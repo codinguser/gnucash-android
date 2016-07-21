@@ -300,6 +300,10 @@ public class TransactionFormFragment extends Fragment implements
 		if (transactionUID != null) {
             mTransaction = mTransactionsDbAdapter.getRecord(transactionUID);
             mEditMode = true;
+        } else {
+            mTransaction = new Transaction("");
+            mTransaction.setCommodity(mAccount.getCommodity());
+            mEditMode = false;
         }
 
         setListeners();
@@ -339,12 +343,12 @@ public class TransactionFormFragment extends Fragment implements
         assert actionBar != null;
 //        actionBar.setSubtitle(mAccount.getFullName());
 
+        initializeViews();
+
         if (mEditMode) {
             actionBar.setTitle(R.string.title_edit_transaction);
-			initializeViewsWithTransaction();
 		} else {
             actionBar.setTitle(R.string.title_add_transaction);
-            initalizeViews();
             initTransactionNameAutocomplete();
         }
 
@@ -414,7 +418,7 @@ public class TransactionFormFragment extends Fragment implements
                 mTransaction.setTime(System.currentTimeMillis());
                 //we check here because next method will modify it and we want to catch user-modification
                 boolean amountEntered = mAmountEditText.isInputModified();
-                initializeViewsWithTransaction();
+                initializeViews();
                 if (hasTransactionOnlyDefaultSplits(mTransaction.getSplits())) {
                     mSplitsList.clear();
                     if (!amountEntered) { //if user already entered an amount
@@ -440,16 +444,22 @@ public class TransactionFormFragment extends Fragment implements
 
     /**
 	 * Initialize views in the fragment with information from a transaction.
-	 * This method is called if the fragment is used for editing a transaction
 	 */
-	private void initializeViewsWithTransaction(){
+	private void initializeViews() {
 		mDescriptionEditText.setText(mTransaction.getDescription());
         mDescriptionEditText.setSelection(mDescriptionEditText.getText().length());
 
         mTransactionTypeSwitch.setAccountType(mAccount.getAccountType());
-        mTransactionTypeSwitch.setChecked(mTransaction.getBalance(mAccount.getUID()).isNegative());
+        if (mEditMode) {
+            mTransactionTypeSwitch.setChecked(
+                    mTransaction.getBalance(mAccount.getUID()).isNegative());
+        } else {
+            String typePref = PreferenceActivity.getActiveBookSharedPreferences(getActivity())
+                    .getString(getString(R.string.key_default_transaction_type), "DEBIT");
+            mTransactionTypeSwitch.setChecked(TransactionType.valueOf(typePref));
+        }
 
-		if (!mAmountEditText.isInputModified()){
+		if (mEditMode && !mAmountEditText.isInputModified()){
             //when autocompleting, only change the amount if the user has not manually changed it already
             mAmountEditText.setValue(mTransaction.getBalance(mAccount.getUID()).asBigDecimal());
         }
@@ -475,11 +485,20 @@ public class TransactionFormFragment extends Fragment implements
             }
         }
 
-        if (mUseDoubleEntry && hasTransactionOnlyDefaultSplits(mSplitsList)) {
-            setSelectedTransferAccount(getTransferAccountIDFromSplits());
+        if (mUseDoubleEntry){
+            if (mEditMode) {
+                if (hasTransactionOnlyDefaultSplits(mSplitsList)) {
+                    setSelectedTransferAccount(getTransferAccountIDFromSplits());
+                }
+            } else {
+                long transferAccountID =
+                        mAccountsDbAdapter.getDefaultTransferAccountIDFromParents(mAccount.getUID());
+                if (transferAccountID > 0)
+                    setSelectedTransferAccount(transferAccountID);
+            }
         }
 
-        if (!hasTransactionOnlyDefaultSplits(mSplitsList)) {
+        if (mEditMode && !hasTransactionOnlyDefaultSplits(mSplitsList)) {
             //if there are other splits than the default ones, then
             //disable editing of the transfer account. User should open editor
             setDoubleEntryViewsVisibility(View.GONE);
@@ -547,30 +566,6 @@ public class TransactionFormFragment extends Fragment implements
             });
         }
     }
-
-    /**
-	 * Initialize views with default data for new transactions
-	 */
-	private void initalizeViews() {
-		Date time = new Date(System.currentTimeMillis());
-		mDateTextView.setText(DATE_FORMATTER.format(time));
-		mTimeTextView.setText(TIME_FORMATTER.format(time));
-		mTime = mDate = Calendar.getInstance();
-
-        mTransactionTypeSwitch.setAccountType(mAccount.getAccountType());
-		String typePref = PreferenceActivity.getActiveBookSharedPreferences(getActivity()).getString(getString(R.string.key_default_transaction_type), "DEBIT");
-        mTransactionTypeSwitch.setChecked(TransactionType.valueOf(typePref));
-
-        mCurrencyTextView.setText(mAccount.getCommodity().getSymbol());
-        mAmountEditText.setCommodity(mAccount.getCommodity());
-
-        if (mUseDoubleEntry){
-            long transferAccountID =
-                    mAccountsDbAdapter.getDefaultTransferAccountIDFromParents(mAccount.getUID());
-            if (transferAccountID > 0)
-                setSelectedTransferAccount(transferAccountID);
-        }
-	}
 
     /**
      * Updates the list of possible transfer accounts.
@@ -747,11 +742,11 @@ public class TransactionFormFragment extends Fragment implements
 
         mAccountsDbAdapter.beginTransaction();
         try {
+            mTransaction.setDescription(mDescriptionEditText.getText().toString());
+
             if (mEditMode) {
                 mTransaction.setSplits(mSplitsList);
-                mTransaction.setDescription(mDescriptionEditText.getText().toString());
             } else {
-                mTransaction = new Transaction(mDescriptionEditText.getText().toString());
 
                 //****************** amount entered in the simple interface (not using splits Editor) ************************
                 if (mSplitsList.isEmpty()) {
