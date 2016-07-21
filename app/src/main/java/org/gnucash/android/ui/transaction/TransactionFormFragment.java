@@ -628,12 +628,7 @@ public class TransactionFormFragment extends Fragment implements
             BigDecimal enteredAmount = mAmountEditText.getValue();
             baseAmountString = enteredAmount.toPlainString();
         } else {
-            Money biggestAmount = Money.createZeroInstance(mTransaction.getCurrencyCode());
-            for (Split split : mTransaction.getSplits()) {
-                if (split.getValue().asBigDecimal().compareTo(biggestAmount.asBigDecimal()) > 0)
-                    biggestAmount = split.getValue();
-            }
-            baseAmountString = biggestAmount.toPlainString();
+            baseAmountString = getBiggestSplitAmount().toPlainString();
         }
 
         Intent intent = new Intent(getActivity(), FormActivity.class);
@@ -650,7 +645,21 @@ public class TransactionFormFragment extends Fragment implements
         startActivityForResult(intent, REQUEST_SPLIT_EDITOR);
     }
 
-	/**
+    /**
+     * Returns a Money object with the biggest amount of the splits of the current transaction.
+     *
+     * @return biggest amount of the splits of the current transaction
+     */
+    private Money getBiggestSplitAmount() {
+        Money biggestAmount = Money.createZeroInstance(mTransaction.getCurrencyCode());
+        for (Split split : mTransaction.getSplits()) {
+            if (split.getValue().asBigDecimal().compareTo(biggestAmount.asBigDecimal()) > 0)
+                biggestAmount = split.getValue();
+        }
+        return biggestAmount;
+    }
+
+    /**
 	 * Sets click listeners for the dialog buttons
 	 */
 	private void setListeners() {
