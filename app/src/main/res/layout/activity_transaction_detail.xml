@@ -22,16 +22,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_edit_transaction"
-        android:layout_height="40dp"
-        android:layout_width="40dp"
-        app:layout_anchor="@+id/toolbar"
-        app:layout_anchorGravity="bottom|left|start"
-        android:layout_marginLeft="8dp"
-        android:scaleType="center"
-        android:src="@drawable/ic_mode_edit_white_24dp"
-        />
+
 
     <LinearLayout
         android:orientation="vertical"
@@ -58,11 +49,14 @@
                     android:maxLines="3"
                     android:paddingBottom="20dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"/>
+
                 <TextView android:id="@+id/transaction_account"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="bottom"
                     android:layout_gravity="bottom"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
                     android:maxLines="1"
                     android:singleLine="true"
                     android:ellipsize="start"
@@ -154,4 +148,14 @@
 
         </TableLayout>
     </LinearLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_edit_transaction"
+        android:layout_height="40dp"
+        android:layout_width="40dp"
+        app:layout_anchor="@id/toolbar"
+        app:layout_anchorGravity="bottom|left|start"
+        android:layout_marginLeft="6dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_mode_edit_white_24dp"
+        />
 </android.support.design.widget.CoordinatorLayout>
