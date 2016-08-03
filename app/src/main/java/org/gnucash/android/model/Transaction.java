@@ -171,19 +171,18 @@ public class Transaction extends BaseModel{
 	}
 
     /**
-     * Creates a split which will balance the transaction
-     * <p><b>Note:</b>If a transaction has splits with different currencies, not auto-balancing will be performed.</p>
+     * Creates a split which will balance the transaction, in value.
+     * <p><b>Note:</b>If a transaction has splits with different currencies, no auto-balancing will be performed.</p>
      *
      * <p>The added split will not use any account in db, but will use currency code as account UID.
      * The added split will be returned, to be filled with proper account UID later.</p>
      * @return Split whose amount is the imbalance of this transaction
      */
-    public Split getAutoBalanceSplit(){
-        Money imbalance = getImbalance();
+    public Split createAutoBalanceSplit(){
+        Money imbalance = getImbalance(); //returns imbalance of 0 for multicurrency transactions
         if (!imbalance.isAmountZero()){
-            Currency currency = Currency.getInstance(mCurrencyCode);
-            Split split = new Split(imbalance.negate(),
-                    currency.getCurrencyCode());
+            Split split = new Split(imbalance.negate(), mCurrencyCode); //yes, this is on purpose
+            //the account UID is set to the currency. This should be overridden before saving to db
             addSplit(split);
             return split;
         }
@@ -250,13 +249,13 @@ public class Transaction extends BaseModel{
     /**
      * Computes the imbalance amount for the given transaction.
      * In double entry, all transactions should resolve to zero. But imbalance occurs when there are unresolved splits.
-     * <p>If it is a multi-currency transaction, an imbalance of zero will be returned</p>
+     * <p><b>Note:</b> If this is a multi-currency transaction, an imbalance of zero will be returned</p>
      * @return Money imbalance of the transaction or zero if it is a multi-currency transaction
      */
     public Money getImbalance(){
         Money imbalance = Money.createZeroInstance(mCurrencyCode);
         for (Split split : mSplitList) {
-            if (!split.getValue().getCurrency().getCurrencyCode().equals(mCurrencyCode)) {
+            if (!split.getQuantity().getCurrency().getCurrencyCode().equals(mCurrencyCode)) {
                 // this may happen when importing XML exported from GNCA before 2.0.0
                 // these transactions should only be imported from XML exported from GNC desktop
                 // so imbalance split should not be generated for them

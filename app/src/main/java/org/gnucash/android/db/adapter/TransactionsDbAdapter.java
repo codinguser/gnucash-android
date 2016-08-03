@@ -97,10 +97,10 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
 	 */
     @Override
 	public void addRecord(@NonNull Transaction transaction, UpdateMethod updateMethod){
-        Log.d(LOG_TAG, "Replacing transaction in db");
+        Log.d(LOG_TAG, "Adding transaction to the db via " + updateMethod.name());
         mDb.beginTransaction();
         try {
-            Split imbalanceSplit = transaction.getAutoBalanceSplit();
+            Split imbalanceSplit = transaction.createAutoBalanceSplit();
             if (imbalanceSplit != null){
                 String imbalanceAccountUID = AccountsDbAdapter.getInstance().getOrCreateImbalanceAccountUID(transaction.getCurrency());
                 imbalanceSplit.setAccountUID(imbalanceAccountUID);
