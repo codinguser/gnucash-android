@@ -190,6 +190,19 @@ public class Transaction extends BaseModel{
     }
 
     /**
+     * Set the GUID of the transaction
+     * If the transaction has Splits, their transactionGUID will be updated as well
+     * @param uid String unique ID
+     */
+    @Override
+    public void setUID(String uid) {
+        super.setUID(uid);
+        for (Split split : mSplitList) {
+            split.setTransactionUID(uid);
+        }
+    }
+
+    /**
      * Returns list of splits for this transaction
      * @return {@link java.util.List} of splits in the transaction
      */

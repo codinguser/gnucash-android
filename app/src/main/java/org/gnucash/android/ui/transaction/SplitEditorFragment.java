@@ -92,8 +92,6 @@ public class SplitEditorFragment extends Fragment {
 
     private BigDecimal mBaseAmount = BigDecimal.ZERO;
 
-    private ArrayList<String> mRemovedSplitUIDs = new ArrayList<>();
-
     CalculatorKeyboard mCalculatorKeyboard;
 
     BalanceTextWatcher mImbalanceWatcher = new BalanceTextWatcher();
@@ -131,13 +129,9 @@ public class SplitEditorFragment extends Fragment {
 
         //we are editing splits for a new transaction.
         // But the user may have already created some splits before. Let's check
-        List<String> splitStrings = getArguments().getStringArrayList(UxArgument.SPLIT_LIST);
-        List<Split> splitList = new ArrayList<>();
-        if (splitStrings != null) {
-            for (String splitString : splitStrings) {
-                splitList.add(Split.parseSplit(splitString));
-            }
-        }
+
+        List<Split> splitList = getArguments().getParcelableArrayList(UxArgument.SPLIT_LIST);
+        assert splitList != null;
 
         initArgs();
         if (!splitList.isEmpty()) {
@@ -264,7 +258,6 @@ public class SplitEditorFragment extends Fragment {
             removeSplitButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mRemovedSplitUIDs.add(splitUidTextView.getText().toString());
                     mSplitsLinearLayout.removeView(splitView);
                     mSplitItemViewList.remove(splitView);
                     mImbalanceWatcher.afterTextChanged(null);
@@ -377,14 +370,8 @@ public class SplitEditorFragment extends Fragment {
             return;
         }
 
-        List<Split> splitList = extractSplitsFromView();
-        ArrayList<String> splitStrings = new ArrayList<>();
-        for (Split split : splitList) {
-            splitStrings.add(split.toCsv());
-        }
         Intent data = new Intent();
-        data.putStringArrayListExtra(UxArgument.SPLIT_LIST, splitStrings);
-        data.putStringArrayListExtra(UxArgument.REMOVED_SPLITS, mRemovedSplitUIDs);
+        data.putParcelableArrayListExtra(UxArgument.SPLIT_LIST, extractSplitsFromView());
         getActivity().setResult(Activity.RESULT_OK, data);
 
         getActivity().finish();
@@ -394,8 +381,8 @@ public class SplitEditorFragment extends Fragment {
      * Extracts the input from the views and builds {@link org.gnucash.android.model.Split}s to correspond to the input.
      * @return List of {@link org.gnucash.android.model.Split}s represented in the view
      */
-    private List<Split> extractSplitsFromView(){
-        List<Split> splitList = new ArrayList<>();
+    private ArrayList<Split> extractSplitsFromView(){
+        ArrayList<Split> splitList = new ArrayList<>();
         for (View splitView : mSplitItemViewList) {
             SplitViewHolder viewHolder = (SplitViewHolder) splitView.getTag();
             if (viewHolder.splitAmountEditText.getValue() == null)

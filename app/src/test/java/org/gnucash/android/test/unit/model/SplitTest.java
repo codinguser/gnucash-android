@@ -49,6 +49,7 @@ public class SplitTest {
 
         Split clone2 = new Split(split, true);
         assertThat(clone2.getUID()).isNotEqualTo(split.getUID());
+        assertThat(split.isEquivalentTo(clone2)).isTrue();
     }
 
     /**

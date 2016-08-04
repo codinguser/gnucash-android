@@ -191,10 +191,13 @@ public class TransactionsActivityTest {
 				.check(matches(isDisplayed()))
 				.perform(typeText("Lunch"));
 
-		onView(withId(R.id.menu_save)).perform(click());
+		Espresso.closeSoftKeyboard();
+
+		onView(withId(R.id.menu_save))
+				.check(matches(isDisplayed()))
+				.perform(click());
 		onView(withText(R.string.title_add_transaction)).check(matches(isDisplayed()));
 
-		Espresso.closeSoftKeyboard();
 		sleep(1000);
 
 		assertToastDisplayed(R.string.toast_transanction_amount_required);
@@ -294,7 +297,9 @@ public class TransactionsActivityTest {
 		Espresso.pressBack(); //close calculator keyboard
 
 		onView(withId(R.id.input_transfer_account_spinner)).perform(click());
-		onView(withText(euroAccount.getFullName())).check(matches(isDisplayed())).perform(click());
+		onView(withText(euroAccount.getFullName()))
+				.check(matches(isDisplayed()))
+				.perform(click());
 
 		onView(withId(R.id.menu_save)).perform(click());
 
@@ -309,7 +314,7 @@ public class TransactionsActivityTest {
 		List<Transaction> allTransactions = mTransactionsDbAdapter.getAllTransactionsForAccount(TRANSACTIONS_ACCOUNT_UID);
 		assertThat(allTransactions).hasSize(transactionCount+1);
 		Transaction multiTrans = allTransactions.get(0);
-
+		assertThat(multiTrans.getSplits()).hasSize(2);
 		assertThat(multiTrans.getSplits()).extracting("mAccountUID")
 				.contains(TRANSACTIONS_ACCOUNT_UID)
 				.contains(euroAccount.getUID());
@@ -339,7 +344,15 @@ public class TransactionsActivityTest {
 
 		Transaction editedTransaction = mTransactionsDbAdapter.getRecord(mTransaction.getUID());
 		assertThat(editedTransaction.getDescription()).isEqualTo(trnName);
-		assertThat(editedTransaction.getSplits()).isEqualTo(mTransaction.getSplits());
+		assertThat(editedTransaction.getSplits()).hasSize(2);
+
+		Split split = mTransaction.getSplits(TRANSACTIONS_ACCOUNT_UID).get(0);
+		Split editedSplit = editedTransaction.getSplits(TRANSACTIONS_ACCOUNT_UID).get(0);
+		assertThat(split.isEquivalentTo(editedSplit)).isTrue();
+
+		split = mTransaction.getSplits(TRANSFER_ACCOUNT_UID).get(0);
+		editedSplit = editedTransaction.getSplits(TRANSFER_ACCOUNT_UID).get(0);
+		assertThat(split.isEquivalentTo(editedSplit)).isTrue();
 	}
 
 	/**
@@ -403,8 +416,7 @@ public class TransactionsActivityTest {
 
 		onView(withId(R.id.split_list_layout)).check(matches(allOf(isDisplayed(), hasDescendant(withId(R.id.input_split_amount)))));
 
-		onView(withId(R.id.menu_add_split)).perform(click());
-
+		onView(allOf(withId(R.id.input_split_amount), withText("-499"))).perform(clearText());
 		onView(allOf(withId(R.id.input_split_amount), withText(""))).perform(typeText("400"));
 
 		onView(withId(R.id.menu_save)).perform(click());
@@ -798,9 +810,9 @@ public class TransactionsActivityTest {
 		String trnDescription = "Multicurrency Test Trn";
 		Transaction multiTransaction = new Transaction(trnDescription);
 		Split split1 = new Split(expectedValue, TRANSACTIONS_ACCOUNT_UID);
-		split1.setType(TransactionType.DEBIT);
+		split1.setType(TransactionType.CREDIT);
 		Split split2 = new Split(expectedValue, expectedQty, euroAccount.getUID());
-		split2.setType(TransactionType.CREDIT);
+		split2.setType(TransactionType.DEBIT);
 		multiTransaction.addSplit(split1);
 		multiTransaction.addSplit(split2);
 		multiTransaction.setCommodity(COMMODITY);
@@ -810,6 +822,10 @@ public class TransactionsActivityTest {
 		Transaction savedTransaction = mTransactionsDbAdapter.getRecord(multiTransaction.getUID());
 		assertThat(savedTransaction.getSplits()).extracting("mQuantity").contains(expectedQty);
 		assertThat(savedTransaction.getSplits()).extracting("mValue").contains(expectedValue);
+
+		assertThat(savedTransaction.getSplits(TRANSACTIONS_ACCOUNT_UID).get(0)
+				.isEquivalentTo(multiTransaction.getSplits(TRANSACTIONS_ACCOUNT_UID).get(0)))
+				.isTrue();
 
 		refreshTransactionsList();
 
@@ -832,10 +848,17 @@ public class TransactionsActivityTest {
 
 		onView(withId(R.id.menu_save)).perform(click());
 
-		Money transferBalance = mAccountsDbAdapter.getAccountBalance(TRANSFER_ACCOUNT_UID);
-		assertThat(transferBalance).isEqualTo(expectedValue);
-
 		Transaction editedTransaction = mTransactionsDbAdapter.getRecord(multiTransaction.getUID());
+		assertThat(editedTransaction.getSplits(TRANSACTIONS_ACCOUNT_UID).get(0)
+				.isEquivalentTo(savedTransaction.getSplits(TRANSACTIONS_ACCOUNT_UID).get(0)))
+				.isTrue();
+
+		Money firstAcctBalance = mAccountsDbAdapter.getAccountBalance(TRANSACTIONS_ACCOUNT_UID);
+		assertThat(firstAcctBalance).isEqualTo(editedTransaction.getBalance(TRANSACTIONS_ACCOUNT_UID));
+
+		Money transferBalance = mAccountsDbAdapter.getAccountBalance(TRANSFER_ACCOUNT_UID);
+		assertThat(transferBalance).isEqualTo(editedTransaction.getBalance(TRANSFER_ACCOUNT_UID));
+
 		assertThat(editedTransaction.getBalance(TRANSFER_ACCOUNT_UID)).isEqualTo(expectedValue);
 
 		Split transferAcctSplit = editedTransaction.getSplits(TRANSFER_ACCOUNT_UID).get(0);

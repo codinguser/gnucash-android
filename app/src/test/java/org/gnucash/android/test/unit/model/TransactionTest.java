@@ -8,9 +8,13 @@ import org.gnucash.android.model.Transaction;
 import org.gnucash.android.test.unit.testutil.GnucashTestRunner;
 import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
 import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
+import org.gnucash.android.ui.transaction.SplitEditorFragment;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -52,4 +56,24 @@ public class TransactionTest {
 		assertThat(split.getTransactionUID()).isEqualTo(transaction.getUID());
 	}
 
+	@Test
+	public void settingUID_shouldSetTransactionUidOfSplits(){
+		Transaction t1 = new Transaction("Test");
+		Split split1 = new Split(Money.getZeroInstance(), "random");
+		split1.setTransactionUID("non-existent");
+
+		Split split2 = new Split(Money.getZeroInstance(), "account-something");
+		split2.setTransactionUID("pre-existent");
+
+		List<Split> splits = new ArrayList<>();
+		splits.add(split1);
+		splits.add(split2);
+
+		t1.setSplits(splits);
+
+		assertThat(t1.getSplits()).extracting("mTransactionUID")
+				.contains(t1.getUID())
+				.doesNotContain("random")
+				.doesNotContain("account-something");
+	}
 }

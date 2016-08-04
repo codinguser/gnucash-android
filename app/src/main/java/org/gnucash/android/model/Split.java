@@ -1,6 +1,8 @@
 package org.gnucash.android.model;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
@@ -17,7 +19,7 @@ import java.sql.Timestamp;
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class Split extends BaseModel{
+public class Split extends BaseModel implements Parcelable{
 
     /**
      * Flag indicating that the split has been reconciled
@@ -89,12 +91,13 @@ public class Split extends BaseModel{
 
     /**
      * Initialize split with a value amount and account
-     * @param amount Money value amount of this split. Value is always in the currency the owning transaction
-     * @param accountUID String UID of transfer account
+     * @param amount Money value amount of this split. Value is always in the currency the owning transaction.
+     *               This amount will be assigned as both the value and the quantity of this split
+     * @param accountUID String UID of owning account
      */
     public Split(@NonNull Money amount, String accountUID){
-        setQuantity(amount);
         setValue(amount);
+        setQuantity(new Money(amount));
         setAccountUID(accountUID);
         //NOTE: This is a rather simplististic approach to the split type.
         //It typically also depends on the account type of the account. But we do not want to access
@@ -442,6 +445,34 @@ public class Split extends BaseModel{
         }
     }
 
+    /**
+     * Two splits are considered equivalent if all the fields (excluding GUID and timestamps - created, modified, reconciled) are equal.
+     * Any two splits which are equal are also equivalent, but the reverse is not true
+     * <p>The difference with to {@link #equals(Object)} is that the GUID of the split is not considered.
+     * This is useful in cases where a new split is generated for a transaction with the same properties,
+     * but a new GUID is generated e.g. when editing a transaction and modifying the splits</p>
+     *
+     * @param split Other split for which to test equivalence
+     * @return {@code true} if both splits are equivalent, {@code false} otherwise
+     */
+    public boolean isEquivalentTo(Split split){
+        if (this == split) return true;
+        if (super.equals(split)) return true;
+
+        if (mReconcileState != split.mReconcileState) return false;
+        if (!mValue.equals(split.mValue)) return false;
+        if (!mQuantity.equals(split.mQuantity)) return false;
+        if (!mTransactionUID.equals(split.mTransactionUID)) return false;
+        if (!mAccountUID.equals(split.mAccountUID)) return false;
+        if (mSplitType != split.mSplitType) return false;
+        return mMemo != null ? mMemo.equals(split.mMemo) : split.mMemo == null;
+    }
+
+    /**
+     * Two splits are considered equal if all their properties excluding timestampes (created, modified, reconciled) are equal.
+     * @param o Other split to compare for equality
+     * @return {@code true} if this split is equal to {@code o}, {@code false} otherwise
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -457,7 +488,6 @@ public class Split extends BaseModel{
         if (!mAccountUID.equals(split.mAccountUID)) return false;
         if (mSplitType != split.mSplitType) return false;
         return mMemo != null ? mMemo.equals(split.mMemo) : split.mMemo == null;
-
     }
 
     @Override
@@ -472,4 +502,74 @@ public class Split extends BaseModel{
         result = 31 * result + (int) mReconcileState;
         return result;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(getUID());
+        dest.writeString(mAccountUID);
+        dest.writeString(mTransactionUID);
+        dest.writeString(mSplitType.name());
+
+        dest.writeLong(mValue.getNumerator());
+        dest.writeLong(mValue.getDenominator());
+        dest.writeString(mValue.getCommodity().getCurrencyCode());
+
+        dest.writeLong(mQuantity.getNumerator());
+        dest.writeLong(mQuantity.getDenominator());
+        dest.writeString(mQuantity.getCommodity().getCurrencyCode());
+
+        dest.writeString(mMemo == null ? "" : mMemo);
+        dest.writeString(String.valueOf(mReconcileState));
+        dest.writeString(mReconcileDate.toString());
+    }
+
+    /**
+     * Constructor for creating a Split object from a Parcel
+     * @param source Source parcel containing the split
+     * @see #CREATOR
+     */
+    private Split(Parcel source){
+        setUID(source.readString());
+        mAccountUID = source.readString();
+        mTransactionUID = source.readString();
+        mSplitType = TransactionType.valueOf(source.readString());
+
+        long valueNum = source.readLong();
+        long valueDenom = source.readLong();
+        String valueCurrency = source.readString();
+        mValue = new Money(valueNum, valueDenom, valueCurrency);
+
+        long qtyNum = source.readLong();
+        long qtyDenom = source.readLong();
+        String qtyCurrency = source.readString();
+        mQuantity = new Money(qtyNum, qtyDenom, qtyCurrency);
+
+        String memo = source.readString();
+        mMemo = memo.isEmpty() ? null : memo;
+        mReconcileState = source.readString().charAt(0);
+        mReconcileDate = Timestamp.valueOf(source.readString());
+    }
+
+    /**
+     * Creates new Parcels containing the information in this split during serialization
+     */
+    public static final Parcelable.Creator<Split> CREATOR
+            = new Parcelable.Creator<Split>() {
+
+        @Override
+        public Split createFromParcel(Parcel source) {
+            return new Split(source);
+        }
+
+        @Override
+        public Split[] newArray(int size) {
+            return new Split[size];
+        }
+    };
+
 }
