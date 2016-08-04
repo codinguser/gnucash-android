@@ -58,4 +58,19 @@ public class RecurrenceTest {
 
         assertThat(recurrence.getCount()).isEqualTo(10);
     }
+
+    /**
+     * When no end period is set, getCount() should return the special value -1.
+     *
+     * <p>Tests for bug https://github.com/codinguser/gnucash-android/issues/526</p>
+     */
+    @Test
+    public void notSettingEndDate_shouldReturnSpecialCountValue() {
+        Recurrence recurrence = new Recurrence(PeriodType.MONTH);
+        Calendar cal = Calendar.getInstance();
+        cal.set(2015, Calendar.OCTOBER, 5);
+        recurrence.setPeriodStart(new Timestamp(cal.getTimeInMillis()));
+
+        assertThat(recurrence.getCount()).isEqualTo(-1);
+    }
 }

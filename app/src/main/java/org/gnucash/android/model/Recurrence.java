@@ -263,6 +263,9 @@ public class Recurrence extends BaseModel {
      * @return Number of occurrences, or -1 if there is no end date
      */
     public int getCount(){
+        if (mPeriodEnd == null)
+            return -1;
+
         int count = 0;
         LocalDate startDate = new LocalDate(mPeriodStart.getTime());
         LocalDate endDate = new LocalDate(mPeriodEnd.getTime());
