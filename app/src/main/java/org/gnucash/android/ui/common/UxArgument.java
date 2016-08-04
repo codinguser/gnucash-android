@@ -93,6 +93,16 @@ public final class UxArgument {
     public static final String SPLIT_LIST = "split_list";
 
     /**
+     * GUID of a budget
+     */
+    public static final String BUDGET_UID = "budget_uid";
+
+    /**
+     * List of budget amounts (as csv)
+     */
+    public static final String BUDGET_AMOUNT_LIST = "budget_amount_list";
+
+    /**
      * GUID of splits which have been removed from the split editor
      */
     public static String REMOVED_SPLITS = "removed_split_guids";

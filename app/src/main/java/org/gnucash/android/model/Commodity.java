@@ -16,7 +16,7 @@
 package org.gnucash.android.model;
 
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 
 /**
  * Commodities are the currencies used in the application.

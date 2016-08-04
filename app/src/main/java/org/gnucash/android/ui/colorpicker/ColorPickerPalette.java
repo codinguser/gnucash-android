@@ -148,7 +148,7 @@ public class ColorPickerPalette extends TableLayout {
             accessibilityIndex = index;
         } else {
             // We're in a backwards-ordered row.
-            int rowMax = ((rowNumber + 1) * mNumColumns);
+            int rowMax = (rowNumber + 1) * mNumColumns;
             accessibilityIndex = rowMax - rowElements;
         }
 

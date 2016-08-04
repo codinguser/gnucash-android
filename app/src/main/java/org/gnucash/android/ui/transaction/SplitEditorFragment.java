@@ -47,8 +47,8 @@ import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
 import org.gnucash.android.R;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
@@ -60,7 +60,6 @@ import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.transaction.dialog.TransferFundsDialogFragment;
-import org.gnucash.android.ui.util.OnTransferFundsListener;
 import org.gnucash.android.ui.util.widget.CalculatorEditText;
 import org.gnucash.android.ui.util.widget.CalculatorKeyboard;
 import org.gnucash.android.ui.util.widget.TransactionTypeSwitch;
@@ -413,7 +412,7 @@ public class SplitEditorFragment extends Fragment {
             split.setType(viewHolder.splitTypeSwitch.getTransactionType());
             split.setUID(viewHolder.splitUidTextView.getText().toString().trim());
             if (viewHolder.quantity != null)
-                split.setQuantity(viewHolder.quantity.absolute());
+                split.setQuantity(viewHolder.quantity.abs());
             splitList.add(split);
         }
         return splitList;

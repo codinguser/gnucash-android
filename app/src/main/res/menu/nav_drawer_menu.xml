@@ -16,17 +16,22 @@
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/nav_item_open"
+        android:icon="@drawable/ic_folder_open_black_24dp"
+        android:title="@string/nav_menu_open"/>
+    <item
         android:id="@+id/nav_section_accounts"
         android:title="@string/title_accounts">
         <menu>
             <item
-                android:id="@+id/nav_item_open"
-                android:icon="@drawable/ic_folder_open_black_24dp"
-                android:title="@string/nav_menu_open"/>
-            <item
                 android:id="@+id/nav_item_favorites"
                 android:icon="@drawable/ic_star_black_24dp"
                 android:title="@string/nav_menu_favorites"/>
+<!--
+            <item android:id="@+id/nav_item_budgets"
+                android:icon="@drawable/ic_dashboard_black_24dp"
+                android:title="@string/nav_menu_budgets" />
+-->
             <item android:id="@+id/nav_item_reports"
                 android:icon="@drawable/ic_equalizer_black_24dp"
                 android:title="@string/nav_menu_reports" />
@@ -47,12 +52,17 @@
         </menu>
     </item>
     <item
-        android:id="@+id/nav_item_settings"
-        android:icon="@drawable/ic_settings_black_24dp"
-        android:title="@string/nav_menu_settings"/>
-    <item
-        android:id="@+id/nav_item_help"
-        android:icon="@drawable/ic_help_black_24dp"
-        android:title="@string/nav_menu_help"/>
-
+        android:id="@+id/nav_section_settings"
+        android:title="Preferences">
+        <menu>
+            <item
+                android:id="@+id/nav_item_settings"
+                android:icon="@drawable/ic_settings_black_24dp"
+                android:title="@string/nav_menu_settings"/>
+            <item
+                android:id="@+id/nav_item_help"
+                android:icon="@drawable/ic_help_black_24dp"
+                android:title="@string/nav_menu_help"/>
+        </menu>
+    </item>
 </menu>

@@ -16,62 +16,64 @@
 
 package org.gnucash.android.test.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.preference.PreferenceManager;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.action.CoordinatesProvider;
 import android.support.test.espresso.action.GeneralClickAction;
 import android.support.test.espresso.action.Press;
 import android.support.test.espresso.action.Tap;
-import android.support.test.espresso.contrib.PickerActions;
+import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
 import android.view.View;
-import android.widget.DatePicker;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
-import org.gnucash.android.db.SplitsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
+import org.gnucash.android.db.adapter.SplitsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.importer.GncXmlImporter;
-import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
-import org.gnucash.android.ui.report.PieChartFragment;
+import org.gnucash.android.test.ui.util.DisableAnimationsRule;
+import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.report.BaseReportFragment;
 import org.gnucash.android.ui.report.ReportsActivity;
+import org.gnucash.android.ui.report.piechart.PieChartFragment;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.joda.time.LocalDateTime;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.math.BigDecimal;
-import java.util.Currency;
+import java.util.Locale;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
-import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.anyOf;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(AndroidJUnit4.class)
-public class PieChartReportTest extends ActivityInstrumentationTestCase2<ReportsActivity> {
+public class PieChartReportTest {
 
     public static final String TAG = PieChartReportTest.class.getName();
 
@@ -95,53 +97,58 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
     private static final String GIFTS_RECEIVED_INCOME_ACCOUNT_UID = "b01950c0df0890b6543209d51c8e0b0f";
     private static final String GIFTS_RECEIVED_INCOME_ACCOUNT_NAME = "Gifts Received";
 
-    public static final Commodity CURRENCY = Commodity.getInstance("USD");
+    public static Commodity CURRENCY;
 
-    private AccountsDbAdapter mAccountsDbAdapter;
-    private TransactionsDbAdapter mTransactionsDbAdapter;
+    private static AccountsDbAdapter mAccountsDbAdapter;
+    private static TransactionsDbAdapter mTransactionsDbAdapter;
 
     private ReportsActivity mReportsActivity;
 
-	public PieChartReportTest() {
-		super(ReportsActivity.class);
+    @Rule
+    public ActivityTestRule<ReportsActivity> mActivityRule = new ActivityTestRule<>(ReportsActivity.class);
+
+    @ClassRule
+    public static DisableAnimationsRule disableAnimationsRule = new DisableAnimationsRule();
+
+    private static String testBookUID;
+    private static String oldActiveBookUID;
+
+
+    public PieChartReportTest() {
+        //nothing to se here, move along
+        CURRENCY = new Commodity("US Dollars", "USD", 100);
 	}
+
+    @BeforeClass
+    public static void prepareTestCase() throws Exception {
+        Context context = GnuCashApplication.getAppContext();
+        oldActiveBookUID = BooksDbAdapter.getInstance().getActiveBookUID();
+        testBookUID = GncXmlImporter.parse(context.getResources().openRawResource(R.raw.default_accounts));
+
+        GnuCashApplication.loadBook(testBookUID);
+        mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
+        mAccountsDbAdapter = AccountsDbAdapter.getInstance();
+
+        CURRENCY = CommoditiesDbAdapter.getInstance().getCommodity("USD");
+
+        PreferenceActivity.getActiveBookSharedPreferences(context).edit()
+                .putString(context.getString(R.string.key_default_currency), CURRENCY.getCurrencyCode())
+                .commit();
+    }
 	
-	@Override
+
 	@Before
 	public void setUp() throws Exception {
-		super.setUp();
-		injectInstrumentation(InstrumentationRegistry.getInstrumentation());
-
-        mReportsActivity = getActivity();
-
-        SQLiteDatabase db;
-        DatabaseHelper dbHelper = new DatabaseHelper(getInstrumentation().getTargetContext());
-        try {
-            db = dbHelper.getWritableDatabase();
-        } catch (SQLException e) {
-            Log.e(TAG, "Error getting database: " + e.getMessage());
-            db = dbHelper.getReadableDatabase();
-        }
-        mTransactionsDbAdapter = new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
-        mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);
-        mAccountsDbAdapter.deleteAllRecords();
-
-        PreferenceManager.getDefaultSharedPreferences(mReportsActivity).edit()
-                .putString(mReportsActivity.getString(R.string.key_default_currency), CURRENCY.getCurrencyCode())
-                .commit();
-        // creates default accounts
-        GncXmlImporter.parse(GnuCashApplication.getAppContext().getResources().openRawResource(R.raw.default_accounts));
+        mTransactionsDbAdapter.deleteAllRecords();
+        mReportsActivity = mActivityRule.getActivity();
+        assertThat(mAccountsDbAdapter.getRecordsCount()).isGreaterThan(20); //lots of accounts in the default
+        onView(withId(R.id.btn_pie_chart)).perform(click());
 	}
 
     /**
-     * Call this method in every tests after adding data
+     * Add a transaction for the current month in order to test the report view
+     * @throws Exception
      */
-    private void getTestActivity() {
-        setActivityIntent(new Intent(Intent.ACTION_VIEW));
-        mReportsActivity = getActivity();
-        onView(withId(R.id.btn_pie_chart)).perform(click());
-    }
-
     private void addTransactionForCurrentMonth() throws Exception {
         Transaction transaction = new Transaction(TRANSACTION_NAME);
         transaction.setTime(System.currentTimeMillis());
@@ -152,11 +159,13 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
         transaction.addSplit(split);
         transaction.addSplit(split.createPair(CASH_IN_WALLET_ASSET_ACCOUNT_UID));
 
-        Account account = mAccountsDbAdapter.getRecord(DINING_EXPENSE_ACCOUNT_UID);
-        account.addTransaction(transaction);
-        mTransactionsDbAdapter.addRecord(transaction);
+        mTransactionsDbAdapter.addRecord(transaction, DatabaseAdapter.UpdateMethod.insert);
     }
 
+    /**
+     * Add a transactions for the previous month for testing pie chart
+     * @param minusMonths Number of months prior
+     */
     private void addTransactionForPreviousMonth(int minusMonths) {
         Transaction transaction = new Transaction(TRANSACTION2_NAME);
         transaction.setTime(new LocalDateTime().minusMonths(minusMonths).toDate().getTime());
@@ -167,15 +176,12 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
         transaction.addSplit(split);
         transaction.addSplit(split.createPair(CASH_IN_WALLET_ASSET_ACCOUNT_UID));
 
-        Account account = mAccountsDbAdapter.getRecord(BOOKS_EXPENSE_ACCOUNT_UID);
-        account.addTransaction(transaction);
-        mTransactionsDbAdapter.addRecord(transaction);
+        mTransactionsDbAdapter.addRecord(transaction, DatabaseAdapter.UpdateMethod.insert);
     }
 
 
     @Test
     public void testNoData() {
-        getTestActivity();
         onView(withId(R.id.pie_chart)).perform(click());
         onView(withId(R.id.selected_chart_slice)).check(matches(withText(R.string.label_select_pie_slice_to_see_details)));
     }
@@ -184,11 +190,11 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
     public void testSelectingValue() throws Exception {
         addTransactionForCurrentMonth();
         addTransactionForPreviousMonth(1);
-        getTestActivity();
+        refreshReport();
 
         onView(withId(R.id.pie_chart)).perform(clickXY(Position.BEGIN, Position.MIDDLE));
         float percent = (float) (TRANSACTION_AMOUNT / (TRANSACTION_AMOUNT + TRANSACTION2_AMOUNT) * 100);
-        String selectedText = String.format(PieChartFragment.SELECTED_VALUE_PATTERN, DINING_EXPENSE_ACCOUNT_NAME, TRANSACTION_AMOUNT, percent);
+        String selectedText = String.format(Locale.US, BaseReportFragment.SELECTED_VALUE_PATTERN, DINING_EXPENSE_ACCOUNT_NAME, TRANSACTION_AMOUNT, percent);
         onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
     }
 
@@ -199,19 +205,15 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
         transaction.addSplit(split);
         transaction.addSplit(split.createPair(CASH_IN_WALLET_ASSET_ACCOUNT_UID));
 
-        mAccountsDbAdapter.getRecord(GIFTS_RECEIVED_INCOME_ACCOUNT_UID).addTransaction(transaction);
-        mTransactionsDbAdapter.addRecord(transaction);
+        mTransactionsDbAdapter.addRecord(transaction, DatabaseAdapter.UpdateMethod.insert);
 
-        getTestActivity();
+        refreshReport();
 
         Thread.sleep(1000);
 
         onView(withId(R.id.report_account_type_spinner)).perform(click());
         onView(withText(AccountType.INCOME.name())).perform(click());
-
-        Thread.sleep(1000);
-
-        onView(withId(R.id.pie_chart)).perform(click());
+        onView(withId(R.id.pie_chart)).perform(clickXY(Position.BEGIN, Position.MIDDLE));
         String selectedText = String.format(PieChartFragment.SELECTED_VALUE_PATTERN, GIFTS_RECEIVED_INCOME_ACCOUNT_NAME, TRANSACTION3_AMOUNT, 100f);
         onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
 
@@ -262,11 +264,31 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
         abstract float getPosition(int widgetPos, int widgetLength);
     }
 
-    @Override
+    /**
+     * Refresh reports
+     */
+    private void refreshReport(){
+        try {
+            mActivityRule.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mReportsActivity.refresh();
+                }
+            });
+        } catch (Throwable t){
+            System.err.println("Faile to refresh reports");
+        }
+    }
+
 	@After
 	public void tearDown() throws Exception {
 		mReportsActivity.finish();
-		super.tearDown();
 	}
 
+    @AfterClass
+    public static void cleanup(){
+        BooksDbAdapter booksDbAdapter = BooksDbAdapter.getInstance();
+        booksDbAdapter.setActive(oldActiveBookUID);
+        booksDbAdapter.deleteRecord(testBookUID);
+    }
 }

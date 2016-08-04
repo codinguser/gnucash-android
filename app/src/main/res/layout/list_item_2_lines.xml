@@ -29,7 +29,7 @@ limitations under the License.
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:ellipsize="end"
-            android:text="@string/label_transaction_name"
+            tools:text="Primary text"
             style="@style/ListItemText"/>
 
     <TextView
@@ -40,5 +40,5 @@ limitations under the License.
             android:ellipsize="middle"
             android:layout_below="@id/primary_text"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            tools:text="@string/label_transaction_name"/>
+            tools:text="Secondary text"/>
 </RelativeLayout>

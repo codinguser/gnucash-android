@@ -25,27 +25,35 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
+import com.facebook.stetho.Stetho;
 import com.uservoice.uservoicesdk.Config;
 import com.uservoice.uservoicesdk.UserVoice;
 
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.CommoditiesDbAdapter;
+import org.gnucash.android.db.BookDbHelper;
 import org.gnucash.android.db.DatabaseHelper;
-import org.gnucash.android.db.PricesDbAdapter;
-import org.gnucash.android.db.ScheduledActionDbAdapter;
-import org.gnucash.android.db.SplitsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
+import org.gnucash.android.db.adapter.BudgetAmountsDbAdapter;
+import org.gnucash.android.db.adapter.BudgetsDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.PricesDbAdapter;
+import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
+import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
+import org.gnucash.android.db.adapter.SplitsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.service.SchedulerService;
+import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 
 import java.util.Currency;
 import java.util.Locale;
@@ -67,13 +75,9 @@ public class GnuCashApplication extends Application{
     /**
      * Init time of passcode session
      */
-    public static long PASSCODE_SESSION_INIT_TIME = 0l;
+    public static long PASSCODE_SESSION_INIT_TIME = 0L;
 
     private static Context context;
-
-    private static DatabaseHelper mDbHelper;
-
-    private static SQLiteDatabase mDb;
 
     private static AccountsDbAdapter mAccountsDbAdapter;
 
@@ -86,6 +90,15 @@ public class GnuCashApplication extends Application{
     private static CommoditiesDbAdapter mCommoditiesDbAdapter;
 
     private static PricesDbAdapter mPricesDbAdapter;
+
+    private static BudgetsDbAdapter mBudgetsDbAdapter;
+
+    private static BudgetAmountsDbAdapter mBudgetAmountsDbAdapter;
+
+    private static RecurrenceDbAdapter mRecurrenceDbAdapter;
+
+    private static BooksDbAdapter mBooksDbAdapter;
+    private static DatabaseHelper mDbHelper;
 
     /**
      * Returns darker version of specified <code>color</code>.
@@ -104,34 +117,53 @@ public class GnuCashApplication extends Application{
         GnuCashApplication.context = getApplicationContext();
 
         Fabric.with(this, new Crashlytics.Builder().core(
-                new CrashlyticsCore.Builder().disabled(!isCrashlyticsEnabled()).build()).build());
+                new CrashlyticsCore.Builder().disabled(!isCrashlyticsEnabled()).build())
+                .build());
 
-        // Set this up once when your application launches
-        Config config = new Config("gnucash.uservoice.com");
-        config.setTopicId(107400);
-        config.setForumId(320493);
-        config.putUserTrait("app_version_name", BuildConfig.VERSION_NAME);
-        config.putUserTrait("app_version_code", BuildConfig.VERSION_CODE);
-        config.putUserTrait("android_version", Build.VERSION.RELEASE);
-        // config.identifyUser("USER_ID", "User Name", "email@example.com");
-        UserVoice.init(config, this);
+        setUpUserVoice();
 
-        mDbHelper = new DatabaseHelper(getApplicationContext());
-        try {
-            mDb = mDbHelper.getWritableDatabase();
-        } catch (SQLException e) {
-            Crashlytics.logException(e);
-            Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
-            mDb = mDbHelper.getReadableDatabase();
-        }
-        mSplitsDbAdapter            = new SplitsDbAdapter(mDb);
-        mTransactionsDbAdapter      = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
-        mAccountsDbAdapter          = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
-        mScheduledActionDbAdapter   = new ScheduledActionDbAdapter(mDb);
-        mCommoditiesDbAdapter       = new CommoditiesDbAdapter(mDb);
-        mPricesDbAdapter            = new PricesDbAdapter(mDb);
+        BookDbHelper bookDbHelper = new BookDbHelper(getApplicationContext());
+        mBooksDbAdapter = new BooksDbAdapter(bookDbHelper.getWritableDatabase());
+
+        initDatabaseAdapters();
+
+        //TODO: migrate preferences from defaultShared to book
 
         setDefaultCurrencyCode(getDefaultCurrencyCode());
+
+        if (BuildConfig.DEBUG)
+            setUpRemoteDebuggingFromChrome();
+    }
+
+    /**
+     * Initialize database adapter singletons for use in the application
+     * This method should be called every time a new book is opened
+     */
+    private static void initDatabaseAdapters() {
+        if (mDbHelper != null){ //close if open
+            mDbHelper.getReadableDatabase().close();
+        }
+
+        mDbHelper = new DatabaseHelper(getAppContext(),
+                mBooksDbAdapter.getActiveBookUID());
+        SQLiteDatabase mainDb;
+        try {
+            mainDb = mDbHelper.getWritableDatabase();
+        } catch (SQLException e) {
+            Crashlytics.logException(e);
+            Log.e("GnuCashApplication", "Error getting database: " + e.getMessage());
+            mainDb = mDbHelper.getReadableDatabase();
+        }
+
+        mSplitsDbAdapter            = new SplitsDbAdapter(mainDb);
+        mTransactionsDbAdapter      = new TransactionsDbAdapter(mainDb, mSplitsDbAdapter);
+        mAccountsDbAdapter          = new AccountsDbAdapter(mainDb, mTransactionsDbAdapter);
+        mRecurrenceDbAdapter        = new RecurrenceDbAdapter(mainDb);
+        mScheduledActionDbAdapter   = new ScheduledActionDbAdapter(mainDb, mRecurrenceDbAdapter);
+        mPricesDbAdapter            = new PricesDbAdapter(mainDb);
+        mCommoditiesDbAdapter       = new CommoditiesDbAdapter(mainDb);
+        mBudgetAmountsDbAdapter     = new BudgetAmountsDbAdapter(mainDb);
+        mBudgetsDbAdapter           = new BudgetsDbAdapter(mainDb, mBudgetAmountsDbAdapter, mRecurrenceDbAdapter);
     }
 
     public static AccountsDbAdapter getAccountsDbAdapter() {
@@ -158,6 +190,32 @@ public class GnuCashApplication extends Application{
         return mPricesDbAdapter;
     }
 
+    public static BudgetsDbAdapter getBudgetDbAdapter() {
+        return mBudgetsDbAdapter;
+    }
+
+    public static RecurrenceDbAdapter getRecurrenceDbAdapter() {
+        return mRecurrenceDbAdapter;
+    }
+
+    public static BudgetAmountsDbAdapter getBudgetAmountsDbAdapter(){
+        return mBudgetAmountsDbAdapter;
+    }
+
+    public static BooksDbAdapter getBooksDbAdapter(){
+        return mBooksDbAdapter;
+    }
+
+    /**
+     * Loads the book with GUID {@code bookUID}
+     * @param bookUID GUID of the book to be loaded
+     */
+    public static void loadBook(String bookUID){
+        mBooksDbAdapter.setActive(bookUID);
+        initDatabaseAdapters();
+        AccountsActivity.start(getAppContext());
+    }
+
     /**
      * Returns the application context
      * @return Application {@link Context} object
@@ -171,7 +229,6 @@ public class GnuCashApplication extends Application{
      * @return {@code true} if crashlytics is enabled, {@code false} otherwise
      */
     public static boolean isCrashlyticsEnabled(){
-        final Context context = getAppContext();
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.key_enable_crashlytics), false);
     }
 
@@ -181,8 +238,8 @@ public class GnuCashApplication extends Application{
      * @return <code>true</code> if double entry is enabled, <code>false</code> otherwise
      */
     public static boolean isDoubleEntryEnabled(){
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return sharedPrefs.getBoolean(context.getString(R.string.key_use_double_entry), false);
+        SharedPreferences sharedPrefs = PreferenceActivity.getActiveBookSharedPreferences(context);
+        return sharedPrefs.getBoolean(context.getString(R.string.key_use_double_entry), true);
     }
 
     /**
@@ -192,7 +249,7 @@ public class GnuCashApplication extends Application{
      * @return <code>true</code> if opening balances should be saved, <code>false</code> otherwise
      */
     public static boolean shouldSaveOpeningBalances(boolean defaultValue){
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences sharedPrefs = PreferenceActivity.getActiveBookSharedPreferences(context);
         return sharedPrefs.getBoolean(context.getString(R.string.key_save_opening_balances), defaultValue);
     }
 
@@ -233,7 +290,7 @@ public class GnuCashApplication extends Application{
      * @see #getDefaultCurrencyCode()
      */
     public static void setDefaultCurrencyCode(@NonNull String currencyCode){
-        PreferenceManager.getDefaultSharedPreferences(getAppContext()).edit()
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
                 .putString(getAppContext().getString(R.string.key_default_currency), currencyCode)
                 .apply();
         Money.DEFAULT_CURRENCY_CODE = currencyCode;
@@ -284,5 +341,37 @@ public class GnuCashApplication extends Application{
                 pendingIntent);
 
         context.startService(alarmIntent); //run the service the first time
+    }
+
+    /**
+     * Sets up UserVoice.
+     *
+     * <p>Allows users to contact with us and access help topics.</p>
+     */
+    private void setUpUserVoice() {
+        // Set this up once when your application launches
+        Config config = new Config("gnucash.uservoice.com");
+        config.setTopicId(107400);
+        config.setForumId(320493);
+        config.putUserTrait("app_version_name", BuildConfig.VERSION_NAME);
+        config.putUserTrait("app_version_code", BuildConfig.VERSION_CODE);
+        config.putUserTrait("android_version", Build.VERSION.RELEASE);
+        // config.identifyUser("USER_ID", "User Name", "email@example.com");
+        UserVoice.init(config, this);
+    }
+
+    /**
+     * Sets up Stetho to enable remote debugging from Chrome developer tools.
+     *
+     * <p>Among other things, allows access to the database and preferences.
+     * See http://facebook.github.io/stetho/#features</p>
+     */
+    private void setUpRemoteDebuggingFromChrome() {
+        Stetho.Initializer initializer =
+                Stetho.newInitializerBuilder(this)
+                        .enableWebKitInspector(
+                                Stetho.defaultInspectorModulesProvider(this))
+                        .build();
+        Stetho.initialize(initializer);
     }
 }

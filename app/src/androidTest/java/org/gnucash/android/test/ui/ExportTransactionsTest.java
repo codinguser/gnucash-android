@@ -18,35 +18,41 @@ package org.gnucash.android.test.ui;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.v7.preference.PreferenceManager;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
 import android.widget.CompoundButton;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
-import org.gnucash.android.db.ScheduledActionDbAdapter;
-import org.gnucash.android.db.SplitsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
+import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
+import org.gnucash.android.db.adapter.SplitsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -60,6 +66,7 @@ import java.util.List;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.swipeUp;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
@@ -89,7 +96,7 @@ public class ExportTransactionsTest extends
     public ExportTransactionsTest() {
 		super(AccountsActivity.class);
 	}
-	
+
 	@Override
 	@Before
 	public void setUp() throws Exception {
@@ -98,30 +105,38 @@ public class ExportTransactionsTest extends
 		AccountsActivityTest.preventFirstRunDialogs(getInstrumentation().getTargetContext());
 		mAcccountsActivity = getActivity();
 
-        mDbHelper = new DatabaseHelper(getActivity());
+		String activeBookUID = BooksDbAdapter.getInstance().getActiveBookUID();
+        mDbHelper = new DatabaseHelper(getActivity(), activeBookUID);
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
             Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
             mDb = mDbHelper.getReadableDatabase();
         }
-        mSplitsDbAdapter = new SplitsDbAdapter(mDb);
-        mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
-        mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
+
+		mSplitsDbAdapter        = SplitsDbAdapter.getInstance();
+		mTransactionsDbAdapter  = TransactionsDbAdapter.getInstance();
+		mAccountsDbAdapter      = AccountsDbAdapter.getInstance();
+
+		//this call initializes the static variables like DEFAULT_COMMODITY which are used implicitly by accounts/transactions
+		@SuppressWarnings("unused")
+		CommoditiesDbAdapter commoditiesDbAdapter = new CommoditiesDbAdapter(mDb);
+		String currencyCode = GnuCashApplication.getDefaultCurrencyCode();
+		Commodity.DEFAULT_COMMODITY = CommoditiesDbAdapter.getInstance().getCommodity(currencyCode);
+
 		mAccountsDbAdapter.deleteAllRecords();
 
 		Account account = new Account("Exportable");
 		Transaction transaction = new Transaction("Pizza");
 		transaction.setNote("What up?");
 		transaction.setTime(System.currentTimeMillis());
-		String currencyCode = GnuCashApplication.getDefaultCurrencyCode();
         Split split = new Split(new Money("8.99", currencyCode), account.getUID());
 		split.setMemo("Hawaii is the best!");
 		transaction.addSplit(split);
 		transaction.addSplit(split.createPair(mAccountsDbAdapter.getOrCreateImbalanceAccountUID(Currency.getInstance(currencyCode))));
 		account.addTransaction(transaction);
 
-		mAccountsDbAdapter.addRecord(account);
+		mAccountsDbAdapter.addRecord(account, DatabaseAdapter.UpdateMethod.insert);
 
 	}
 	
@@ -133,27 +148,27 @@ public class ExportTransactionsTest extends
 	 */
 	@Test
 	public void testOfxExport(){
-		PreferenceManager.getDefaultSharedPreferences(mAcccountsActivity)
-				.edit().putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), false)
+		SharedPreferences.Editor prefsEditor = PreferenceActivity.getActiveBookSharedPreferences(mAcccountsActivity)
+				.edit();
+		prefsEditor.putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), false)
 				.commit();
         testExport(ExportFormat.OFX);
-		PreferenceManager.getDefaultSharedPreferences(mAcccountsActivity)
-				.edit().putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), true)
+		prefsEditor.putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), true)
 				.commit();
 	}
 
 	@Test
 	public void whenInSingleEntry_shouldHideXmlExportOption(){
-		PreferenceManager.getDefaultSharedPreferences(mAcccountsActivity)
-				.edit().putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), false)
+		SharedPreferences.Editor prefsEditor = PreferenceActivity.getActiveBookSharedPreferences(mAcccountsActivity)
+				.edit();
+		prefsEditor.putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), false)
 				.commit();
 
 		DrawerActions.openDrawer(R.id.drawer_layout);
 		onView(withText(R.string.nav_menu_export)).perform(click());
 		onView(withId(R.id.radio_xml_format)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
 
-		PreferenceManager.getDefaultSharedPreferences(mAcccountsActivity)
-				.edit().putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), true)
+		prefsEditor.putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), true)
 				.commit();
 	}
 
@@ -185,7 +200,7 @@ public class ExportTransactionsTest extends
 			}
 		}
 
-		File folder = new File(Exporter.EXPORT_FOLDER_PATH);
+		File folder = new File(Exporter.getExportFolderPath());
 		folder.mkdirs();
 		assertThat(folder).exists();
 
@@ -193,7 +208,7 @@ public class ExportTransactionsTest extends
 			file.delete();
 		}
 
-		DrawerActions.openDrawer(R.id.drawer_layout);
+		onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
 		onView(withText(R.string.nav_menu_export)).perform(click());
 
 		onView(withId(R.id.spinner_export_destination)).perform(click());
@@ -213,14 +228,21 @@ public class ExportTransactionsTest extends
 	public void testDeleteTransactionsAfterExport(){
 		assertThat(mTransactionsDbAdapter.getRecordsCount()).isGreaterThan(0);
 
-		PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
-				.putBoolean(mAcccountsActivity.getString(R.string.key_delete_transactions_after_export), true).commit();
+		SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit(); //PreferenceActivity.getActiveBookSharedPreferences(getActivity()).edit();
+		editor.putBoolean(mAcccountsActivity.getString(R.string.key_delete_transactions_after_export), true);
+		editor.commit();
+
+		PreferenceActivity.getActiveBookSharedPreferences(getActivity())
+				.edit()
+				.putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), true)
+				.apply();
 
 		testExport(ExportFormat.XML);
 
 		assertThat(mTransactionsDbAdapter.getRecordsCount()).isEqualTo(0);
-		PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
-				.putBoolean(mAcccountsActivity.getString(R.string.key_delete_transactions_after_export), false).commit();
+		List<Transaction> transactions = mTransactionsDbAdapter.getAllTransactions();
+
+		editor.putBoolean(mAcccountsActivity.getString(R.string.key_delete_transactions_after_export), false).commit();
 	}
 
 	/**
@@ -229,7 +251,7 @@ public class ExportTransactionsTest extends
 	 */
 	@Test
 	public void testShouldCreateExportSchedule(){
-		DrawerActions.openDrawer(R.id.drawer_layout);
+		onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
 		onView(withText(R.string.nav_menu_export)).perform(click());
 
 		onView(withText(ExportFormat.XML.name())).perform(click());
@@ -237,23 +259,24 @@ public class ExportTransactionsTest extends
 
 		//switch on recurrence dialog
 		onView(allOf(isAssignableFrom(CompoundButton.class), isDisplayed(), isEnabled())).perform(click());
-		onView(withText("Done")).perform(click());
+		onView(withText("OK")).perform(click());
 
 		onView(withId(R.id.menu_save)).perform(click());
-		ScheduledActionDbAdapter scheduledactionDbAdapter = new ScheduledActionDbAdapter(mDb);
+		ScheduledActionDbAdapter scheduledactionDbAdapter = ScheduledActionDbAdapter.getInstance(); //new ScheduledActionDbAdapter(mDb, new RecurrenceDbAdapter(mDb));
 		List<ScheduledAction> scheduledActions = scheduledactionDbAdapter.getAllEnabledScheduledActions();
 		assertThat(scheduledActions)
 				.hasSize(1)
 				.extracting("mActionType").contains(ScheduledAction.ActionType.BACKUP);
 
 		ScheduledAction action = scheduledActions.get(0);
-		assertThat(action.getPeriodType()).isEqualTo(PeriodType.WEEK);
+		assertThat(action.getRecurrence().getPeriodType()).isEqualTo(PeriodType.WEEK);
 		assertThat(action.getEndTime()).isEqualTo(0);
 	}
 
 	@Test
 	public void testCreateBackup(){
-		DrawerActions.openDrawer(R.id.drawer_layout);
+		onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+		onView(withId(R.id.nav_view)).perform(swipeUp());
 		onView(withText(R.string.title_settings)).perform(click());
 		onView(withText(R.string.header_backup_and_export_settings)).perform(click());
 

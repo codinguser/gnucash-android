@@ -19,7 +19,7 @@ package org.gnucash.android.model;
 import android.content.Intent;
 
 import org.gnucash.android.BuildConfig;
-import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.export.ofx.OfxHelper;
 import org.gnucash.android.model.Account.OfxAccountType;
 import org.w3c.dom.Document;
@@ -262,7 +262,7 @@ public class Transaction extends BaseModel{
                 // so imbalance split should not be generated for them
                 return Money.createZeroInstance(mCurrencyCode);
             }
-            Money amount = split.getValue().absolute();
+            Money amount = split.getValue().abs();
             if (split.getType() == TransactionType.DEBIT)
                 imbalance = imbalance.subtract(amount);
             else
@@ -293,9 +293,9 @@ public class Transaction extends BaseModel{
                 continue;
             Money absAmount;
             if (split.getValue().getCurrency() == accountCurrency){
-                absAmount = split.getValue().absolute();
+                absAmount = split.getValue().abs();
             } else { //if this split belongs to the account, then either its value or quantity is in the account currency
-                absAmount = split.getQuantity().absolute();
+                absAmount = split.getQuantity().abs();
             }
             boolean isDebitSplit = split.getType() == TransactionType.DEBIT;
             if (isDebitAccount) {

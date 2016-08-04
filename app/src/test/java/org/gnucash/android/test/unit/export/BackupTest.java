@@ -16,10 +16,15 @@
 package org.gnucash.android.test.unit.export;
 
 import org.gnucash.android.BuildConfig;
+import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.BookDbHelper;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.export.xml.GncXmlExporter;
+import org.gnucash.android.importer.GncXmlImporter;
 import org.gnucash.android.test.unit.db.AccountsDbAdapterTest;
 import org.gnucash.android.test.unit.testutil.GnucashTestRunner;
 import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
@@ -28,9 +33,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
+import org.xml.sax.SAXException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,7 +52,7 @@ public class BackupTest {
 
     @Before
     public void setUp(){
-        AccountsDbAdapterTest.loadDefaultAccounts();
+        loadDefaultAccounts();
     }
 
     @Test
@@ -62,5 +71,18 @@ public class BackupTest {
                 .exists()
                 .hasExtension(ExportFormat.XML.getExtension().substring(1));
 
+    }
+
+    /**
+     * Loads the default accounts from file resource
+     */
+    private void loadDefaultAccounts(){
+        try {
+            String bookUID = GncXmlImporter.parse(GnuCashApplication.getAppContext().getResources().openRawResource(R.raw.default_accounts));
+            BooksDbAdapter.getInstance().setActive(bookUID);
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Could not create default accounts");
+        }
     }
 }

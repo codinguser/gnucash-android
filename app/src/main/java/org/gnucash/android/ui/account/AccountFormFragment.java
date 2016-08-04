@@ -26,7 +26,6 @@ import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -54,9 +53,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import org.gnucash.android.R;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Commodity;
@@ -65,6 +65,7 @@ import org.gnucash.android.ui.colorpicker.ColorPickerDialog;
 import org.gnucash.android.ui.colorpicker.ColorPickerSwatch;
 import org.gnucash.android.ui.colorpicker.ColorSquare;
 import org.gnucash.android.ui.common.UxArgument;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.util.CommoditiesCursorAdapter;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
@@ -237,7 +238,7 @@ public class AccountFormFragment extends Fragment {
 		setHasOptionsMenu(true);
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SharedPreferences sharedPrefs = PreferenceActivity.getActiveBookSharedPreferences(getActivity());
         mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), true);
 	}
 	
@@ -375,7 +376,7 @@ public class AccountFormFragment extends Fragment {
             setParentAccountSelection(mAccountsDbAdapter.getID(mParentAccountUID));
         }
 
-        String currencyCode = account.getCurrency().getCurrencyCode();
+        String currencyCode = account.getCommodity().getCurrencyCode();
         setSelectedCurrency(currencyCode);
 
         if (mAccountsDbAdapter.getTransactionMaxSplitNum(mAccount.getUID()) > 1)
@@ -724,6 +725,8 @@ public class AccountFormFragment extends Fragment {
      */
 	private void saveAccount() {
         Log.i("AccountFormFragment", "Saving account");
+        if (mAccountsDbAdapter == null)
+            mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         // accounts to update, in case we're updating full names of a sub account tree
         ArrayList<Account> accountsToUpdate = new ArrayList<>();
         boolean nameChanged = false;
@@ -735,6 +738,7 @@ public class AccountFormFragment extends Fragment {
 				return;				
 			}
 			mAccount = new Account(getEnteredName());
+            mAccountsDbAdapter.addRecord(mAccount, DatabaseAdapter.UpdateMethod.insert); //new account, insert it
 		}
 		else {
             nameChanged = !mAccount.getName().equals(getEnteredName());
@@ -793,9 +797,7 @@ public class AccountFormFragment extends Fragment {
                     // parent change, update all full names of descent accounts
                     accountsToUpdate.addAll(mAccountsDbAdapter.getSimpleAccountList(
                             DatabaseSchema.AccountEntry.COLUMN_UID + " IN ('" +
-                                    TextUtils.join("','", mDescendantAccountUIDs) + "')",
-                            null,
-                            null
+                                    TextUtils.join("','", mDescendantAccountUIDs) + "')", null, null
                     ));
                 }
                 HashMap<String, Account> mapAccount = new HashMap<>();
@@ -818,12 +820,9 @@ public class AccountFormFragment extends Fragment {
             }
         }
         accountsToUpdate.add(mAccount);
-		if (mAccountsDbAdapter == null)
-			mAccountsDbAdapter = AccountsDbAdapter.getInstance();
+
         // bulk update, will not update transactions
-        mAccountsDbAdapter.enableForeignKey(false);
-		mAccountsDbAdapter.bulkAddRecords(accountsToUpdate);
-        mAccountsDbAdapter.enableForeignKey(true);
+		mAccountsDbAdapter.bulkAddRecords(accountsToUpdate, DatabaseAdapter.UpdateMethod.update);
 
 		finishFragment();
 	}

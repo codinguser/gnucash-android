@@ -15,9 +15,9 @@ import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.ScheduledActionDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
@@ -118,7 +118,7 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
         Transaction transaction = transactionsDbAdapter.getRecord(mTransactionUID);
 
         mTransactionDescription.setText(transaction.getDescription());
-        mTransactionAccount.setText("in " + AccountsDbAdapter.getInstance().getAccountFullName(mAccountUID));
+        mTransactionAccount.setText(getString(R.string.label_inside_account_with_name, AccountsDbAdapter.getInstance().getAccountFullName(mAccountUID)));
 
         AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
 

@@ -33,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <include layout="@layout/toolbar_transactions_activity" />
+            <include layout="@layout/toolbar_with_spinner" />
 
             <android.support.design.widget.TabLayout
                 android:id="@+id/tab_layout"

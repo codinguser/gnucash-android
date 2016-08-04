@@ -29,8 +29,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import java.util.Currency;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(GnucashTestRunner.class)
@@ -40,7 +38,7 @@ public class AccountTest{
 	@Test
 	public void testAccountUsesDefaultCurrency(){
 		Account account = new Account("Dummy account");
-		assertThat(account.getCurrency().getCurrencyCode()).isEqualTo(Money.DEFAULT_CURRENCY_CODE);
+		assertThat(account.getCommodity().getCurrencyCode()).isEqualTo(Money.DEFAULT_CURRENCY_CODE);
 	}
 
 	@Test
@@ -93,23 +91,6 @@ public class AccountTest{
 		account.setName("Name");
 		assertThat(account.getName()).isEqualTo("Name");
 		assertThat(account.getFullName()).isEqualTo(fullName);
-	}
-
-	@Test
-	public void settingCommodity_shouldSetCurrencyCode(){
-		Account account = new Account("Test", Commodity.USD);
-		account.setCommodity(Commodity.JPY);
-
-		assertThat(account.getCurrency()).isEqualTo(Currency.getInstance("JPY"));
-	}
-
-	@Test
-	public void settingCurrencyCode_shouldNotSetCommodity(){
-		Account account = new Account("Test EUR account", Commodity.EUR);
-		account.setCurrencyCode("USD");
-
-		assertThat(account.getCommodity()).isEqualTo(Commodity.EUR);
-		assertThat(account.getCurrency()).isEqualTo(Currency.getInstance("USD"));
 	}
 
 	@Test

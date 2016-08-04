@@ -50,6 +50,7 @@ import com.tech.freak.wizardpager.ui.StepPagerStrip;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.util.TaskDelegate;
@@ -209,7 +210,10 @@ public class FirstRunWizardActivity extends AppCompatActivity implements
         AccountsActivity.removeFirstRunFlag();
 
         if (mAccountOptions.equals(getString(R.string.wizard_option_create_default_accounts))){
+            //save the UID of the active book, and then delete it after successful import
+            String bookUID = BooksDbAdapter.getInstance().getActiveBookUID();
             AccountsActivity.createDefaultAccounts(mCurrencyCode, FirstRunWizardActivity.this);
+            BooksDbAdapter.getInstance().deleteRecord(bookUID); //a default book is usually created
             finish();
         } else if (mAccountOptions.equals(getString(R.string.wizard_option_import_my_accounts))){
             AccountsActivity.startXmlFileChooser(this);

@@ -25,6 +25,7 @@
   <string name="label_account_name">科目名称</string>
   <string name="btn_cancel">取消</string>
   <string name="btn_save">保存</string>
+  <string name="btn_test">Test</string>
   <string name="label_passcode">输入密码</string>
   <string name="toast_wrong_passcode">密码错误，请再试一次</string>
   <string name="toast_passcode_set">密码已设置</string>
@@ -64,7 +65,8 @@
     <item>SD卡</item>
     <item>DropBox</item>
     <item>Google Drive</item>
-    <item>分享&#8230;</item>
+    <item>ownCloud</item>
+    <item>Send to&#8230;</item>
   </string-array>
   <string name="btn_move">移动</string>
   <string name="title_move_transactions">移动 %1$d 交易</string>
@@ -166,6 +168,7 @@
   <string name="summary_default_export_format">导出交易信息时使用的文件格式。</string>
   <string name="menu_export_transactions">导出交易&#8230;</string>
   <string name="label_recurring_transaction">重复</string>
+  <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">不平衡的</string>
   <string name="title_progress_exporting_transactions">正在导出交易信息</string>
   <string name="label_no_recurring_transactions">没有要显示的计划交易</string>
@@ -196,7 +199,10 @@
     <item>OFX</item>
     <item>XML</item>
   </string-array>
+  <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
   <string name="color_picker_default_title">选择一种颜色</string>
+  <!-- Content description for a color square. -->
+  <!-- Content description for a selected color square. -->
   <string name="label_account_color_and_type">科目颜色和类型</string>
   <string name="label_delete_sub_accounts">删除子科目</string>
   <string name="title_recent_accounts">最近的</string>
@@ -269,9 +275,11 @@
   <string name="label_tap_to_create_schedule">点击然后创建计划交易</string>
   <string name="title_restore_backup">从备份恢复&#8230;</string>
   <string name="header_backup_and_export_settings">备份和导出</string>
-  <string name="title_dropbox_sync_preference">DropBox Sync</string>
+  <string name="title_dropbox_sync_preference">Enable DropBox</string>
+  <string name="title_owncloud_sync_preference">Enable ownCloud </string>
   <string name="title_backup_preference_category">备份</string>
-  <string name="summary_dropbox_sync">同步到DropBox</string>
+  <string name="summary_dropbox_sync">Enable exporting to DropBox</string>
+  <string name="summary_owncloud_sync">Enable exporting to ownCloud</string>
   <string name="title_select_gnucash_xml_file">Select GnuCash XML file</string>
   <string name="title_backup_prefs">备份设置</string>
   <string name="title_create_backup_pref">创建备份</string>
@@ -280,8 +288,8 @@
   <string name="toast_backup_successful">备份成功</string>
   <string name="toast_backup_failed">备份失败</string>
   <string name="export_warning_xml">导出所有科目和交易</string>
-  <string name="title_google_drive_sync_pref">Google Drive Sync</string>
-  <string name="summary_google_drive_sync">同步到Google Drive</string>
+  <string name="title_google_drive_sync_pref">Enable Google Drive</string>
+  <string name="summary_google_drive_sync">Enable exporting to Google Drive</string>
   <string name="toast_install_file_manager">你需要安装一个文件管理器</string>
   <string name="title_select_backup_to_restore">选择备份</string>
   <string name="nav_menu_favorites">收藏</string>
@@ -290,6 +298,16 @@
   <string name="nav_menu_scheduled_transactions">计划交易</string>
   <string name="nav_menu_export">导出...</string>
   <string name="nav_menu_settings">设置</string>
+  <string name="username">User Name</string>
+  <string name="password">Password</string>
+  <string name="owncloud_pref">owncloud</string>
+  <string name="owncloud_server">https://</string>
+  <string name="owncloud_server_invalid">OC server not found</string>
+  <string name="owncloud_user_invalid">OC username/password invalid</string>
+  <string name="owncloud_dir_invalid">Invalid chars: \\ &lt; &gt; : \&quot; | * ? </string>
+  <string name="owncloud_server_ok">OC server OK</string>
+  <string name="owncloud_user_ok">OC username/password OK</string>
+  <string name="owncloud_dir_ok">Dir name OK</string>
   <plurals name="label_every_x_days">
     <item quantity="other">每 %d 天</item>
   </plurals>
@@ -375,10 +393,16 @@ No user-identifiable information will be collected as part of this process!
   <string name="summary_google_plus">Share ideas, discuss changes or report problems</string>
   <string name="summary_translate_gnucash">Translate or proof-read on CrowdIn</string>
   <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
-  <string name="menu_move_transaction">Move...</string>
+  <string name="menu_move_transaction">Move&#8230;</string>
   <string name="menu_duplicate_transaction">Duplicate</string>
+  <string name="nav_menu_budgets">Budgets</string>
+  <string name="title_cash_flow_report">Cash Flow</string>
+  <string name="title_budgets">Budgets</string>
+  <string name="title_use_compact_list">Enable compact view</string>
+  <string name="summary_use_compact_list">Enable to always use compact view for transactions list</string>
   <string name="error_invalid_exchange_rate">Invalid exchange rate</string>
   <string name="sample_exchange_rate">e.g. 1 %1$s = x.xx %2$s</string>
+  <string name="error_invalid_amount">Invalid amount</string>
   <string-array name="report_time_range">
     <item>Current month</item>
     <item>Last 3 months</item>
@@ -387,4 +411,38 @@ No user-identifiable information will be collected as part of this process!
     <item>All time</item>
     <item>Custom range&#8230;</item>
   </string-array>
+  <!-- Passcode lock -->
+  <string name="digit_one">1</string>
+  <!-- In the English locale, digit 1 has no text on it. This is simply empty space. If your locale has text on digit 1, then translate-->
+  <string name="digit_one_text">​</string>
+  <string name="digit_two">2</string>
+  <string name="digit_two_text">ABC</string>
+  <string name="digit_three">3</string>
+  <string name="digit_three_text">DEF</string>
+  <string name="digit_four">4</string>
+  <string name="digit_four_text">GHI</string>
+  <string name="digit_five">5</string>
+  <string name="digit_five_text">JKL</string>
+  <string name="digit_six">6</string>
+  <string name="digit_six_text">MNO</string>
+  <string name="digit_seven">7</string>
+  <string name="digit_seven_text">PQRS</string>
+  <string name="digit_eight">8</string>
+  <string name="digit_eight_text">TUV</string>
+  <string name="digit_nine">9</string>
+  <string name="digit_nine_text">WXYZ</string>
+  <string name="digit_zero">0</string>
+  <string name="digit_zero_text">+</string>
+  <string name="title_manage_books">Manage Books</string>
+  <string name="menu_manage_books">Manage Books&#8230;</string>
+  <string name="select_chart_to_view_details">Select any part of the chart to view details</string>
+  <string name="title_confirm_delete_book">Confirm delete Book</string>
+  <string name="msg_all_book_data_will_be_deleted">All accounts and transactions in this book will be deleted!</string>
+  <string name="btn_delete_book">Delete Book</string>
+  <string name="label_last_export_time">Last Exported:</string>
+  <string name="menu_title_enable_sync">Enable Sync</string>
+  <string name="menu_title_new_book">New Book</string>
+  <string name="toast_transaction_has_no_splits_and_cannot_open">The selected transaction has no splits and cannot be opened</string>
+  <string name="label_split_count">%1$d splits</string>
+  <string name="label_inside_account_with_name">in %1$s</string>
 </resources>

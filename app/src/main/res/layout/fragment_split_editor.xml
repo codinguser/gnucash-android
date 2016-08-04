@@ -19,7 +19,7 @@ limitations under the License.
     android:animateLayoutChanges="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.FormActivity">
+    tools:context=".ui.common.FormActivity">
 
     <LinearLayout android:id="@+id/imbalance_layout"
         android:layout_width="match_parent"

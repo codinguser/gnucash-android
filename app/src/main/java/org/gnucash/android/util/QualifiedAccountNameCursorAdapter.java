@@ -18,12 +18,16 @@ package org.gnucash.android.util;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
+import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 
 /**
  * Cursor adapter which looks up the fully qualified account name and returns that instead of just the simple name.
@@ -33,11 +37,30 @@ import org.gnucash.android.db.DatabaseSchema;
  */
 public class QualifiedAccountNameCursorAdapter extends SimpleCursorAdapter {
 
+    /**
+     * Initialize the Cursor adapter for account names using default spinner views
+     * @param context Application context
+     * @param cursor Cursor to accounts
+     */
     public QualifiedAccountNameCursorAdapter(Context context, Cursor cursor) {
         super(context, android.R.layout.simple_spinner_item, cursor,
                 new String[]{DatabaseSchema.AccountEntry.COLUMN_FULL_NAME},
                 new int[]{android.R.id.text1}, 0);
-        setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        setDropDownViewResource(R.layout.account_spinner_dropdown_item);
+    }
+
+    /**
+     * Overloaded constructor. Specifies the view to use for displaying selected spinner text
+     * @param context Application context
+     * @param cursor Cursor to account data
+     * @param selectedSpinnerItem Layout resource for selected item text
+     */
+    public QualifiedAccountNameCursorAdapter(Context context, Cursor cursor,
+                                             @LayoutRes int selectedSpinnerItem) {
+        super(context, selectedSpinnerItem, cursor,
+                new String[]{DatabaseSchema.AccountEntry.COLUMN_FULL_NAME},
+                new int[]{android.R.id.text1}, 0);
+        setDropDownViewResource(R.layout.account_spinner_dropdown_item);
     }
 
     @Override
@@ -45,5 +68,20 @@ public class QualifiedAccountNameCursorAdapter extends SimpleCursorAdapter {
         super.bindView(view, context, cursor);
         TextView textView = (TextView) view.findViewById(android.R.id.text1);
         textView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+    }
+
+    /**
+     * Returns the position of a given account in the adapter
+     * @param accountUID GUID of the account
+     * @return Position of the account or -1 if the account is not found
+     */
+    public int getPosition(@NonNull String accountUID){
+        long accountId = AccountsDbAdapter.getInstance().getID(accountUID);
+        for (int pos = 0; pos < getCount(); pos++) {
+            if (getItemId(pos) == accountId){
+                return pos;
+            }
+        }
+        return -1;
     }
 }

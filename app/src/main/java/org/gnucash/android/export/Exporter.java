@@ -27,12 +27,16 @@ import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.CommoditiesDbAdapter;
-import org.gnucash.android.db.PricesDbAdapter;
-import org.gnucash.android.db.ScheduledActionDbAdapter;
-import org.gnucash.android.db.SplitsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
+import org.gnucash.android.db.adapter.BudgetAmountsDbAdapter;
+import org.gnucash.android.db.adapter.BudgetsDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.PricesDbAdapter;
+import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
+import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
+import org.gnucash.android.db.adapter.SplitsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 
 import java.io.File;
 import java.text.ParseException;
@@ -57,17 +61,7 @@ public abstract class Exporter {
     /**
      * Application folder on external storage
      */
-    private static final String BASE_FOLDER_PATH = Environment.getExternalStorageDirectory() + "/" + BuildConfig.APPLICATION_ID;
-
-    /**
-     * Folder where exports like QIF and OFX will be saved for access by external programs
-     */
-    public static final String EXPORT_FOLDER_PATH =  BASE_FOLDER_PATH + "/exports/";
-
-    /**
-     * Folder where XML backups will be saved
-     */
-    public static final String BACKUP_FOLDER_PATH = BASE_FOLDER_PATH + "/backups/";
+    public static final String BASE_FOLDER_PATH = Environment.getExternalStorageDirectory() + "/" + BuildConfig.APPLICATION_ID;
 
     /**
      * Export options
@@ -95,6 +89,7 @@ public abstract class Exporter {
     protected final ScheduledActionDbAdapter mScheduledActionDbAdapter;
     protected final PricesDbAdapter mPricesDbAdapter;
     protected final CommoditiesDbAdapter mCommoditiesDbAdapter;
+	protected final BudgetsDbAdapter mBudgetsDbAdapter;
     protected final Context mContext;
     private String mExportCacheFilePath;
 
@@ -102,19 +97,23 @@ public abstract class Exporter {
         this.mExportParams = params;
         mContext = GnuCashApplication.getAppContext();
         if (db == null) {
-            mAccountsDbAdapter = AccountsDbAdapter.getInstance();
-            mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
-            mSplitsDbAdapter = SplitsDbAdapter.getInstance();
+            mAccountsDbAdapter      = AccountsDbAdapter.getInstance();
+            mTransactionsDbAdapter  = TransactionsDbAdapter.getInstance();
+            mSplitsDbAdapter        = SplitsDbAdapter.getInstance();
+            mPricesDbAdapter        = PricesDbAdapter.getInstance();
+            mCommoditiesDbAdapter   = CommoditiesDbAdapter.getInstance();
+            mBudgetsDbAdapter       = BudgetsDbAdapter.getInstance();
             mScheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
-            mPricesDbAdapter = PricesDbAdapter.getInstance();
-            mCommoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
+
         } else {
-            mSplitsDbAdapter = new SplitsDbAdapter(db);
-            mTransactionsDbAdapter = new TransactionsDbAdapter(db, mSplitsDbAdapter);
-            mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);
-            mScheduledActionDbAdapter = new ScheduledActionDbAdapter(db);
-            mPricesDbAdapter = new PricesDbAdapter(db);
-            mCommoditiesDbAdapter = new CommoditiesDbAdapter(db);
+            mSplitsDbAdapter        = new SplitsDbAdapter(db);
+            mTransactionsDbAdapter  = new TransactionsDbAdapter(db, mSplitsDbAdapter);
+            mAccountsDbAdapter      = new AccountsDbAdapter(db, mTransactionsDbAdapter);
+            mPricesDbAdapter        = new PricesDbAdapter(db);
+            mCommoditiesDbAdapter   = new CommoditiesDbAdapter(db);
+            RecurrenceDbAdapter recurrenceDbAdapter = new RecurrenceDbAdapter(db);
+            mBudgetsDbAdapter       = new BudgetsDbAdapter(db, new BudgetAmountsDbAdapter(db), recurrenceDbAdapter);
+            mScheduledActionDbAdapter = new ScheduledActionDbAdapter(db, recurrenceDbAdapter);
         }
 
         mExportCacheFilePath = null;
@@ -190,6 +189,32 @@ public abstract class Exporter {
 
         return mExportCacheFilePath;
     }
+
+    /**
+     * Returns that path to the export folder for the currently active book.
+     * This is the folder where exports like QIF and OFX will be saved for access by external programs
+     * @return Absolute path to export folder for active book
+     */
+    public static String getExportFolderPath(){
+        String path = BASE_FOLDER_PATH + "/" + BooksDbAdapter.getInstance().getActiveBookUID() + "/exports/";
+        File file = new File(path);
+        if (!file.exists())
+            file.mkdirs();
+        return path;
+    }
+
+    /**
+     * Returns the path to the backups folder for the currently active book
+     * @return Absolute path to backup folder for active book
+     */
+    public static String getBackupFolderPath(){
+        String path = BASE_FOLDER_PATH + "/" + BooksDbAdapter.getInstance().getActiveBookUID() + "/backups/";
+        File file = new File(path);
+        if (!file.exists())
+            file.mkdirs();
+        return path;
+    }
+
 
     /**
      * Returns the MIME type for this exporter.

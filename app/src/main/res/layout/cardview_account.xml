@@ -26,7 +26,7 @@
     android:focusable="true"
     android:clickable="true"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -94,13 +94,33 @@
         <TextView
             android:id="@+id/account_balance"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:singleLine="true"
             android:layout_alignParentBottom="true"
             android:paddingBottom="4dp"
             android:textSize="18sp"
+            tools:text="$ 2000.00"
             android:layout_alignBottom="@id/options_menu"
             android:layout_toLeftOf="@id/create_transaction"
+            android:layout_marginRight="@dimen/edge_padding"/>
+
+        <ProgressBar
+            android:id="@+id/budget_indicator"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:progressDrawable="@drawable/budget_progress_indicator"
+            android:layout_width="100dp"
+            android:layout_height="8dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="@dimen/strip_width"
+            android:layout_marginStart="@dimen/strip_width"
+            android:max="100"
+            tools:progress="50"
+            android:indeterminate="false"
+            android:paddingBottom="4dp"
+            android:background="@android:color/transparent"
+            android:visibility="gone"
+            android:layout_alignBottom="@id/options_menu"
             android:layout_marginRight="@dimen/edge_padding"/>
     </RelativeLayout>
 

@@ -21,9 +21,11 @@ import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
+import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -31,6 +33,7 @@ import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
@@ -39,6 +42,8 @@ import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.model.PeriodType;
+import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.util.PreferencesHelper;
@@ -67,9 +72,12 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
+import static org.gnucash.android.db.DatabaseSchema.BudgetAmountEntry;
+import static org.gnucash.android.db.DatabaseSchema.BudgetEntry;
 import static org.gnucash.android.db.DatabaseSchema.CommodityEntry;
 import static org.gnucash.android.db.DatabaseSchema.CommonColumns;
 import static org.gnucash.android.db.DatabaseSchema.PriceEntry;
+import static org.gnucash.android.db.DatabaseSchema.RecurrenceEntry;
 import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
 import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
 import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
@@ -85,7 +93,7 @@ public class MigrationHelper {
 
     /**
      * Performs same function as {@link AccountsDbAdapter#getFullyQualifiedAccountName(String)}
-     * <p>This method is only necessary because we cannot open the database again (by instantiating {@link org.gnucash.android.db.AccountsDbAdapter}
+     * <p>This method is only necessary because we cannot open the database again (by instantiating {@link AccountsDbAdapter}
      * while it is locked for upgrades. So we re-implement the method here.</p>
      * @param db SQLite database
      * @param accountUID Unique ID of account whose fully qualified name is to be determined
@@ -186,7 +194,7 @@ public class MigrationHelper {
                 for (File src : oldExportFolder.listFiles()) {
                     if (src.isDirectory())
                         continue;
-                    File dst = new File(Exporter.EXPORT_FOLDER_PATH + "/" + src.getName());
+                    File dst = new File(Exporter.BASE_FOLDER_PATH + "/exports/" + src.getName());
                     try {
                         MigrationHelper.moveFile(src, dst);
                     } catch (IOException e) {
@@ -202,7 +210,7 @@ public class MigrationHelper {
             File oldBackupFolder = new File(oldExportFolder, "backup");
             if (oldBackupFolder.exists()){
                 for (File src : new File(oldExportFolder, "backup").listFiles()) {
-                    File dst = new File(Exporter.BACKUP_FOLDER_PATH + "/" + src.getName());
+                    File dst = new File(Exporter.BASE_FOLDER_PATH + "/backups/" + src.getName());
                     try {
                         MigrationHelper.moveFile(src, dst);
                     } catch (IOException e) {
@@ -216,7 +224,6 @@ public class MigrationHelper {
                 oldExportFolder.delete();
         }
     };
-
 
     /**
      * Imports commodities into the database from XML resource file
@@ -483,8 +490,8 @@ public class MigrationHelper {
     static int upgradeDbToVersion8(SQLiteDatabase db) {
         Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 8");
         int oldVersion = 7;
-        new File(Exporter.BACKUP_FOLDER_PATH).mkdirs();
-        new File(Exporter.EXPORT_FOLDER_PATH).mkdirs();
+        new File(Exporter.BASE_FOLDER_PATH + "/backups/").mkdirs();
+        new File(Exporter.BASE_FOLDER_PATH + "/exports/").mkdirs();
         //start moving the files in background thread before we do the database stuff
         new Thread(moveExportedFilesToNewDefaultLocation).start();
 
@@ -497,7 +504,7 @@ public class MigrationHelper {
                     + ScheduledActionEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
                     + ScheduledActionEntry.COLUMN_ACTION_UID    + " varchar(255) not null, "
                     + ScheduledActionEntry.COLUMN_TYPE           + " varchar(255) not null, "
-                    + ScheduledActionEntry.COLUMN_PERIOD         + " integer not null, "
+                    + "period "                                 + " integer not null, "
                     + ScheduledActionEntry.COLUMN_LAST_RUN       + " integer default 0, "
                     + ScheduledActionEntry.COLUMN_START_TIME     + " integer not null, "
                     + ScheduledActionEntry.COLUMN_END_TIME       + " integer default 0, "
@@ -713,7 +720,7 @@ public class MigrationHelper {
                 contentValues.put(CommonColumns.COLUMN_UID, BaseModel.generateUID());
                 contentValues.put(CommonColumns.COLUMN_CREATED_AT, timestamp);
                 contentValues.put(ScheduledActionEntry.COLUMN_ACTION_UID, cursor.getString(cursor.getColumnIndexOrThrow(TransactionEntry.COLUMN_UID)));
-                contentValues.put(ScheduledActionEntry.COLUMN_PERIOD,    cursor.getLong(cursor.getColumnIndexOrThrow("recurrence_period")));
+                contentValues.put("period", cursor.getLong(cursor.getColumnIndexOrThrow("recurrence_period")));
                 contentValues.put(ScheduledActionEntry.COLUMN_START_TIME, timestampT.getTime());
                 contentValues.put(ScheduledActionEntry.COLUMN_END_TIME, 0);
                 contentValues.put(ScheduledActionEntry.COLUMN_LAST_RUN, lastRun);
@@ -852,7 +859,7 @@ public class MigrationHelper {
 
         db.beginTransaction();
         try {
-            String createCommoditiesSql = "CREATE TABLE " + CommodityEntry.TABLE_NAME + " ("
+            db.execSQL("CREATE TABLE " + CommodityEntry.TABLE_NAME + " ("
                     + CommodityEntry._ID                + " integer primary key autoincrement, "
                     + CommodityEntry.COLUMN_UID         + " varchar(255) not null UNIQUE, "
                     + CommodityEntry.COLUMN_NAMESPACE   + " varchar(255) not null default " + Commodity.Namespace.ISO4217.name() + ", "
@@ -864,8 +871,10 @@ public class MigrationHelper {
                     + CommodityEntry.COLUMN_QUOTE_FLAG  + " integer not null, "
                     + CommodityEntry.COLUMN_CREATED_AT  + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     + CommodityEntry.COLUMN_MODIFIED_AT + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
-                    + ");" + DatabaseHelper.createUpdatedAtTrigger(CommodityEntry.TABLE_NAME);
-            db.execSQL(createCommoditiesSql);
+                    + ");" + DatabaseHelper.createUpdatedAtTrigger(CommodityEntry.TABLE_NAME));
+            db.execSQL("CREATE UNIQUE INDEX '" + CommodityEntry.INDEX_UID
+                    + "' ON " + CommodityEntry.TABLE_NAME + "(" + CommodityEntry.COLUMN_UID + ")");
+
             try {
                 importCommodities(db);
             } catch (SAXException | ParserConfigurationException | IOException e) {
@@ -894,7 +903,7 @@ public class MigrationHelper {
                     + " WHERE " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_COMMODITY_UID + " = " + CommodityEntry.TABLE_NAME + "." + CommodityEntry.COLUMN_UID
                     + ")");
 
-            String createPricesSql = "CREATE TABLE " + PriceEntry.TABLE_NAME + " ("
+            db.execSQL("CREATE TABLE " + PriceEntry.TABLE_NAME + " ("
                     + PriceEntry._ID                    + " integer primary key autoincrement, "
                     + PriceEntry.COLUMN_UID             + " varchar(255) not null UNIQUE, "
                     + PriceEntry.COLUMN_COMMODITY_UID 	+ " varchar(255) not null, "
@@ -909,12 +918,13 @@ public class MigrationHelper {
                     + "UNIQUE (" + PriceEntry.COLUMN_COMMODITY_UID + ", " + PriceEntry.COLUMN_CURRENCY_UID + ") ON CONFLICT REPLACE, "
                     + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_COMMODITY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ON DELETE CASCADE, "
                     + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_CURRENCY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ON DELETE CASCADE "
-                    + ");" + DatabaseHelper.createUpdatedAtTrigger(PriceEntry.TABLE_NAME);
-            db.execSQL(createPricesSql);
+                    + ");" + DatabaseHelper.createUpdatedAtTrigger(PriceEntry.TABLE_NAME));
+            db.execSQL("CREATE UNIQUE INDEX '" + PriceEntry.INDEX_UID
+                    + "' ON " + PriceEntry.TABLE_NAME + "(" + PriceEntry.COLUMN_UID + ")");
 
 
             //store split amounts as integer components numerator and denominator
-            
+
             db.execSQL("ALTER TABLE " + SplitEntry.TABLE_NAME + " RENAME TO " + SplitEntry.TABLE_NAME + "_bak");
             // create new split table
             db.execSQL("CREATE TABLE " + SplitEntry.TABLE_NAME + " ("
@@ -1203,6 +1213,255 @@ public class MigrationHelper {
         } catch (Exception ignored){
             // Do nothing: here oldVersion = 11.
         }
+
+        return oldVersion;
+    }
+
+    /**
+     * Upgrades the database to version 13.
+     * <p>This migration makes the following changes to the database:
+     * <ul>
+     *     <li>Adds support for multiple database for different books and one extra database for storing book info</li>
+     *     <li>Adds a table for budgets</li>
+     *     <li>Adds an extra table for recurrences</li>
+     *     <li>Migrate scheduled transaction recurrences to own table</li>
+     *     <li>Adds flags for reconciled status to split table</li>
+     *     <li>Add flags for auto-/advance- create and notification to scheduled actions</li>
+     *     <li>Migrate old shared preferences into new book-specific preferences</li>
+     * </ul>
+     * </p>
+     * @param db SQlite database to be upgraded
+     * @return New database version, 13 if migration succeeds, 11 otherwise
+     */
+    static int upgradeDbToVersion13(SQLiteDatabase db){
+        Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 13");
+        int oldVersion = 12;
+
+        db.beginTransaction();
+        try {
+            db.execSQL("CREATE TABLE " + RecurrenceEntry.TABLE_NAME + " ("
+                    + RecurrenceEntry._ID                   + " integer primary key autoincrement, "
+                    + RecurrenceEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
+                    + RecurrenceEntry.COLUMN_MULTIPLIER     + " integer not null default 1, "
+                    + RecurrenceEntry.COLUMN_PERIOD_TYPE    + " varchar(255) not null, "
+                    + RecurrenceEntry.COLUMN_BYDAY          + " varchar(255), "
+                    + RecurrenceEntry.COLUMN_PERIOD_START   + " timestamp not null, "
+                    + RecurrenceEntry.COLUMN_PERIOD_END   + " timestamp, "
+                    + RecurrenceEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + RecurrenceEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP); "
+                    + DatabaseHelper.createUpdatedAtTrigger(RecurrenceEntry.TABLE_NAME));
+
+            db.execSQL("CREATE TABLE " + BudgetEntry.TABLE_NAME + " ("
+                    + BudgetEntry._ID                   + " integer primary key autoincrement, "
+                    + BudgetEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
+                    + BudgetEntry.COLUMN_NAME           + " varchar(255) not null, "
+                    + BudgetEntry.COLUMN_DESCRIPTION    + " varchar(255), "
+                    + BudgetEntry.COLUMN_RECURRENCE_UID + " varchar(255) not null, "
+                    + BudgetEntry.COLUMN_NUM_PERIODS    + " integer, "
+                    + BudgetEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + BudgetEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + "FOREIGN KEY (" 	+ BudgetEntry.COLUMN_RECURRENCE_UID + ") REFERENCES " + RecurrenceEntry.TABLE_NAME + " (" + RecurrenceEntry.COLUMN_UID + ") "
+                    + ");" + DatabaseHelper.createUpdatedAtTrigger(BudgetEntry.TABLE_NAME));
+
+            db.execSQL("CREATE UNIQUE INDEX '" + BudgetEntry.INDEX_UID
+                    + "' ON " + BudgetEntry.TABLE_NAME + "(" + BudgetEntry.COLUMN_UID + ")");
+
+            db.execSQL("CREATE TABLE " + BudgetAmountEntry.TABLE_NAME + " ("
+                    + BudgetAmountEntry._ID                   + " integer primary key autoincrement, "
+                    + BudgetAmountEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
+                    + BudgetAmountEntry.COLUMN_BUDGET_UID     + " varchar(255) not null, "
+                    + BudgetAmountEntry.COLUMN_ACCOUNT_UID    + " varchar(255) not null, "
+                    + BudgetAmountEntry.COLUMN_AMOUNT_NUM     + " integer not null, "
+                    + BudgetAmountEntry.COLUMN_AMOUNT_DENOM   + " integer not null, "
+                    + BudgetAmountEntry.COLUMN_PERIOD_NUM     + " integer not null, "
+                    + BudgetAmountEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + BudgetAmountEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + "FOREIGN KEY (" 	+ BudgetAmountEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + ") ON DELETE CASCADE, "
+                    + "FOREIGN KEY (" 	+ BudgetAmountEntry.COLUMN_BUDGET_UID + ") REFERENCES " + BudgetEntry.TABLE_NAME + " (" + BudgetEntry.COLUMN_UID + ") ON DELETE CASCADE "
+                    + ");" + DatabaseHelper.createUpdatedAtTrigger(BudgetAmountEntry.TABLE_NAME));
+
+            db.execSQL("CREATE UNIQUE INDEX '" + BudgetAmountEntry.INDEX_UID
+                    + "' ON " + BudgetAmountEntry.TABLE_NAME + "(" + BudgetAmountEntry.COLUMN_UID + ")");
+
+
+            //extract recurrences from scheduled actions table and put in the recurrence table
+            db.execSQL("ALTER TABLE " + ScheduledActionEntry.TABLE_NAME + " RENAME TO " + ScheduledActionEntry.TABLE_NAME + "_bak");
+
+            db.execSQL("CREATE TABLE " + ScheduledActionEntry.TABLE_NAME + " ("
+                    + ScheduledActionEntry._ID                      + " integer primary key autoincrement, "
+                    + ScheduledActionEntry.COLUMN_UID               + " varchar(255) not null UNIQUE, "
+                    + ScheduledActionEntry.COLUMN_ACTION_UID        + " varchar(255) not null, "
+                    + ScheduledActionEntry.COLUMN_TYPE              + " varchar(255) not null, "
+                    + ScheduledActionEntry.COLUMN_RECURRENCE_UID    + " varchar(255) not null, "
+                    + ScheduledActionEntry.COLUMN_TEMPLATE_ACCT_UID + " varchar(255) not null, "
+                    + ScheduledActionEntry.COLUMN_LAST_RUN          + " integer default 0, "
+                    + ScheduledActionEntry.COLUMN_START_TIME        + " integer not null, "
+                    + ScheduledActionEntry.COLUMN_END_TIME          + " integer default 0, "
+                    + ScheduledActionEntry.COLUMN_TAG               + " text, "
+                    + ScheduledActionEntry.COLUMN_ENABLED           + " tinyint default 1, " //enabled by default
+                    + ScheduledActionEntry.COLUMN_AUTO_CREATE       + " tinyint default 1, "
+                    + ScheduledActionEntry.COLUMN_AUTO_NOTIFY       + " tinyint default 0, "
+                    + ScheduledActionEntry.COLUMN_ADVANCE_CREATION  + " integer default 0, "
+                    + ScheduledActionEntry.COLUMN_ADVANCE_NOTIFY    + " integer default 0, "
+                    + ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY   + " integer default 0, "
+                    + ScheduledActionEntry.COLUMN_EXECUTION_COUNT   + " integer default 0, "
+                    + ScheduledActionEntry.COLUMN_CREATED_AT        + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + ScheduledActionEntry.COLUMN_MODIFIED_AT       + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + "FOREIGN KEY (" 	+ ScheduledActionEntry.COLUMN_RECURRENCE_UID + ") REFERENCES " + RecurrenceEntry.TABLE_NAME + " (" + RecurrenceEntry.COLUMN_UID + ") "
+                    + ");" + DatabaseHelper.createUpdatedAtTrigger(ScheduledActionEntry.TABLE_NAME));
+
+
+            // initialize new transaction table with data from old table
+            db.execSQL("INSERT INTO " + ScheduledActionEntry.TABLE_NAME + " ( "
+                            + ScheduledActionEntry._ID + " , "
+                            + ScheduledActionEntry.COLUMN_UID + " , "
+                            + ScheduledActionEntry.COLUMN_ACTION_UID + " , "
+                            + ScheduledActionEntry.COLUMN_TYPE + " , "
+                            + ScheduledActionEntry.COLUMN_LAST_RUN + " , "
+                            + ScheduledActionEntry.COLUMN_START_TIME + " , "
+                            + ScheduledActionEntry.COLUMN_END_TIME + " , "
+                            + ScheduledActionEntry.COLUMN_ENABLED + " , "
+                            + ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY + " , "
+                            + ScheduledActionEntry.COLUMN_EXECUTION_COUNT + " , "
+                            + ScheduledActionEntry.COLUMN_CREATED_AT + " , "
+                            + ScheduledActionEntry.COLUMN_MODIFIED_AT + " , "
+                            + ScheduledActionEntry.COLUMN_RECURRENCE_UID + " , "
+                            + ScheduledActionEntry.COLUMN_TEMPLATE_ACCT_UID + " , "
+                            + ScheduledActionEntry.COLUMN_TAG
+                            + ")  SELECT "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry._ID + " , "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_UID + " , "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_ACTION_UID + " , "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_TYPE + " , "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_LAST_RUN + " , "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_START_TIME + " , "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_END_TIME + " , "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_ENABLED + " , "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY + " , "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_EXECUTION_COUNT + " , "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_CREATED_AT + " , "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_MODIFIED_AT + " , "
+                            + " 'dummy-string' ," //will be updated in next steps
+                            + " 'dummy-string' ,"
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_TAG
+                            + " FROM " + ScheduledActionEntry.TABLE_NAME + "_bak;");
+
+            //update the template-account-guid and the recurrence guid for all scheduled actions
+            Cursor cursor = db.query(ScheduledActionEntry.TABLE_NAME + "_bak",
+                    new String[]{ScheduledActionEntry.COLUMN_UID,
+                            "period",
+                            ScheduledActionEntry.COLUMN_START_TIME
+                    },
+                    null, null, null, null, null);
+
+            ContentValues contentValues = new ContentValues();
+            while (cursor.moveToNext()){
+                String uid = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_UID));
+                long period = cursor.getLong(cursor.getColumnIndexOrThrow("period"));
+                long startTime = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_START_TIME));
+                PeriodType periodType = PeriodType.parse(period);
+                Recurrence recurrence = new Recurrence(periodType);
+                recurrence.setPeriodStart(new Timestamp(startTime));
+
+                contentValues.clear();
+                contentValues.put(RecurrenceEntry.COLUMN_UID, recurrence.getUID());
+                contentValues.put(RecurrenceEntry.COLUMN_MULTIPLIER, recurrence.getPeriodType().getMultiplier());
+                contentValues.put(RecurrenceEntry.COLUMN_PERIOD_TYPE, recurrence.getPeriodType().name());
+                contentValues.put(RecurrenceEntry.COLUMN_PERIOD_START, recurrence.getPeriodStart().toString());
+                db.insert(RecurrenceEntry.TABLE_NAME, null, contentValues);
+
+                contentValues.clear();
+                contentValues.put(ScheduledActionEntry.COLUMN_RECURRENCE_UID, recurrence.getUID());
+                contentValues.put(ScheduledActionEntry.COLUMN_TEMPLATE_ACCT_UID, BaseModel.generateUID());
+                db.update(ScheduledActionEntry.TABLE_NAME, contentValues,
+                        ScheduledActionEntry.COLUMN_UID + " = ?", new String[]{uid});
+            }
+            cursor.close();
+
+            db.execSQL("DROP TABLE " + ScheduledActionEntry.TABLE_NAME + "_bak");
+
+
+            //==============  Add RECONCILE_STATE and RECONCILE_DATE to the splits table ==========
+            //We migrate the whole table because we want those columns to have default values
+
+            db.execSQL("ALTER TABLE " + SplitEntry.TABLE_NAME + " RENAME TO " + SplitEntry.TABLE_NAME + "_bak");
+            db.execSQL("CREATE TABLE " + SplitEntry.TABLE_NAME + " ("
+                    + SplitEntry._ID                    + " integer primary key autoincrement, "
+                    + SplitEntry.COLUMN_UID             + " varchar(255) not null UNIQUE, "
+                    + SplitEntry.COLUMN_MEMO 	        + " text, "
+                    + SplitEntry.COLUMN_TYPE            + " varchar(255) not null, "
+                    + SplitEntry.COLUMN_VALUE_NUM       + " integer not null, "
+                    + SplitEntry.COLUMN_VALUE_DENOM     + " integer not null, "
+                    + SplitEntry.COLUMN_QUANTITY_NUM    + " integer not null, "
+                    + SplitEntry.COLUMN_QUANTITY_DENOM  + " integer not null, "
+                    + SplitEntry.COLUMN_ACCOUNT_UID 	+ " varchar(255) not null, "
+                    + SplitEntry.COLUMN_TRANSACTION_UID + " varchar(255) not null, "
+                    + SplitEntry.COLUMN_RECONCILE_STATE + " varchar(1) not null default 'n', "
+                    + SplitEntry.COLUMN_RECONCILE_DATE  + " timestamp not null default current_timestamp, "
+                    + SplitEntry.COLUMN_CREATED_AT      + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + SplitEntry.COLUMN_MODIFIED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + "FOREIGN KEY (" 	+ SplitEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + ") ON DELETE CASCADE, "
+                    + "FOREIGN KEY (" 	+ SplitEntry.COLUMN_TRANSACTION_UID + ") REFERENCES " + TransactionEntry.TABLE_NAME + " (" + TransactionEntry.COLUMN_UID + ") ON DELETE CASCADE "
+                    + ");" + DatabaseHelper.createUpdatedAtTrigger(SplitEntry.TABLE_NAME));
+
+            db.execSQL("INSERT INTO " + SplitEntry.TABLE_NAME + " ( "
+                    + SplitEntry._ID                    + " , "
+                    + SplitEntry.COLUMN_UID             + " , "
+                    + SplitEntry.COLUMN_MEMO            + " , "
+                    + SplitEntry.COLUMN_TYPE            + " , "
+                    + SplitEntry.COLUMN_VALUE_NUM       + " , "
+                    + SplitEntry.COLUMN_VALUE_DENOM     + " , "
+                    + SplitEntry.COLUMN_QUANTITY_NUM    + " , "
+                    + SplitEntry.COLUMN_QUANTITY_DENOM  + " , "
+                    + SplitEntry.COLUMN_ACCOUNT_UID     + " , "
+                    + SplitEntry.COLUMN_TRANSACTION_UID
+                    + ")  SELECT "
+                    + SplitEntry.TABLE_NAME + "_bak." + SplitEntry._ID                  + " , "
+                    + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_UID           + " , "
+                    + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_MEMO          + " , "
+                    + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_TYPE          + " , "
+                    + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_VALUE_NUM     + " , "
+                    + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_VALUE_DENOM   + " , "
+                    + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_QUANTITY_NUM  + " , "
+                    + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_QUANTITY_DENOM + " , "
+                    + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_ACCOUNT_UID   + " , "
+                    + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_TRANSACTION_UID
+                    + " FROM " + SplitEntry.TABLE_NAME + "_bak;");
+
+
+            db.execSQL("DROP TABLE " + SplitEntry.TABLE_NAME + "_bak");
+
+            db.setTransactionSuccessful();
+            oldVersion = 13;
+        } finally {
+            db.endTransaction();
+        }
+
+
+        //Migrate book-specific preferences away from shared preferences
+        Log.d(LOG_TAG, "Migrating shared preferences into book preferences");
+        Context context = GnuCashApplication.getAppContext();
+        String keyUseDoubleEntry = context.getString(R.string.key_use_double_entry);
+        String keySaveOpeningBalance = context.getString(R.string.key_save_opening_balances);
+        String keyLastExportTime = PreferencesHelper.PREFERENCE_LAST_EXPORT_TIME_KEY;
+        String keyUseCompactView = context.getString(R.string.key_use_compact_list);
+
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String lastExportTime = sharedPrefs.getString(keyLastExportTime, TimestampHelper.getTimestampFromEpochZero().toString());
+        boolean useDoubleEntry = sharedPrefs.getBoolean(keyUseDoubleEntry, true);
+        boolean saveOpeningBalance = sharedPrefs.getBoolean(keySaveOpeningBalance, false);
+        boolean useCompactTrnView = PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(context.getString(R.string.key_use_double_entry), !useDoubleEntry);
+
+        String rootAccountUID = getGnuCashRootAccountUID(db);
+        SharedPreferences bookPrefs = context.getSharedPreferences(rootAccountUID, Context.MODE_PRIVATE);
+
+        bookPrefs.edit()
+                .putString(keyLastExportTime, lastExportTime)
+                .putBoolean(keyUseDoubleEntry, useDoubleEntry)
+                .putBoolean(keySaveOpeningBalance, saveOpeningBalance)
+                .putBoolean(keyUseCompactView, useCompactTrnView)
+                .apply();
 
         return oldVersion;
     }
