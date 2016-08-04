@@ -1265,4 +1265,49 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
             cursor.close();
         }
     }
+
+    /**
+     * Returns the ID of the first defined default transfer account in an
+     * account or its parents.
+     *
+     * <p>Looks at the account with UID {@code accountUID} and its parents for
+     * the first one that has a default transfer account set and returns its ID.</p>
+     *
+     * @param accountUID UID of the Account where to start looking for a
+     *                   default transfer account.
+     * @return ID of the first defined default transfer account in an
+     * account or its parents. Returns -1 if none of the accounts had it defined.
+     */
+    public long getDefaultTransferAccountIDFromParents(@NonNull String accountUID) {
+        long defaultTransferAccountID;
+        String currentAccountUID = accountUID;
+        String rootAccountUID = getOrCreateGnuCashRootAccountUID();
+        do {
+            defaultTransferAccountID = getDefaultTransferAccountID(getID(currentAccountUID));
+            if (defaultTransferAccountID > 0) {
+                return defaultTransferAccountID; //we found a parent with default transfer setting
+            }
+            currentAccountUID = getParentAccountUID(currentAccountUID);
+        } while (!currentAccountUID.equals(rootAccountUID));
+
+        return -1;
+    }
+
+    /**
+     * Returns possible transfer accounts for a transaction in the account
+     * with UID {@code accountUID}.
+     *
+     * @param accountUID UID of the account where the transaction belongs
+     * @return Cursor with possible transfer accounts for a transaction
+     * in the account with UID {@code accountUID}.
+     */
+    public Cursor getPossibleTransferAccounts(@NonNull String accountUID) {
+        String conditions = "(" + AccountEntry.COLUMN_UID + " != ?"
+                + " AND " + AccountEntry.COLUMN_TYPE + " != ?"
+                + " AND " + AccountEntry.COLUMN_PLACEHOLDER + " = 0"
+                + ")";
+
+        return fetchAccountsOrderedByFullName(conditions,
+                new String[]{accountUID, AccountType.ROOT.name()});
+    }
 }
