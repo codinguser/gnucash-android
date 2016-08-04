@@ -441,4 +441,35 @@ public class Split extends BaseModel{
             return split;
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Split split = (Split) o;
+
+        if (mReconcileState != split.mReconcileState) return false;
+        if (!mValue.equals(split.mValue)) return false;
+        if (!mQuantity.equals(split.mQuantity)) return false;
+        if (!mTransactionUID.equals(split.mTransactionUID)) return false;
+        if (!mAccountUID.equals(split.mAccountUID)) return false;
+        if (mSplitType != split.mSplitType) return false;
+        return mMemo != null ? mMemo.equals(split.mMemo) : split.mMemo == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + mValue.hashCode();
+        result = 31 * result + mQuantity.hashCode();
+        result = 31 * result + mTransactionUID.hashCode();
+        result = 31 * result + mAccountUID.hashCode();
+        result = 31 * result + mSplitType.hashCode();
+        result = 31 * result + (mMemo != null ? mMemo.hashCode() : 0);
+        result = 31 * result + (int) mReconcileState;
+        return result;
+    }
 }

@@ -276,6 +276,56 @@ public class TransactionsActivityTest {
     }
 
 	@Test
+	public void testAddMultiCurrencyTransaction(){
+		Commodity euro = Commodity.getInstance("EUR");
+		Account euroAccount = new Account("Euro Konto", euro);
+		mAccountsDbAdapter.addRecord(euroAccount);
+
+		int transactionCount = mTransactionsDbAdapter.getTransactionsCount(TRANSACTIONS_ACCOUNT_UID);
+		setDoubleEntryEnabled(true);
+		setDefaultTransactionType(TransactionType.DEBIT);
+		validateTransactionListDisplayed();
+
+		onView(withId(R.id.fab_create_transaction)).perform(click());
+
+		String transactionName = "Multicurrency lunch";
+		onView(withId(R.id.input_transaction_name)).perform(typeText(transactionName));
+		onView(withId(R.id.input_transaction_amount)).perform(typeText("10"));
+		Espresso.pressBack(); //close calculator keyboard
+
+		onView(withId(R.id.input_transfer_account_spinner)).perform(click());
+		onView(withText(euroAccount.getFullName())).check(matches(isDisplayed())).perform(click());
+
+		onView(withId(R.id.menu_save)).perform(click());
+
+		onView(withText(R.string.msg_provide_exchange_rate)).check(matches(isDisplayed()));
+		onView(withId(R.id.radio_converted_amount)).perform(click());
+		onView(withId(R.id.input_converted_amount)).perform(typeText("5"));
+		Espresso.closeSoftKeyboard();
+		onView(withId(R.id.btn_save)).perform(click());
+
+		onView(withId(R.id.menu_save)).perform(click());
+
+		List<Transaction> allTransactions = mTransactionsDbAdapter.getAllTransactionsForAccount(TRANSACTIONS_ACCOUNT_UID);
+		assertThat(allTransactions).hasSize(transactionCount+1);
+		Transaction multiTrans = allTransactions.get(0);
+
+		assertThat(multiTrans.getSplits()).extracting("mAccountUID")
+				.contains(TRANSACTIONS_ACCOUNT_UID)
+				.contains(euroAccount.getUID());
+
+		Split euroSplit = multiTrans.getSplits(euroAccount.getUID()).get(0);
+		Money expectedQty = new Money("5", euro.getCurrencyCode());
+		Money expectedValue = new Money(BigDecimal.TEN, COMMODITY);
+		assertThat(euroSplit.getQuantity()).isEqualTo(expectedQty);
+		assertThat(euroSplit.getValue()).isEqualTo(expectedValue);
+
+		Split usdSplit = multiTrans.getSplits(TRANSACTIONS_ACCOUNT_UID).get(0);
+		assertThat(usdSplit.getQuantity()).isEqualTo(expectedValue);
+		assertThat(usdSplit.getValue()).isEqualTo(expectedValue);
+	}
+
+	@Test
 	public void testEditTransaction(){
 		validateTransactionListDisplayed();
 
@@ -283,8 +333,13 @@ public class TransactionsActivityTest {
 		
 		validateEditTransactionFields(mTransaction);
 
-		onView(withId(R.id.input_transaction_name)).perform(clearText(), typeText("Pasta"));
+		String trnName = "Pasta";
+		onView(withId(R.id.input_transaction_name)).perform(clearText(), typeText(trnName));
 		onView(withId(R.id.menu_save)).perform(click());
+
+		Transaction editedTransaction = mTransactionsDbAdapter.getRecord(mTransaction.getUID());
+		assertThat(editedTransaction.getDescription()).isEqualTo(trnName);
+		assertThat(editedTransaction.getSplits()).isEqualTo(mTransaction.getSplits());
 	}
 
 	/**
