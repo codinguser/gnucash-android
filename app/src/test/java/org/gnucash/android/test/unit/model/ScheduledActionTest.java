@@ -52,6 +52,27 @@ public class ScheduledActionTest {
     }
 
     @Test
+    public void settingEndTime_shouldSetRecurrenceEnd(){
+        ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.TRANSACTION);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2014, 8, 26);
+        long endTime = calendar.getTimeInMillis();
+        scheduledAction.setEndTime(endTime);
+        assertThat(scheduledAction.getRecurrence()).isNull();
+
+        Recurrence recurrence = new Recurrence(PeriodType.MONTH);
+        assertThat(recurrence.getPeriodEnd()).isNull();
+        scheduledAction.setRecurrence(recurrence);
+        assertThat(recurrence.getPeriodEnd().getTime()).isEqualTo(endTime);
+
+        calendar.clear();
+        calendar.set(2015, 6, 6);
+        long newEndTime = calendar.getTimeInMillis();
+        scheduledAction.setEndTime(newEndTime);
+        assertThat(recurrence.getPeriodEnd().getTime()).isEqualTo(newEndTime);
+    }
+
+    @Test
     public void settingRecurrence_shouldSetScheduledActionStartTime(){
         ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.BACKUP);
         assertThat(scheduledAction.getStartTime()).isEqualTo(0);
