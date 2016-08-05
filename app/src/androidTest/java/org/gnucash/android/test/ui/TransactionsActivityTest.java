@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.support.test.espresso.Espresso;
+import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -68,6 +69,7 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static android.support.test.espresso.matcher.ViewMatchers.hasSibling;
 import static android.support.test.espresso.matcher.ViewMatchers.isChecked;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -582,7 +584,11 @@ public class TransactionsActivityTest {
 
 	}
 
-//	@Test //// FIXME: 03.11.2015 fix and re-enable this test
+	/**
+	 * This test edits a transaction from within an account and removes the split belonging to that account.
+	 * The account should then have a balance of 0 and the transaction has "moved" to another account
+	 */
+	@Test
 	public void editingSplit_shouldNotSetAmountToZero(){
 		setDoubleEntryEnabled(true);
 		mTransactionsDbAdapter.deleteAllRecords();
@@ -597,29 +603,24 @@ public class TransactionsActivityTest {
 
 		onView(withId(R.id.menu_save)).perform(click());
 
+		assertThat(mTransactionsDbAdapter.getTransactionsCount(TRANSACTIONS_ACCOUNT_UID)).isEqualTo(1);
+
+		sleep(500);
 		onView(withText("Test Split")).perform(click());
 		onView(withId(R.id.fab_edit_transaction)).perform(click());
 
 		onView(withId(R.id.btn_split_editor)).perform(click());
 
-//		onView(withSpinnerText(TRANSACTIONS_ACCOUNT_NAME)).perform(click()); //// FIXME: 03.11.2015 properly select the spinner
-		onData(withId(R.id.input_accounts_spinner))
-				.inAdapterView(withId(R.id.split_list_layout))
-				.atPosition(1)
-				.perform(click());
-		onData(allOf(is(instanceOf(String.class)), is(account.getFullName()))).perform(click());
-//		onView(withText(account.getFullName())).perform(click());
+		onView(withText(TRANSACTIONS_ACCOUNT_NAME)).perform(click());
+		onView(withText(account.getFullName())).perform(click());
 
 		onView(withId(R.id.menu_save)).perform(click());
 		onView(withId(R.id.menu_save)).perform(click());
 
-		//split should have moved from account, it should now be empty
-		onView(withId(R.id.empty_view)).check(matches(isDisplayed()));
+		assertThat(mTransactionsDbAdapter.getTransactionsCount(TRANSACTIONS_ACCOUNT_UID)).isZero();
 
-		assertThat(mAccountsDbAdapter.getAccountBalance(TRANSACTIONS_ACCOUNT_UID)).isEqualTo(Money.createZeroInstance(CURRENCY_CODE));
-
-		//split
-		assertThat(mAccountsDbAdapter.getAccountBalance(account.getUID())).isEqualTo(new Money("1024", CURRENCY_CODE));
+		assertThat(mAccountsDbAdapter.getAccountBalance(account.getUID()))
+				.isEqualTo(new Money("1024", CURRENCY_CODE));
 	}
 
 	@Test
