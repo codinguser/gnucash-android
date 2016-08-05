@@ -213,7 +213,7 @@ public class ScheduledAction extends BaseModel{
     public void setEndTime(long endDate) {
         this.mEndDate = endDate;
         if (mRecurrence != null){
-            mRecurrence.setPeriodStart(new Timestamp(mEndDate));
+            mRecurrence.setPeriodEnd(new Timestamp(mEndDate));
         }
     }
 
