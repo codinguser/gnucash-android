@@ -18,14 +18,14 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="title_create_account">Criar Conta</string>
   <string name="title_edit_account">Editar Conta</string>
-  <string name="info_details">Info</string>
+  <string name="info_details">Informação</string>
   <string name="menu_export">Exportar</string>
   <string name="description_add_transaction_icon">Adicionar nova transação a uma conta</string>
   <string name="label_no_accounts">Sem contas para mostrar</string>
   <string name="label_account_name">Nome da Conta</string>
   <string name="btn_cancel">Cancelar</string>
   <string name="btn_save">Gravar</string>
-  <string name="btn_test">Test</string>
+  <string name="btn_test">Teste</string>
   <string name="label_passcode">Introduza a palavra passe</string>
   <string name="toast_wrong_passcode">Senha incorreta, tente novamente</string>
   <string name="toast_passcode_set">Definição de palavra passe</string>
@@ -47,10 +47,10 @@
   <string name="toast_account_deleted">Conta apagada</string>
   <string name="title_confirm_delete">Confirma apagar</string>
   <string name="delete_account_confirmation_message">Todas as transações desta conta também serão apagadas</string>
-  <string name="title_edit_transaction">Editar Transações</string>
+  <string name="title_edit_transaction">Editar Transação</string>
   <string name="label_transaction_description">Adicionar nota</string>
   <string name="menu_move">MOVER</string>
-  <string name="title_selected">%1$d seleccionado</string>
+  <string name="title_selected">%1$d selecionado</string>
   <string name="label_account_balance">Saldo:</string>
   <string name="label_export_destination">Exportar para:</string>
   <string name="title_export_dialog">Exportar Transações</string>
@@ -66,7 +66,7 @@
     <item>DropBox</item>
     <item>Google Drive</item>
     <item>ownCloud</item>
-    <item>Send to&#8230;</item>
+    <item>Enviar para&#8230;</item>
   </string-array>
   <string name="btn_move">Mover</string>
   <string name="title_move_transactions">Mover %1$d transação(ões)</string>
@@ -163,8 +163,8 @@
   <string name="section_header_subaccounts">Sub-Contas</string>
   <string name="menu_search_accounts">Procurar</string>
   <string name="title_default_export_format">Formato de Exportação padrão</string>
-  <string name="summary_default_export_format">Formato de ficheiro usado por defeito quando é feita uma exportação de transações</string>
-  <string name="menu_export_transactions">Exportar transações</string>
+  <string name="summary_default_export_format">Formato de arquivo a ser usado por padrão ao exportar transações</string>
+  <string name="menu_export_transactions">Exportar transações&#8230;</string>
   <string name="label_recurring_transaction">Recorrente</string>
   <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">Desequilibrio</string>
@@ -181,7 +181,7 @@
     <item>DINHEIRO</item>
     <item>BANCO</item>
     <item>CARTÃO CRÉDITO</item>
-    <item>ACTIVO</item>
+    <item>ATIVO</item>
     <item>PASSIVO</item>
     <item>RENDIMENTO</item>
     <item>DESPESA</item>
@@ -235,7 +235,7 @@
   <string name="toast_no_recent_backup">Não foi encontrado um Backup recente</string>
   <string name="account_name_opening_balances">Saldo de abertura</string>
   <string name="account_name_equity">Capital Próprio</string>
-  <string name="summary_save_opening_balances">Permite gravar o saldo da conta actual (antes de apagar as transações) como novo saldo de abertura depois de apagadas as transações
+  <string name="summary_save_opening_balances">Permite salvar o saldo da conta atual (antes de apagar as transações) como novo saldo de abertura após a exclusão das transações
     </string>
   <string name="title_save_opening_balances">Grava o saldo de abertura da conta</string>
   <string name="export_warning_ofx">O formato OFX não permite transações de entrada dupla</string>
@@ -265,8 +265,8 @@
   <string name="label_chart_overall">Geral</string>
   <string name="label_chart_total">Total</string>
   <string name="label_other_slice">Outro</string>
-  <string name="toast_chart_percentage_mode_total">A percentagem do valor seleccionado face ao valor total</string>
-  <string name="toast_chart_percentage_mode_current_bar">A percentagem do valor seleccionado face ao valor da barra actual</string>
+  <string name="toast_chart_percentage_mode_total">O percentual do valor selecionado em relação ao valor total</string>
+  <string name="toast_chart_percentage_mode_current_bar">O percentual do valor selecionado em relação ao valor da barra empilhada atual</string>
   <string name="label_save_template">Guardar como modelo</string>
   <string name="label_delete_account_transactions_description">Esta conta tem transações. \nO que pretende fazer com estas transações</string>
   <string name="label_delete_account_subaccounts_description">Esta conta tem subcontas. \nO que pretende fazer com estas subcontas</string>
@@ -275,11 +275,11 @@
   <string name="label_tap_to_create_schedule">Toque para criar um agendamento</string>
   <string name="title_restore_backup">Restore Backup</string>
   <string name="header_backup_and_export_settings">Backup &amp; exportação</string>
-  <string name="title_dropbox_sync_preference">Enable DropBox</string>
-  <string name="title_owncloud_sync_preference">Enable ownCloud </string>
+  <string name="title_dropbox_sync_preference">Habilitar o DropBox</string>
+  <string name="title_owncloud_sync_preference">Habilitar o ownCloud </string>
   <string name="title_backup_preference_category">Backup</string>
-  <string name="summary_dropbox_sync">Enable exporting to DropBox</string>
-  <string name="summary_owncloud_sync">Enable exporting to ownCloud</string>
+  <string name="summary_dropbox_sync">Habilitar a exportação para o DropBox</string>
+  <string name="summary_owncloud_sync">Habilitar a exportação para o ownCloud</string>
   <string name="title_select_gnucash_xml_file">Escolha um ficheiro XML do GnuCash</string>
   <string name="title_backup_prefs">Preferências de Backup</string>
   <string name="title_create_backup_pref">Criar Backup</string>
@@ -288,8 +288,8 @@
   <string name="toast_backup_successful">Backup efectuado com sucesso</string>
   <string name="toast_backup_failed">Erro ao efectuar o Backup</string>
   <string name="export_warning_xml">Exporta todas as contas e transações</string>
-  <string name="title_google_drive_sync_pref">Enable Google Drive</string>
-  <string name="summary_google_drive_sync">Enable exporting to Google Drive</string>
+  <string name="title_google_drive_sync_pref">Habilitar o Google Drive</string>
+  <string name="summary_google_drive_sync">Habilitar a exportação para o Google Drive</string>
   <string name="toast_install_file_manager">Instale um gestor de ficheiros para escolher um ficheiro</string>
   <string name="title_select_backup_to_restore">Escolha um backup para restaurar</string>
   <string name="nav_menu_favorites">Favoritos</string>
@@ -298,16 +298,16 @@
   <string name="nav_menu_scheduled_transactions">Transações agendadas</string>
   <string name="nav_menu_export">Exportar&#8230;</string>
   <string name="nav_menu_settings">Definições</string>
-  <string name="username">User Name</string>
-  <string name="password">Password</string>
-  <string name="owncloud_pref">owncloud</string>
+  <string name="username">Nome do usuário</string>
+  <string name="password">Senha</string>
+  <string name="owncloud_pref">ownCloud</string>
   <string name="owncloud_server">https://</string>
-  <string name="owncloud_server_invalid">OC server not found</string>
-  <string name="owncloud_user_invalid">OC username/password invalid</string>
-  <string name="owncloud_dir_invalid">Invalid chars: \\ &lt; &gt; : \&quot; | * ? </string>
-  <string name="owncloud_server_ok">OC server OK</string>
-  <string name="owncloud_user_ok">OC username/password OK</string>
-  <string name="owncloud_dir_ok">Dir name OK</string>
+  <string name="owncloud_server_invalid">Servidor OC não encontrado</string>
+  <string name="owncloud_user_invalid">Usuário/senha do OC inválido</string>
+  <string name="owncloud_dir_invalid">Caracteres inválidos: \\ &lt; &gt; : \&quot; | * ? </string>
+  <string name="owncloud_server_ok">Servidor OC OK</string>
+  <string name="owncloud_user_ok">Usuário/senha do OC OK</string>
+  <string name="owncloud_dir_ok">Nome do diretório OK</string>
   <plurals name="label_every_x_days">
     <item quantity="one">Diariamente</item>
     <item quantity="other">Todos os %d dias</item>
@@ -396,21 +396,21 @@ Neste processo não serão recolhidas informações do utilizador!</string>
   <string name="summary_google_plus">Compartilhe ideias, discuta alterações ou reporte problemas</string>
   <string name="summary_translate_gnucash">Traduza ou corrija as traduções no Crowdln</string>
   <string name="toast_no_compatible_apps_to_receive_export">Não existem apps compatíveis para receber as transações exportadas!</string>
-  <string name="menu_move_transaction">Move&#8230;</string>
+  <string name="menu_move_transaction">Mover&#8230;</string>
   <string name="menu_duplicate_transaction">Duplicar</string>
-  <string name="nav_menu_budgets">Budgets</string>
-  <string name="title_cash_flow_report">Cash Flow</string>
-  <string name="title_budgets">Budgets</string>
-  <string name="title_use_compact_list">Enable compact view</string>
-  <string name="summary_use_compact_list">Enable to always use compact view for transactions list</string>
-  <string name="error_invalid_exchange_rate">Invalid exchange rate</string>
-  <string name="sample_exchange_rate">e.g. 1 %1$s = x.xx %2$s</string>
-  <string name="error_invalid_amount">Invalid amount</string>
+  <string name="nav_menu_budgets">Orçamentos</string>
+  <string name="title_cash_flow_report">Fluxo de caixa</string>
+  <string name="title_budgets">Orçamentos</string>
+  <string name="title_use_compact_list">Permitir visão compacta</string>
+  <string name="summary_use_compact_list">Sempre permitir visão compacta para a lista de transações</string>
+  <string name="error_invalid_exchange_rate">Taxa de câmbio inválida</string>
+  <string name="sample_exchange_rate">por exemplo, 1 %1$s = x.xx %2$s</string>
+  <string name="error_invalid_amount">Valor inválido</string>
   <string-array name="report_time_range">
     <item>Mês atual</item>
-    <item>Last 3 meses</item>
-    <item>Last 6 meses</item>
-    <item>Last 12 meses</item>
+    <item>Últimos 3 meses</item>
+    <item>Últimos 6 meses</item>
+    <item>Últimos 12 meses</item>
     <item>Tudo</item>
     <item>Intervalo personalizado&#8230;</item>
   </string-array>
@@ -436,16 +436,16 @@ Neste processo não serão recolhidas informações do utilizador!</string>
   <string name="digit_nine_text">WXYZ</string>
   <string name="digit_zero">0</string>
   <string name="digit_zero_text">+</string>
-  <string name="title_manage_books">Manage Books</string>
+  <string name="title_manage_books">Gerenciar livros</string>
   <string name="menu_manage_books">Manage Books&#8230;</string>
-  <string name="select_chart_to_view_details">Select any part of the chart to view details</string>
+  <string name="select_chart_to_view_details">Selecione qualquer parte do gráfico para ver os detalhes</string>
   <string name="title_confirm_delete_book">Confirm delete Book</string>
-  <string name="msg_all_book_data_will_be_deleted">All accounts and transactions in this book will be deleted!</string>
-  <string name="btn_delete_book">Delete Book</string>
-  <string name="label_last_export_time">Last Exported:</string>
-  <string name="menu_title_enable_sync">Enable Sync</string>
+  <string name="msg_all_book_data_will_be_deleted">Todas as contas e transações neste livro serão excluídas!</string>
+  <string name="btn_delete_book">Apagar livro</string>
+  <string name="label_last_export_time">Última exportação:</string>
+  <string name="menu_title_enable_sync">Ativar a Sincronização</string>
   <string name="menu_title_new_book">New Book</string>
-  <string name="toast_transaction_has_no_splits_and_cannot_open">The selected transaction has no splits and cannot be opened</string>
-  <string name="label_split_count">%1$d splits</string>
-  <string name="label_inside_account_with_name">in %1$s</string>
+  <string name="toast_transaction_has_no_splits_and_cannot_open">A transação selecionada não tem divisões e não pode ser aberta</string>
+  <string name="label_split_count">%1$d divisões</string>
+  <string name="label_inside_account_with_name">em %1$s</string>
 </resources>

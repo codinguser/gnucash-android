@@ -132,13 +132,12 @@
   <string name="summary_xml_ofx_header">데스크탑용 GnuCash 이외의 타 응용 프로그램에 내보낼 때에 사용하세요</string>
   <string name="title_whats_new">새로운 기능</string>
   <string name="whats_new">
-        - 새로운 머티리얼 디자인 \n
+         - 머티리얼 디자인\n
         - 한 거래에 여러 통화 지원\n
-        - 거래총액 계산기\n
+        - 거래총액 계산기 기능\n
         - 보고서 기능 강화\n
-        - 새로운 도움말과 피드백 섹션\n
-        - 많은 문제점 해결 및 개선\n
-	</string>
+        - 도움말과 피드백 섹션\n
+        - 그밖에 버그 수정 및 개선\n</string>
   <string name="label_dismiss">닫기</string>
   <string name="toast_transanction_amount_required">거래기록에 저장할 금액을 입력해 주세요</string>
   <string name="toast_error_edit_multi_currency_transaction">다중 통화 거래는 수정할 수 없습니다.</string>
@@ -174,7 +173,7 @@
   <string name="label_no_recurring_transactions">반복되는 거래내역이 없습니다</string>
   <string name="toast_recurring_transaction_deleted">반복되는 거래를 삭제했습니다</string>
   <string name="label_placeholder_account">견본 계정</string>
-  <string name="label_default_transfer_account">Default Transfer Account</string>
+  <string name="label_default_transfer_account">기본 송금계정으로 지정</string>
   <plurals name="label_sub_accounts">
     <item quantity="other">%d의 하위 계정</item>
   </plurals>
@@ -258,8 +257,8 @@
   <string name="menu_toggle_legend">범례 보기</string>
   <string name="menu_toggle_labels">레이블 표시</string>
   <string name="menu_toggle_percentage_mode">비율 표시</string>
-  <string name="menu_toggle_average_lines">Show average lines</string>
-  <string name="menu_group_smaller_slices">Group Smaller Slices</string>
+  <string name="menu_toggle_average_lines">평균선 표시</string>
+  <string name="menu_group_smaller_slices">작은 슬라이스를 묶어서 표시</string>
   <string name="label_chart_no_data">차트 데이터가 없습니다</string>
   <string name="label_chart_overall">전체</string>
   <string name="label_chart_total">합계</string>
@@ -343,16 +342,16 @@
   <string name="wizard_title_account_setup">계정 설정</string>
   <string name="wizard_title_select_currency">통화 선택</string>
   <string name="wizard_title_feedback_options">피드백 옵션</string>
-  <string name="wizard_option_create_default_accounts">기본 계정을 생성합니다</string>
-  <string name="wizard_option_import_my_accounts">내 계정 가져오기</string>
-  <string name="wizard_option_let_me_handle_it">제가 처리할게요</string>
+  <string name="wizard_option_create_default_accounts">내장된 기본 계정 생성</string>
+  <string name="wizard_option_import_my_accounts">계정정보 불러오기</string>
+  <string name="wizard_option_let_me_handle_it">수동으로 설정</string>
   <string name="wizard_option_currency_other">기타...</string>
   <string name="wizard_option_auto_send_crash_reports">비정상 종료시 자동으로 보고서 보내기</string>
   <string name="wizard_option_disable_crash_reports">보고서를 보내지 않음</string>
   <string name="wizard_btn_back">이전</string>
   <string name="title_setup_gnucash">GnuCash 설정</string>
   <string name="wizard_title_welcome_to_gnucash">GnuCash 사용을 환영합니다</string>
-  <string name="msg_wizard_welcome_page">시작하기 전에 \n몇가지 설정부터 하겠습니다\n\n다음을 눌러주세요.</string>
+  <string name="msg_wizard_welcome_page">시작하기 전에 \n몇가지 설정부터 하겠습니다.\n\n다음을 눌러주세요.</string>
   <string name="title_split_editor">Split Editor</string>
   <string name="toast_error_check_split_amounts">Check that all splits have valid amounts before saving!</string>
   <string name="label_error_invalid_expression">식이 맞지 않습니다!</string>
@@ -369,7 +368,7 @@
   <string name="hint_exchange_rate">환율</string>
   <string name="btn_fetch_quote">Fetch quote</string>
   <string name="hint_converted_amount">환전후 금액</string>
-  <string name="title_report_sheet">Sheet</string>
+  <string name="title_report_sheet">표</string>
   <string name="label_last_3_months_expenses">최근 3개월간의 지출</string>
   <string name="label_total_assets">총자산</string>
   <string name="label_total_liabilities">총부채</string>
