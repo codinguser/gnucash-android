@@ -73,7 +73,7 @@ public class TransactionTest {
 
 		assertThat(t1.getSplits()).extracting("mTransactionUID")
 				.contains(t1.getUID())
-				.doesNotContain("random")
-				.doesNotContain("account-something");
+				.doesNotContain("non-existent")
+				.doesNotContain("pre-existent");
 	}
 }
