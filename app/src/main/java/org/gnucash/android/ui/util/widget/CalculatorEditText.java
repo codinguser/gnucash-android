@@ -289,8 +289,8 @@ public class CalculatorEditText extends EditText {
      * @return @{code true} if the input is valid, {@code false} otherwise
      */
     public boolean isInputValid(){
-        evaluate();
-        return getText().length() > 0 && getError() == null;
+        String text = evaluate();
+        return !text.isEmpty() && getError() == null;
     }
 
     /**

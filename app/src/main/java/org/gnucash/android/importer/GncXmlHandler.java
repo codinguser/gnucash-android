@@ -688,7 +688,7 @@ public class GncXmlHandler extends DefaultHandler {
                 break;
             case GncXmlHelper.TAG_TRANSACTION:
                 mTransaction.setTemplate(mInTemplates);
-                Split imbSplit = mTransaction.getAutoBalanceSplit();
+                Split imbSplit = mTransaction.createAutoBalanceSplit();
                 if (imbSplit != null) {
                     mAutoBalanceSplits.add(imbSplit);
                 }
@@ -899,7 +899,7 @@ public class GncXmlHandler extends DefaultHandler {
 
         // Set the account for created balancing splits to correct imbalance accounts
         for (Split split: mAutoBalanceSplits) {
-            // XXX: yes, getAccountUID() returns a currency code in this case (see Transaction.getAutoBalanceSplit())
+            // XXX: yes, getAccountUID() returns a currency code in this case (see Transaction.createAutoBalanceSplit())
             String currencyCode = split.getAccountUID();
             Account imbAccount = mapImbalanceAccount.get(currencyCode);
             if (imbAccount == null) {
