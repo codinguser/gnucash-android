@@ -16,15 +16,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.owncloud.android.lib.common.OwnCloudClientFactory;
 import com.owncloud.android.lib.common.OwnCloudClient;
+import com.owncloud.android.lib.common.OwnCloudClientFactory;
 import com.owncloud.android.lib.common.OwnCloudCredentialsFactory;
 import com.owncloud.android.lib.common.operations.OnRemoteOperationListener;
 import com.owncloud.android.lib.common.operations.RemoteOperation;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
+import com.owncloud.android.lib.resources.files.FileUtils;
 import com.owncloud.android.lib.resources.status.GetRemoteStatusOperation;
 import com.owncloud.android.lib.resources.users.GetRemoteUserNameOperation;
-import com.owncloud.android.lib.resources.files.FileUtils;
 
 import org.gnucash.android.R;
 

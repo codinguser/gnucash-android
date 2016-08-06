@@ -25,7 +25,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -33,7 +32,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.SparseArray;
@@ -48,19 +46,19 @@ import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.ui.common.BaseDrawerActivity;
-import org.gnucash.android.ui.common.FormActivity;
-import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.account.AccountsListFragment;
-import org.gnucash.android.ui.util.AccountBalanceTask;
 import org.gnucash.android.ui.account.OnAccountClickedListener;
+import org.gnucash.android.ui.common.BaseDrawerActivity;
+import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.Refreshable;
+import org.gnucash.android.ui.common.UxArgument;
+import org.gnucash.android.ui.util.AccountBalanceTask;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 import org.joda.time.LocalDate;
 
@@ -69,7 +67,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 
 /**
  * Activity for displaying, creating and editing transactions

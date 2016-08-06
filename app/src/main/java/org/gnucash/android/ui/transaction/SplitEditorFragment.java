@@ -47,9 +47,9 @@ import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
 import org.gnucash.android.R;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
-import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Commodity;

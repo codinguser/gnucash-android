@@ -46,7 +46,6 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.ui.account.AccountsActivity;
-import org.gnucash.android.ui.budget.BudgetsActivity;
 import org.gnucash.android.ui.passcode.PasscodeLockActivity;
 import org.gnucash.android.ui.report.ReportsActivity;
 import org.gnucash.android.ui.settings.PreferenceActivity;

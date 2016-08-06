@@ -18,8 +18,6 @@ package org.gnucash.android.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.gnucash.android.app.GnuCashApplication;
-
 import java.math.BigDecimal;
 
 /**

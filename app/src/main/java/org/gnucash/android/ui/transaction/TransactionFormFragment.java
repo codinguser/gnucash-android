@@ -24,7 +24,6 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.inputmethodservice.KeyboardView;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -59,9 +58,9 @@ import com.codetroopers.betterpickers.recurrencepicker.RecurrencePickerDialogFra
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.PricesDbAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
@@ -69,7 +68,6 @@ import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.model.Price;
 import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
@@ -87,7 +85,6 @@ import org.gnucash.android.ui.util.widget.TransactionTypeSwitch;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -821,12 +818,11 @@ public class TransactionFormFragment extends Fragment implements
         Transaction transaction = extractTransactionFromView();
         if (mEditMode) { //if editing an existing transaction
             transaction.setUID(mTransaction.getUID());
-            mTransaction = transaction;
-        } else {
-            mTransaction = transaction;
         }
 
+        mTransaction = transaction;
         mAccountsDbAdapter.beginTransaction();
+
         try {
             // 1) mTransactions may be existing or non-existing
             // 2) when mTransactions exists in the db, the splits may exist or not exist in the db
@@ -956,12 +952,6 @@ public class TransactionFormFragment extends Fragment implements
 
         mAmountEditText.setValue(balance.asBigDecimal());
         mTransactionTypeSwitch.setChecked(balance.isNegative());
-        //once we set the split list, do not allow direct editing of the total
-        if (mSplitsList.size() > 1){
-            toggleAmountInputEntryMode(false);
-            setDoubleEntryViewsVisibility(View.GONE);
-            mOpenSplitEditor.setVisibility(View.VISIBLE);
-        }
     }
 
 

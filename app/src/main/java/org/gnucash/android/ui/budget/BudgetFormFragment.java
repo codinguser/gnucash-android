@@ -21,7 +21,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.inputmethodservice.KeyboardView;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
@@ -70,8 +69,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.IllegalFormatCodePointException;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

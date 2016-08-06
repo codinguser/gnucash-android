@@ -53,9 +53,9 @@ import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.BudgetAmount;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.common.FormActivity;
+import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.util.CursorRecyclerAdapter;
-import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
 
 import java.math.BigDecimal;

@@ -41,7 +41,6 @@ import org.gnucash.android.ui.report.ReportsActivity;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.Bind;
 
