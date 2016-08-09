@@ -34,7 +34,6 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
-import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.util.TaskDelegate;
 
 import java.io.InputStream;
@@ -47,6 +46,8 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
     private final Activity mContext;
     private TaskDelegate mDelegate;
     private ProgressDialog mProgressDialog;
+
+    private String mImportedBookUID;
 
     public ImportAsyncTask(Activity context){
         this.mContext = context;
@@ -76,10 +77,9 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
 
     @Override
     protected Boolean doInBackground(Uri... uris) {
-        String bookUID = null;
         try {
             InputStream accountInputStream = mContext.getContentResolver().openInputStream(uris[0]);
-            bookUID = GncXmlImporter.parse(accountInputStream);
+            mImportedBookUID = GncXmlImporter.parse(accountInputStream);
 
         } catch (Exception exception){
             Log.e(ImportAsyncTask.class.getName(), "" + exception.getMessage());
@@ -98,12 +98,6 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
                 }
             });
 
-            //a database is always created at the beginning of import
-            //if there was an error during import, delete the created database
-            if (bookUID != null) {
-                mContext.deleteDatabase(bookUID);
-            }
-
             return false;
         }
 
@@ -114,18 +108,16 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
             ContentValues contentValues = new ContentValues();
             contentValues.put(DatabaseSchema.BookEntry.COLUMN_DISPLAY_NAME, displayName);
             contentValues.put(DatabaseSchema.BookEntry.COLUMN_SOURCE_URI, uris[0].toString());
-            BooksDbAdapter.getInstance().updateRecord(bookUID, contentValues);
+            BooksDbAdapter.getInstance().updateRecord(mImportedBookUID, contentValues);
 
             cursor.close();
         }
 
         //set the preferences to their default values
-        mContext.getSharedPreferences(bookUID, Context.MODE_PRIVATE)
+        mContext.getSharedPreferences(mImportedBookUID, Context.MODE_PRIVATE)
                 .edit()
                 .putBoolean(mContext.getString(R.string.key_use_double_entry), true)
                 .apply();
-
-        ((GnuCashApplication)mContext.getApplication()).loadBook(bookUID);
 
         return true;
     }
@@ -148,6 +140,7 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
         int message = importSuccess ? R.string.toast_success_importing_accounts : R.string.toast_error_importing_accounts;
         Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
 
-        AccountsActivity.start(mContext);
+        if (mImportedBookUID != null)
+            GnuCashApplication.loadBook(mImportedBookUID);
     }
 }

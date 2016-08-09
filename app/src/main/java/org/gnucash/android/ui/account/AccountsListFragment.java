@@ -288,6 +288,10 @@ public class AccountsListFragment extends Fragment implements
 
 
     @Override
+    /**
+     * Refresh the account list as a sublist of another account
+     * @param parentAccountUID GUID of the parent account
+     */
     public void refresh(String parentAccountUID) {
         getArguments().putString(UxArgument.PARENT_ACCOUNT_UID, parentAccountUID);
         refresh();

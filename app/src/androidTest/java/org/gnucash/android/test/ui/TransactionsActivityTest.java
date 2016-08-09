@@ -591,13 +591,15 @@ public class TransactionsActivityTest {
 	@Test
 	public void editingSplit_shouldNotSetAmountToZero(){
 		setDoubleEntryEnabled(true);
+		setDefaultTransactionType(TransactionType.DEBIT);
+
 		mTransactionsDbAdapter.deleteAllRecords();
 
 		Account account = new Account("Z Account", Commodity.getInstance(CURRENCY_CODE));
 		mAccountsDbAdapter.addRecord(account, DatabaseAdapter.UpdateMethod.insert);
 
+		//create new transaction "Transaction Acct" --> "Transfer Account"
 		onView(withId(R.id.fab_create_transaction)).perform(click());
-
 		onView(withId(R.id.input_transaction_name)).perform(typeText("Test Split"));
 		onView(withId(R.id.input_transaction_amount)).perform(typeText("1024"));
 

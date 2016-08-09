@@ -94,9 +94,14 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
 
     /**
      * Sets the book with unique identifier {@code uid} as active and all others as inactive
+     * <p>If the parameter is null, then the currently active book is not changed</p>
      * @param bookUID Unique identifier of the book
+     * @return GUID of the currently active book
      */
-    public void setActive(String bookUID){
+    public String setActive(@NonNull String bookUID){
+        if (bookUID == null)
+            return BooksDbAdapter.getInstance().getActiveBookUID();
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(BookEntry.COLUMN_ACTIVE, 0);
         mDb.update(mTableName, contentValues, null, null); //disable all
@@ -104,6 +109,8 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
         contentValues.clear();
         contentValues.put(BookEntry.COLUMN_ACTIVE, 1);
         mDb.update(mTableName, contentValues, BookEntry.COLUMN_UID + " = ?", new String[]{bookUID});
+
+        return bookUID;
     }
 
     /**

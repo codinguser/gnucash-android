@@ -210,7 +210,7 @@ public class GnuCashApplication extends Application{
      * Loads the book with GUID {@code bookUID}
      * @param bookUID GUID of the book to be loaded
      */
-    public static void loadBook(String bookUID){
+    public static void loadBook(@NonNull String bookUID){
         mBooksDbAdapter.setActive(bookUID);
         initDatabaseAdapters();
         AccountsActivity.start(getAppContext());
