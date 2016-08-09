@@ -19,8 +19,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import org.gnucash.android.R;
@@ -28,8 +26,6 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.ui.common.BaseDrawerActivity;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
-
-import butterknife.ButterKnife;
 
 /**
  * Activity for managing display and editing of budgets

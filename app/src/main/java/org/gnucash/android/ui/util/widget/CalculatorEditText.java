@@ -30,7 +30,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -39,8 +38,6 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.model.Money;
-import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.util.AmountParser;

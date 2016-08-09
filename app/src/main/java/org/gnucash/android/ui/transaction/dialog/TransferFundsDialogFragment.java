@@ -40,8 +40,8 @@ import org.gnucash.android.db.adapter.PricesDbAdapter;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Price;
-import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.transaction.OnTransferFundsListener;
+import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.util.AmountParser;
 
 import java.math.BigDecimal;

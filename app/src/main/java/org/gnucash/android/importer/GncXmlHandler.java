@@ -1097,6 +1097,10 @@ public class GncXmlHandler extends DefaultHandler {
                     transaction.setTime(lastRuntime);
                     transaction.setScheduledActionUID(scheduledAction.getUID());
                     mTransactionList.add(transaction);
+                    //autobalance splits are generated with the currency of the transactions as the GUID
+                    //so we add them to the mAutoBalanceSplits which will be updated to real GUIDs before saving
+                    List<Split> autoBalanceSplits = transaction.getSplits(transaction.getCurrencyCode());
+                    mAutoBalanceSplits.addAll(autoBalanceSplits);
                     scheduledAction.setExecutionCount(scheduledAction.getExecutionCount() + 1);
                     ++generatedTransactionCount;
                     break;

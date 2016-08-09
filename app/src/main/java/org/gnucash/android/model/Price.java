@@ -2,7 +2,6 @@ package org.gnucash.android.model;
 
 import org.gnucash.android.util.TimestampHelper;
 
-
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.sql.Timestamp;

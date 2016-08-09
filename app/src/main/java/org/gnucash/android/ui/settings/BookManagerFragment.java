@@ -43,9 +43,8 @@ import android.widget.TextView;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseCursorLoader;
-import org.gnucash.android.db.adapter.BooksDbAdapter;
-
 import org.gnucash.android.db.DatabaseSchema.BookEntry;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.util.PreferencesHelper;
@@ -201,6 +200,7 @@ public class BookManagerFragment extends ListFragment implements
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 BooksDbAdapter.getInstance().deleteRecord(bookUID);
+                                mContext.deleteDatabase(bookUID);
                                 refresh();
                             }
                         });

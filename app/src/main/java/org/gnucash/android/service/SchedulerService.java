@@ -51,20 +51,32 @@ public class SchedulerService extends IntentService {
     public static final String LOG_TAG = "SchedulerService";
 
     /**
-     * Creates an IntentService
-     *
+     * Wake lock for keeping the CPU on while export is in progress
      */
+    PowerManager.WakeLock mWakeLock;
+
     public SchedulerService() {
         super(LOG_TAG);
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        mWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, LOG_TAG);
+        mWakeLock.acquire();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mWakeLock.isHeld())
+            mWakeLock.release(); //whenever this service is destroyed, release the lock
+    }
+
+    @Override
     protected void onHandleIntent(Intent intent) {
         Log.i(LOG_TAG, "Starting scheduled action service");
-        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                LOG_TAG);
-        wakeLock.acquire();
 
         ScheduledActionDbAdapter scheduledActionDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
         List<ScheduledAction> scheduledActions = scheduledActionDbAdapter.getAllEnabledScheduledActions();
@@ -87,8 +99,6 @@ public class SchedulerService extends IntentService {
         }
 
         Log.i(LOG_TAG, "Completed service @ " + SystemClock.elapsedRealtime());
-
-        wakeLock.release();
     }
 
     /**
