@@ -273,14 +273,16 @@ public class ExportFormFragment extends Fragment implements
 		exportParameters.setExportTarget(mExportTarget);
 		exportParameters.setDeleteTransactionsAfterExport(mDeleteAllCheckBox.isChecked());
 
-		ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.BACKUP);
-		scheduledAction.setRecurrence(RecurrenceParser.parse(mEventRecurrence));
-		scheduledAction.setTag(exportParameters.toCsv());
-		scheduledAction.setActionUID(BaseModel.generateUID());
-		ScheduledActionDbAdapter.getInstance().addRecord(scheduledAction, DatabaseAdapter.UpdateMethod.insert);
-
 		Log.i(TAG, "Commencing async export of transactions");
 		new ExportAsyncTask(getActivity()).execute(exportParameters);
+
+		if (mRecurrenceRule != null) {
+			ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.BACKUP);
+			scheduledAction.setRecurrence(RecurrenceParser.parse(mEventRecurrence));
+			scheduledAction.setTag(exportParameters.toCsv());
+			scheduledAction.setActionUID(BaseModel.generateUID());
+			ScheduledActionDbAdapter.getInstance().addRecord(scheduledAction, DatabaseAdapter.UpdateMethod.insert);
+		}
 
 		int position = mDestinationSpinner.getSelectedItemPosition();
 		PreferenceManager.getDefaultSharedPreferences(getActivity())
@@ -292,6 +294,9 @@ public class ExportFormFragment extends Fragment implements
 		//getActivity().finish();
 	}
 
+	/**
+	 * Bind views to actions when initializing the export form
+	 */
 	private void bindViewListeners(){
 		// export destination bindings
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),

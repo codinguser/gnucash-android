@@ -15,6 +15,8 @@
  */
 package org.gnucash.android.model;
 
+import android.support.annotation.NonNull;
+
 import org.joda.time.LocalDate;
 
 import java.sql.Timestamp;
@@ -430,7 +432,7 @@ public class ScheduledAction extends BaseModel{
      * <p>This also sets the start period of the recurrence object, if there is one</p>
      * @param recurrence {@link Recurrence} object
      */
-    public void setRecurrence(Recurrence recurrence) {
+    public void setRecurrence(@NonNull Recurrence recurrence) {
         this.mRecurrence = recurrence;
         //if we were parsing XML and parsed the start and end date from the scheduled action first,
         //then use those over the values which might be gotten from the recurrence
