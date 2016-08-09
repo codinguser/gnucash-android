@@ -19,8 +19,8 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -32,14 +32,11 @@ import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.util.TaskDelegate;
 
-import java.io.File;
 import java.io.InputStream;
 
 /**
@@ -121,6 +118,12 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
 
             cursor.close();
         }
+
+        //set the preferences to their default values
+        mContext.getSharedPreferences(bookUID, Context.MODE_PRIVATE)
+                .edit()
+                .putBoolean(mContext.getString(R.string.key_use_double_entry), true)
+                .apply();
 
         ((GnuCashApplication)mContext.getApplication()).loadBook(bookUID);
 

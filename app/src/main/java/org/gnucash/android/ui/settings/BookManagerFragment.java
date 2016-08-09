@@ -200,6 +200,7 @@ public class BookManagerFragment extends ListFragment implements
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 BooksDbAdapter.getInstance().deleteRecord(bookUID);
+                                mContext.deleteDatabase(bookUID);
                                 refresh();
                             }
                         });
