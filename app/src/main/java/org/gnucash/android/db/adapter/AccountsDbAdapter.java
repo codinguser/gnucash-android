@@ -78,6 +78,11 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     private final TransactionsDbAdapter mTransactionsAdapter;
 
     /**
+     * Commodities database adapter for commodity manipulation
+     */
+    private final CommoditiesDbAdapter mCommoditiesDbAdapter;
+
+    /**
      * Overloaded constructor. Creates an adapter for an already open database
      * @param db SQliteDatabase instance
      */
@@ -98,6 +103,35 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
                 AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID
         });
         mTransactionsAdapter = transactionsDbAdapter;
+        mCommoditiesDbAdapter = new CommoditiesDbAdapter(db);
+    }
+
+    /**
+     * Convenience overloaded constructor. 
+     * This is used when an AccountsDbAdapter object is needed quickly. Otherwise, the other 
+     * constructor {@link #AccountsDbAdapter(SQLiteDatabase, TransactionsDbAdapter)}
+     * should be used whenever possible
+     * @param db Database to create an adapter for
+     */
+    public AccountsDbAdapter(SQLiteDatabase db){
+        super(db, AccountEntry.TABLE_NAME, new String[]{
+                AccountEntry.COLUMN_NAME         ,
+                AccountEntry.COLUMN_DESCRIPTION  ,
+                AccountEntry.COLUMN_TYPE         ,
+                AccountEntry.COLUMN_CURRENCY     ,
+                AccountEntry.COLUMN_COLOR_CODE   ,
+                AccountEntry.COLUMN_FAVORITE     ,
+                AccountEntry.COLUMN_FULL_NAME    ,
+                AccountEntry.COLUMN_PLACEHOLDER  ,
+                AccountEntry.COLUMN_CREATED_AT   ,
+                AccountEntry.COLUMN_HIDDEN       ,
+                AccountEntry.COLUMN_COMMODITY_UID,
+                AccountEntry.COLUMN_PARENT_ACCOUNT_UID,
+                AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID
+        });
+
+        mTransactionsAdapter = new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
+        mCommoditiesDbAdapter = new CommoditiesDbAdapter(db);
     }
 
     /**
@@ -407,7 +441,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         account.setParentUID(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_PARENT_ACCOUNT_UID)));
         account.setAccountType(AccountType.valueOf(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_TYPE))));
         Currency currency = Currency.getInstance(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_CURRENCY)));
-        account.setCommodity(CommoditiesDbAdapter.getInstance().getCommodity(currency.getCurrencyCode()));
+        account.setCommodity(mCommoditiesDbAdapter.getCommodity(currency.getCurrencyCode()));
         account.setPlaceHolderFlag(c.getInt(c.getColumnIndexOrThrow(AccountEntry.COLUMN_PLACEHOLDER)) == 1);
         account.setDefaultTransferAccountUID(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID)));
         String color = c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_COLOR_CODE));
@@ -552,7 +586,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      */
     public String getOrCreateImbalanceAccountUID(Currency currency){
         String imbalanceAccountName = getImbalanceAccountName(currency);
-        Commodity commodity = CommoditiesDbAdapter.getInstance().getCommodity(currency.getCurrencyCode());
+        Commodity commodity = mCommoditiesDbAdapter.getCommodity(currency.getCurrencyCode());
         String uid = findAccountUidByFullName(imbalanceAccountName);
         if (uid == null){
             Account account = new Account(imbalanceAccountName, commodity);
@@ -755,7 +789,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         String currencyCode = GnuCashApplication.getDefaultCurrencyCode();
 
         Log.d(LOG_TAG, "all account list : " + accountUidList.size());
-        SplitsDbAdapter splitsDbAdapter = SplitsDbAdapter.getInstance();
+        SplitsDbAdapter splitsDbAdapter = mTransactionsAdapter.getSplitDbAdapter();
 
         return (startTimestamp == -1 && endTimestamp == -1)
                 ? splitsDbAdapter.computeSplitBalance(accountUidList, currencyCode, hasDebitNormalBalance)
@@ -788,7 +822,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         accountsList.add(0, accountUID);
 
         Log.d(LOG_TAG, "all account list : " + accountsList.size());
-        SplitsDbAdapter splitsDbAdapter = SplitsDbAdapter.getInstance();
+        SplitsDbAdapter splitsDbAdapter = mTransactionsAdapter.getSplitDbAdapter();
         return (startTimestamp == -1 && endTimestamp == -1)
                 ? splitsDbAdapter.computeSplitBalance(accountsList, currencyCode, hasDebitNormalBalance)
                 : splitsDbAdapter.computeSplitBalance(accountsList, currencyCode, hasDebitNormalBalance, startTimestamp, endTimestamp);
@@ -812,7 +846,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
 
         boolean hasDebitNormalBalance = getAccountType(accountUIDList.get(0)).hasDebitNormalBalance();
 
-        SplitsDbAdapter splitsDbAdapter = SplitsDbAdapter.getInstance();
+        SplitsDbAdapter splitsDbAdapter = mTransactionsAdapter.getSplitDbAdapter();
         Money splitSum = (startTimestamp == -1 && endTimestamp == -1)
                 ? splitsDbAdapter.computeSplitBalance(accountUIDList, currencyCode, hasDebitNormalBalance)
                 : splitsDbAdapter.computeSplitBalance(accountUIDList, currencyCode, hasDebitNormalBalance, startTimestamp, endTimestamp);

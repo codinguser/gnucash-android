@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -58,6 +59,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.DatabaseAdapter;
+import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.export.qif.QifExporter;
@@ -93,6 +95,8 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
     private ProgressDialog mProgressDialog;
 
+    private SQLiteDatabase mDb;
+
     /**
      * Log tag
      */
@@ -108,8 +112,9 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
     private Exporter mExporter;
 
-    public ExportAsyncTask(Context context){
+    public ExportAsyncTask(Context context, SQLiteDatabase db){
         this.mContext = context;
+        this.mDb = db;
     }
 
     @Override
@@ -440,11 +445,11 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         GncXmlExporter.createBackup(); //create backup before deleting everything
         List<Transaction> openingBalances = new ArrayList<>();
         boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
-        if (preserveOpeningBalances) {
-            openingBalances = AccountsDbAdapter.getInstance().getAllOpeningBalanceTransactions();
-        }
 
-        TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
+        TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(mDb, new SplitsDbAdapter(mDb));
+        if (preserveOpeningBalances) {
+            openingBalances = new AccountsDbAdapter(mDb, transactionsDbAdapter).getAllOpeningBalanceTransactions();
+        }
         transactionsDbAdapter.deleteAllNonTemplateTransactions();
 
         if (preserveOpeningBalances) {

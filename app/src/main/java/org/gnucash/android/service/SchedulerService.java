@@ -19,23 +19,32 @@ package org.gnucash.android.service;
 import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.PowerManager;
 import android.os.SystemClock;
+import android.text.format.DateFormat;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.DatabaseAdapter;
+import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
+import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportAsyncTask;
 import org.gnucash.android.export.ExportParams;
+import org.gnucash.android.model.Book;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -50,37 +59,46 @@ public class SchedulerService extends IntentService {
 
     public static final String LOG_TAG = "SchedulerService";
 
-    /**
-     * Wake lock for keeping the CPU on while export is in progress
-     */
-    PowerManager.WakeLock mWakeLock;
-
     public SchedulerService() {
         super(LOG_TAG);
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        mWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, LOG_TAG);
-        mWakeLock.acquire();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mWakeLock.isHeld())
-            mWakeLock.release(); //whenever this service is destroyed, release the lock
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.i(LOG_TAG, "Starting scheduled action service");
 
-        ScheduledActionDbAdapter scheduledActionDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
-        List<ScheduledAction> scheduledActions = scheduledActionDbAdapter.getAllEnabledScheduledActions();
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, LOG_TAG);
+        wakeLock.acquire();
 
+        try {
+            BooksDbAdapter booksDbAdapter = BooksDbAdapter.getInstance();
+            List<Book> books = booksDbAdapter.getAllRecords();
+            for (Book book : books) {
+                DatabaseHelper dbHelper = new DatabaseHelper(GnuCashApplication.getAppContext(), book.getUID());
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
+                RecurrenceDbAdapter recurrenceDbAdapter = new RecurrenceDbAdapter(db);
+                ScheduledActionDbAdapter scheduledActionDbAdapter = new ScheduledActionDbAdapter(db, recurrenceDbAdapter);
+
+                List<ScheduledAction> scheduledActions = scheduledActionDbAdapter.getAllEnabledScheduledActions();
+                Log.i(LOG_TAG, String.format("Processing %d total scheduled actions for Book: %s",
+                        scheduledActions.size(), book.getDisplayName()));
+                processScheduledActions(scheduledActions, db);
+            }
+
+            Log.i(LOG_TAG, "Completed service @ " + java.text.DateFormat.getDateTimeInstance().format(new Date()));
+
+        } finally { //release the lock either way
+            wakeLock.release();
+        }
+
+    }
+
+    /**
+     * Process scheduled actions and execute any pending actions
+     * @param scheduledActions List of scheduled actions
+     */
+    private void processScheduledActions(List<ScheduledAction> scheduledActions, SQLiteDatabase db) {
         for (ScheduledAction scheduledAction : scheduledActions) {
             long endTime    = scheduledAction.getEndTime();
             long now        = System.currentTimeMillis();
@@ -93,25 +111,23 @@ public class SchedulerService extends IntentService {
                         && (nextRunTime <= now)  //one period has passed since last execution
                         && scheduledAction.getStartTime() <= now
                         && scheduledAction.isEnabled()) { //the start time has arrived
-                    executeScheduledEvent(scheduledAction);
+                    executeScheduledEvent(scheduledAction, db);
                 }
             } while (nextRunTime <= now && scheduledAction.getActionType() == ScheduledAction.ActionType.TRANSACTION);
         }
-
-        Log.i(LOG_TAG, "Completed service @ " + SystemClock.elapsedRealtime());
     }
 
     /**
      * Executes a scheduled event according to the specified parameters
      * @param scheduledAction ScheduledEvent to be executed
      */
-    private void executeScheduledEvent(ScheduledAction scheduledAction){
+    private void executeScheduledEvent(ScheduledAction scheduledAction, SQLiteDatabase db){
         Log.i(LOG_TAG, "Executing scheduled action: " + scheduledAction.toString());
         switch (scheduledAction.getActionType()){
             case TRANSACTION:
-                String eventUID = scheduledAction.getActionUID();
-                TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
-                Transaction trxnTemplate = transactionsDbAdapter.getRecord(eventUID);
+                String actionUID = scheduledAction.getActionUID();
+                TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
+                Transaction trxnTemplate = transactionsDbAdapter.getRecord(actionUID);
                 Transaction recurringTrxn = new Transaction(trxnTemplate, true);
 
                 //we may be executing scheduled action significantly after scheduled time (depending on when Android fires the alarm)
@@ -126,7 +142,7 @@ public class SchedulerService extends IntentService {
                 ExportParams params = ExportParams.parseCsv(scheduledAction.getTag());
                 try {
                     //wait for async task to finish before we proceed (we are holding a wake lock)
-                    new ExportAsyncTask(GnuCashApplication.getAppContext()).execute(params).get();
+                    new ExportAsyncTask(GnuCashApplication.getAppContext(), db).execute(params).get();
                 } catch (InterruptedException | ExecutionException e) {
                     //TODO: Create special log for scheduler service
                     Crashlytics.logException(e);
@@ -142,7 +158,7 @@ public class SchedulerService extends IntentService {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_LAST_RUN, lastRun);
         contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_EXECUTION_COUNT, executionCount);
-        ScheduledActionDbAdapter.getInstance().updateRecord(scheduledAction.getUID(), contentValues);
+        new ScheduledActionDbAdapter(db, new RecurrenceDbAdapter(db)).updateRecord(scheduledAction.getUID(), contentValues);
 
         scheduledAction.setLastRun(lastRun);
         scheduledAction.setExecutionCount(executionCount);

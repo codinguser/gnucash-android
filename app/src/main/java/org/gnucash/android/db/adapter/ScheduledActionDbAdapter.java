@@ -104,7 +104,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
     public long updateRecurrenceAttributes(ScheduledAction scheduledAction){
         //since we are updating, first fetch the existing recurrence UID and set it to the object
         //so that it will be updated and not a new one created
-        RecurrenceDbAdapter recurrenceDbAdapter = RecurrenceDbAdapter.getInstance();
+        RecurrenceDbAdapter recurrenceDbAdapter = new RecurrenceDbAdapter(mDb);
         String recurrenceUID = recurrenceDbAdapter.getAttribute(scheduledAction.getUID(), ScheduledActionEntry.COLUMN_RECURRENCE_UID);
 
         Recurrence recurrence = scheduledAction.getRecurrence();

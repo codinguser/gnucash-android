@@ -25,6 +25,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
@@ -217,6 +218,14 @@ public class GnuCashApplication extends Application{
     }
 
     /**
+     * Returns the currently active database in the application
+     * @return Currently active {@link SQLiteDatabase}
+     */
+    public static SQLiteDatabase getActiveDb(){
+        return mDbHelper.getWritableDatabase();
+    }
+
+    /**
      * Returns the application context
      * @return Application {@link Context} object
      */
@@ -329,16 +338,16 @@ public class GnuCashApplication extends Application{
     public static void startScheduledActionExecutionService(Context context){
         Intent alarmIntent = new Intent(context, SchedulerService.class);
         PendingIntent pendingIntent = PendingIntent.getService(context, 0, alarmIntent, PendingIntent.FLAG_NO_CREATE);
-        if (pendingIntent != null)
+
+        if (pendingIntent != null) //if service is already scheduled, just return
             return;
         else
             pendingIntent = PendingIntent.getService(context, 0, alarmIntent, 0);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP,
-                System.currentTimeMillis() + AlarmManager.INTERVAL_DAY,
-                AlarmManager.INTERVAL_HALF_DAY,
-                pendingIntent);
+        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                SystemClock.elapsedRealtime() + AlarmManager.INTERVAL_FIFTEEN_MINUTES,
+                AlarmManager.INTERVAL_HALF_DAY, pendingIntent);
 
         context.startService(alarmIntent); //run the service the first time
     }

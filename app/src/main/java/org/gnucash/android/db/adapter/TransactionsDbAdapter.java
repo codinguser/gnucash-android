@@ -58,6 +58,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
 
     private final SplitsDbAdapter mSplitsDbAdapter;
 
+    private final CommoditiesDbAdapter mCommoditiesDbAdapter;
+
     /**
      * Overloaded constructor. Creates adapter for already open db
      * @param db SQlite db instance
@@ -75,6 +77,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
                 TransactionEntry.COLUMN_TEMPLATE
         });
         mSplitsDbAdapter = splitsDbAdapter;
+        mCommoditiesDbAdapter = new CommoditiesDbAdapter(db);
     }
 
     /**
@@ -102,7 +105,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
         try {
             Split imbalanceSplit = transaction.createAutoBalanceSplit();
             if (imbalanceSplit != null){
-                String imbalanceAccountUID = AccountsDbAdapter.getInstance().getOrCreateImbalanceAccountUID(transaction.getCurrency());
+                String imbalanceAccountUID = new AccountsDbAdapter(mDb, this).getOrCreateImbalanceAccountUID(transaction.getCurrency());
                 imbalanceSplit.setAccountUID(imbalanceAccountUID);
             }
             super.addRecord(transaction, updateMethod);
@@ -183,7 +186,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
 
         Commodity commodity = transaction.getCommodity();
         if (commodity == null)
-            commodity = CommoditiesDbAdapter.getInstance().getCommodity(transaction.getCurrencyCode());
+            commodity = mCommoditiesDbAdapter.getCommodity(transaction.getCurrencyCode());
 
         stmt.bindString(6, commodity.getUID());
         stmt.bindString(7, TimestampHelper.getUtcStringFromTimestamp(transaction.getCreatedTimestamp()));
@@ -289,17 +292,6 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
         return queryBuilder.query(mDb, projectionIn, null, null, null, null, sortOrder);
     }
 
-	/**
-	 * Returns a cursor to a set of all transactions for the account with ID <code>accountID</code>
-	 * or for which this account is the origin account in a double entry
-	 * @param accountID ID of the account whose transactions are to be retrieved
-	 * @return Cursor holding set of transactions for particular account
-	 */
-	public Cursor fetchAllTransactionsForAccount(long accountID){
-        String accountUID = AccountsDbAdapter.getInstance().getUID(accountID);
-		return fetchAllTransactionsForAccount(accountUID);
-	}
-	
 	/**
 	 * Returns list of all transactions for account with UID <code>accountUID</code>
 	 * @param accountUID UID of account whose transactions are to be retrieved
@@ -416,24 +408,12 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
 		transaction.setTemplate(c.getInt(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_TEMPLATE)) == 1);
         String currencyCode = c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_CURRENCY));
         transaction.setCurrencyCode(currencyCode);
-        transaction.setCommodity(CommoditiesDbAdapter.getInstance().getCommodity(currencyCode));
+        transaction.setCommodity(mCommoditiesDbAdapter.getCommodity(currencyCode));
         transaction.setScheduledActionUID(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_SCHEDX_ACTION_UID)));
         long transactionID = c.getLong(c.getColumnIndexOrThrow(TransactionEntry._ID));
         transaction.setSplits(mSplitsDbAdapter.getSplitsForTransaction(transactionID));
 
 		return transaction;
-	}
-
-	/**
-	 * Returns the currency code (ISO 4217) used by the account with id <code>accountId</code>
-	 * If you do not have the database record Id, you can call {@link #getID(String)}  instead.
-	 * @param accountId Database record id of the account 
-	 * @return Currency code of the account with Id <code>accountId</code>
-	 * @see #getAccountCurrencyCode(String)
-	 */
-	public String getAccountCurrencyCode(long accountId){
-		String accountUID = AccountsDbAdapter.getInstance().getUID(accountId);
-		return getAccountCurrencyCode(accountUID);
 	}
 
     /**
@@ -467,20 +447,6 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
         }
         mSplitsDbAdapter.bulkAddRecords(splits, UpdateMethod.update);
         return splits.size();
-	}
-	
-	/**
-	 * Returns the number of transactions belonging to account with id <code>accountId</code>
-	 * @param accountId Long ID of account
-	 * @return Number of transactions assigned to account with id <code>accountId</code>
-	 */
-	public int getTransactionsCount(long accountId){
-		Cursor cursor = fetchAllTransactionsForAccount(accountId);
-        try {
-            return cursor.getCount();
-        } finally {
-            cursor.close();
-		}
 	}
 
     /**

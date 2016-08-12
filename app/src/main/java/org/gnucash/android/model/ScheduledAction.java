@@ -80,7 +80,6 @@ public class ScheduledAction extends BaseModel{
 
     /**
      * Flag for whether the scheduled transaction should be auto-created
-     * TODO: Add this flag to the database. At the moment we always treat it as true
      */
     private boolean mAutoCreate = true;
     private boolean mAutoNotify = false;
