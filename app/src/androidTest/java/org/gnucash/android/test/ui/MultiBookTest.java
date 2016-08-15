@@ -71,6 +71,17 @@ public class MultiBookTest {
         Intents.intended(hasComponent(PreferenceActivity.class.getName()));
     }
 
+    public void testLoadBookFromBookManager(){
+        Book book = new Book();
+        book.setDisplayName("Launch Codes");
+        BooksDbAdapter.getInstance().addRecord(book);
+
+        shouldOpenBookManager();
+        onView(withText(book.getDisplayName())).perform(click());
+
+        assertThat(BooksDbAdapter.getInstance().getActiveBookUID()).isEqualTo(book.getUID());
+    }
+
     @Test
     public void creatingNewAccounts_shouldCreatedNewBook(){
         long booksCount = mBooksDbAdapter.getRecordsCount();

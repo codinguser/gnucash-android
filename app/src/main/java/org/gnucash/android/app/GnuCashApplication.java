@@ -132,7 +132,7 @@ public class GnuCashApplication extends Application{
 
         setDefaultCurrencyCode(getDefaultCurrencyCode());
 
-        if (BuildConfig.DEBUG)
+        if (BuildConfig.DEBUG && !isRoboUnitTest())
             setUpRemoteDebuggingFromChrome();
     }
 
@@ -239,6 +239,14 @@ public class GnuCashApplication extends Application{
      */
     public static boolean isCrashlyticsEnabled(){
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.key_enable_crashlytics), false);
+    }
+
+    /**
+     * Returns {@code true} if the app is being run by robolectric
+     * @return {@code true} if in unit testing, {@code false} otherwise
+     */
+    public static boolean isRoboUnitTest(){
+        return "robolectric".equals(Build.FINGERPRINT);
     }
 
     /**

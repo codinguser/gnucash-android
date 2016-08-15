@@ -356,7 +356,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
     }
 
     /**
-     * Return number of transactions in the database which are non recurring
+     * Return number of transactions in the database (excluding templates)
      * @return Number of transactions
      */
     public long getRecordsCount() {
@@ -371,6 +371,12 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
         }
     }
 
+    /**
+     * Returns the number of transactions in the database which fulfill the conditions
+     * @param where SQL WHERE clause without the "WHERE" itself
+     * @param whereArgs Arguments to substitute question marks for
+     * @return Number of records in the databases
+     */
     public long getRecordsCount(@Nullable String where, @Nullable String[] whereArgs) {
         Cursor cursor = mDb.query(true, TransactionEntry.TABLE_NAME + " , trans_extra_info ON "
                         + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID

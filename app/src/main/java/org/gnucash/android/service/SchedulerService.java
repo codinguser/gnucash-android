@@ -21,8 +21,6 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.PowerManager;
-import android.os.SystemClock;
-import android.text.format.DateFormat;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -41,9 +39,8 @@ import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.model.Book;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
-import org.joda.time.format.DateTimeFormatter;
 
-import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -98,22 +95,21 @@ public class SchedulerService extends IntentService {
      * Process scheduled actions and execute any pending actions
      * @param scheduledActions List of scheduled actions
      */
-    private void processScheduledActions(List<ScheduledAction> scheduledActions, SQLiteDatabase db) {
+    //made public static for testing. Do not call these methods directly
+    public static void processScheduledActions(List<ScheduledAction> scheduledActions, SQLiteDatabase db) {
         for (ScheduledAction scheduledAction : scheduledActions) {
-            long endTime    = scheduledAction.getEndTime();
+
             long now        = System.currentTimeMillis();
-            long nextRunTime;
-            do { //loop so that we can add transactions which were missed while device was off
-                nextRunTime = scheduledAction.computeNextRunTime();
-                if (((endTime > 0 && now < endTime) //if and endTime is set and we did not reach it yet
-                        || (scheduledAction.getExecutionCount() < scheduledAction.getTotalFrequency()) //or the number of scheduled runs
-                        || (endTime == 0 && scheduledAction.getTotalFrequency() == 0)) //or the action is to run forever
-                        && (nextRunTime <= now)  //one period has passed since last execution
-                        && scheduledAction.getStartTime() <= now
-                        && scheduledAction.isEnabled()) { //the start time has arrived
-                    executeScheduledEvent(scheduledAction, db);
-                }
-            } while (nextRunTime <= now && scheduledAction.getActionType() == ScheduledAction.ActionType.TRANSACTION);
+            int totalPlannedExecutions = scheduledAction.getTotalFrequency();
+            int executionCount = scheduledAction.getExecutionCount();
+
+            if (scheduledAction.getStartTime() > now    //if schedule begins in the future
+                    || !scheduledAction.isEnabled()     // of if schedule is disabled
+                    || (totalPlannedExecutions > 0 && executionCount >= totalPlannedExecutions)) { //limit was set and we reached or exceeded it
+                Log.i(LOG_TAG, "Skipping scheduled action: " + scheduledAction.toString());
+                continue;
+            }
+            executeScheduledEvent(scheduledAction, db);
         }
     }
 
@@ -121,21 +117,41 @@ public class SchedulerService extends IntentService {
      * Executes a scheduled event according to the specified parameters
      * @param scheduledAction ScheduledEvent to be executed
      */
-    private void executeScheduledEvent(ScheduledAction scheduledAction, SQLiteDatabase db){
+    //made public static for testing. Do not call directly
+    public static void executeScheduledEvent(ScheduledAction scheduledAction, SQLiteDatabase db){
         Log.i(LOG_TAG, "Executing scheduled action: " + scheduledAction.toString());
+        int executionCount = scheduledAction.getExecutionCount();
+
         switch (scheduledAction.getActionType()){
             case TRANSACTION:
                 String actionUID = scheduledAction.getActionUID();
                 TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
                 Transaction trxnTemplate = transactionsDbAdapter.getRecord(actionUID);
-                Transaction recurringTrxn = new Transaction(trxnTemplate, true);
+
+                long now = System.currentTimeMillis();
+                //if there is an end time in the past, we execute all schedules up to the end time.
+                //if the end time is in the future, we execute all schedules until now (current time)
+                //if there is no end time, we execute all schedules until now
+                long endTime = scheduledAction.getEndTime() > 0 ? Math.min(scheduledAction.getEndTime(), now) : now;
+                int totalPlannedExecutions = scheduledAction.getTotalFrequency();
+                List<Transaction> transactions = new ArrayList<>();
 
                 //we may be executing scheduled action significantly after scheduled time (depending on when Android fires the alarm)
                 //so compute the actual transaction time from pre-known values
-                long transactionTime = scheduledAction.computeNextRunTime(); //default
-                recurringTrxn.setTime(transactionTime);
-                recurringTrxn.setCreatedTimestamp(new Timestamp(transactionTime));
-                transactionsDbAdapter.addRecord(recurringTrxn, DatabaseAdapter.UpdateMethod.insert);
+                long transactionTime = scheduledAction.computeNextScheduledExecutionTime();
+                while (transactionTime <= endTime) {
+                    Transaction recurringTrxn = new Transaction(trxnTemplate, true);
+                    recurringTrxn.setTime(transactionTime);
+                    transactions.add(recurringTrxn);
+                    recurringTrxn.setScheduledActionUID(scheduledAction.getUID());
+                    scheduledAction.setExecutionCount(++executionCount);
+
+                    if (totalPlannedExecutions > 0 && executionCount >= totalPlannedExecutions)
+                        break; //if we hit the total planned executions set, then abort
+                    transactionTime = scheduledAction.computeNextScheduledExecutionTime();
+                }
+
+                transactionsDbAdapter.bulkAddRecords(transactions, DatabaseAdapter.UpdateMethod.insert);
                 break;
 
             case BACKUP:
@@ -143,8 +159,8 @@ public class SchedulerService extends IntentService {
                 try {
                     //wait for async task to finish before we proceed (we are holding a wake lock)
                     new ExportAsyncTask(GnuCashApplication.getAppContext(), db).execute(params).get();
+                    scheduledAction.setExecutionCount(++executionCount);
                 } catch (InterruptedException | ExecutionException e) {
-                    //TODO: Create special log for scheduler service
                     Crashlytics.logException(e);
                     Log.e(LOG_TAG, e.getMessage());
                     return; //return immediately, do not update last run time of event
@@ -152,15 +168,16 @@ public class SchedulerService extends IntentService {
                 break;
         }
 
-        long lastRun = scheduledAction.computeNextRunTime();
-        int executionCount = scheduledAction.getExecutionCount() + 1;
+        //the last run time is computed instead of just using "now" so that if the more than
+        // one period has been skipped, all intermediate transactions can be created
+
         //update the last run time and execution count
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_LAST_RUN, lastRun);
+        contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_LAST_RUN, System.currentTimeMillis());
         contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_EXECUTION_COUNT, executionCount);
         new ScheduledActionDbAdapter(db, new RecurrenceDbAdapter(db)).updateRecord(scheduledAction.getUID(), contentValues);
 
-        scheduledAction.setLastRun(lastRun);
+        //set the values in the object because they will be checked for the next iteration in the calling loop
         scheduledAction.setExecutionCount(executionCount);
     }
 }
