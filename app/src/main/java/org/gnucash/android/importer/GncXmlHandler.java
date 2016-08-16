@@ -729,7 +729,7 @@ public class GncXmlHandler extends DefaultHandler {
                 break;
             //todo: export auto_notify, advance_create, advance_notify
             case GncXmlHelper.TAG_SX_NUM_OCCUR:
-                mScheduledAction.setTotalFrequency(Integer.parseInt(characterString));
+                mScheduledAction.setTotalPlannedExecutionCount(Integer.parseInt(characterString));
                 break;
             case GncXmlHelper.TAG_RX_MULT:
                 mRecurrenceMultiplier = Integer.parseInt(characterString);
@@ -1078,7 +1078,7 @@ public class GncXmlHandler extends DefaultHandler {
         if (scheduledAction.getActionType() != ScheduledAction.ActionType.TRANSACTION
                 || !scheduledAction.isEnabled() || !scheduledAction.shouldAutoCreate()
                 || (scheduledAction.getEndTime() > 0 && scheduledAction.getEndTime() > System.currentTimeMillis())
-                || (scheduledAction.getTotalFrequency() > 0 && scheduledAction.getExecutionCount() >= scheduledAction.getTotalFrequency())){
+                || (scheduledAction.getTotalPlannedExecutionCount() > 0 && scheduledAction.getExecutionCount() >= scheduledAction.getTotalPlannedExecutionCount())){
             return 0;
         }
 

@@ -52,7 +52,7 @@ import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.service.SchedulerService;
+import org.gnucash.android.service.ScheduledActionService;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.settings.PreferenceActivity;
 
@@ -127,9 +127,6 @@ public class GnuCashApplication extends Application{
         mBooksDbAdapter = new BooksDbAdapter(bookDbHelper.getWritableDatabase());
 
         initDatabaseAdapters();
-
-        //TODO: migrate preferences from defaultShared to book
-
         setDefaultCurrencyCode(getDefaultCurrencyCode());
 
         if (BuildConfig.DEBUG && !isRoboUnitTest())
@@ -344,7 +341,7 @@ public class GnuCashApplication extends Application{
      * @param context Application context
      */
     public static void startScheduledActionExecutionService(Context context){
-        Intent alarmIntent = new Intent(context, SchedulerService.class);
+        Intent alarmIntent = new Intent(context, ScheduledActionService.class);
         PendingIntent pendingIntent = PendingIntent.getService(context, 0, alarmIntent, PendingIntent.FLAG_NO_CREATE);
 
         if (pendingIntent != null) //if service is already scheduled, just return

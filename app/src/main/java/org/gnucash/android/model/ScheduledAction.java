@@ -71,7 +71,7 @@ public class ScheduledAction extends BaseModel{
     private ActionType mActionType;
 
     /**
-     * Number of times this event is to be executed
+     * Number of times this event is planned to be executed
      */
     private int mTotalFrequency = 0;
 
@@ -297,16 +297,16 @@ public class ScheduledAction extends BaseModel{
      * Returns the total number of planned occurrences of this scheduled action.
      * @return Total number of planned occurrences of this action
      */
-    public int getTotalFrequency(){
+    public int getTotalPlannedExecutionCount(){
         return mTotalFrequency;
     }
 
     /**
      * Sets the number of occurences of this action
-     * @param occurencesCount Number of occurences
+     * @param plannedExecutions Number of occurences
      */
-    public void setTotalFrequency(int occurencesCount){
-        this.mTotalFrequency = occurencesCount;
+    public void setTotalPlannedExecutionCount(int plannedExecutions){
+        this.mTotalFrequency = plannedExecutions;
     }
 
     /**

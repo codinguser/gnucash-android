@@ -116,7 +116,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
         contentValues.put(ScheduledActionEntry.COLUMN_START_TIME, scheduledAction.getStartTime());
         contentValues.put(ScheduledActionEntry.COLUMN_END_TIME,  scheduledAction.getEndTime());
         contentValues.put(ScheduledActionEntry.COLUMN_TAG,       scheduledAction.getTag());
-        contentValues.put(ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY, scheduledAction.getTotalFrequency());
+        contentValues.put(ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY, scheduledAction.getTotalPlannedExecutionCount());
 
         Log.d(LOG_TAG, "Updating scheduled event recurrence attributes");
         String where = ScheduledActionEntry.COLUMN_UID + "=?";
@@ -138,7 +138,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
             stmt.bindNull(8);
         else
             stmt.bindString(8, schedxAction.getTag());
-        stmt.bindString(9, Integer.toString(schedxAction.getTotalFrequency()));
+        stmt.bindString(9, Integer.toString(schedxAction.getTotalPlannedExecutionCount()));
         stmt.bindString(10, schedxAction.getRecurrence().getUID());
         stmt.bindLong(11,   schedxAction.shouldAutoCreate() ? 1 : 0);
         stmt.bindLong(12,   schedxAction.shouldAutoNotify() ? 1 : 0);
@@ -182,7 +182,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
         event.setLastRun(lastRun);
         event.setTag(tag);
         event.setEnabled(enabled);
-        event.setTotalFrequency(numOccurrences);
+        event.setTotalPlannedExecutionCount(numOccurrences);
         event.setExecutionCount(execCount);
         event.setAutoCreate(autoCreate == 1);
         event.setAutoNotify(autoNotify == 1);

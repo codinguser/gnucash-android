@@ -52,11 +52,11 @@ import java.util.concurrent.ExecutionException;
  * Scheduled runs of the service should be achieved using an {@link android.app.AlarmManager}</p>
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class SchedulerService extends IntentService {
+public class ScheduledActionService extends IntentService {
 
-    public static final String LOG_TAG = "SchedulerService";
+    public static final String LOG_TAG = "ScheduledActionService";
 
-    public SchedulerService() {
+    public ScheduledActionService() {
         super(LOG_TAG);
     }
 
@@ -100,7 +100,7 @@ public class SchedulerService extends IntentService {
         for (ScheduledAction scheduledAction : scheduledActions) {
 
             long now        = System.currentTimeMillis();
-            int totalPlannedExecutions = scheduledAction.getTotalFrequency();
+            int totalPlannedExecutions = scheduledAction.getTotalPlannedExecutionCount();
             int executionCount = scheduledAction.getExecutionCount();
 
             if (scheduledAction.getStartTime() > now    //if schedule begins in the future
@@ -133,7 +133,7 @@ public class SchedulerService extends IntentService {
                 //if the end time is in the future, we execute all schedules until now (current time)
                 //if there is no end time, we execute all schedules until now
                 long endTime = scheduledAction.getEndTime() > 0 ? Math.min(scheduledAction.getEndTime(), now) : now;
-                int totalPlannedExecutions = scheduledAction.getTotalFrequency();
+                int totalPlannedExecutions = scheduledAction.getTotalPlannedExecutionCount();
                 List<Transaction> transactions = new ArrayList<>();
 
                 //we may be executing scheduled action significantly after scheduled time (depending on when Android fires the alarm)

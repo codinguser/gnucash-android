@@ -522,7 +522,6 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      * @throws IOException if the file could not be moved.
      */
     public void moveFile(String src, String dst) throws IOException {
-        //TODO: Make this asynchronous at some time, t in the future.
         File srcFile = new File(src);
         File dstFile = new File(dst);
         FileChannel inChannel = new FileInputStream(srcFile).getChannel();

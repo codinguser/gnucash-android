@@ -37,7 +37,7 @@ import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.service.SchedulerService;
+import org.gnucash.android.service.ScheduledActionService;
 import org.gnucash.android.test.unit.testutil.GnucashTestRunner;
 import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
 import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
@@ -134,7 +134,7 @@ public class ScheduledActionServiceTest {
         TransactionsDbAdapter trxnAdapter = TransactionsDbAdapter.getInstance();
 
         assertThat(trxnAdapter.getRecordsCount()).isZero();
-        SchedulerService.processScheduledActions(actions, mDb);
+        ScheduledActionService.processScheduledActions(actions, mDb);
         assertThat(trxnAdapter.getRecordsCount()).isZero();
     }
 
@@ -152,7 +152,7 @@ public class ScheduledActionServiceTest {
         TransactionsDbAdapter trxnAdapter = TransactionsDbAdapter.getInstance();
 
         assertThat(trxnAdapter.getRecordsCount()).isZero();
-        SchedulerService.processScheduledActions(actions, mDb);
+        ScheduledActionService.processScheduledActions(actions, mDb);
         assertThat(trxnAdapter.getRecordsCount()).isZero();
     }
 
@@ -166,7 +166,7 @@ public class ScheduledActionServiceTest {
         scheduledAction.setStartTime(new DateTime(2015, 5, 31, 14, 0).getMillis());
         scheduledAction.setEnabled(true);
         scheduledAction.setRecurrence(new Recurrence(PeriodType.WEEK));
-        scheduledAction.setTotalFrequency(4);
+        scheduledAction.setTotalPlannedExecutionCount(4);
         scheduledAction.setExecutionCount(4);
 
         List<ScheduledAction> actions = new ArrayList<>();
@@ -174,7 +174,7 @@ public class ScheduledActionServiceTest {
 
         TransactionsDbAdapter trxnAdapter = TransactionsDbAdapter.getInstance();
         assertThat(trxnAdapter.getRecordsCount()).isZero();
-        SchedulerService.processScheduledActions(actions, mDb);
+        ScheduledActionService.processScheduledActions(actions, mDb);
         assertThat(trxnAdapter.getRecordsCount()).isZero();
     }
 
@@ -196,7 +196,7 @@ public class ScheduledActionServiceTest {
 
         List<ScheduledAction> actions = new ArrayList<>();
         actions.add(scheduledAction);
-        SchedulerService.processScheduledActions(actions, mDb);
+        ScheduledActionService.processScheduledActions(actions, mDb);
 
         int weeks = Weeks.weeksBetween(startTime, new DateTime(2016, 8, 29, 10, 0)).getWeeks();
         int expectedTransactionCount = weeks/2;
@@ -219,7 +219,7 @@ public class ScheduledActionServiceTest {
 
         List<ScheduledAction> actions = new ArrayList<>();
         actions.add(scheduledAction);
-        SchedulerService.processScheduledActions(actions, mDb);
+        ScheduledActionService.processScheduledActions(actions, mDb);
 
         int weeks = Weeks.weeksBetween(startTime, new DateTime(2016, 8, 29, 10, 0)).getWeeks();
         int expectedTransactionCount = weeks/2; //multiplier from the PeriodType
@@ -246,7 +246,7 @@ public class ScheduledActionServiceTest {
 
         List<ScheduledAction> actions = new ArrayList<>();
         actions.add(scheduledAction);
-        SchedulerService.processScheduledActions(actions, mDb);
+        ScheduledActionService.processScheduledActions(actions, mDb);
 
         int expectedCount = 5;
         assertThat(scheduledAction.getExecutionCount()).isEqualTo(expectedCount);
@@ -268,7 +268,7 @@ public class ScheduledActionServiceTest {
 
         List<ScheduledAction> actions = new ArrayList<>();
         actions.add(scheduledAction);
-        SchedulerService.processScheduledActions(actions, mDb);
+        ScheduledActionService.processScheduledActions(actions, mDb);
     }
 
     //// FIXME: 16.08.2016 Cannot find the file after export. But the export task is called and run
@@ -288,7 +288,7 @@ public class ScheduledActionServiceTest {
 
         List<ScheduledAction> actions = new ArrayList<>();
         actions.add(scheduledBackup);
-        SchedulerService.processScheduledActions(actions, mDb);
+        ScheduledActionService.processScheduledActions(actions, mDb);
 
         File[] backupFiles = backupFolder.listFiles();
         assertThat(backupFiles).hasSize(1);
