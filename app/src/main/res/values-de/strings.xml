@@ -326,7 +326,7 @@
     <item quantity="one">Jährlich</item>
     <item quantity="other">Alle %d Jahre</item>
   </plurals>
-  <string name="title_enable_crashlytics">Absturzprotokolloerung aktivieren</string>
+  <string name="title_enable_crashlytics">Absturzprotokollierung aktivieren</string>
   <string name="msg_enable_crashlytics">Enable to send information about malfunctions to the developers for improvement (recommended).
 No user-identifiable information will be collected as part of this process!</string>
   <string name="label_export_format"> Format</string>
