@@ -254,7 +254,7 @@ public class BudgetDetailFragment extends Fragment implements Refreshable {
             //todo: refactor getNumberOfPeriods into budget
             int budgetPeriods = (int) mBudget.getNumberOfPeriods();
             budgetPeriods = budgetPeriods == 0 ? 12 : budgetPeriods;
-            int periods = mBudget.getRecurrence().getNumberOfPeriods(budgetPeriods);
+            int periods = mBudget.getRecurrence().getNumberOfPeriods(budgetPeriods); //// FIXME: 15.08.2016 why do we need number of periods
 
             for (int periodNum = 1; periodNum <= periods; periodNum++) {
                 BigDecimal amount = accountsDbAdapter.getAccountBalance(budgetAmount.getAccountUID(),

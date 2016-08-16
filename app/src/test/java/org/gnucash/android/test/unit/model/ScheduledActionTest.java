@@ -19,6 +19,7 @@ package org.gnucash.android.test.unit.model;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
+import org.joda.time.DateTime;
 import org.junit.Test;
 
 import java.sql.Timestamp;
@@ -87,6 +88,46 @@ public class ScheduledActionTest {
         scheduledAction.setRecurrence(recurrence);
 
         assertThat(scheduledAction.getEndTime()).isEqualTo(endTime);
+    }
+
+    /**
+     * Checks that scheduled actions accurately compute the next run time based on the start date
+     * and the last time the action was run
+     */
+    @Test
+    public void testComputingNextScheduledExecution(){
+        ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.TRANSACTION);
+        PeriodType periodType = PeriodType.MONTH;
+        periodType.setMultiplier(2);
+
+        Recurrence recurrence = new Recurrence(periodType);
+        DateTime startDate = new DateTime(2015, 8, 15, 12, 0);
+        recurrence.setPeriodStart(new Timestamp(startDate.getMillis()));
+        scheduledAction.setRecurrence(recurrence);
+
+        assertThat(scheduledAction.computeNextScheduledExecutionTime()).isEqualTo(startDate.getMillis());
+
+        scheduledAction.setExecutionCount(3);
+        DateTime expectedTime = new DateTime(2016, 2, 15, 12, 0);
+        assertThat(scheduledAction.computeNextScheduledExecutionTime()).isEqualTo(expectedTime.getMillis());
+    }
+
+    @Test
+    public void testComputingTimeOfLastSchedule(){
+        ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.TRANSACTION);
+        PeriodType periodType = PeriodType.WEEK;
+        periodType.setMultiplier(2);
+        Recurrence recurrence = new Recurrence(periodType);
+        scheduledAction.setRecurrence(recurrence);
+        DateTime startDate = new DateTime(2016, 6, 6, 9, 0);
+        scheduledAction.setStartTime(startDate.getMillis());
+
+        assertThat(scheduledAction.getTimeOfLastSchedule()).isEqualTo(-1L);
+
+        scheduledAction.setExecutionCount(3);
+        DateTime expectedDate = new DateTime(2016, 7, 4, 9, 0);
+        assertThat(scheduledAction.getTimeOfLastSchedule()).isEqualTo(expectedDate.getMillis());
+
     }
 
     private long getTimeInMillis(int year, int month, int day) {

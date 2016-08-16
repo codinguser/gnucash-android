@@ -561,8 +561,7 @@ public class TransactionsActivityTest {
 		onView(withId(R.id.options_menu)).perform(click());
 		onView(withText(R.string.menu_delete)).perform(click());
 
-		long id = mAccountsDbAdapter.getID(TRANSACTIONS_ACCOUNT_UID);
-		assertThat(0).isEqualTo(mTransactionsDbAdapter.getTransactionsCount(id));
+		assertThat(0).isEqualTo(mTransactionsDbAdapter.getTransactionsCount(TRANSACTIONS_ACCOUNT_UID));
 	}
 
 	@Test

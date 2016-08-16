@@ -25,6 +25,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
@@ -51,7 +52,7 @@ import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.service.SchedulerService;
+import org.gnucash.android.service.ScheduledActionService;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.settings.PreferenceActivity;
 
@@ -126,12 +127,9 @@ public class GnuCashApplication extends Application{
         mBooksDbAdapter = new BooksDbAdapter(bookDbHelper.getWritableDatabase());
 
         initDatabaseAdapters();
-
-        //TODO: migrate preferences from defaultShared to book
-
         setDefaultCurrencyCode(getDefaultCurrencyCode());
 
-        if (BuildConfig.DEBUG)
+        if (BuildConfig.DEBUG && !isRoboUnitTest())
             setUpRemoteDebuggingFromChrome();
     }
 
@@ -217,6 +215,14 @@ public class GnuCashApplication extends Application{
     }
 
     /**
+     * Returns the currently active database in the application
+     * @return Currently active {@link SQLiteDatabase}
+     */
+    public static SQLiteDatabase getActiveDb(){
+        return mDbHelper.getWritableDatabase();
+    }
+
+    /**
      * Returns the application context
      * @return Application {@link Context} object
      */
@@ -230,6 +236,14 @@ public class GnuCashApplication extends Application{
      */
     public static boolean isCrashlyticsEnabled(){
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.key_enable_crashlytics), false);
+    }
+
+    /**
+     * Returns {@code true} if the app is being run by robolectric
+     * @return {@code true} if in unit testing, {@code false} otherwise
+     */
+    public static boolean isRoboUnitTest(){
+        return "robolectric".equals(Build.FINGERPRINT);
     }
 
     /**
@@ -327,18 +341,18 @@ public class GnuCashApplication extends Application{
      * @param context Application context
      */
     public static void startScheduledActionExecutionService(Context context){
-        Intent alarmIntent = new Intent(context, SchedulerService.class);
+        Intent alarmIntent = new Intent(context, ScheduledActionService.class);
         PendingIntent pendingIntent = PendingIntent.getService(context, 0, alarmIntent, PendingIntent.FLAG_NO_CREATE);
-        if (pendingIntent != null)
+
+        if (pendingIntent != null) //if service is already scheduled, just return
             return;
         else
             pendingIntent = PendingIntent.getService(context, 0, alarmIntent, 0);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP,
-                System.currentTimeMillis() + AlarmManager.INTERVAL_DAY,
-                AlarmManager.INTERVAL_HALF_DAY,
-                pendingIntent);
+        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                SystemClock.elapsedRealtime() + AlarmManager.INTERVAL_FIFTEEN_MINUTES,
+                AlarmManager.INTERVAL_HALF_DAY, pendingIntent);
 
         context.startService(alarmIntent); //run the service the first time
     }

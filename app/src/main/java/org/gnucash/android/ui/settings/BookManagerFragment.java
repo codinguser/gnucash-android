@@ -219,6 +219,16 @@ public class BookManagerFragment extends ListFragment implements
                     }
                 });
             }
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //do nothing if the active book is tapped
+                    if (!BooksDbAdapter.getInstance().getActiveBookUID().equals(bookUID)) {
+                        GnuCashApplication.loadBook(bookUID);
+                    }
+                }
+            });
         }
     }
 

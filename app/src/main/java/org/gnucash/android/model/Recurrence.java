@@ -98,6 +98,7 @@ public class Recurrence extends BaseModel {
      * <p>The period is approximate because months do not all have the same number of days,
      * but that is assumed</p>
      * @return Milliseconds since Epoch representing the period
+     * @deprecated Do not use in new code. Uses fixed period values for months and years (which have variable units of time)
      */
     public long getPeriod(){
         long baseMillis = 0;
@@ -195,14 +196,16 @@ public class Recurrence extends BaseModel {
     }
 
     /**
-     * Returns the number of periods from the start date of this occurence until the end of the
+     * Returns the number of periods from the start date of this recurrence until the end of the
      * interval multiplier specified in the {@link PeriodType}
+     * //fixme: Improve the documentation
      * @return Number of periods in this recurrence
      */
     public int getNumberOfPeriods(int numberOfPeriods) {
         LocalDate startDate = new LocalDate(mPeriodStart.getTime());
         LocalDate endDate;
         int interval = mPeriodType.getMultiplier();
+        //// TODO: 15.08.2016 Why do we add the number of periods. maybe rename method or param
         switch (mPeriodType){
 
             case DAY:

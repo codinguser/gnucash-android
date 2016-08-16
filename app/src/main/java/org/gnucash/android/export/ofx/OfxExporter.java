@@ -113,7 +113,11 @@ public class OfxExporter extends Exporter{
 		}
 	}
 
-    // FIXME: Move code to generateExport()
+    /**
+     * Generate OFX export file from the transactions in the database
+     * @return String containing OFX export
+     * @throws ExporterException
+     */
     private String generateOfxExport() throws ExporterException {
         mAccountsList = mAccountsDbAdapter.getExportableAccounts(mExportParams.getExportStartTime());
 

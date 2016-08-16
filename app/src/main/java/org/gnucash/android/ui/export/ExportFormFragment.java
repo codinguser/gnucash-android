@@ -274,7 +274,7 @@ public class ExportFormFragment extends Fragment implements
 		exportParameters.setDeleteTransactionsAfterExport(mDeleteAllCheckBox.isChecked());
 
 		Log.i(TAG, "Commencing async export of transactions");
-		new ExportAsyncTask(getActivity()).execute(exportParameters);
+		new ExportAsyncTask(getActivity(), GnuCashApplication.getActiveDb()).execute(exportParameters);
 
 		if (mRecurrenceRule != null) {
 			ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.BACKUP);

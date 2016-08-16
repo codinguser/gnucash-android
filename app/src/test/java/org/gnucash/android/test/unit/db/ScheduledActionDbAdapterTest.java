@@ -63,7 +63,7 @@ public class ScheduledActionDbAdapterTest {
         PeriodType periodType = PeriodType.MONTH;
         periodType.setMultiplier(2);
         scheduledAction.setRecurrence(new Recurrence(periodType));
-        scheduledAction.setTotalFrequency(4);
+        scheduledAction.setTotalPlannedExecutionCount(4);
 
         String repeatString = "Every 2 months,  for 4 times";
         assertThat(scheduledAction.getRepeatString().trim()).isEqualTo(repeatString);
