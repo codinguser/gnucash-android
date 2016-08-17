@@ -124,9 +124,6 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
 
     @Override
     protected void onPostExecute(Boolean importSuccess) {
-        if (mDelegate != null)
-            mDelegate.onTaskComplete();
-
         try {
             if (mProgressDialog != null && mProgressDialog.isShowing())
                 mProgressDialog.dismiss();
@@ -142,5 +139,8 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
 
         if (mImportedBookUID != null)
             GnuCashApplication.loadBook(mImportedBookUID);
+
+        if (mDelegate != null)
+            mDelegate.onTaskComplete();
     }
 }
