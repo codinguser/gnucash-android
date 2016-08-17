@@ -199,8 +199,7 @@ public class BookManagerFragment extends ListFragment implements
                         dialogBuilder.setPositiveButton(getString(R.string.btn_delete_book), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                BooksDbAdapter.getInstance().deleteRecord(bookUID);
-                                mContext.deleteDatabase(bookUID);
+                                BooksDbAdapter.getInstance().deleteBook(bookUID);
                                 refresh();
                             }
                         });

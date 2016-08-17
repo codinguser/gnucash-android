@@ -413,6 +413,7 @@ public class AccountsActivityTest {
                 withId(R.id.options_menu))).perform(click());
         onView(withText(R.string.menu_delete)).perform(click());
 
+        //// FIXME: 17.08.2016 This enabled check fails during some test runs - not reliable, investigate why
         onView(allOf(withParent(withId(R.id.accounts_options)),
                 withId(R.id.radio_move))).check(matches(isEnabled())).perform(click());
 

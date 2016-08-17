@@ -24,6 +24,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.DatabaseSchema.AccountEntry;
 import org.gnucash.android.db.DatabaseSchema.CommonColumns;
@@ -709,6 +710,19 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      */
     public boolean deleteRecord(@NonNull String uid){
         return deleteRecord(getID(uid));
+    }
+
+    /**
+     * Deletes a book - removes the book record from the database and deletes the database file from the disk
+     * @param bookUID GUID of the book
+     * @return <code>true</code> if deletion was successful, <code>false</code> otherwise
+     * @see #deleteRecord(String)
+     */
+    public boolean deleteBook(@NonNull String bookUID){
+        boolean result = GnuCashApplication.getAppContext().deleteDatabase(bookUID);
+        if (result) //delete the db entry only if the file deletion was successful
+            result &= deleteRecord(bookUID);
+        return result;
     }
 
     /**
