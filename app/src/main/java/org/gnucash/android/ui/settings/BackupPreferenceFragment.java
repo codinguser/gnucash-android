@@ -318,7 +318,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 							});
 
 						}
-						Toast.makeText(context, "Connected to Google Drive", Toast.LENGTH_SHORT).show();
+						Toast.makeText(context, R.string.toast_connected_to_google_drive, Toast.LENGTH_SHORT).show();
 					}
 
 					@Override
@@ -336,7 +336,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 								connectionResult.startResolutionForResult((Activity) context, REQUEST_RESOLVE_CONNECTION);
 							} catch (IntentSender.SendIntentException e) {
 								Log.e(BackupPreferenceFragment.class.getName(), e.getMessage());
-								Toast.makeText(context, "Unable to link to Google Drive", Toast.LENGTH_LONG).show();
+								Toast.makeText(context, R.string.toast_unable_to_connect_to_google_drive, Toast.LENGTH_LONG).show();
 							}
 						} else {
 							if (context instanceof Activity)

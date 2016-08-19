@@ -590,7 +590,7 @@ public class TransactionFormFragment extends Fragment implements
      */
     private void openSplitEditor(){
         if (mAmountEditText.getValue() == null){
-            Toast.makeText(getActivity(), "Please enter an amount to split", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), R.string.toast_enter_amount_to_split, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -876,7 +876,7 @@ public class TransactionFormFragment extends Fragment implements
             } else {
                 scheduledAction.setUID(scheduledActionUID);
                 scheduledActionDbAdapter.updateRecurrenceAttributes(scheduledAction);
-                Toast.makeText(getActivity(), "Updated transaction schedule", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.toast_updated_transaction_recurring_schedule, Toast.LENGTH_SHORT).show();
             }
         } else {
             if (recurrence != null) {
