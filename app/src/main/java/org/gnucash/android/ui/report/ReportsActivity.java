@@ -162,8 +162,11 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
     @Override
     public void onAttachFragment(Fragment fragment) {
         super.onAttachFragment(fragment);
-        BaseReportFragment reportFragment = (BaseReportFragment)fragment;
-        updateReportTypeSpinner(reportFragment.getReportType(), getString(reportFragment.getTitle()));
+
+        if (fragment instanceof BaseReportFragment) {
+            BaseReportFragment reportFragment = (BaseReportFragment)fragment;
+            updateReportTypeSpinner(reportFragment.getReportType(), getString(reportFragment.getTitle()));
+        }
     }
 
     /**
