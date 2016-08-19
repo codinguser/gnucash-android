@@ -1,6 +1,10 @@
 package org.gnucash.android.test.unit.db;
 
+import android.content.res.Resources;
+
 import org.gnucash.android.BuildConfig;
+import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.PeriodType;
@@ -64,8 +68,10 @@ public class ScheduledActionDbAdapterTest {
         periodType.setMultiplier(2);
         scheduledAction.setRecurrence(new Recurrence(periodType));
         scheduledAction.setTotalPlannedExecutionCount(4);
+        Resources res = GnuCashApplication.getAppContext().getResources();
+        String repeatString = res.getQuantityString(R.plurals.label_every_x_months, 2, 2) + ", " +
+                res.getString(R.string.repeat_x_times, 4);
 
-        String repeatString = "Every 2 months,  for 4 times";
         assertThat(scheduledAction.getRepeatString().trim()).isEqualTo(repeatString);
 
     }
