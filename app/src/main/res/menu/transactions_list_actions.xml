@@ -28,7 +28,7 @@
           app:showAsAction="never|withText" />
     <item android:id="@+id/menu_compact_trn_view"
           android:icon="@drawable/content_edit_holo_dark"
-          android:title="Compact View"
+          android:title="@string/menu_show_compact_view"
           android:checkable="true"
           app:showAsAction="never|withText" />
 </menu>
