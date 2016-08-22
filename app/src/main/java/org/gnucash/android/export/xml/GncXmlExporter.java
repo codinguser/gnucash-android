@@ -809,6 +809,11 @@ public class GncXmlExporter extends Exporter{
             String[] namespaces = new String[]{"gnc", "act", "book", "cd", "cmdty", "price", "slot",
                     "split", "trn", "ts", "sx", "bgt", "recurrence"};
             XmlSerializer xmlSerializer = XmlPullParserFactory.newInstance().newSerializer();
+            try {
+                xmlSerializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+            } catch (IllegalStateException e) {
+                // Feature not supported. No problem
+            }
             xmlSerializer.setOutput(writer);
             xmlSerializer.startDocument("utf-8", true);
             // root tag
