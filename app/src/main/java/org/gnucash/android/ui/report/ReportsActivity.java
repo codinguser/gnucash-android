@@ -134,15 +134,21 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
         mTimeRangeSpinner.setOnItemSelectedListener(this);
         mTimeRangeSpinner.setSelection(1);
 
-        ArrayAdapter<AccountType> dataAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item,
-                Arrays.asList(AccountType.EXPENSE, AccountType.INCOME));
+        ArrayAdapter<CharSequence> dataAdapter = ArrayAdapter.createFromResource(this,
+                R.array.report_account_types, android.R.layout.simple_spinner_item);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mAccountTypeSpinner.setAdapter(dataAdapter);
         mAccountTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                mAccountType = (AccountType) mAccountTypeSpinner.getSelectedItem();
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                switch(position) {
+                    default:
+                    case 0:
+                        mAccountType = AccountType.EXPENSE;
+                        break;
+                    case 1:
+                        mAccountType = AccountType.INCOME;
+                }
                 updateAccountTypeOnFragments();
             }
 

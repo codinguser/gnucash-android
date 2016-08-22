@@ -15,8 +15,11 @@
  */
 package org.gnucash.android.model;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
+import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -423,15 +426,11 @@ public class ScheduledAction extends BaseModel{
      */
     public String getRepeatString(){
         StringBuilder ruleBuilder = new StringBuilder(mRecurrence.getRepeatString());
-
-        if (mEndDate > 0){
-            ruleBuilder.append(", ");
-            ruleBuilder.append(" until ")
-                    .append(SimpleDateFormat.getDateInstance(DateFormat.SHORT).format(new Date(mEndDate)));
-        } else if (mTotalFrequency > 0){
-            ruleBuilder.append(", ");
-            ruleBuilder.append(" for ").append(mTotalFrequency).append(" times");
+        Context context = GnuCashApplication.getAppContext();
+        if (mEndDate <= 0 && mTotalFrequency > 0){
+            ruleBuilder.append(", ").append(context.getString(R.string.repeat_x_times, mTotalFrequency));
         }
+
         return ruleBuilder.toString();
     }
 

@@ -244,7 +244,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                                 "ownCloud sync not enabled";
                         break;
                     default:
-                        targetLocation = "external service";
+                        targetLocation = mContext.getString(R.string.label_export_target_external_service);
                 }
                 Toast.makeText(mContext,
                         String.format(mContext.getString(R.string.toast_exported_to), targetLocation),

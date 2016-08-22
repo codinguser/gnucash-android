@@ -16,8 +16,11 @@
 
 package org.gnucash.android.model;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
+import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.ui.util.RecurrenceParser;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -124,16 +127,18 @@ public class Recurrence extends BaseModel {
      * @return String description of repeat schedule
      */
     public String getRepeatString(){
-        String dayOfWeek = new SimpleDateFormat("EEEE", Locale.US).format(new Date(mPeriodStart.getTime()));
-
         StringBuilder repeatBuilder = new StringBuilder(mPeriodType.getFrequencyRepeatString());
+        Context context = GnuCashApplication.getAppContext();
 
+        String dayOfWeek = new SimpleDateFormat("EEEE", GnuCashApplication.getDefaultLocale())
+                .format(new Date(mPeriodStart.getTime()));
         if (mPeriodType == PeriodType.WEEK) {
-            repeatBuilder.append(" on ").append(dayOfWeek);
+            repeatBuilder.append(" ").append(context.getString(R.string.repeat_on_weekday, dayOfWeek));
         }
 
         if (mPeriodEnd != null){
-            repeatBuilder.append(" until " + SimpleDateFormat.getDateInstance().format(new Date(mPeriodEnd.getTime())));
+            String endDateString = SimpleDateFormat.getDateInstance().format(new Date(mPeriodEnd.getTime()));
+            repeatBuilder.append(", ").append(context.getString(R.string.repeat_until_date, endDateString));
         }
         return repeatBuilder.toString();
     }
