@@ -101,6 +101,7 @@ public class MultiBookTest {
 
         assertThat(mBooksDbAdapter.getRecordsCount()).isEqualTo(booksCount+1);
 
+        //// TODO: 25.08.2016 Delete all books before the start of this test
         Book activeBook = mBooksDbAdapter.getRecord(mBooksDbAdapter.getActiveBookUID());
         assertThat(activeBook.getDisplayName()).isEqualTo("Book " + (booksCount+1));
     }

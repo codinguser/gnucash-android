@@ -21,6 +21,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.PowerManager;
+import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -96,6 +97,7 @@ public class ScheduledActionService extends IntentService {
      * @param scheduledActions List of scheduled actions
      */
     //made public static for testing. Do not call these methods directly
+    @VisibleForTesting
     public static void processScheduledActions(List<ScheduledAction> scheduledActions, SQLiteDatabase db) {
         for (ScheduledAction scheduledAction : scheduledActions) {
 
@@ -118,6 +120,7 @@ public class ScheduledActionService extends IntentService {
      * @param scheduledAction ScheduledEvent to be executed
      */
     //made public static for testing. Do not call directly
+    @VisibleForTesting
     public static void executeScheduledEvent(ScheduledAction scheduledAction, SQLiteDatabase db){
         Log.i(LOG_TAG, "Executing scheduled action: " + scheduledAction.toString());
         int executionCount = scheduledAction.getExecutionCount();

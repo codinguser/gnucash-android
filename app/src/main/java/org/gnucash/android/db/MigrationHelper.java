@@ -1438,6 +1438,7 @@ public class MigrationHelper {
             db.endTransaction();
         }
 
+        //TODO: Move old files from old export folders into new book-specific export folders
 
         //Migrate book-specific preferences away from shared preferences
         Log.d(LOG_TAG, "Migrating shared preferences into book preferences");

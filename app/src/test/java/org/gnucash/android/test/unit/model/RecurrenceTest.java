@@ -18,10 +18,10 @@ package org.gnucash.android.test.unit.model;
 
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Recurrence;
+import org.joda.time.DateTime;
 import org.junit.Test;
 
 import java.sql.Timestamp;
-import java.util.Calendar;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,14 +33,13 @@ public class RecurrenceTest {
     @Test
     public void settingCount_shouldComputeCorrectEndTime(){
         Recurrence recurrence = new Recurrence(PeriodType.MONTH);
-        Calendar cal = Calendar.getInstance();
-        cal.set(2015, Calendar.OCTOBER, 5);
 
-        recurrence.setPeriodStart(new Timestamp(cal.getTimeInMillis()));
+        DateTime startTime = new DateTime(2015, 10, 5, 0, 0);
+        recurrence.setPeriodStart(new Timestamp(startTime.getMillis()));
         recurrence.setPeriodEnd(3);
 
-        cal.set(2016, Calendar.JANUARY, 5);
-        assertThat(recurrence.getPeriodEnd().getTime()).isEqualTo(cal.getTimeInMillis());
+        DateTime expectedEndtime = new DateTime(2016, 1, 5, 0, 0);
+        assertThat(recurrence.getPeriodEnd().getTime()).isEqualTo(expectedEndtime.getMillis());
     }
 
     /**
@@ -49,12 +48,12 @@ public class RecurrenceTest {
     @Test
     public void testRecurrenceCountComputation(){
         Recurrence recurrence = new Recurrence(PeriodType.MONTH);
-        Calendar cal = Calendar.getInstance();
-        cal.set(2015, Calendar.OCTOBER, 5);
 
-        recurrence.setPeriodStart(new Timestamp(cal.getTimeInMillis()));
-        cal.set(2016, Calendar.AUGUST, 5);
-        recurrence.setPeriodEnd(new Timestamp(cal.getTimeInMillis()));
+        DateTime start = new DateTime(2015, 10, 5, 0, 0);
+        recurrence.setPeriodStart(new Timestamp(start.getMillis()));
+
+        DateTime end = new DateTime(2016, 8, 5, 0, 0);
+        recurrence.setPeriodEnd(new Timestamp(end.getMillis()));
 
         assertThat(recurrence.getCount()).isEqualTo(10);
     }
@@ -67,9 +66,9 @@ public class RecurrenceTest {
     @Test
     public void notSettingEndDate_shouldReturnSpecialCountValue() {
         Recurrence recurrence = new Recurrence(PeriodType.MONTH);
-        Calendar cal = Calendar.getInstance();
-        cal.set(2015, Calendar.OCTOBER, 5);
-        recurrence.setPeriodStart(new Timestamp(cal.getTimeInMillis()));
+
+        DateTime start = new DateTime(2015, 10, 5, 0, 0);
+        recurrence.setPeriodStart(new Timestamp(start.getMillis()));
 
         assertThat(recurrence.getCount()).isEqualTo(-1);
     }

@@ -80,6 +80,8 @@ public class WidgetConfigurationActivity extends Activity {
 		}
 
         SimpleCursorAdapter cursorAdapter = new QualifiedAccountNameCursorAdapter(this, cursor);
+		//without this line, the app crashes when a user tries to select an account
+		cursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mAccountsSpinner.setAdapter(cursorAdapter);
 		
 		bindListeners();

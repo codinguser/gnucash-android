@@ -145,16 +145,16 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
         switch (mExportParams.getExportFormat()) {
                 case QIF:
-                    mExporter = new QifExporter(mExportParams);
+                    mExporter = new QifExporter(mExportParams, mDb);
                     break;
 
                 case OFX:
-                    mExporter = new OfxExporter(mExportParams);
+                    mExporter = new OfxExporter(mExportParams, mDb);
                     break;
 
                 case XML:
                 default:
-                    mExporter = new GncXmlExporter(mExportParams);
+                    mExporter = new GncXmlExporter(mExportParams, mDb);
                     break;
         }
 
@@ -414,11 +414,11 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     private List<String> moveExportToSDCard() {
         Log.i(TAG, "Moving exported file to external storage");
-        new File(Exporter.getExportFolderPath());
+        new File(Exporter.getExportFolderPath(mExporter.mBookUID));
         List<String> dstFiles = new ArrayList<>();
 
         for (String src: mExportedFiles) {
-            String dst = Exporter.getExportFolderPath() + stripPathPart(src);
+            String dst = Exporter.getExportFolderPath(mExporter.mBookUID) + stripPathPart(src);
             try {
                 moveFile(src, dst);
                 dstFiles.add(dst);

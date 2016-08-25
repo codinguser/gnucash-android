@@ -21,6 +21,7 @@ import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
@@ -282,7 +283,7 @@ public class ScheduledActionServiceTest {
         backupParams.setExportTarget(ExportParams.ExportTarget.SD_CARD);
         scheduledBackup.setTag(backupParams.toCsv());
 
-        File backupFolder = new File(Exporter.getBackupFolderPath());
+        File backupFolder = new File(Exporter.getBackupFolderPath(BooksDbAdapter.getInstance().getActiveBookUID()));
         assertThat(backupFolder).exists();
         assertThat(backupFolder.listFiles()).isEmpty();
 

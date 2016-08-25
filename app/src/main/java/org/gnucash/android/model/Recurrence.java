@@ -22,9 +22,9 @@ import android.support.annotation.NonNull;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.ui.util.RecurrenceParser;
+import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 import org.joda.time.Months;
 import org.joda.time.Weeks;
 import org.joda.time.Years;
@@ -32,7 +32,6 @@ import org.joda.time.Years;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 /**
  * Model for recurrences in the database
@@ -275,8 +274,8 @@ public class Recurrence extends BaseModel {
             return -1;
 
         int count = 0;
-        LocalDate startDate = new LocalDate(mPeriodStart.getTime());
-        LocalDate endDate = new LocalDate(mPeriodEnd.getTime());
+        DateTime startDate = new DateTime(mPeriodStart.getTime());
+        DateTime endDate = new DateTime(mPeriodEnd.getTime());
         switch (mPeriodType){
             case DAY:
                 count = Days.daysBetween(startDate, endDate).getDays();
@@ -300,27 +299,25 @@ public class Recurrence extends BaseModel {
      * @param numberOfOccurences Number of occurences from the start time
      */
     public void setPeriodEnd(int numberOfOccurences){
-        LocalDateTime localDate = new LocalDateTime(mPeriodStart.getTime());
-        LocalDateTime endDate;
+        DateTime localDate = new DateTime(mPeriodStart.getTime());
+        DateTime endDate;
         int occurrenceDuration = numberOfOccurences * mPeriodType.getMultiplier();
         switch (mPeriodType){
             case DAY:
-                endDate = localDate.dayOfWeek().getLocalDateTime().plusDays(occurrenceDuration);
+                endDate = localDate.plusDays(occurrenceDuration);
                 break;
             case WEEK:
-                endDate = localDate.dayOfWeek().getLocalDateTime().plusWeeks(occurrenceDuration);
+                endDate = localDate.plusWeeks(occurrenceDuration);
                 break;
+            default:
             case MONTH:
-                endDate = localDate.dayOfMonth().getLocalDateTime().plusMonths(occurrenceDuration);
+                endDate = localDate.plusMonths(occurrenceDuration);
                 break;
             case YEAR:
-                endDate = localDate.monthOfYear().getLocalDateTime().plusYears(occurrenceDuration);
-                break;
-            default: //default to monthly
-                endDate = localDate.dayOfMonth().getLocalDateTime().plusMonths(occurrenceDuration);
+                endDate = localDate.plusYears(occurrenceDuration);
                 break;
         }
-        mPeriodEnd = new Timestamp(endDate.toDate().getTime());
+        mPeriodEnd = new Timestamp(endDate.getMillis());
     }
 
     /**

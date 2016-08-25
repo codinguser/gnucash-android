@@ -17,6 +17,7 @@
 
 package org.gnucash.android.export.ofx;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -75,6 +76,16 @@ public class OfxExporter extends Exporter{
         super(params, null);
         LOG_TAG = "OfxExporter";
 	}
+
+    /**
+     * Overloaded constructor. Initializes the export parameters and the database to export
+     * @param params Export options
+     * @param db SQLiteDatabase to export
+     */
+    public OfxExporter(ExportParams params, SQLiteDatabase db){
+        super(params, db);
+        LOG_TAG = "OfxExporter";
+    }
 
     /**
 	 * Converts all expenses into OFX XML format and adds them to the XML document
