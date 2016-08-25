@@ -89,7 +89,6 @@ public class ScheduledActionService extends IntentService {
         } finally { //release the lock either way
             wakeLock.release();
         }
-
     }
 
     /**
@@ -105,12 +104,15 @@ public class ScheduledActionService extends IntentService {
             int totalPlannedExecutions = scheduledAction.getTotalPlannedExecutionCount();
             int executionCount = scheduledAction.getExecutionCount();
 
+            //the end time of the ScheduledAction is not handled here because
+            //it is handled differently for transactions and backups. See the individual methods.
             if (scheduledAction.getStartTime() > now    //if schedule begins in the future
                     || !scheduledAction.isEnabled()     // of if schedule is disabled
                     || (totalPlannedExecutions > 0 && executionCount >= totalPlannedExecutions)) { //limit was set and we reached or exceeded it
                 Log.i(LOG_TAG, "Skipping scheduled action: " + scheduledAction.toString());
                 continue;
             }
+
             executeScheduledEvent(scheduledAction, db);
         }
     }
@@ -119,55 +121,17 @@ public class ScheduledActionService extends IntentService {
      * Executes a scheduled event according to the specified parameters
      * @param scheduledAction ScheduledEvent to be executed
      */
-    //made public static for testing. Do not call directly
-    @VisibleForTesting
-    public static void executeScheduledEvent(ScheduledAction scheduledAction, SQLiteDatabase db){
+    private static void executeScheduledEvent(ScheduledAction scheduledAction, SQLiteDatabase db){
         Log.i(LOG_TAG, "Executing scheduled action: " + scheduledAction.toString());
         int executionCount = scheduledAction.getExecutionCount();
 
         switch (scheduledAction.getActionType()){
             case TRANSACTION:
-                String actionUID = scheduledAction.getActionUID();
-                TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
-                Transaction trxnTemplate = transactionsDbAdapter.getRecord(actionUID);
-
-                long now = System.currentTimeMillis();
-                //if there is an end time in the past, we execute all schedules up to the end time.
-                //if the end time is in the future, we execute all schedules until now (current time)
-                //if there is no end time, we execute all schedules until now
-                long endTime = scheduledAction.getEndTime() > 0 ? Math.min(scheduledAction.getEndTime(), now) : now;
-                int totalPlannedExecutions = scheduledAction.getTotalPlannedExecutionCount();
-                List<Transaction> transactions = new ArrayList<>();
-
-                //we may be executing scheduled action significantly after scheduled time (depending on when Android fires the alarm)
-                //so compute the actual transaction time from pre-known values
-                long transactionTime = scheduledAction.computeNextScheduledExecutionTime();
-                while (transactionTime <= endTime) {
-                    Transaction recurringTrxn = new Transaction(trxnTemplate, true);
-                    recurringTrxn.setTime(transactionTime);
-                    transactions.add(recurringTrxn);
-                    recurringTrxn.setScheduledActionUID(scheduledAction.getUID());
-                    scheduledAction.setExecutionCount(++executionCount);
-
-                    if (totalPlannedExecutions > 0 && executionCount >= totalPlannedExecutions)
-                        break; //if we hit the total planned executions set, then abort
-                    transactionTime = scheduledAction.computeNextScheduledExecutionTime();
-                }
-
-                transactionsDbAdapter.bulkAddRecords(transactions, DatabaseAdapter.UpdateMethod.insert);
+                executionCount += executeTransactions(scheduledAction, db);
                 break;
 
             case BACKUP:
-                ExportParams params = ExportParams.parseCsv(scheduledAction.getTag());
-                try {
-                    //wait for async task to finish before we proceed (we are holding a wake lock)
-                    new ExportAsyncTask(GnuCashApplication.getAppContext(), db).execute(params).get();
-                    scheduledAction.setExecutionCount(++executionCount);
-                } catch (InterruptedException | ExecutionException e) {
-                    Crashlytics.logException(e);
-                    Log.e(LOG_TAG, e.getMessage());
-                    return; //return immediately, do not update last run time of event
-                }
+                executionCount += executeBackup(scheduledAction, db);
                 break;
         }
 
@@ -182,5 +146,73 @@ public class ScheduledActionService extends IntentService {
 
         //set the values in the object because they will be checked for the next iteration in the calling loop
         scheduledAction.setExecutionCount(executionCount);
+    }
+
+    /**
+     * Executes scheduled backups for a given scheduled action.
+     * The backup will be executed only once, even if multiple schedules were missed
+     * @param scheduledAction Scheduled action referencing the backup
+     * @param db SQLiteDatabase to backup
+     * @return Number of times backup is executed. This should either be 1 or 0
+     */
+    private static int executeBackup(ScheduledAction scheduledAction, SQLiteDatabase db) {
+        int executionCount = 0;
+        long now = System.currentTimeMillis();
+        long endTime = scheduledAction.getEndTime();
+
+        if (endTime > 0 && endTime < now)
+            return executionCount;
+
+        ExportParams params = ExportParams.parseCsv(scheduledAction.getTag());
+        try {
+            //wait for async task to finish before we proceed (we are holding a wake lock)
+            new ExportAsyncTask(GnuCashApplication.getAppContext(), db).execute(params).get();
+            scheduledAction.setExecutionCount(++executionCount);
+        } catch (InterruptedException | ExecutionException e) {
+            Crashlytics.logException(e);
+            Log.e(LOG_TAG, e.getMessage());
+        }
+        return executionCount;
+    }
+
+    /**
+     * Executes scheduled transactions which are to be added to the database.
+     * <p>If a schedule was missed, all the intervening transactions will be generated, even if
+     * the end time of the transaction was already reached</p>
+     * @param scheduledAction Scheduled action which references the transaction
+     * @param db SQLiteDatabase where the transactions are to be executed
+     * @return Number of transactions created as a result of this action
+     */
+    private static int executeTransactions(ScheduledAction scheduledAction, SQLiteDatabase db) {
+        int executionCount = 0;
+        String actionUID = scheduledAction.getActionUID();
+        TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
+        Transaction trxnTemplate = transactionsDbAdapter.getRecord(actionUID);
+
+        long now = System.currentTimeMillis();
+        //if there is an end time in the past, we execute all schedules up to the end time.
+        //if the end time is in the future, we execute all schedules until now (current time)
+        //if there is no end time, we execute all schedules until now
+        long endTime = scheduledAction.getEndTime() > 0 ? Math.min(scheduledAction.getEndTime(), now) : now;
+        int totalPlannedExecutions = scheduledAction.getTotalPlannedExecutionCount();
+        List<Transaction> transactions = new ArrayList<>();
+
+        //we may be executing scheduled action significantly after scheduled time (depending on when Android fires the alarm)
+        //so compute the actual transaction time from pre-known values
+        long transactionTime = scheduledAction.computeNextScheduledExecutionTime();
+        while (transactionTime <= endTime) {
+            Transaction recurringTrxn = new Transaction(trxnTemplate, true);
+            recurringTrxn.setTime(transactionTime);
+            transactions.add(recurringTrxn);
+            recurringTrxn.setScheduledActionUID(scheduledAction.getUID());
+            scheduledAction.setExecutionCount(++executionCount); //required for computingNextScheduledExecutionTime
+
+            if (totalPlannedExecutions > 0 && executionCount >= totalPlannedExecutions)
+                break; //if we hit the total planned executions set, then abort
+            transactionTime = scheduledAction.computeNextScheduledExecutionTime();
+        }
+
+        transactionsDbAdapter.bulkAddRecords(transactions, DatabaseAdapter.UpdateMethod.insert);
+        return executionCount;
     }
 }
