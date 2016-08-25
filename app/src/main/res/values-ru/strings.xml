@@ -132,12 +132,12 @@
   <string name="summary_xml_ofx_header">Включите эту опцию, если экспортируете в программы отличные от GnuCash для ПК</string>
   <string name="title_whats_new">Новости</string>
   <string name="whats_new">
-        - Новый материальный дизайн\n
-        - Проводки в нескольких валютах\n
-        - Калькулятор в сумме проводки\n
-        - Улучшены отчёты\n
-        - Новая секция справки и обратной связи\n
-        - Множественные исправления ошибок и улучшения\n
+        - Поддержка нескольких различных книг \n
+        - Добавляет ownCloud как место для экспорта\n
+        - Компактный вид списка операций\n
+        - Новый дизайн окна блокировки\n
+        - Улучшена обработка запланированных операций\n
+        - Множество других исправлений ошибок и улучшений\n
 	</string>
   <string name="label_dismiss">Отказаться</string>
   <string name="toast_transanction_amount_required">Введите сумму, чтобы сохранить проводку</string>
@@ -210,7 +210,7 @@
   <string name="title_all_accounts">Все</string>
   <string name="summary_create_default_accounts">Создание структуры счетов GnuCash по умолчанию</string>
   <string name="title_create_default_accounts">Создание счетов по умолчанию</string>
-  <string name="msg_confirm_create_default_accounts_setting">Всех существующие счета и транзакции на устройстве будут удалены.\n\nВы уверены, что хотите продолжить?</string>
+  <string name="msg_confirm_create_default_accounts_setting">Новая книга будет открыта с помощью учетной записи по умолчанию\n\nВаши текущие счета и операции не будут изменяться!</string>
   <string name="menu_scheduled_transactions">Запланированные проводки</string>
   <string name="msg_confirm_create_default_accounts_first_run">Добро
         пожаловать в GnuCash для Android!\nВы можете как создать структуру
@@ -456,4 +456,30 @@
   <string name="toast_transaction_has_no_splits_and_cannot_open">Выбранная транзакция не имеет разрывов и не может быть открыта</string>
   <string name="label_split_count">%1$d разбивает</string>
   <string name="label_inside_account_with_name">в %1$s</string>
+  <plurals name="book_account_stats">
+    <item quantity="one">%d счета</item>
+    <item quantity="few">%d счета</item>
+    <item quantity="other">%d счетов</item>
+  </plurals>
+  <plurals name="book_transaction_stats">
+    <item quantity="one">%d транзакция</item>
+    <item quantity="few">%d транзакции</item>
+    <item quantity="other">%d транзакций</item>
+  </plurals>
+  <string-array name="report_account_types">
+    <item>РАСХОДЫ</item>
+    <item>ДОХОДЫ</item>
+  </string-array>
+  <string name="toast_connected_to_google_drive">Подключен к Google диску</string>
+  <string name="toast_unable_to_connect_to_google_drive">Не удалось подключиться к Google диску</string>
+  <string name="toast_enter_amount_to_split">Пожалуйста, введите сумму для отправки</string>
+  <string name="label_export_target_external_service">внешняя служба</string>
+  <string name="toast_updated_transaction_recurring_schedule">Обновлено расписание повторяющихся транзакций</string>
+  <string name="label_export_transactions_since_date">Начиная с</string>
+  <string name="switch_export_transactions_from_all_time">Всё время</string>
+  <string name="label_recommend_app">Рекомендовать в Play Store</string>
+  <string name="repeat_until_date">до %1$s</string>
+  <string name="repeat_on_weekday">в %1$s</string>
+  <string name="repeat_x_times">для %1$s раз</string>
+  <string name="menu_show_compact_view">Компактный вид</string>
 </resources>

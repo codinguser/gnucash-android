@@ -131,14 +131,14 @@
   <string name="title_xml_ofx_header">XML-OFX-Header verwenden</string>
   <string name="summary_xml_ofx_header">Diese Option aktivieren, wenn Sie die OFX-Dateien für ein anderes Programm als GnuCash auf dem Desktop exportieren</string>
   <string name="title_whats_new">Neuigkeiten in dieser Version</string>
-  <string name="whats_new">\n
-        - App im Material Design\n
-        - Mehrwährungsbuchungen\n
-        - Rechner für Buchungsbeträge\n
-        - Verbesserte Berichte\n
-        - Neuer Hilfe &amp; Feedback-Bereich\n
-        - Viele Fehlerbehebungen und Verbesserungen\n
-\n</string>
+  <string name="whats_new">
+	- Unterstützung für mehrere verschiedene Bücher\n
+	- Fügt ownCloud als Exportziel hinzu\n
+	- Kompaktansicht für Buchungsliste\n
+	- Neugestaltung des Zugangscode-Sperrbildschirms\n
+	- Verbesserte Handhabung terminierter Buchungen\n
+	- Mehrere Bugfixes und Verbesserungen\n
+	</string>
   <string name="label_dismiss">Schließen</string>
   <string name="toast_transanction_amount_required">Geben Sie einen Betrag ein, um die Buchung speichern zu können</string>
   <string name="toast_error_edit_multi_currency_transaction">Mehrwährungsbuchungen können nicht bearbeitet werden</string>
@@ -211,7 +211,7 @@
   <string name="title_all_accounts">Alle</string>
   <string name="summary_create_default_accounts">Erstellt die häufig verwendeten Standard-GnuCash-Konten</string>
   <string name="title_create_default_accounts">Standard-Konten erstellen</string>
-  <string name="msg_confirm_create_default_accounts_setting">Es werden alle bestehenden Konten und Buchungen auf dem Gerät gelöscht.\n\nWollen Sie fortfahren?</string>
+  <string name="msg_confirm_create_default_accounts_setting">Ein neues Buch wird mit den Standardkonten geöffnet\n\nIhre aktuellen Konten und Buchungen werden nicht geändert!</string>
   <string name="menu_scheduled_transactions">Geplante Buchungen</string>
   <string name="msg_confirm_create_default_accounts_first_run">Willkommen bei GnuCash Android!\nSie können entweder eine Hierarchie der für gewöhnlich verwendeten Konten erstellen oder Ihre eigene GnuCash-Kontenstruktur importieren.\n\nBeide Optionen sind auch in den Einstellungen verfügbar, sodass Sie dies später entscheiden können.
     </string>
@@ -364,7 +364,7 @@ No user-identifiable information will be collected as part of this process!</str
   <string name="title_split_editor">Split Buchung</string>
   <string name="toast_error_check_split_amounts">Prüfen Sie vor dem Speichern, ob alle Buchungsteile gültige Beträge enthalten!</string>
   <string name="label_error_invalid_expression">Ungültiger Ausdruck!</string>
-  <string name="toast_scheduled_recurring_transaction">Geplante Buchung</string>
+  <string name="toast_scheduled_recurring_transaction">Geplante wiederkehrende Buchung</string>
   <string name="error_exchange_rate_required">Ein Wechselkurs ist erforderlich</string>
   <string name="error_converted_amount_required">Ein Wechselbetrag ist erforderlich</string>
   <string name="title_transfer_funds">Überweisungen</string>
@@ -399,12 +399,12 @@ No user-identifiable information will be collected as part of this process!</str
   <string name="summary_translate_gnucash">Übersetze oder korrigiere Übersetzungen auf CrowdIn</string>
   <string name="toast_no_compatible_apps_to_receive_export">Es gibt keine kompatible App, welche die exportierten Buchungen empfangen kann!</string>
   <string name="menu_move_transaction">Bewegen&#8230;</string>
-  <string name="menu_duplicate_transaction">Kopieren</string>
+  <string name="menu_duplicate_transaction">Duplizieren</string>
   <string name="nav_menu_budgets">Budgets</string>
   <string name="title_cash_flow_report">Geldfluss</string>
   <string name="title_budgets">Budgets</string>
   <string name="title_use_compact_list">Kompaktansicht verwenden</string>
-  <string name="summary_use_compact_list">Enable to always use compact view for transactions list</string>
+  <string name="summary_use_compact_list">Aktivieren, um stets die Kompaktansicht für die Buchungsliste zu verwenden</string>
   <string name="error_invalid_exchange_rate">Ungültiger Wechselkurs</string>
   <string name="sample_exchange_rate">z. B. 1 %1$s = x.xx %2$s</string>
   <string name="error_invalid_amount">Ungültiger Betrag</string>
@@ -440,14 +440,38 @@ No user-identifiable information will be collected as part of this process!</str
   <string name="digit_zero_text">+</string>
   <string name="title_manage_books">Bücher verwalten</string>
   <string name="menu_manage_books">Bücher verwalten&#8230;</string>
-  <string name="select_chart_to_view_details">Select any part of the chart to view details</string>
-  <string name="title_confirm_delete_book">Confirm delete Book</string>
-  <string name="msg_all_book_data_will_be_deleted">All accounts and transactions in this book will be deleted!</string>
-  <string name="btn_delete_book">Delete Book</string>
-  <string name="label_last_export_time">Last Exported:</string>
-  <string name="menu_title_enable_sync">Enable Sync</string>
-  <string name="menu_title_new_book">New Book</string>
-  <string name="toast_transaction_has_no_splits_and_cannot_open">The selected transaction has no splits and cannot be opened</string>
+  <string name="select_chart_to_view_details">Wählen Sie irgendeinen Teil des Diagramms, um Details anzuzeigen</string>
+  <string name="title_confirm_delete_book">Löschen des Buchs bestätigen</string>
+  <string name="msg_all_book_data_will_be_deleted">Alle Konten und Buchungen in diesem Buch werden gelöscht!</string>
+  <string name="btn_delete_book">Buch löschen</string>
+  <string name="label_last_export_time">Zuletzt exportiert:</string>
+  <string name="menu_title_enable_sync">Sync aktivieren</string>
+  <string name="menu_title_new_book">Neues Buch</string>
+  <string name="toast_transaction_has_no_splits_and_cannot_open">Die ausgewählte Buchung hat keine Splits und kann nicht geöffnet werden</string>
   <string name="label_split_count">%1$d splits</string>
   <string name="label_inside_account_with_name">in %1$s</string>
+  <plurals name="book_account_stats">
+    <item quantity="one">%d Konto</item>
+    <item quantity="other">%d Konten</item>
+  </plurals>
+  <plurals name="book_transaction_stats">
+    <item quantity="one">%d Buchung</item>
+    <item quantity="other">%d Buchungen</item>
+  </plurals>
+  <string-array name="report_account_types">
+    <item>EXPENSE</item>
+    <item>INCOME</item>
+  </string-array>
+  <string name="toast_connected_to_google_drive">Connected to Google Drive</string>
+  <string name="toast_unable_to_connect_to_google_drive">Unable to connect to Google Drive</string>
+  <string name="toast_enter_amount_to_split">Please enter an amount to split</string>
+  <string name="label_export_target_external_service">external service</string>
+  <string name="toast_updated_transaction_recurring_schedule">Updated transaction recurring schedule</string>
+  <string name="label_export_transactions_since_date">Since</string>
+  <string name="switch_export_transactions_from_all_time">All time</string>
+  <string name="label_recommend_app">Recommend in Play Store</string>
+  <string name="repeat_until_date">until %1$s</string>
+  <string name="repeat_on_weekday">on %1$s</string>
+  <string name="repeat_x_times">for %1$s times</string>
+  <string name="menu_show_compact_view">Compact View</string>
 </resources>

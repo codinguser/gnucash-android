@@ -131,13 +131,13 @@
   <string name="title_xml_ofx_header">OFXファイルのヘッダーにXMLを使う</string>
   <string name="summary_xml_ofx_header">GnuCash for desktopではなく他のサードパーティ製ソフトウェアにエクスポートする場合は、このオプションを有効にします</string>
   <string name="title_whats_new">新着情報</string>
-  <string name="whats_new">        - マテリアルデザインを新たに採用\n
-        - 取引に異なる通貨を使用可能\n
-        - 取引総額を計算するための計算機\n
-        - より良いレポートオプション\n
-        - ヘルプとフィードバックの項目を追加\n
-        - 多くのバグフィックスと改良\n
-        </string>
+  <string name="whats_new">
+- 複数の異なる帳簿のサポート \n
+- エクスポート先として ownCloud を追加\n
+- 取引リストのコンパクト表示\n
+- パスコードロック画面の再設計\n
+- スケジュールされた取引の処理を改善\n
+- 複数のバグの修正と改良\n</string>
   <string name="label_dismiss">消去</string>
   <string name="toast_transanction_amount_required">取引を保存するには金額の入力が必要です</string>
   <string name="toast_error_edit_multi_currency_transaction">多通貨の取引は変更できません</string>
@@ -207,7 +207,7 @@
   <string name="title_all_accounts">すべて</string>
   <string name="summary_create_default_accounts">一般的に使用されるデフォルトの GnuCash 勘定科目構成を作成します</string>
   <string name="title_create_default_accounts">デフォルトの勘定科目を作成</string>
-  <string name="msg_confirm_create_default_accounts_setting">デバイス上の勘定科目と取引はすべて削除されます。\n\n続行してもよろしいですか?</string>
+  <string name="msg_confirm_create_default_accounts_setting">デフォルトの勘定で新しい帳簿が開かれて\n\n現在の勘定と取引は変更されません!</string>
   <string name="menu_scheduled_transactions">予定の取引</string>
   <string name="msg_confirm_create_default_accounts_first_run">GnuCash Android へようこそ!\n
 一般的に使用される勘定科目の階層を作成することも、独自の GnuCash 勘定科目構成をインポートすることもできます。\n\n
@@ -410,7 +410,7 @@
   <!-- Passcode lock -->
   <string name="digit_one">1</string>
   <!-- In the English locale, digit 1 has no text on it. This is simply empty space. If your locale has text on digit 1, then translate-->
-  <string name="digit_one_text">​</string>
+  <string name="digit_one_text">​1</string>
   <string name="digit_two">2</string>
   <string name="digit_two_text">ABC</string>
   <string name="digit_three">3</string>
@@ -441,4 +441,26 @@
   <string name="toast_transaction_has_no_splits_and_cannot_open">選択した取引は分割がありません。開くことはできません</string>
   <string name="label_split_count">%1$d 分割</string>
   <string name="label_inside_account_with_name">%1$s 中</string>
+  <plurals name="book_account_stats">
+    <item quantity="other">%d 勘定</item>
+  </plurals>
+  <plurals name="book_transaction_stats">
+    <item quantity="other">%d 取引</item>
+  </plurals>
+  <string-array name="report_account_types">
+    <item>支出</item>
+    <item>収入</item>
+  </string-array>
+  <string name="toast_connected_to_google_drive">Google ドライブに接続されています</string>
+  <string name="toast_unable_to_connect_to_google_drive">Google ドライブに接続できません</string>
+  <string name="toast_enter_amount_to_split">分割する金額を入力してください</string>
+  <string name="label_export_target_external_service">外部サービス</string>
+  <string name="toast_updated_transaction_recurring_schedule">取引の繰り返し予定を更新しました</string>
+  <string name="label_export_transactions_since_date">開始</string>
+  <string name="switch_export_transactions_from_all_time">全期間</string>
+  <string name="label_recommend_app">Play ストア でお勧め</string>
+  <string name="repeat_until_date">%1$s まで</string>
+  <string name="repeat_on_weekday">%1$s に</string>
+  <string name="repeat_x_times">%1$s 回</string>
+  <string name="menu_show_compact_view">コンパクト表示</string>
 </resources>
