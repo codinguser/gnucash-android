@@ -124,23 +124,6 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
     }
 
     /**
-     * Returns the root account GUID of the current active book
-     * @return GUID of the root account
-     */
-    public @NonNull String getActiveRootAccountUID(){
-        Cursor cursor = mDb.query(mTableName, new String[]{BookEntry.COLUMN_ROOT_GUID},
-                BookEntry.COLUMN_ACTIVE + "= 1", null, null, null, null, "1");
-        try{
-            if (cursor.moveToFirst()){
-                return cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_ROOT_GUID));
-            }
-        } finally {
-            cursor.close();
-        }
-        return null;
-    }
-
-    /**
      * Returns the GUID of the current active book
      * @return GUID of the active book
      */
@@ -149,7 +132,7 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
                 BookEntry.COLUMN_ACTIVE + "= 1", null, null, null, null, "1");
         try{
             if (cursor.getCount() == 0)
-                throw new RuntimeException("There is no active book in the app. This should NEVER happen!");
+                throw new RuntimeException("There is no active book in the app. This should NEVER happen, fix your bugs!");
             cursor.moveToFirst();
             return cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_UID));
         } finally {

@@ -21,6 +21,7 @@ import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
@@ -228,10 +229,13 @@ public class ScheduledActionServiceTest {
     }
 
     /**
-     * Test that the end time for scheduled actions should be respected
+     * Test that if the end time of a scheduled transaction has passed, but the schedule was missed
+     * (either because the book was not opened or similar) then the scheduled transactions for the
+     * relevant period should still be executed even though end time has passed.
+     * <p>This holds only for transactions. Backups will be skipped</p>
      */
     @Test
-    public void scheduledActionsWithEndTimeInPast_shouldBeExecuted(){
+    public void scheduledTransactionsWithEndTimeInPast_shouldBeExecuted(){
         ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.TRANSACTION);
         DateTime startTime = new DateTime(2016, 6, 6, 9, 0);
         scheduledAction.setStartTime(startTime.getMillis());
@@ -271,7 +275,7 @@ public class ScheduledActionServiceTest {
         ScheduledActionService.processScheduledActions(actions, mDb);
     }
 
-    //// FIXME: 16.08.2016 Cannot find the file after export. But the export task is called and run
+    @Test
     public void scheduledBackups_shouldRunOnlyOnce(){
         ScheduledAction scheduledBackup = new ScheduledAction(ScheduledAction.ActionType.BACKUP);
         scheduledBackup.setStartTime(new DateTime(2016, 2, 17, 17, 0).getMillis());
@@ -282,7 +286,7 @@ public class ScheduledActionServiceTest {
         backupParams.setExportTarget(ExportParams.ExportTarget.SD_CARD);
         scheduledBackup.setTag(backupParams.toCsv());
 
-        File backupFolder = new File(Exporter.getBackupFolderPath());
+        File backupFolder = new File(Exporter.getExportFolderPath(BooksDbAdapter.getInstance().getActiveBookUID()));
         assertThat(backupFolder).exists();
         assertThat(backupFolder.listFiles()).isEmpty();
 
@@ -290,11 +294,11 @@ public class ScheduledActionServiceTest {
         actions.add(scheduledBackup);
         ScheduledActionService.processScheduledActions(actions, mDb);
 
+        assertThat(scheduledBackup.getExecutionCount()).isEqualTo(3);
         File[] backupFiles = backupFolder.listFiles();
         assertThat(backupFiles).hasSize(1);
-        assertThat(backupFiles[0]).hasExtension("gnca");
+        assertThat(backupFiles[0]).exists().hasExtension("gnca");
     }
-
 
     @After
     public void tearDown(){

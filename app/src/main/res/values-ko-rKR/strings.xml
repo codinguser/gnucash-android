@@ -132,12 +132,13 @@
   <string name="summary_xml_ofx_header">데스크탑용 GnuCash 이외의 타 응용 프로그램에 내보낼 때에 사용하세요</string>
   <string name="title_whats_new">새로운 기능</string>
   <string name="whats_new">
-         - 머티리얼 디자인\n
-        - 한 거래에 여러 통화 지원\n
-        - 거래총액 계산기 기능\n
-        - 보고서 기능 강화\n
-        - 도움말과 피드백 섹션\n
-        - 그밖에 버그 수정 및 개선\n</string>
+        - Support for multiple different books \n
+        - Adds ownCloud as destination for exports\n
+        - Compact view for transactions list\n
+        - Re-design of passcode lock screen\n
+        - Improved handling of scheduled transactions\n
+        - Multiple bug fixes and improvements\n
+	</string>
   <string name="label_dismiss">닫기</string>
   <string name="toast_transanction_amount_required">거래기록에 저장할 금액을 입력해 주세요</string>
   <string name="toast_error_edit_multi_currency_transaction">다중 통화 거래는 수정할 수 없습니다.</string>
@@ -209,7 +210,7 @@
   <string name="title_all_accounts">모든 계정</string>
   <string name="summary_create_default_accounts">GnuCash에서 일반적으로 사용되는 기본 계정구조를 생성합니다.</string>
   <string name="title_create_default_accounts">기본 계정을 생성합니다</string>
-  <string name="msg_confirm_create_default_accounts_setting">기기에 존재하던 모든 계정과 거래내역이 삭제됩니다. \n\n진행하시겠습니까?</string>
+  <string name="msg_confirm_create_default_accounts_setting">A new book will be opened with the default accounts\n\nYour current accounts and transactions will not be modified!</string>
   <string name="menu_scheduled_transactions">예약거래</string>
   <string name="msg_confirm_create_default_accounts_first_run">안드로이드용 GnuCash 사용을 환영합니다! \n일반적으로 사용되는 계정 구조를 만들거나, 이전에 사용하던 GnuCash 계정구조를 가져올 수 있습니다. \n\n지금 결정하지 않아도 나중에 설정 메뉴에 들어가서 정할 수 있습니다.    </string>
   <string name="title_scheduled_transactions">거래내역</string>
@@ -441,4 +442,26 @@
   <string name="toast_transaction_has_no_splits_and_cannot_open">열 수 없습니다. 선택한 거래내역에는 분할이 없습니다.</string>
   <string name="label_split_count">%1$d개 분할</string>
   <string name="label_inside_account_with_name">%1$s개 중</string>
+  <plurals name="book_account_stats">
+    <item quantity="other">%d accounts</item>
+  </plurals>
+  <plurals name="book_transaction_stats">
+    <item quantity="other">%d transactions</item>
+  </plurals>
+  <string-array name="report_account_types">
+    <item>EXPENSE</item>
+    <item>INCOME</item>
+  </string-array>
+  <string name="toast_connected_to_google_drive">Connected to Google Drive</string>
+  <string name="toast_unable_to_connect_to_google_drive">Unable to connect to Google Drive</string>
+  <string name="toast_enter_amount_to_split">Please enter an amount to split</string>
+  <string name="label_export_target_external_service">external service</string>
+  <string name="toast_updated_transaction_recurring_schedule">Updated transaction recurring schedule</string>
+  <string name="label_export_transactions_since_date">Since</string>
+  <string name="switch_export_transactions_from_all_time">All time</string>
+  <string name="label_recommend_app">Recommend in Play Store</string>
+  <string name="repeat_until_date">until %1$s</string>
+  <string name="repeat_on_weekday">on %1$s</string>
+  <string name="repeat_x_times">for %1$s times</string>
+  <string name="menu_show_compact_view">Compact View</string>
 </resources>

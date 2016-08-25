@@ -23,6 +23,8 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
@@ -33,6 +35,7 @@ import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
+import org.gnucash.android.model.Book;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.BudgetAmount;
@@ -905,12 +908,13 @@ public class GncXmlExporter extends Exporter{
     }
 
     /**
-     * Creates a backup of current database contents to the directory {@link Exporter#getBackupFolderPath()}
+     * Creates a backup of current database contents to the directory {@link Exporter#getBackupFolderPath(String)}
      * @return {@code true} if backup was successful, {@code false} otherwise
      */
     public static boolean createBackup(){
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream(getBackupFilePath());
+            String bookUID = BooksDbAdapter.getInstance().getActiveBookUID();
+            FileOutputStream fileOutputStream = new FileOutputStream(getBackupFilePath(bookUID));
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
             GZIPOutputStream gzipOutputStream = new GZIPOutputStream(bufferedOutputStream);
             OutputStreamWriter writer = new OutputStreamWriter(gzipOutputStream);
@@ -927,12 +931,14 @@ public class GncXmlExporter extends Exporter{
     }
 
     /**
-     * Returns the full path of a file to make database backup.
+     * Returns the full path of a file to make database backup of the specified book
      * Backups are done in XML format and are zipped (with ".zip" extension).
+     * @param bookUID GUID of the book
      * @return the file path for backups of the database.
-     * @see #getBackupFolderPath()
+     * @see #getBackupFolderPath(String)
      */
-    private static String getBackupFilePath(){
-        return Exporter.getBackupFolderPath() + buildExportFilename(ExportFormat.XML) + ".zip";
+    private static String getBackupFilePath(String bookUID){
+        Book book = BooksDbAdapter.getInstance().getRecord(bookUID);
+        return Exporter.getBackupFolderPath(book.getUID()) + buildExportFilename(ExportFormat.XML, book.getDisplayName()) + ".zip";
     }
 }

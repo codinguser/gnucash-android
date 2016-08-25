@@ -200,7 +200,7 @@ public class ExportTransactionsTest extends
 			}
 		}
 
-		File folder = new File(Exporter.getExportFolderPath());
+		File folder = new File(Exporter.getExportFolderPath(BooksDbAdapter.getInstance().getActiveBookUID()));
 		folder.mkdirs();
 		assertThat(folder).exists();
 

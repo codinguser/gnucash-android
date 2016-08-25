@@ -46,6 +46,7 @@ import com.google.android.gms.drive.MetadataChangeSet;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
@@ -352,7 +353,8 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 	 */
 	private void restoreBackup() {
 		Log.i("Settings", "Opening GnuCash XML backups for restore");
-		File[] backupFiles = new File(Exporter.getBackupFolderPath()).listFiles();
+		String bookUID = BooksDbAdapter.getInstance().getActiveBookUID();
+		File[] backupFiles = new File(Exporter.getBackupFolderPath(bookUID)).listFiles();
 		if (backupFiles == null || backupFiles.length == 0){
 			android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity())
 					.setTitle("No backups found")
@@ -364,7 +366,6 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 						}
 					});
 			builder.create().show();
-			Exporter.getBackupFolderPath(); //creates the directory
 			return;
 		}
 

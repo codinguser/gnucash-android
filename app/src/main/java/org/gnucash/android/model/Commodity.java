@@ -190,6 +190,15 @@ public class Commodity extends BaseModel {
         this.mQuoteFlag = quoteFlag;
     }
 
+    @Override
+    /**
+     * Returns the full name of the currency, or the currency code if there is no full name
+     * @return String representation of the commodity
+     */
+    public String toString() {
+        return mFullname == null || mFullname.isEmpty() ? mMnemonic : mFullname;
+    }
+
     /**
      * Overrides {@link BaseModel#equals(Object)} to compare only the currency codes of the commodity.
      * <p>Two commodities are considered equal if they have the same currency code</p>

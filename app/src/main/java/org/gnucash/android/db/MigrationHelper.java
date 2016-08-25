@@ -1438,7 +1438,6 @@ public class MigrationHelper {
             db.endTransaction();
         }
 
-
         //Migrate book-specific preferences away from shared preferences
         Log.d(LOG_TAG, "Migrating shared preferences into book preferences");
         Context context = GnuCashApplication.getAppContext();
