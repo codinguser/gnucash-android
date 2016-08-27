@@ -190,4 +190,45 @@ public class GncXmlHandlerTest {
         assertThat(split2.getReconcileState()).isEqualTo('n');
         assertThat(split2.isPairOf(split1)).isTrue();
     }
+
+    /**
+     * Checks for bug 562 - Scheduled transaction imported with imbalanced splits.
+     *
+     * <p>Happens when an scheduled transaction is defined with both credit and
+     * debit slots in each split.</p>
+     */
+    @Test
+    public void bug562_scheduledTransactionImportedWithImbalancedSplits() throws ParseException {
+        String bookUID = importGnuCashXml("bug562_scheduledTransactionImportedWithImbalancedSplits.xml");
+        setUpDbAdapters(bookUID);
+
+        assertThat(mTransactionsDbAdapter.getTemplateTransactionsCount()).isEqualTo(1);
+
+        Transaction scheduledTransaction =
+                mTransactionsDbAdapter.getRecord("b645bef06d0844aece6424ceeec03983");
+
+        // Ensure it's the correct transaction
+        assertThat(scheduledTransaction.getDescription()).isEqualTo("Los pollos hermanos");
+        assertThat(scheduledTransaction.isTemplate()).isTrue();
+
+        // Check splits
+        assertThat(scheduledTransaction.getSplits().size()).isEqualTo(2);
+
+        Split split1 = scheduledTransaction.getSplits().get(0);
+        assertThat(split1.getAccountUID()).isEqualTo("6a7cf8267314992bdddcee56d71a3908");
+        assertThat(split1.getType()).isEqualTo(TransactionType.CREDIT);
+        assertThat(split1.getValue()).isEqualTo(new Money("20", "USD"));
+        // FIXME: the quantity is always 0 as it's set from <split:quantity> instead
+        // of from the slots
+        //assertThat(split1.getQuantity()).isEqualTo(new Money("20", "USD"));
+
+        Split split2 = scheduledTransaction.getSplits().get(1);
+        assertThat(split2.getAccountUID()).isEqualTo("dae686a1636addc0dae1ae670701aa4a");
+        assertThat(split2.getType()).isEqualTo(TransactionType.DEBIT);
+        assertThat(split2.getValue()).isEqualTo(new Money("20", "USD"));
+        // FIXME: the quantity is always 0 as it's set from <split:quantity> instead
+        // of from the slots
+        //assertThat(split2.getQuantity()).isEqualTo(new Money("20", "USD"));
+        assertThat(split2.isPairOf(split1)).isTrue();
+    }
 }
