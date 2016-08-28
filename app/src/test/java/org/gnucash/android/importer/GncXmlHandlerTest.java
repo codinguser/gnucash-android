@@ -192,6 +192,59 @@ public class GncXmlHandlerTest {
     }
 
     /**
+     * Tests importing a simple scheduled transaction with default splits.
+     */
+    //@Test Disabled as currently amounts are only read from credit/debit-numeric
+    // slots and transactions without amount are ignored.
+    public void testImportSimpleScheduledTransaction() throws ParseException {
+        String bookUID = importGnuCashXml("testImportSimpleScheduledTransaction.xml");
+        setUpDbAdapters(bookUID);
+
+        assertThat(mTransactionsDbAdapter.getTemplateTransactionsCount()).isEqualTo(1);
+
+        Transaction scheduledTransaction =
+                mTransactionsDbAdapter.getRecord("b645bef06d0844aece6424ceeec03983");
+
+        // Check attributes
+        assertThat(scheduledTransaction.getDescription()).isEqualTo("Los pollos hermanos");
+        assertThat(scheduledTransaction.getCommodity().getCurrencyCode()).isEqualTo("USD");
+        assertThat(scheduledTransaction.getNote()).isEqualTo("");
+        assertThat(scheduledTransaction.getScheduledActionUID()).isNull();
+        assertThat(scheduledTransaction.isExported()).isTrue();
+        assertThat(scheduledTransaction.isTemplate()).isTrue();
+        assertThat(scheduledTransaction.getTimeMillis())
+                .isEqualTo(GncXmlHelper.parseDate("2016-08-24 00:00:00 +0200"));
+        assertThat(scheduledTransaction.getCreatedTimestamp().getTime())
+                .isEqualTo(GncXmlHelper.parseDate("2016-08-24 19:50:15 +0200"));
+
+        // Check splits
+        assertThat(scheduledTransaction.getSplits().size()).isEqualTo(2);
+
+        Split split1 = scheduledTransaction.getSplits().get(0);
+        assertThat(split1.getUID()).isEqualTo("f66794ef262aac3ae085ecc3030f2769");
+        assertThat(split1.getAccountUID()).isEqualTo("6a7cf8267314992bdddcee56d71a3908");
+        assertThat(split1.getTransactionUID()).isEqualTo("b645bef06d0844aece6424ceeec03983");
+        assertThat(split1.getType()).isEqualTo(TransactionType.CREDIT);
+        assertThat(split1.getMemo()).isNull();
+        assertThat(split1.getValue()).isEqualTo(new Money("20", "USD"));
+        // FIXME: the quantity is always 0 as it's set from <split:quantity> instead
+        // of from the slots
+        //assertThat(split1.getQuantity()).isEqualTo(new Money("20", "USD"));
+
+        Split split2 = scheduledTransaction.getSplits().get(1);
+        assertThat(split2.getUID()).isEqualTo("57e2be6ca6b568f8f7c9b2e455e1e21f");
+        assertThat(split2.getAccountUID()).isEqualTo("dae686a1636addc0dae1ae670701aa4a");
+        assertThat(split2.getTransactionUID()).isEqualTo("b645bef06d0844aece6424ceeec03983");
+        assertThat(split2.getType()).isEqualTo(TransactionType.DEBIT);
+        assertThat(split2.getMemo()).isNull();
+        assertThat(split2.getValue()).isEqualTo(new Money("20", "USD"));
+        // FIXME: the quantity is always 0 as it's set from <split:quantity> instead
+        // of from the slots
+        //assertThat(split2.getQuantity()).isEqualTo(new Money("20", "USD"));
+        assertThat(split2.isPairOf(split1)).isTrue();
+    }
+
+    /**
      * Checks for bug 562 - Scheduled transaction imported with imbalanced splits.
      *
      * <p>Happens when an scheduled transaction is defined with both credit and
