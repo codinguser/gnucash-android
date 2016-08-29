@@ -1050,11 +1050,16 @@ public class GncXmlHandler extends DefaultHandler {
      */
     private void handleEndOfTemplateNumericSlot(String characterString, TransactionType splitType) {
         try {
-            BigDecimal amountBigD = GncXmlHelper.parseSplitAmount(characterString);
-            Money amount = new Money(amountBigD, getCommodityForAccount(mSplit.getAccountUID()));
-            mSplit.setValue(amount.abs());
-            mSplit.setType(splitType);
-            mIgnoreTemplateTransaction = false; //we have successfully parsed an amount
+            // HACK: Check for bug #562. If a value has already been set, ignore the one just read
+            if (mSplit.getValue().equals(
+                    new Money(BigDecimal.ZERO, mSplit.getValue().getCommodity()))) {
+                BigDecimal amountBigD = GncXmlHelper.parseSplitAmount(characterString);
+                Money amount = new Money(amountBigD, getCommodityForAccount(mSplit.getAccountUID()));
+
+                mSplit.setValue(amount.abs());
+                mSplit.setType(splitType);
+                mIgnoreTemplateTransaction = false; //we have successfully parsed an amount
+            }
         } catch (NumberFormatException | ParseException e) {
             String msg = "Error parsing template credit split amount " + characterString;
             Log.e(LOG_TAG, msg + "\n" + e.getMessage());
