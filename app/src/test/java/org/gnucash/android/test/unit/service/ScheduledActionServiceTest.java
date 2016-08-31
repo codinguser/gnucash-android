@@ -199,10 +199,7 @@ public class ScheduledActionServiceTest {
         actions.add(scheduledAction);
         ScheduledActionService.processScheduledActions(actions, mDb);
 
-        int weeks = Weeks.weeksBetween(startTime, new DateTime(2016, 8, 29, 10, 0)).getWeeks();
-        int expectedTransactionCount = weeks/2;
-
-        assertThat(transactionsDbAdapter.getRecordsCount()).isEqualTo(expectedTransactionCount);
+        assertThat(transactionsDbAdapter.getRecordsCount()).isEqualTo(7);
     }
 
     public void endTimeInTheFuture_shouldExecuteOnlyUntilPresent(){
