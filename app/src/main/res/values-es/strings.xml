@@ -472,4 +472,5 @@ Este proceso solo recoge información que no permite identificar al usuario</str
   <string name="repeat_on_weekday">en %1$s</string>
   <string name="repeat_x_times">%1$s veces</string>
   <string name="menu_show_compact_view">Vista compacta</string>
+  <string name="book_default_name">Book %1$d</string>
 </resources>

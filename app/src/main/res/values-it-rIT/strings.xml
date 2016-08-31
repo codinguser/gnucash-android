@@ -474,4 +474,5 @@
   <string name="repeat_on_weekday">il %1$s</string>
   <string name="repeat_x_times">per %1$s volte</string>
   <string name="menu_show_compact_view">Visualizzazione compatta</string>
+  <string name="book_default_name">Book %1$d</string>
 </resources>

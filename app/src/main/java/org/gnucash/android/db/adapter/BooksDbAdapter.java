@@ -24,6 +24,7 @@ import android.database.sqlite.SQLiteStatement;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema.BookEntry;
 import org.gnucash.android.model.Book;
@@ -111,7 +112,7 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
 
         return result;
     }
-    
+
     /**
      * Sets the book with unique identifier {@code uid} as active and all others as inactive
      * <p>If the parameter is null, then the currently active book is not changed</p>
@@ -191,7 +192,9 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
         SQLiteStatement statement = mDb.compileStatement(sql);
 
         while (true) {
-            String name = "Book" + " " + bookCount;
+            Context context = GnuCashApplication.getAppContext();
+            String name = context.getString(R.string.book_default_name, bookCount);
+            //String name = "Book" + " " + bookCount;
 
             statement.clearBindings();
             statement.bindString(1, name);

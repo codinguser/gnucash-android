@@ -474,4 +474,5 @@ Aucune information permettant d\'identifier l\'utilisateur ne sera recueillis da
   <string name="repeat_on_weekday">on %1$s</string>
   <string name="repeat_x_times">for %1$s times</string>
   <string name="menu_show_compact_view">Compact View</string>
+  <string name="book_default_name">Book %1$d</string>
 </resources>
