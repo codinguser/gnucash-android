@@ -65,8 +65,8 @@ It will build the project for you and install it to the connected Android device
 The app is configured to allow you to install a development and production version in parallel on your device.
 
 ### With Android Studio
-The easiest way to build is to install [Android Studio](https://developer.android.com/sdk/index.html) v1.+
-with [Gradle](https://www.gradle.org/) v2.4.
+The easiest way to build is to install [Android Studio](https://developer.android.com/sdk/index.html) v2.+
+with [Gradle](https://www.gradle.org/) v2.10
 Once installed, then you can import the project into Android Studio:
 
 1. Open `File`
@@ -85,7 +85,7 @@ Google+ Community: https://plus.google.com/communities/104728406764752407046
 There are several ways you could contribute to the development.
 
 * One way is providing translations for locales which are not yet available, or improving translations.
-See this [blog post](http://www.codinguser.com/2012/09/gnucash-for-android-beta-2-lost-in-translation/) for some guidelines.
+Please visit [CrowdIn](https://crowdin.com/project/gnucash-android) in order to update and create new translations
 
 * You could as well contribute code, fixing bugs, new features or automated tests. Pull requests are always welcome.
 Take a look at the [bug tracker](https://github.com/codinguser/gnucash-android/issues?state=open)
