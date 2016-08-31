@@ -95,7 +95,7 @@ public class TransactionsListFragment extends Fragment implements
 		Bundle args = getArguments();
 		mAccountUID = args.getString(UxArgument.SELECTED_ACCOUNT_UID);
 
-		mUseCompactView = PreferenceActivity.getActiveBookSharedPreferences(getActivity())
+		mUseCompactView = PreferenceActivity.getActiveBookSharedPreferences()
 				.getBoolean(getActivity().getString(R.string.key_use_compact_list), !GnuCashApplication.isDoubleEntryEnabled());
 		//if there was a local override of the global setting, respect it
 		if (savedInstanceState != null)

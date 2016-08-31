@@ -252,7 +252,7 @@ public class GnuCashApplication extends Application{
      * @return <code>true</code> if double entry is enabled, <code>false</code> otherwise
      */
     public static boolean isDoubleEntryEnabled(){
-        SharedPreferences sharedPrefs = PreferenceActivity.getActiveBookSharedPreferences(context);
+        SharedPreferences sharedPrefs = PreferenceActivity.getActiveBookSharedPreferences();
         return sharedPrefs.getBoolean(context.getString(R.string.key_use_double_entry), true);
     }
 
@@ -263,7 +263,7 @@ public class GnuCashApplication extends Application{
      * @return <code>true</code> if opening balances should be saved, <code>false</code> otherwise
      */
     public static boolean shouldSaveOpeningBalances(boolean defaultValue){
-        SharedPreferences sharedPrefs = PreferenceActivity.getActiveBookSharedPreferences(context);
+        SharedPreferences sharedPrefs = PreferenceActivity.getActiveBookSharedPreferences();
         return sharedPrefs.getBoolean(context.getString(R.string.key_save_opening_balances), defaultValue);
     }
 
