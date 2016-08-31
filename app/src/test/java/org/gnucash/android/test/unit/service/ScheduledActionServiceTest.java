@@ -187,9 +187,12 @@ public class ScheduledActionServiceTest {
         ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.TRANSACTION);
         DateTime startTime = new DateTime(2016, 6, 6, 9, 0);
         scheduledAction.setStartTime(startTime.getMillis());
+        DateTime endTime = new DateTime(2016, 8, 29, 10, 0);
+        scheduledAction.setEndTime(endTime.getMillis());
         scheduledAction.setActionUID(mActionUID);
 
-        scheduledAction.setRecurrence(PeriodType.WEEK, 2);
+        int multiplier = 2;
+        scheduledAction.setRecurrence(PeriodType.WEEK, multiplier);
         ScheduledActionDbAdapter.getInstance().addRecord(scheduledAction, DatabaseAdapter.UpdateMethod.insert);
 
         TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
@@ -199,10 +202,8 @@ public class ScheduledActionServiceTest {
         actions.add(scheduledAction);
         ScheduledActionService.processScheduledActions(actions, mDb);
 
-        int weeks = Weeks.weeksBetween(startTime, new DateTime(2016, 8, 29, 10, 0)).getWeeks();
-        int expectedTransactionCount = weeks/2;
-
-        assertThat(transactionsDbAdapter.getRecordsCount()).isEqualTo(expectedTransactionCount);
+        //int expectedCount = Weeks.weeksBetween(startTime, endTime).dividedBy(multiplier).getWeeks();
+        assertThat(transactionsDbAdapter.getRecordsCount()).isEqualTo(7);
     }
 
     public void endTimeInTheFuture_shouldExecuteOnlyUntilPresent(){
