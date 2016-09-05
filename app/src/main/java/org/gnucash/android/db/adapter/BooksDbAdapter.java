@@ -17,15 +17,18 @@
 package org.gnucash.android.db.adapter;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema.BookEntry;
 import org.gnucash.android.model.Book;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.util.TimestampHelper;
 
 /**
@@ -90,6 +93,24 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
         stmt.bindString(6, book.getUID());
         stmt.bindString(7, TimestampHelper.getUtcStringFromTimestamp(book.getLastSync()));
         return stmt;
+    }
+
+
+    /**
+     * Deletes a book - removes the book record from the database and deletes the database file from the disk
+     * @param bookUID GUID of the book
+     * @return <code>true</code> if deletion was successful, <code>false</code> otherwise
+     * @see #deleteRecord(String)
+     */
+    public boolean deleteBook(@NonNull String bookUID){
+        Context context = GnuCashApplication.getAppContext();
+        boolean result = context.deleteDatabase(bookUID);
+        if (result) //delete the db entry only if the file deletion was successful
+            result &= deleteRecord(bookUID);
+
+        PreferenceActivity.getBookSharedPreferences(bookUID).edit().clear().apply();
+
+        return result;
     }
 
     /**
@@ -171,7 +192,9 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
         SQLiteStatement statement = mDb.compileStatement(sql);
 
         while (true) {
-            String name = "Book" + " " + bookCount;
+            Context context = GnuCashApplication.getAppContext();
+            String name = context.getString(R.string.book_default_name, bookCount);
+            //String name = "Book" + " " + bookCount;
 
             statement.clearBindings();
             statement.bindString(1, name);

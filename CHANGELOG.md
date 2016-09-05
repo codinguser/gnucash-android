@@ -1,6 +1,6 @@
 Change Log
 ===============================================================================
-Version 2.1.0 *(2016-xx-xx)*
+Version 2.1.0 *(2016-09-01)*
 ----------------------------
 * Feature: Use multiple GnuCash books in single application
 * Feature: Backup/Export to ownCloud servers
@@ -8,7 +8,9 @@ Version 2.1.0 *(2016-xx-xx)*
 * Improved: Redesign of passcode screen with included alphabet keys
 * Improved: Scheduled transactions now have more accurate timestamps
 * Improved: Generate all scheduled transactions even if a scheduled is missed (e.g. device off)
+* Improved: Updated translations (and extracted some hard-coded strings)
 * Fixed: Accounts lists not properly refreshed after switching between recent and all
+* Fixed: Inaccurate execution of some scheduled transactions
 
 Version 2.0.7 *(2016-05-05)*
 ----------------------------

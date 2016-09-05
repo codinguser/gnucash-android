@@ -78,7 +78,7 @@ public final class PreferencesHelper {
      * @return A {@link Timestamp} with the time.
      */
     public static Timestamp getLastExportTime() {
-        final String utcString = PreferenceActivity.getActiveBookSharedPreferences(GnuCashApplication.getAppContext())
+        final String utcString = PreferenceActivity.getActiveBookSharedPreferences()
                 .getString(PREFERENCE_LAST_EXPORT_TIME_KEY,
                         TimestampHelper.getUtcStringFromTimestamp(TimestampHelper.getTimestampFromEpochZero()));
         Log.d(LOG_TAG, "Retrieving '" + utcString + "' as lastExportTime from Android Preferences.");

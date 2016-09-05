@@ -238,7 +238,7 @@ public class AccountFormFragment extends Fragment {
 		setHasOptionsMenu(true);
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
-        SharedPreferences sharedPrefs = PreferenceActivity.getActiveBookSharedPreferences(getActivity());
+        SharedPreferences sharedPrefs = PreferenceActivity.getActiveBookSharedPreferences();
         mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), true);
 	}
 	

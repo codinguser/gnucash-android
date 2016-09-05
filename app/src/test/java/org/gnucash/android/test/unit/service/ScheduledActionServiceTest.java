@@ -202,7 +202,6 @@ public class ScheduledActionServiceTest {
         actions.add(scheduledAction);
         ScheduledActionService.processScheduledActions(actions, mDb);
 
-        //int expectedCount = Weeks.weeksBetween(startTime, endTime).dividedBy(multiplier).getWeeks();
         assertThat(transactionsDbAdapter.getRecordsCount()).isEqualTo(7);
     }
 

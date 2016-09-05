@@ -148,7 +148,7 @@ public class ExportTransactionsTest extends
 	 */
 	@Test
 	public void testOfxExport(){
-		SharedPreferences.Editor prefsEditor = PreferenceActivity.getActiveBookSharedPreferences(mAcccountsActivity)
+		SharedPreferences.Editor prefsEditor = PreferenceActivity.getActiveBookSharedPreferences()
 				.edit();
 		prefsEditor.putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), false)
 				.commit();
@@ -159,7 +159,7 @@ public class ExportTransactionsTest extends
 
 	@Test
 	public void whenInSingleEntry_shouldHideXmlExportOption(){
-		SharedPreferences.Editor prefsEditor = PreferenceActivity.getActiveBookSharedPreferences(mAcccountsActivity)
+		SharedPreferences.Editor prefsEditor = PreferenceActivity.getActiveBookSharedPreferences()
 				.edit();
 		prefsEditor.putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), false)
 				.commit();
@@ -232,7 +232,7 @@ public class ExportTransactionsTest extends
 		editor.putBoolean(mAcccountsActivity.getString(R.string.key_delete_transactions_after_export), true);
 		editor.commit();
 
-		PreferenceActivity.getActiveBookSharedPreferences(getActivity())
+		PreferenceActivity.getActiveBookSharedPreferences()
 				.edit()
 				.putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), true)
 				.apply();

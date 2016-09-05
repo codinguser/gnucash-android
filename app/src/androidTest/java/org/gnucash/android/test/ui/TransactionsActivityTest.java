@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.support.test.espresso.Espresso;
-import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -61,7 +60,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -69,7 +67,6 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static android.support.test.espresso.matcher.ViewMatchers.hasSibling;
 import static android.support.test.espresso.matcher.ViewMatchers.isChecked;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -77,7 +74,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
@@ -451,7 +447,7 @@ public class TransactionsActivityTest {
 
 
     private void setDoubleEntryEnabled(boolean enabled){
-        SharedPreferences prefs = PreferenceActivity.getActiveBookSharedPreferences(mTransactionsActivity);
+        SharedPreferences prefs = PreferenceActivity.getActiveBookSharedPreferences();
         Editor editor = prefs.edit();
         editor.putBoolean(mTransactionsActivity.getString(R.string.key_use_double_entry), enabled);
         editor.apply();
@@ -466,7 +462,7 @@ public class TransactionsActivityTest {
 	}
 
 	private void setDefaultTransactionType(TransactionType type) {
-		SharedPreferences prefs = PreferenceActivity.getActiveBookSharedPreferences(mTransactionsActivity);
+		SharedPreferences prefs = PreferenceActivity.getActiveBookSharedPreferences();
 		Editor editor = prefs.edit();
 		editor.putString(mTransactionsActivity.getString(R.string.key_default_transaction_type), type.name());
 		editor.commit();
