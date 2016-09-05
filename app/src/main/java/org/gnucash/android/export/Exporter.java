@@ -27,12 +27,18 @@ import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.CommoditiesDbAdapter;
-import org.gnucash.android.db.PricesDbAdapter;
-import org.gnucash.android.db.ScheduledActionDbAdapter;
-import org.gnucash.android.db.SplitsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
+import org.gnucash.android.db.adapter.BudgetAmountsDbAdapter;
+import org.gnucash.android.db.adapter.BudgetsDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.PricesDbAdapter;
+import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
+import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
+import org.gnucash.android.db.adapter.SplitsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
+import org.gnucash.android.model.Book;
 
 import java.io.File;
 import java.text.ParseException;
@@ -57,17 +63,7 @@ public abstract class Exporter {
     /**
      * Application folder on external storage
      */
-    private static final String BASE_FOLDER_PATH = Environment.getExternalStorageDirectory() + "/" + BuildConfig.APPLICATION_ID;
-
-    /**
-     * Folder where exports like QIF and OFX will be saved for access by external programs
-     */
-    public static final String EXPORT_FOLDER_PATH =  BASE_FOLDER_PATH + "/exports/";
-
-    /**
-     * Folder where XML backups will be saved
-     */
-    public static final String BACKUP_FOLDER_PATH = BASE_FOLDER_PATH + "/backups/";
+    public static final String BASE_FOLDER_PATH = Environment.getExternalStorageDirectory() + "/" + BuildConfig.APPLICATION_ID;
 
     /**
      * Export options
@@ -95,28 +91,45 @@ public abstract class Exporter {
     protected final ScheduledActionDbAdapter mScheduledActionDbAdapter;
     protected final PricesDbAdapter mPricesDbAdapter;
     protected final CommoditiesDbAdapter mCommoditiesDbAdapter;
+	protected final BudgetsDbAdapter mBudgetsDbAdapter;
     protected final Context mContext;
     private String mExportCacheFilePath;
+
+    /**
+     * Database being currently exported
+     */
+    protected final SQLiteDatabase mDb;
+
+    /**
+     * GUID of the book being exported
+     */
+    protected String mBookUID;
 
     public Exporter(ExportParams params, SQLiteDatabase db) {
         this.mExportParams = params;
         mContext = GnuCashApplication.getAppContext();
         if (db == null) {
-            mAccountsDbAdapter = AccountsDbAdapter.getInstance();
-            mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
-            mSplitsDbAdapter = SplitsDbAdapter.getInstance();
+            mAccountsDbAdapter      = AccountsDbAdapter.getInstance();
+            mTransactionsDbAdapter  = TransactionsDbAdapter.getInstance();
+            mSplitsDbAdapter        = SplitsDbAdapter.getInstance();
+            mPricesDbAdapter        = PricesDbAdapter.getInstance();
+            mCommoditiesDbAdapter   = CommoditiesDbAdapter.getInstance();
+            mBudgetsDbAdapter       = BudgetsDbAdapter.getInstance();
             mScheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
-            mPricesDbAdapter = PricesDbAdapter.getInstance();
-            mCommoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
+            mDb = GnuCashApplication.getActiveDb();
         } else {
-            mSplitsDbAdapter = new SplitsDbAdapter(db);
-            mTransactionsDbAdapter = new TransactionsDbAdapter(db, mSplitsDbAdapter);
-            mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);
-            mScheduledActionDbAdapter = new ScheduledActionDbAdapter(db);
-            mPricesDbAdapter = new PricesDbAdapter(db);
-            mCommoditiesDbAdapter = new CommoditiesDbAdapter(db);
+            mDb = db;
+            mSplitsDbAdapter        = new SplitsDbAdapter(db);
+            mTransactionsDbAdapter  = new TransactionsDbAdapter(db, mSplitsDbAdapter);
+            mAccountsDbAdapter      = new AccountsDbAdapter(db, mTransactionsDbAdapter);
+            mPricesDbAdapter        = new PricesDbAdapter(db);
+            mCommoditiesDbAdapter   = new CommoditiesDbAdapter(db);
+            RecurrenceDbAdapter recurrenceDbAdapter = new RecurrenceDbAdapter(db);
+            mBudgetsDbAdapter       = new BudgetsDbAdapter(db, new BudgetAmountsDbAdapter(db), recurrenceDbAdapter);
+            mScheduledActionDbAdapter = new ScheduledActionDbAdapter(db, recurrenceDbAdapter);
         }
 
+        mBookUID = new File(mDb.getPath()).getName(); //this depends on the database file always having the name of the book GUID
         mExportCacheFilePath = null;
         mCacheDir = new File(mContext.getCacheDir(), params.getExportFormat().name());
         mCacheDir.mkdir();
@@ -124,17 +137,29 @@ public abstract class Exporter {
     }
 
     /**
+     * Strings a string of any characters not allowed in a file name.
+     * All unallowed characters are replaced with an underscore
+     * @param inputName Raw file name input
+     * @return Sanitized file name
+     */
+    public static String sanitizeFilename(String inputName) {
+        return inputName.replaceAll("[^a-zA-Z0-9-_\\.]", "_");
+    }
+
+    /**
      * Builds a file name based on the current time stamp for the exported file
+     * @param format Format to use when exporting
+     * @param bookName Name of the book being exported. This name will be included in the generated file name
      * @return String containing the file name
      */
-    public static String buildExportFilename(ExportFormat format) {
+    public static String buildExportFilename(ExportFormat format, String bookName) {
         return EXPORT_FILENAME_DATE_FORMAT.format(new Date(System.currentTimeMillis()))
-                + "_gnucash_export" + format.getExtension();
+                + "_gnucash_export_" + sanitizeFilename(bookName) + format.getExtension();
     }
 
     /**
      * Parses the name of an export file and returns the date of export
-     * @param filename Export file name generated by {@link #buildExportFilename(ExportFormat)}
+     * @param filename Export file name generated by {@link #buildExportFilename(ExportFormat,String)}
      * @return Date in milliseconds
      */
     public static long getExportTime(String filename){
@@ -185,11 +210,41 @@ public abstract class Exporter {
             String cachePath = mCacheDir.getAbsolutePath();
             if (!cachePath.endsWith("/"))
                 cachePath += "/";
-            mExportCacheFilePath = cachePath + buildExportFilename(mExportParams.getExportFormat());
+            String bookName = BooksDbAdapter.getInstance().getAttribute(mBookUID, DatabaseSchema.BookEntry.COLUMN_DISPLAY_NAME);
+            mExportCacheFilePath = cachePath + buildExportFilename(mExportParams.getExportFormat(), bookName);
         }
 
         return mExportCacheFilePath;
     }
+
+    /**
+     * Returns that path to the export folder for the book with GUID {@code bookUID}.
+     * This is the folder where exports like QIF and OFX will be saved for access by external programs
+     * @param bookUID GUID of the book being exported. Each book has its own export path
+     * @return Absolute path to export folder for active book
+     */
+    public static String getExportFolderPath(String bookUID){
+        String path = BASE_FOLDER_PATH + "/" + bookUID + "/exports/";
+        File file = new File(path);
+        if (!file.exists())
+            file.mkdirs();
+        return path;
+    }
+
+    /**
+     * Returns the path to the backups folder for the book with GUID {@code bookUID}
+     * Each book has its own backup path
+     *
+     * @return Absolute path to backup folder for the book
+     */
+    public static String getBackupFolderPath(String bookUID){
+        String path = BASE_FOLDER_PATH + "/" + bookUID + "/backups/";
+        File file = new File(path);
+        if (!file.exists())
+            file.mkdirs();
+        return path;
+    }
+
 
     /**
      * Returns the MIME type for this exporter.

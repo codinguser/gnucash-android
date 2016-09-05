@@ -24,16 +24,32 @@ import android.provider.BaseColumns;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class DatabaseSchema {
-    /**
-     * Database version.
-     * With any change to the database schema, this number must increase
-     */
-    public static final int DATABASE_VERSION = 12;
 
     /**
-     * Database version where Splits were introduced
+     * Name of database storing information about the books in the application
      */
-    public static final int SPLITS_DB_VERSION = 7;
+    public static final String BOOK_DATABASE_NAME = "gnucash_books.db";
+
+    /**
+     * Version number of database containing information about the books in the application
+     */
+    public static final int BOOK_DATABASE_VERSION = 1;
+
+    /**
+     * Version number of database containing accounts and transactions info.
+     * With any change to the database schema, this number must increase
+     */
+    public static final int DATABASE_VERSION = 13;
+
+    /**
+     * Name of the database
+     * <p>This was used when the application had only one database per instance.
+     * Now there can be multiple databases for each book imported
+     * </p>
+     * @deprecated Each database uses the GUID of the root account as name
+     */
+    @Deprecated
+    public static final String LEGACY_DATABASE_NAME = "gnucash_db";
 
     //no instances are to be instantiated
     private DatabaseSchema(){}
@@ -42,6 +58,17 @@ public class DatabaseSchema {
         public static final String COLUMN_UID           = "uid";
         public static final String COLUMN_CREATED_AT    = "created_at";
         public static final String COLUMN_MODIFIED_AT   = "modified_at";
+    }
+
+    public static abstract class BookEntry implements CommonColumns {
+        public static final String TABLE_NAME = "books";
+
+        public static final String COLUMN_DISPLAY_NAME  = "name";
+        public static final String COLUMN_SOURCE_URI    = "uri";
+        public static final String COLUMN_ROOT_GUID     = "root_account_guid";
+        public static final String COLUMN_TEMPLATE_GUID = "root_template_guid";
+        public static final String COLUMN_ACTIVE        = "is_active";
+        public static final String COLUMN_LAST_SYNC     = "last_export_time";
     }
 
     /**
@@ -116,6 +143,9 @@ public class DatabaseSchema {
         public static final String COLUMN_ACCOUNT_UID           = "account_uid";
         public static final String COLUMN_TRANSACTION_UID       = "transaction_uid";
 
+        public static final String COLUMN_RECONCILE_STATE       = "reconcile_state";
+        public static final String COLUMN_RECONCILE_DATE        = "reconcile_date";
+
         public static final String INDEX_UID                    = "split_uid_index";
     }
 
@@ -127,11 +157,26 @@ public class DatabaseSchema {
         public static final String COLUMN_START_TIME        = "start_time";
         public static final String COLUMN_END_TIME          = "end_time";
         public static final String COLUMN_LAST_RUN          = "last_run";
-        public static final String COLUMN_PERIOD            = "period";
-        public static final String COLUMN_TAG               = "tag"; //for any action-specific information
+
+        /**
+         * Tag for scheduledAction-specific information e.g. backup parameters for backup
+         */
+        public static final String COLUMN_TAG               = "tag";
         public static final String COLUMN_ENABLED           = "is_enabled";
         public static final String COLUMN_TOTAL_FREQUENCY   = "total_frequency";
+
+        /**
+         * Number of times this scheduledAction has been run. Analogous to instance_count in GnuCash desktop SQL
+         */
         public static final String COLUMN_EXECUTION_COUNT   = "execution_count";
+
+        public static final String COLUMN_RECURRENCE_UID    = "recurrence_uid";
+        public static final String COLUMN_AUTO_CREATE       = "auto_create";
+        public static final String COLUMN_AUTO_NOTIFY       = "auto_notify";
+        public static final String COLUMN_ADVANCE_CREATION  = "adv_creation";
+        public static final String COLUMN_ADVANCE_NOTIFY    = "adv_notify";
+        public static final String COLUMN_TEMPLATE_ACCT_UID = "template_act_uid";
+
 
         public static final String INDEX_UID            = "scheduled_action_uid_index";
     }
@@ -190,5 +235,43 @@ public class DatabaseSchema {
 
         public static final String INDEX_UID = "prices_uid_index";
 
+    }
+
+
+    public static abstract class BudgetEntry implements CommonColumns {
+        public static final String TABLE_NAME           = "budgets";
+
+        public static final String COLUMN_NAME          = "name";
+        public static final String COLUMN_DESCRIPTION   = "description";
+        public static final String COLUMN_NUM_PERIODS   = "num_periods";
+        public static final String COLUMN_RECURRENCE_UID = "recurrence_uid";
+
+        public static final String INDEX_UID = "budgets_uid_index";
+    }
+
+
+    public static abstract class BudgetAmountEntry implements CommonColumns {
+        public static final String TABLE_NAME           = "budget_amounts";
+
+        public static final String COLUMN_BUDGET_UID    = "budget_uid";
+        public static final String COLUMN_ACCOUNT_UID   = "account_uid";
+        public static final String COLUMN_PERIOD_NUM    = "period_num";
+        public static final String COLUMN_AMOUNT_NUM    = "amount_num";
+        public static final String COLUMN_AMOUNT_DENOM  = "amount_denom";
+
+        public static final String INDEX_UID            = "budget_amounts_uid_index";
+    }
+
+
+    public static abstract class RecurrenceEntry implements CommonColumns {
+        public static final String TABLE_NAME           = "recurrences";
+
+        public static final String COLUMN_MULTIPLIER    = "recurrence_mult";
+        public static final String COLUMN_PERIOD_TYPE   = "recurrence_period_type";
+        public static final String COLUMN_PERIOD_START  = "recurrence_period_start";
+        public static final String COLUMN_PERIOD_END    = "recurrence_period_end";
+        public static final String COLUMN_BYDAY         = "recurrence_byday";
+
+        public static final String INDEX_UID = "recurrence_uid_index";
     }
 }

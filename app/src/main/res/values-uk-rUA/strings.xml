@@ -25,6 +25,7 @@
   <string name="label_account_name">Ім\'я рахунку</string>
   <string name="btn_cancel">Скасувати</string>
   <string name="btn_save">Зберегти</string>
+  <string name="btn_test">Test</string>
   <string name="label_passcode">Введіть пароль</string>
   <string name="toast_wrong_passcode">Невірний пароль, спробуйте ще раз</string>
   <string name="toast_passcode_set">Пароль встановлений</string>
@@ -64,7 +65,8 @@
     <item>Карта пам\'яті</item>
     <item>DropBox</item>
     <item>Google Drive</item>
-    <item>Відправити файл&#8230;</item>
+    <item>ownCloud</item>
+    <item>Send to&#8230;</item>
   </string-array>
   <string name="btn_move">Перенести</string>
   <string name="title_move_transactions">Перенести %1$d транзакц(ію,ії,ій)</string>
@@ -130,12 +132,12 @@
   <string name="summary_xml_ofx_header">Ввімкніть цю опцію, якщо експортуєте в програми відмінні від GnuCash для ПК</string>
   <string name="title_whats_new">Що нового</string>
   <string name="whats_new">
-        - Новий матеріальний дизайн\n
-        - Підтримка мультивалютних транзакцій\n
-        - Новий зручний калькулятор для вводу транзакцій\n
-        - Покращені звіти\n
-        - Нова секція для допомоги та зворотнього зв\'язку\n
-        - Безліч виправлених багів та покращень\n
+        - Support for multiple different books \n
+        - Adds ownCloud as destination for exports\n
+        - Compact view for transactions list\n
+        - Re-design of passcode lock screen\n
+        - Improved handling of scheduled transactions\n
+        - Multiple bug fixes and improvements\n
 	</string>
   <string name="label_dismiss">Відмовитися</string>
   <string name="toast_transanction_amount_required">Введіть суму, щоб зберегти транзакцію</string>
@@ -164,6 +166,7 @@
   <string name="summary_default_export_format">Формат файлу, який використовується за умовчанням при експорті</string>
   <string name="menu_export_transactions">Експортувати транзакції&#8230;</string>
   <string name="label_recurring_transaction">Запланована транзакція</string>
+  <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">Дисбаланс</string>
   <string name="title_progress_exporting_transactions">Транзакції експортуються</string>
   <string name="label_no_recurring_transactions">Немає запланований транзакцій.</string>
@@ -196,7 +199,10 @@
     <item>OFX</item>
     <item>XML</item>
   </string-array>
+  <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
   <string name="color_picker_default_title">Оберіть колір</string>
+  <!-- Content description for a color square. -->
+  <!-- Content description for a selected color square. -->
   <string name="label_account_color_and_type">Колір &amp; Тип рахунку</string>
   <string name="label_delete_sub_accounts">Видалити дочірні рахунки</string>
   <string name="title_recent_accounts">Нещодавні</string>
@@ -204,7 +210,7 @@
   <string name="title_all_accounts">Всі</string>
   <string name="summary_create_default_accounts">Створення стандартної структури рахунків GnuCash</string>
   <string name="title_create_default_accounts">Створення стандартних рахунків</string>
-  <string name="msg_confirm_create_default_accounts_setting">Всі існуючі рахунки та транзакції будуть видалені.\n\nВи впевнені, що хочете продовжити?</string>
+  <string name="msg_confirm_create_default_accounts_setting">A new book will be opened with the default accounts\n\nYour current accounts and transactions will not be modified!</string>
   <string name="menu_scheduled_transactions">Заплановані транзакції</string>
   <string name="msg_confirm_create_default_accounts_first_run">Ласкаво просимо в GnuCash для Android!\n
     	Ви можете створити структуру часто використовуваних рахунків, або імпортувати її з GnuCash.\n\n
@@ -272,9 +278,11 @@
   <string name="label_tap_to_create_schedule">Натисніть, щоб створити розклад</string>
   <string name="title_restore_backup">Відновити з резервної копії&#8230;</string>
   <string name="header_backup_and_export_settings">Резервне копіювання &amp; експорт</string>
-  <string name="title_dropbox_sync_preference">Синхронізація з DropBox</string>
+  <string name="title_dropbox_sync_preference">Enable DropBox</string>
+  <string name="title_owncloud_sync_preference">Enable ownCloud </string>
   <string name="title_backup_preference_category">Резервне копіюванняе</string>
-  <string name="summary_dropbox_sync">Увімкнути синхронізацію з DropBox</string>
+  <string name="summary_dropbox_sync">Enable exporting to DropBox</string>
+  <string name="summary_owncloud_sync">Enable exporting to ownCloud</string>
   <string name="title_select_gnucash_xml_file">Оберіть файл GnuCash XML</string>
   <string name="title_backup_prefs">Налаштування резервного копіювання</string>
   <string name="title_create_backup_pref">Створити резервну копію</string>
@@ -283,8 +291,8 @@
   <string name="toast_backup_successful">Резервна копія створена</string>
   <string name="toast_backup_failed">Не вийшло створити резервну копію</string>
   <string name="export_warning_xml">Будуть експортовані всі рахунки і транзакції</string>
-  <string name="title_google_drive_sync_pref">Синхронізація з Google Drive</string>
-  <string name="summary_google_drive_sync">Увімкнути синхронізацію з  Google Drive</string>
+  <string name="title_google_drive_sync_pref">Enable Google Drive</string>
+  <string name="summary_google_drive_sync">Enable exporting to Google Drive</string>
   <string name="toast_install_file_manager">Встановіть програму для перегляду файлової системи</string>
   <string name="title_select_backup_to_restore">Оберіть резервну копію для відновлення</string>
   <string name="nav_menu_favorites">Закладки</string>
@@ -293,6 +301,16 @@
   <string name="nav_menu_scheduled_transactions">Заплановані транзакції</string>
   <string name="nav_menu_export">Експорт&#8230;</string>
   <string name="nav_menu_settings">Налаштування</string>
+  <string name="username">User Name</string>
+  <string name="password">Password</string>
+  <string name="owncloud_pref">owncloud</string>
+  <string name="owncloud_server">https://</string>
+  <string name="owncloud_server_invalid">OC server not found</string>
+  <string name="owncloud_user_invalid">OC username/password invalid</string>
+  <string name="owncloud_dir_invalid">Invalid chars: \\ &lt; &gt; : \&quot; | * ? </string>
+  <string name="owncloud_server_ok">OC server OK</string>
+  <string name="owncloud_user_ok">OC username/password OK</string>
+  <string name="owncloud_dir_ok">Dir name OK</string>
   <plurals name="label_every_x_days">
     <item quantity="one">Щодня</item>
     <item quantity="few">Кожні %d дні</item>
@@ -384,10 +402,16 @@
   <string name="summary_google_plus">Поділитися ідеями, обговорити зміни або повідомити про проблеми</string>
   <string name="summary_translate_gnucash">Перекласти або вичитати на CrowdIn</string>
   <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
-  <string name="menu_move_transaction">Move...</string>
+  <string name="menu_move_transaction">Move&#8230;</string>
   <string name="menu_duplicate_transaction">Duplicate</string>
+  <string name="nav_menu_budgets">Budgets</string>
+  <string name="title_cash_flow_report">Cash Flow</string>
+  <string name="title_budgets">Budgets</string>
+  <string name="title_use_compact_list">Enable compact view</string>
+  <string name="summary_use_compact_list">Enable to always use compact view for transactions list</string>
   <string name="error_invalid_exchange_rate">Invalid exchange rate</string>
   <string name="sample_exchange_rate">e.g. 1 %1$s = x.xx %2$s</string>
+  <string name="error_invalid_amount">Invalid amount</string>
   <string-array name="report_time_range">
     <item>Поточний місяць</item>
     <item>Останній квартал</item>
@@ -396,4 +420,65 @@
     <item>Весь час</item>
     <item>Інший інтервал&#8230;</item>
   </string-array>
+  <!-- Passcode lock -->
+  <string name="digit_one">1</string>
+  <!-- In the English locale, digit 1 has no text on it. This is simply empty space. If your locale has text on digit 1, then translate-->
+  <string name="digit_one_text">​</string>
+  <string name="digit_two">2</string>
+  <string name="digit_two_text">ABC</string>
+  <string name="digit_three">3</string>
+  <string name="digit_three_text">DEF</string>
+  <string name="digit_four">4</string>
+  <string name="digit_four_text">GHI</string>
+  <string name="digit_five">5</string>
+  <string name="digit_five_text">JKL</string>
+  <string name="digit_six">6</string>
+  <string name="digit_six_text">MNO</string>
+  <string name="digit_seven">7</string>
+  <string name="digit_seven_text">PQRS</string>
+  <string name="digit_eight">8</string>
+  <string name="digit_eight_text">TUV</string>
+  <string name="digit_nine">9</string>
+  <string name="digit_nine_text">WXYZ</string>
+  <string name="digit_zero">0</string>
+  <string name="digit_zero_text">+</string>
+  <string name="title_manage_books">Manage Books</string>
+  <string name="menu_manage_books">Manage Books&#8230;</string>
+  <string name="select_chart_to_view_details">Select any part of the chart to view details</string>
+  <string name="title_confirm_delete_book">Confirm delete Book</string>
+  <string name="msg_all_book_data_will_be_deleted">All accounts and transactions in this book will be deleted!</string>
+  <string name="btn_delete_book">Delete Book</string>
+  <string name="label_last_export_time">Last Exported:</string>
+  <string name="menu_title_enable_sync">Enable Sync</string>
+  <string name="menu_title_new_book">New Book</string>
+  <string name="toast_transaction_has_no_splits_and_cannot_open">The selected transaction has no splits and cannot be opened</string>
+  <string name="label_split_count">%1$d splits</string>
+  <string name="label_inside_account_with_name">in %1$s</string>
+  <plurals name="book_account_stats">
+    <item quantity="one">%d account</item>
+    <item quantity="few">%d accounts</item>
+    <item quantity="other">%d accounts</item>
+  </plurals>
+  <plurals name="book_transaction_stats">
+    <item quantity="one">%d transaction</item>
+    <item quantity="few">%d transactions</item>
+    <item quantity="other">%d transactions</item>
+  </plurals>
+  <string-array name="report_account_types">
+    <item>EXPENSE</item>
+    <item>INCOME</item>
+  </string-array>
+  <string name="toast_connected_to_google_drive">Connected to Google Drive</string>
+  <string name="toast_unable_to_connect_to_google_drive">Unable to connect to Google Drive</string>
+  <string name="toast_enter_amount_to_split">Please enter an amount to split</string>
+  <string name="label_export_target_external_service">external service</string>
+  <string name="toast_updated_transaction_recurring_schedule">Updated transaction recurring schedule</string>
+  <string name="label_export_transactions_since_date">Since</string>
+  <string name="switch_export_transactions_from_all_time">All time</string>
+  <string name="label_recommend_app">Recommend in Play Store</string>
+  <string name="repeat_until_date">until %1$s</string>
+  <string name="repeat_on_weekday">on %1$s</string>
+  <string name="repeat_x_times">for %1$s times</string>
+  <string name="menu_show_compact_view">Compact View</string>
+  <string name="book_default_name">Book %1$d</string>
 </resources>

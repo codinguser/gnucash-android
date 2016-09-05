@@ -17,29 +17,30 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="title_create_account">Create Account</string>
-  <string name="title_edit_account">Edit Account</string>
-  <string name="info_details">Info</string>
-  <string name="menu_export">Export&#8230;</string>
-  <string name="description_add_transaction_icon">Add a new transaction to an account</string>
-  <string name="label_no_accounts">No accounts to display</string>
-  <string name="label_account_name">Account name</string>
-  <string name="btn_cancel">Cancel</string>
-  <string name="btn_save">Save</string>
-  <string name="label_passcode">Enter Passcode</string>
-  <string name="toast_wrong_passcode">Wrong passcode, please try again</string>
-  <string name="toast_passcode_set">Passcode set</string>
-  <string name="label_confirm_passcode">Please confirm your passcode</string>
-  <string name="toast_invalid_passcode_confirmation">Invalid passcode confirmation. Please try again</string>
-  <string name="label_transaction_name">Description</string>
-  <string name="label_transaction_amount">Amount</string>
-  <string name="title_add_transaction">New transaction</string>
-  <string name="label_no_transactions">No transactions to display</string>
+  <string name="title_edit_account">ערוך חשבון</string>
+  <string name="info_details">פרטים</string>
+  <string name="menu_export">ייצוא&#8230;</string>
+  <string name="description_add_transaction_icon">הוספת העברה כספים לחשבון</string>
+  <string name="label_no_accounts">אין חשבונות לתצוגה</string>
+  <string name="label_account_name">שם חשבון</string>
+  <string name="btn_cancel">ביטול</string>
+  <string name="btn_save">שמור</string>
+  <string name="btn_test">בדיקה</string>
+  <string name="label_passcode">הזן סיסמה</string>
+  <string name="toast_wrong_passcode">סיסמה שגויה, אנא נסה שוב</string>
+  <string name="toast_passcode_set">סיסמה נשמרה</string>
+  <string name="label_confirm_passcode">אנא וודא את הסיסמה</string>
+  <string name="toast_invalid_passcode_confirmation">ווידוי סיסמה שגוי. אנא נסה שוב</string>
+  <string name="label_transaction_name">פרטים</string>
+  <string name="label_transaction_amount">סכום</string>
+  <string name="title_add_transaction">העברה חדשה</string>
+  <string name="label_no_transactions">אין העברות להציג</string>
   <string name="label_timeanddate">DATE &amp; TIME</string>
-  <string name="label_account">Account</string>
-  <string name="label_debit">DEBIT</string>
-  <string name="label_credit">CREDIT</string>
-  <string name="title_accounts">Accounts</string>
-  <string name="title_transactions">Transactions</string>
+  <string name="label_account">חשבון</string>
+  <string name="label_debit">חוב</string>
+  <string name="label_credit">אשראי</string>
+  <string name="title_accounts">חשבונות</string>
+  <string name="title_transactions">העברות</string>
   <string name="menu_delete">Delete</string>
   <string name="alert_dialog_ok_delete">Delete</string>
   <string name="alert_dialog_cancel">Cancel</string>
@@ -64,40 +65,41 @@
     <item>SD Card</item>
     <item>DropBox</item>
     <item>Google Drive</item>
-    <item>Send to&#8230;</item>
+    <item>ownCloud</item>
+    <item>שלח אל&#8230;</item>
   </string-array>
-  <string name="btn_move">Move</string>
+  <string name="btn_move">העבר</string>
   <string name="title_move_transactions">Move %1$d transaction(s)</string>
-  <string name="label_move_destination">Destination Account</string>
+  <string name="label_move_destination">חשבון יעד</string>
   <string name="permission_access_sdcard">Access SD Card</string>
   <string name="toast_incompatible_currency">Cannot move transactions.\nThe destination account uses a different currency from origin account</string>
   <string name="header_general_settings">General</string>
-  <string name="header_about_gnucash">About</string>
-  <string name="title_choose_currency">Choose default currency</string>
-  <string name="title_default_currency">Default currency</string>
-  <string name="summary_default_currency">Default currency to assign to new accounts</string>
-  <string name="label_permission_record_transactions">Enables recording transactions in GnuCash for Android</string>
-  <string name="label_permission_create_accounts">Enables creation of accounts in GnuCash for Android</string>
-  <string name="label_permission_group">Your GnuCash data</string>
-  <string name="description_permission_group">Read and modify GnuCash data</string>
-  <string name="label_permission_record_transaction">Record transactions in GnuCash</string>
-  <string name="label_permission_create_account">Create accounts in GnuCash</string>
-  <string name="label_display_account">Display account</string>
-  <string name="btn_create_accounts">Create Accounts</string>
-  <string name="title_default_accounts">Select accounts to create</string>
-  <string name="error_no_accounts">No accounts exist in GnuCash.\nCreate an account before adding a widget</string>
-  <string name="title_build_version">Build version</string>
-  <string name="title_license">License</string>
-  <string name="summary_licence_details">Apache License v2.0. Click for details</string>
-  <string name="title_general_prefs">General Preferences</string>
-  <string name="label_widget_configuration">Select Account</string>
-  <string name="toast_no_transactions_to_export">There are no transactions available to export</string>
-  <string name="header_passcode_settings">Passcode</string>
-  <string name="title_passcode_preferences">Passcode Preferences</string>
-  <string name="title_passcode_enabled">Passcode Turned On</string>
-  <string name="title_passcode_disabled">Passcode Turned Off</string>
-  <string name="title_change_passcode">Change Passcode</string>
-  <string name="title_about_gnucash">About GnuCash</string>
+  <string name="header_about_gnucash">אודות</string>
+  <string name="title_choose_currency">בחר מטבע ברירת מחדל</string>
+  <string name="title_default_currency">מטבע ברירת מחדל</string>
+  <string name="summary_default_currency">מטבע ברירת מחדל להקצות לחשבונות חדשים</string>
+  <string name="label_permission_record_transactions">מאפשר תיעוד תנועות GnuCash עבור אנדרואיד</string>
+  <string name="label_permission_create_accounts">אפשר יצירת חשבונות של GnuCash עבור אנדרואיד</string>
+  <string name="label_permission_group">נתוני הGnuCash שלך</string>
+  <string name="description_permission_group">קרוא ושנה נתוני GnuCash</string>
+  <string name="label_permission_record_transaction">שמור העברות בGnuCash</string>
+  <string name="label_permission_create_account">צור חשבונות ב GnuCash</string>
+  <string name="label_display_account">הצג חשבון</string>
+  <string name="btn_create_accounts">צור חשבונות</string>
+  <string name="title_default_accounts">בחר חשבונות ליצור</string>
+  <string name="error_no_accounts">לא קיימים חשבונות ב- GnuCassh.\n צור חשבון לפני הוספת widget</string>
+  <string name="title_build_version">‏גרסת Build</string>
+  <string name="title_license">רישיון</string>
+  <string name="summary_licence_details">רישיון אפאצ\'י v 2.0. לחץ לפרטים</string>
+  <string name="title_general_prefs">העדפות כלליות</string>
+  <string name="label_widget_configuration">בחר חשבון</string>
+  <string name="toast_no_transactions_to_export">אין תנועות זמינות לייצא</string>
+  <string name="header_passcode_settings">קוד הגישה</string>
+  <string name="title_passcode_preferences">העדפות קוד גישה</string>
+  <string name="title_passcode_enabled">קוד גישה מופעל</string>
+  <string name="title_passcode_disabled">קוד גישה כבוי</string>
+  <string name="title_change_passcode">שנה את קוד הגישה</string>
+  <string name="title_about_gnucash">אודות GnuCash</string>
   <string name="summary_about_gnucash">A mobile finance management and expense-tracker designed for Android</string>
   <string name="title_about">About</string>
   <string name="toast_format_exported_to">%1$s file exported to:\n</string>
@@ -130,11 +132,11 @@
   <string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>
   <string name="title_whats_new">What\'s New</string>
   <string name="whats_new">
-        - New Material app design \n
-        - Multi-currency transactions\n
-        - Calculator to transaction amounts\n
-        - Better reporting options\n
-        - New help &amp; feedback section\n
+        - Support for multiple different books \n
+        - Adds ownCloud as destination for exports\n
+        - Compact view for transactions list\n
+        - Re-design of passcode lock screen\n
+        - Improved handling of scheduled transactions\n
         - Multiple bug fixes and improvements\n
 	</string>
   <string name="label_dismiss">Dismiss</string>
@@ -177,6 +179,8 @@
   <string name="label_default_transfer_account">Default Transfer Account</string>
   <plurals name="label_sub_accounts">
     <item quantity="one">%d sub-account</item>
+    <item quantity="two">%d sub-accounts</item>
+    <item quantity="many">%d sub-accounts</item>
     <item quantity="other">%d sub-accounts</item>
   </plurals>
   <string-array name="account_type_entry_values">
@@ -211,7 +215,7 @@
   <string name="title_all_accounts">All</string>
   <string name="summary_create_default_accounts">Creates default GnuCash commonly-used account structure</string>
   <string name="title_create_default_accounts">Create default accounts</string>
-  <string name="msg_confirm_create_default_accounts_setting">All existing accounts and transactions on the device will be deleted.\n\nAre you sure you want to proceed?</string>
+  <string name="msg_confirm_create_default_accounts_setting">A new book will be opened with the default accounts\n\nYour current accounts and transactions will not be modified!</string>
   <string name="menu_scheduled_transactions">Scheduled Transactions</string>
   <string name="msg_confirm_create_default_accounts_first_run">Welcome to GnuCash Android! \nYou can either create
         a hierarchy of commonly-used accounts, or import your own GnuCash account structure. \n\nBoth options are also
@@ -279,9 +283,11 @@
   <string name="label_tap_to_create_schedule">Tap to create schedule</string>
   <string name="title_restore_backup">Restore Backup&#8230;</string>
   <string name="header_backup_and_export_settings">Backup &amp; export</string>
-  <string name="title_dropbox_sync_preference">DropBox Sync</string>
+  <string name="title_dropbox_sync_preference">Enable DropBox</string>
+  <string name="title_owncloud_sync_preference">Enable ownCloud </string>
   <string name="title_backup_preference_category">Backup</string>
-  <string name="summary_dropbox_sync">Enable to sync to DropBox</string>
+  <string name="summary_dropbox_sync">Enable exporting to DropBox</string>
+  <string name="summary_owncloud_sync">Enable exporting to ownCloud</string>
   <string name="title_select_gnucash_xml_file">Select GnuCash XML file</string>
   <string name="title_backup_prefs">Backup Preferences</string>
   <string name="title_create_backup_pref">Create Backup</string>
@@ -290,8 +296,8 @@
   <string name="toast_backup_successful">Backup successful</string>
   <string name="toast_backup_failed">Backup failed</string>
   <string name="export_warning_xml">Exports all accounts and transactions</string>
-  <string name="title_google_drive_sync_pref">Google Drive Sync</string>
-  <string name="summary_google_drive_sync">Enable to sync to Google Drive</string>
+  <string name="title_google_drive_sync_pref">Enable Google Drive</string>
+  <string name="summary_google_drive_sync">Enable exporting to Google Drive</string>
   <string name="toast_install_file_manager">Install a file manager to select files</string>
   <string name="title_select_backup_to_restore">Select backup to restore</string>
   <string name="nav_menu_favorites">Favorites</string>
@@ -300,20 +306,38 @@
   <string name="nav_menu_scheduled_transactions">Scheduled Transactions</string>
   <string name="nav_menu_export">Export&#8230;</string>
   <string name="nav_menu_settings">Settings</string>
+  <string name="username">User Name</string>
+  <string name="password">Password</string>
+  <string name="owncloud_pref">owncloud</string>
+  <string name="owncloud_server">https://</string>
+  <string name="owncloud_server_invalid">OC server not found</string>
+  <string name="owncloud_user_invalid">OC username/password invalid</string>
+  <string name="owncloud_dir_invalid">Invalid chars: \\ &lt; &gt; : \&quot; | * ? </string>
+  <string name="owncloud_server_ok">OC server OK</string>
+  <string name="owncloud_user_ok">OC username/password OK</string>
+  <string name="owncloud_dir_ok">Dir name OK</string>
   <plurals name="label_every_x_days">
     <item quantity="one">Daily</item>
+    <item quantity="two">Every %d days</item>
+    <item quantity="many">Every %d days</item>
     <item quantity="other">Every %d days</item>
   </plurals>
   <plurals name="label_every_x_weeks">
     <item quantity="one">Weekly</item>
+    <item quantity="two">Every %d weeks</item>
+    <item quantity="many">Every %d weeks</item>
     <item quantity="other">Every %d weeks</item>
   </plurals>
   <plurals name="label_every_x_months">
     <item quantity="one">Monthly</item>
+    <item quantity="two">Every %d months</item>
+    <item quantity="many">Every %d months</item>
     <item quantity="other">Every %d months</item>
   </plurals>
   <plurals name="label_every_x_years">
     <item quantity="one">Yearly</item>
+    <item quantity="two">Every %d years</item>
+    <item quantity="many">Every %d years</item>
     <item quantity="other">Every %d years</item>
   </plurals>
   <string name="title_enable_crashlytics">Enable Crash Logging</string>
@@ -387,10 +411,16 @@
   <string name="summary_google_plus">Share ideas, discuss changes or report problems</string>
   <string name="summary_translate_gnucash">Translate or proof-read on CrowdIn</string>
   <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
-  <string name="menu_move_transaction">Move...</string>
+  <string name="menu_move_transaction">Move&#8230;</string>
   <string name="menu_duplicate_transaction">Duplicate</string>
+  <string name="nav_menu_budgets">Budgets</string>
+  <string name="title_cash_flow_report">Cash Flow</string>
+  <string name="title_budgets">Budgets</string>
+  <string name="title_use_compact_list">Enable compact view</string>
+  <string name="summary_use_compact_list">Enable to always use compact view for transactions list</string>
   <string name="error_invalid_exchange_rate">Invalid exchange rate</string>
   <string name="sample_exchange_rate">e.g. 1 %1$s = x.xx %2$s</string>
+  <string name="error_invalid_amount">Invalid amount</string>
   <string-array name="report_time_range">
     <item>Current month</item>
     <item>Last 3 months</item>
@@ -399,4 +429,67 @@
     <item>All time</item>
     <item>Custom range&#8230;</item>
   </string-array>
+  <!-- Passcode lock -->
+  <string name="digit_one">1</string>
+  <!-- In the English locale, digit 1 has no text on it. This is simply empty space. If your locale has text on digit 1, then translate-->
+  <string name="digit_one_text">​</string>
+  <string name="digit_two">2</string>
+  <string name="digit_two_text">ABC</string>
+  <string name="digit_three">3</string>
+  <string name="digit_three_text">DEF</string>
+  <string name="digit_four">4</string>
+  <string name="digit_four_text">GHI</string>
+  <string name="digit_five">5</string>
+  <string name="digit_five_text">JKL</string>
+  <string name="digit_six">6</string>
+  <string name="digit_six_text">MNO</string>
+  <string name="digit_seven">7</string>
+  <string name="digit_seven_text">PQRS</string>
+  <string name="digit_eight">8</string>
+  <string name="digit_eight_text">TUV</string>
+  <string name="digit_nine">9</string>
+  <string name="digit_nine_text">WXYZ</string>
+  <string name="digit_zero">0</string>
+  <string name="digit_zero_text">+</string>
+  <string name="title_manage_books">Manage Books</string>
+  <string name="menu_manage_books">Manage Books&#8230;</string>
+  <string name="select_chart_to_view_details">Select any part of the chart to view details</string>
+  <string name="title_confirm_delete_book">Confirm delete Book</string>
+  <string name="msg_all_book_data_will_be_deleted">All accounts and transactions in this book will be deleted!</string>
+  <string name="btn_delete_book">Delete Book</string>
+  <string name="label_last_export_time">Last Exported:</string>
+  <string name="menu_title_enable_sync">Enable Sync</string>
+  <string name="menu_title_new_book">New Book</string>
+  <string name="toast_transaction_has_no_splits_and_cannot_open">The selected transaction has no splits and cannot be opened</string>
+  <string name="label_split_count">%1$d splits</string>
+  <string name="label_inside_account_with_name">in %1$s</string>
+  <plurals name="book_account_stats">
+    <item quantity="one">%d account</item>
+    <item quantity="two">%d accounts</item>
+    <item quantity="many">%d accounts</item>
+    <item quantity="other">%d accounts</item>
+  </plurals>
+  <plurals name="book_transaction_stats">
+    <item quantity="one">%d transaction</item>
+    <item quantity="two">%d transactions</item>
+    <item quantity="many">%d transactions</item>
+    <item quantity="other">%d transactions</item>
+  </plurals>
+  <string-array name="report_account_types">
+    <item>EXPENSE</item>
+    <item>INCOME</item>
+  </string-array>
+  <string name="toast_connected_to_google_drive">Connected to Google Drive</string>
+  <string name="toast_unable_to_connect_to_google_drive">Unable to connect to Google Drive</string>
+  <string name="toast_enter_amount_to_split">Please enter an amount to split</string>
+  <string name="label_export_target_external_service">external service</string>
+  <string name="toast_updated_transaction_recurring_schedule">Updated transaction recurring schedule</string>
+  <string name="label_export_transactions_since_date">Since</string>
+  <string name="switch_export_transactions_from_all_time">All time</string>
+  <string name="label_recommend_app">Recommend in Play Store</string>
+  <string name="repeat_until_date">until %1$s</string>
+  <string name="repeat_on_weekday">on %1$s</string>
+  <string name="repeat_x_times">for %1$s times</string>
+  <string name="menu_show_compact_view">Compact View</string>
+  <string name="book_default_name">Book %1$d</string>
 </resources>

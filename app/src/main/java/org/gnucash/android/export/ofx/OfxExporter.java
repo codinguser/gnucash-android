@@ -17,6 +17,7 @@
 
 package org.gnucash.android.export.ofx;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -24,7 +25,7 @@ import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
@@ -77,6 +78,16 @@ public class OfxExporter extends Exporter{
 	}
 
     /**
+     * Overloaded constructor. Initializes the export parameters and the database to export
+     * @param params Export options
+     * @param db SQLiteDatabase to export
+     */
+    public OfxExporter(ExportParams params, SQLiteDatabase db){
+        super(params, db);
+        LOG_TAG = "OfxExporter";
+    }
+
+    /**
 	 * Converts all expenses into OFX XML format and adds them to the XML document
 	 * @param doc DOM document of the OFX expenses.
 	 * @param parent Parent node for all expenses in report
@@ -113,7 +124,11 @@ public class OfxExporter extends Exporter{
 		}
 	}
 
-    // FIXME: Move code to generateExport()
+    /**
+     * Generate OFX export file from the transactions in the database
+     * @return String containing OFX export
+     * @throws ExporterException
+     */
     private String generateOfxExport() throws ExporterException {
         mAccountsList = mAccountsDbAdapter.getExportableAccounts(mExportParams.getExportStartTime());
 

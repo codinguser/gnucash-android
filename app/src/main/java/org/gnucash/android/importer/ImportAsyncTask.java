@@ -18,16 +18,22 @@ package org.gnucash.android.importer;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.R;
-import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.ui.util.TaskDelegate;
 
 import java.io.InputStream;
@@ -40,6 +46,8 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
     private final Activity mContext;
     private TaskDelegate mDelegate;
     private ProgressDialog mProgressDialog;
+
+    private String mImportedBookUID;
 
     public ImportAsyncTask(Activity context){
         this.mContext = context;
@@ -71,7 +79,8 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
     protected Boolean doInBackground(Uri... uris) {
         try {
             InputStream accountInputStream = mContext.getContentResolver().openInputStream(uris[0]);
-            GncXmlImporter.parse(accountInputStream);
+            mImportedBookUID = GncXmlImporter.parse(accountInputStream);
+
         } catch (Exception exception){
             Log.e(ImportAsyncTask.class.getName(), "" + exception.getMessage());
             Crashlytics.log("Could not open: " + uris[0].toString());
@@ -91,14 +100,30 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
 
             return false;
         }
+
+        Cursor cursor = mContext.getContentResolver().query(uris[0], null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            String displayName = cursor.getString(nameIndex);
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(DatabaseSchema.BookEntry.COLUMN_DISPLAY_NAME, displayName);
+            contentValues.put(DatabaseSchema.BookEntry.COLUMN_SOURCE_URI, uris[0].toString());
+            BooksDbAdapter.getInstance().updateRecord(mImportedBookUID, contentValues);
+
+            cursor.close();
+        }
+
+        //set the preferences to their default values
+        mContext.getSharedPreferences(mImportedBookUID, Context.MODE_PRIVATE)
+                .edit()
+                .putBoolean(mContext.getString(R.string.key_use_double_entry), true)
+                .apply();
+
         return true;
     }
 
     @Override
     protected void onPostExecute(Boolean importSuccess) {
-        if (mDelegate != null)
-            mDelegate.onTaskComplete();
-
         try {
             if (mProgressDialog != null && mProgressDialog.isShowing())
                 mProgressDialog.dismiss();
@@ -112,6 +137,10 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
         int message = importSuccess ? R.string.toast_success_importing_accounts : R.string.toast_error_importing_accounts;
         Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
 
-        AccountsActivity.start(mContext);
+        if (mImportedBookUID != null)
+            GnuCashApplication.loadBook(mImportedBookUID);
+
+        if (mDelegate != null)
+            mDelegate.onTaskComplete();
     }
 }

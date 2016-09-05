@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -46,18 +47,27 @@ import com.google.android.gms.drive.DriveContents;
 import com.google.android.gms.drive.DriveFolder;
 import com.google.android.gms.drive.DriveId;
 import com.google.android.gms.drive.MetadataChangeSet;
+import com.owncloud.android.lib.common.OwnCloudClient;
+import com.owncloud.android.lib.common.OwnCloudClientFactory;
+import com.owncloud.android.lib.common.OwnCloudCredentialsFactory;
+import com.owncloud.android.lib.common.operations.RemoteOperationResult;
+import com.owncloud.android.lib.resources.files.CreateRemoteFolderOperation;
+import com.owncloud.android.lib.resources.files.FileUtils;
+import com.owncloud.android.lib.resources.files.UploadRemoteFileOperation;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
+import org.gnucash.android.db.adapter.SplitsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.export.qif.QifExporter;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.account.AccountsListFragment;
-import org.gnucash.android.ui.settings.SettingsActivity;
+import org.gnucash.android.ui.settings.BackupPreferenceFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 
 import java.io.File;
@@ -85,6 +95,8 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
     private ProgressDialog mProgressDialog;
 
+    private SQLiteDatabase mDb;
+
     /**
      * Log tag
      */
@@ -100,8 +112,9 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
     private Exporter mExporter;
 
-    public ExportAsyncTask(Context context){
+    public ExportAsyncTask(Context context, SQLiteDatabase db){
         this.mContext = context;
+        this.mDb = db;
     }
 
     @Override
@@ -132,16 +145,16 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
         switch (mExportParams.getExportFormat()) {
                 case QIF:
-                    mExporter = new QifExporter(mExportParams);
+                    mExporter = new QifExporter(mExportParams, mDb);
                     break;
 
                 case OFX:
-                    mExporter = new OfxExporter(mExportParams);
+                    mExporter = new OfxExporter(mExportParams, mDb);
                     break;
 
                 case XML:
                 default:
-                    mExporter = new GncXmlExporter(mExportParams);
+                    mExporter = new GncXmlExporter(mExportParams, mDb);
                     break;
         }
 
@@ -151,7 +164,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         } catch (final Exception e) {
             Log.e(TAG, "Error exporting: " + e.getMessage());
             Crashlytics.logException(e);
-
+            e.printStackTrace();
             if (mContext instanceof Activity) {
                 ((Activity)mContext).runOnUiThread(new Runnable() {
                     @Override
@@ -178,6 +191,10 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
             case GOOGLE_DRIVE:
                 moveExportToGoogleDrive();
+                return true;
+
+            case OWNCLOUD:
+                moveExportToOwnCloud();
                 return true;
 
             case SD_CARD:
@@ -213,8 +230,21 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                     case GOOGLE_DRIVE:
                         targetLocation = "Google Drive -> " + mContext.getString(R.string.app_name);
                         break;
+                    case OWNCLOUD:
+                        targetLocation = mContext.getSharedPreferences(
+                                mContext.getString(R.string.owncloud_pref),
+                                Context.MODE_PRIVATE).getBoolean(
+                                mContext.getString(R.string.owncloud_sync), false) ?
+
+                                "ownCloud -> " +
+                                mContext.getSharedPreferences(
+                                        mContext.getString(R.string.owncloud_pref),
+                                        Context.MODE_PRIVATE).getString(
+                                        mContext.getString(R.string.key_owncloud_dir), null) :
+                                "ownCloud sync not enabled";
+                        break;
                     default:
-                        targetLocation = "external service";
+                        targetLocation = mContext.getString(R.string.label_export_target_external_service);
                 }
                 Toast.makeText(mContext,
                         String.format(mContext.getString(R.string.toast_exported_to), targetLocation),
@@ -246,7 +276,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
     private void moveExportToGoogleDrive(){
         Log.i(TAG, "Moving exported file to Google Drive");
-        final GoogleApiClient googleApiClient = SettingsActivity.getGoogleApiClient(GnuCashApplication.getAppContext());
+        final GoogleApiClient googleApiClient = BackupPreferenceFragment.getGoogleApiClient(GnuCashApplication.getAppContext());
         googleApiClient.blockingConnect();
         final ResultCallback<DriveFolder.DriveFileResult> fileCallback = new
                 ResultCallback<DriveFolder.DriveFileResult>() {
@@ -306,8 +336,8 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
     private void moveExportToDropbox() {
         Log.i(TAG, "Copying exported file to DropBox");
-        String dropboxAppKey = mContext.getString(R.string.dropbox_app_key, SettingsActivity.DROPBOX_APP_KEY);
-        String dropboxAppSecret = mContext.getString(R.string.dropbox_app_secret, SettingsActivity.DROPBOX_APP_SECRET);
+        String dropboxAppKey = mContext.getString(R.string.dropbox_app_key, BackupPreferenceFragment.DROPBOX_APP_KEY);
+        String dropboxAppSecret = mContext.getString(R.string.dropbox_app_secret, BackupPreferenceFragment.DROPBOX_APP_SECRET);
         DbxAccountManager mDbxAcctMgr = DbxAccountManager.getInstance(mContext.getApplicationContext(),
                 dropboxAppKey, dropboxAppSecret);
         DbxFile dbExportFile = null;
@@ -333,6 +363,49 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         }
     }
 
+    private void moveExportToOwnCloud() {
+        Log.i(TAG, "Copying exported file to ownCloud");
+
+        SharedPreferences mPrefs = mContext.getSharedPreferences(mContext.getString(R.string.owncloud_pref), Context.MODE_PRIVATE);
+
+        Boolean mOC_sync = mPrefs.getBoolean(mContext.getString(R.string.owncloud_sync), false);
+
+        if(!mOC_sync){
+            Log.e(TAG, "ownCloud not enabled.");
+            return;
+        }
+
+        String mOC_server = mPrefs.getString(mContext.getString(R.string.key_owncloud_server), null);
+        String mOC_username = mPrefs.getString(mContext.getString(R.string.key_owncloud_username), null);
+        String mOC_password = mPrefs.getString(mContext.getString(R.string.key_owncloud_password), null);
+        String mOC_dir = mPrefs.getString(mContext.getString(R.string.key_owncloud_dir), null);
+
+        Uri serverUri = Uri.parse(mOC_server);
+        OwnCloudClient mClient = OwnCloudClientFactory.createOwnCloudClient(serverUri, this.mContext, true);
+        mClient.setCredentials(
+                OwnCloudCredentialsFactory.newBasicCredentials(mOC_username, mOC_password)
+        );
+
+        if (mOC_dir.length() != 0) {
+            RemoteOperationResult dirResult = new CreateRemoteFolderOperation(
+                    mOC_dir, true).execute(mClient);
+            if (!dirResult.isSuccess())
+                Log.e(TAG, dirResult.getLogMessage(), dirResult.getException());
+        }
+        for (String exportedFilePath : mExportedFiles) {
+            String remotePath = mOC_dir + FileUtils.PATH_SEPARATOR + stripPathPart(exportedFilePath);
+            String mimeType = mExporter.getExportMimeType();
+
+            RemoteOperationResult result = new UploadRemoteFileOperation(
+                    exportedFilePath, remotePath, mimeType).execute(mClient);
+
+            if (!result.isSuccess())
+                Log.e(TAG, result.getLogMessage(), result.getException());
+            else {
+                new File(exportedFilePath).delete();
+            }
+        }
+    }
 
     /**
      * Moves the exported files from the internal storage where they are generated to
@@ -341,11 +414,11 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     private List<String> moveExportToSDCard() {
         Log.i(TAG, "Moving exported file to external storage");
-        new File(Exporter.EXPORT_FOLDER_PATH).mkdirs();
+        new File(Exporter.getExportFolderPath(mExporter.mBookUID));
         List<String> dstFiles = new ArrayList<>();
 
         for (String src: mExportedFiles) {
-            String dst = Exporter.EXPORT_FOLDER_PATH + stripPathPart(src);
+            String dst = Exporter.getExportFolderPath(mExporter.mBookUID) + stripPathPart(src);
             try {
                 moveFile(src, dst);
                 dstFiles.add(dst);
@@ -372,15 +445,15 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         GncXmlExporter.createBackup(); //create backup before deleting everything
         List<Transaction> openingBalances = new ArrayList<>();
         boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
-        if (preserveOpeningBalances) {
-            openingBalances = AccountsDbAdapter.getInstance().getAllOpeningBalanceTransactions();
-        }
 
-        TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
+        TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(mDb, new SplitsDbAdapter(mDb));
+        if (preserveOpeningBalances) {
+            openingBalances = new AccountsDbAdapter(mDb, transactionsDbAdapter).getAllOpeningBalanceTransactions();
+        }
         transactionsDbAdapter.deleteAllNonTemplateTransactions();
 
         if (preserveOpeningBalances) {
-            transactionsDbAdapter.bulkAddRecords(openingBalances);
+            transactionsDbAdapter.bulkAddRecords(openingBalances, DatabaseAdapter.UpdateMethod.insert);
         }
     }
 
@@ -423,8 +496,6 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         }
     }
 
-    //
-
     /**
      * Convert file paths to URIs by adding the file// prefix
      * <p>e.g. /some/path/file.ext --> file:///some/path/file.ext</p>
@@ -451,7 +522,6 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      * @throws IOException if the file could not be moved.
      */
     public void moveFile(String src, String dst) throws IOException {
-        //TODO: Make this asynchronous at some time, t in the future.
         File srcFile = new File(src);
         File dstFile = new File(dst);
         FileChannel inChannel = new FileInputStream(srcFile).getChannel();

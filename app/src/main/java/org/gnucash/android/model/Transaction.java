@@ -19,7 +19,7 @@ package org.gnucash.android.model;
 import android.content.Intent;
 
 import org.gnucash.android.BuildConfig;
-import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.export.ofx.OfxHelper;
 import org.gnucash.android.model.Account.OfxAccountType;
 import org.w3c.dom.Document;
@@ -171,23 +171,35 @@ public class Transaction extends BaseModel{
 	}
 
     /**
-     * Creates a split which will balance the transaction
-     * <p><b>Note:</b>If a transaction has splits with different currencies, not auto-balancing will be performed.</p>
+     * Creates a split which will balance the transaction, in value.
+     * <p><b>Note:</b>If a transaction has splits with different currencies, no auto-balancing will be performed.</p>
      *
      * <p>The added split will not use any account in db, but will use currency code as account UID.
      * The added split will be returned, to be filled with proper account UID later.</p>
      * @return Split whose amount is the imbalance of this transaction
      */
-    public Split getAutoBalanceSplit(){
-        Money imbalance = getImbalance();
+    public Split createAutoBalanceSplit(){
+        Money imbalance = getImbalance(); //returns imbalance of 0 for multicurrency transactions
         if (!imbalance.isAmountZero()){
-            Currency currency = Currency.getInstance(mCurrencyCode);
-            Split split = new Split(imbalance.negate(),
-                    currency.getCurrencyCode());
+            Split split = new Split(imbalance.negate(), mCurrencyCode); //yes, this is on purpose
+            //the account UID is set to the currency. This should be overridden before saving to db
             addSplit(split);
             return split;
         }
         return null;
+    }
+
+    /**
+     * Set the GUID of the transaction
+     * If the transaction has Splits, their transactionGUID will be updated as well
+     * @param uid String unique ID
+     */
+    @Override
+    public void setUID(String uid) {
+        super.setUID(uid);
+        for (Split split : mSplitList) {
+            split.setTransactionUID(uid);
+        }
     }
 
     /**
@@ -250,19 +262,19 @@ public class Transaction extends BaseModel{
     /**
      * Computes the imbalance amount for the given transaction.
      * In double entry, all transactions should resolve to zero. But imbalance occurs when there are unresolved splits.
-     * <p>If it is a multi-currency transaction, an imbalance of zero will be returned</p>
+     * <p><b>Note:</b> If this is a multi-currency transaction, an imbalance of zero will be returned</p>
      * @return Money imbalance of the transaction or zero if it is a multi-currency transaction
      */
     public Money getImbalance(){
         Money imbalance = Money.createZeroInstance(mCurrencyCode);
         for (Split split : mSplitList) {
-            if (!split.getValue().getCurrency().getCurrencyCode().equals(mCurrencyCode)) {
+            if (!split.getQuantity().getCurrency().getCurrencyCode().equals(mCurrencyCode)) {
                 // this may happen when importing XML exported from GNCA before 2.0.0
                 // these transactions should only be imported from XML exported from GNC desktop
                 // so imbalance split should not be generated for them
                 return Money.createZeroInstance(mCurrencyCode);
             }
-            Money amount = split.getValue().absolute();
+            Money amount = split.getValue().abs();
             if (split.getType() == TransactionType.DEBIT)
                 imbalance = imbalance.subtract(amount);
             else
@@ -293,9 +305,9 @@ public class Transaction extends BaseModel{
                 continue;
             Money absAmount;
             if (split.getValue().getCurrency() == accountCurrency){
-                absAmount = split.getValue().absolute();
+                absAmount = split.getValue().abs();
             } else { //if this split belongs to the account, then either its value or quantity is in the account currency
-                absAmount = split.getQuantity().absolute();
+                absAmount = split.getQuantity().abs();
             }
             boolean isDebitSplit = split.getType() == TransactionType.DEBIT;
             if (isDebitAccount) {

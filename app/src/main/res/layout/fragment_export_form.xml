@@ -99,7 +99,7 @@
         android:orientation="horizontal">
         <TextView
             android:id="@+id/label_export_date"
-            android:text="Since"
+            android:text="@string/label_export_transactions_since_date"
             android:gravity="center_vertical"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
@@ -127,7 +127,7 @@
             android:clickable="true"/>
         <android.support.v7.widget.SwitchCompat
             android:id="@+id/switch_export_all"
-            android:text="All time"
+            android:text="@string/switch_export_transactions_from_all_time"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:layout_marginLeft="5dp"

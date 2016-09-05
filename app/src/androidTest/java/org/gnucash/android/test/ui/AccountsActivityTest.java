@@ -16,28 +16,32 @@
 
 package org.gnucash.android.test.ui;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
-import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.matcher.ViewMatchers;
+import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v4.app.Fragment;
-import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
 
 import com.kobakei.ratethisapp.RateThisApp;
 
 import org.gnucash.android.R;
-import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseHelper;
-import org.gnucash.android.db.SplitsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
+import org.gnucash.android.db.adapter.SplitsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Commodity;
@@ -45,15 +49,18 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.receivers.AccountCreator;
+import org.gnucash.android.test.ui.util.DisableAnimationsRule;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.account.AccountsListFragment;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.math.BigDecimal;
-import java.util.Currency;
 import java.util.List;
 
 import static android.support.test.espresso.Espresso.onData;
@@ -65,12 +72,16 @@ import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard
 import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.action.ViewActions.swipeRight;
 import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isChecked;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.allOf;
@@ -78,48 +89,71 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
+
 @RunWith(AndroidJUnit4.class)
-public class AccountsActivityTest extends ActivityInstrumentationTestCase2<AccountsActivity> {
-	private static final String DUMMY_ACCOUNT_CURRENCY_CODE = "USD";
-    private static final Commodity DUMMY_ACCOUNT_CURRENCY = Commodity.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE);
-	private static final String DUMMY_ACCOUNT_NAME = "Dummy account";
-    public static final String  DUMMY_ACCOUNT_UID   = "dummy-account";
-    private DatabaseHelper mDbHelper;
-    private SQLiteDatabase mDb;
-    private AccountsDbAdapter mAccountsDbAdapter;
-    private TransactionsDbAdapter mTransactionsDbAdapter;
-    private SplitsDbAdapter mSplitsDbAdapter;
-    private AccountsActivity mAcccountsActivity;
+public class AccountsActivityTest {
+    private static final String ACCOUNTS_CURRENCY_CODE = "USD";
+    // Don't add static here, otherwise it gets set to null by super.tearDown()
+    private final Commodity ACCOUNTS_CURRENCY = Commodity.getInstance(ACCOUNTS_CURRENCY_CODE);
+    private static final String SIMPLE_ACCOUNT_NAME = "Simple account";
+    private static final String SIMPLE_ACCOUNT_UID = "simple-account";
+    private static final String ROOT_ACCOUNT_NAME = "Root account";
+    private static final String ROOT_ACCOUNT_UID = "root-account";
+    private static final String PARENT_ACCOUNT_NAME = "Parent account";
+    private static final String PARENT_ACCOUNT_UID = "parent-account";
+    private static final String CHILD_ACCOUNT_UID = "child-account";
+    private static final String CHILD_ACCOUNT_NAME = "Child account";
+    public static final String TEST_DB_NAME = "test_gnucash_db.sqlite";
+
+    private static DatabaseHelper mDbHelper;
+    private static SQLiteDatabase mDb;
+    private static AccountsDbAdapter mAccountsDbAdapter;
+    private static TransactionsDbAdapter mTransactionsDbAdapter;
+    private static SplitsDbAdapter mSplitsDbAdapter;
+    private AccountsActivity mAccountsActivity;
 
     public AccountsActivityTest() {
-		super(AccountsActivity.class);
-	}
+//        super(AccountsActivity.class);
+    }
 
-    @Before
-	public void setUp() throws Exception {
-        super.setUp();
-        injectInstrumentation(InstrumentationRegistry.getInstrumentation());
-        preventFirstRunDialogs(getInstrumentation().getTargetContext());
-        mAcccountsActivity = getActivity();
+    @ClassRule public static DisableAnimationsRule disableAnimationsRule = new DisableAnimationsRule();
 
-        mDbHelper = new DatabaseHelper(mAcccountsActivity);
+    @Rule
+    public ActivityTestRule<AccountsActivity> mActivityRule = new ActivityTestRule<>(AccountsActivity.class);
+
+    @BeforeClass
+    public static void prepTest(){
+        preventFirstRunDialogs(GnuCashApplication.getAppContext());
+
+        String activeBookUID = BooksDbAdapter.getInstance().getActiveBookUID();
+        mDbHelper = new DatabaseHelper(GnuCashApplication.getAppContext(), activeBookUID);
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
-            Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
+            Log.e("AccountsActivityTest", "Error getting database: " + e.getMessage());
             mDb = mDbHelper.getReadableDatabase();
         }
-        mSplitsDbAdapter = new SplitsDbAdapter(mDb);
-        mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
-        mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
+        mSplitsDbAdapter        = SplitsDbAdapter.getInstance();
+        mTransactionsDbAdapter  = TransactionsDbAdapter.getInstance();
+        mAccountsDbAdapter      = AccountsDbAdapter.getInstance();
+        CommoditiesDbAdapter commoditiesDbAdapter = new CommoditiesDbAdapter(mDb); //initialize commodity constants
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        mAccountsActivity = mActivityRule.getActivity();
+//        testPreconditions();
+
         mAccountsDbAdapter.deleteAllRecords(); //clear the data
 
-		Account account = new Account(DUMMY_ACCOUNT_NAME);
-        account.setUID(DUMMY_ACCOUNT_UID);
-		account.setCommodity(Commodity.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE));
-		mAccountsDbAdapter.addRecord(account);
+        Account simpleAccount = new Account(SIMPLE_ACCOUNT_NAME);
+        simpleAccount.setUID(SIMPLE_ACCOUNT_UID);
+        simpleAccount.setCommodity(Commodity.getInstance(ACCOUNTS_CURRENCY_CODE));
+        mAccountsDbAdapter.addRecord(simpleAccount, DatabaseAdapter.UpdateMethod.insert);
+
         refreshAccountsList();
-	}
+    }
+
 
     /**
      * Prevents the first-run dialogs (Whats new, Create accounts etc) from being displayed when testing
@@ -141,11 +175,13 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
     }
 
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void testDisplayAccountsList(){
-        AccountsActivity.createDefaultAccounts("EUR", mAcccountsActivity);
-        mAcccountsActivity.recreate();
+        AccountsActivity.createDefaultAccounts("EUR", mAccountsActivity);
+        mAccountsActivity.recreate();
 
         refreshAccountsList();
+        sleep(1000);
         onView(withText("Assets")).perform(scrollTo());
         onView(withText("Expenses")).perform(click());
         onView(withText("Books")).perform(scrollTo());
@@ -156,8 +192,8 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         String SEARCH_ACCOUNT_NAME = "Search Account";
 
         Account account = new Account(SEARCH_ACCOUNT_NAME);
-        account.setParentUID(DUMMY_ACCOUNT_UID);
-        mAccountsDbAdapter.addRecord(account);
+        account.setParentUID(SIMPLE_ACCOUNT_UID);
+        mAccountsDbAdapter.addRecord(account, DatabaseAdapter.UpdateMethod.insert);
 
         //enter search query
 //        ActionBarUtils.clickSherlockActionBarItem(mSolo, R.id.menu_search);
@@ -166,14 +202,15 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         onView(withText(SEARCH_ACCOUNT_NAME)).check(matches(isDisplayed()));
 
         onView(withId(R.id.search_src_text)).perform(clearText());
-        onView(withId(R.id.primary_text)).check(matches(not(withText(SEARCH_ACCOUNT_NAME))));
+        onView(withText(SEARCH_ACCOUNT_NAME)).check(doesNotExist());
     }
 
     /**
      * Tests that an account can be created successfully and that the account list is sorted alphabetically.
      */
     @Test
-	public void testCreateAccount(){
+    public void testCreateAccount(){
+        assertThat(mAccountsDbAdapter.getAllRecords()).hasSize(1);
         onView(allOf(isDisplayed(), withId(R.id.fab_create_account))).perform(click());
 
         String NEW_ACCOUNT_NAME = "A New Account";
@@ -183,38 +220,39 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
                 .check(matches(isNotChecked()))
                 .perform(click());
 
-        onView(withId(R.id.checkbox_parent_account)).perform(scrollTo())
-                .check(matches(allOf(isDisplayed(), isNotChecked())))
-                .perform(click());
-
         onView(withId(R.id.menu_save)).perform(click());
 
-		List<Account> accounts = mAccountsDbAdapter.getAllRecords();
+        List<Account> accounts = mAccountsDbAdapter.getAllRecords();
         assertThat(accounts).isNotNull();
         assertThat(accounts).hasSize(2);
-		Account newestAccount = accounts.get(0); //because of alphabetical sorting
+        Account newestAccount = accounts.get(0); //because of alphabetical sorting
 
-		assertThat(newestAccount.getName()).isEqualTo(NEW_ACCOUNT_NAME);
-		assertThat(newestAccount.getCurrency().getCurrencyCode()).isEqualTo(Money.DEFAULT_CURRENCY_CODE);
+        assertThat(newestAccount.getName()).isEqualTo(NEW_ACCOUNT_NAME);
+        assertThat(newestAccount.getCommodity().getCurrencyCode()).isEqualTo(Money.DEFAULT_CURRENCY_CODE);
         assertThat(newestAccount.isPlaceholderAccount()).isTrue();
-	}
+    }
 
     @Test
     public void testChangeParentAccount() {
         final String accountName = "Euro Account";
         Account account = new Account(accountName, Commodity.EUR);
-        mAccountsDbAdapter.addRecord(account);
+        mAccountsDbAdapter.addRecord(account, DatabaseAdapter.UpdateMethod.insert);
 
         refreshAccountsList();
 
         onView(withText(accountName)).perform(click());
-        openActionBarOverflowOrOptionsMenu(mAcccountsActivity);
+        openActionBarOverflowOrOptionsMenu(mAccountsActivity);
         onView(withText(R.string.title_edit_account)).perform(click());
         onView(withId(R.id.fragment_account_form)).check(matches(isDisplayed()));
         Espresso.closeSoftKeyboard();
         onView(withId(R.id.checkbox_parent_account)).perform(scrollTo())
                 .check(matches(isNotChecked()))
                 .perform(click());
+        // FIXME: explicitly select the parent account
+
+        onView(withId(R.id.input_parent_account)).check(matches(isEnabled())).perform(click());
+
+        onView(withText(SIMPLE_ACCOUNT_NAME)).perform(click());
 
         onView(withId(R.id.menu_save)).perform(click());
 
@@ -222,7 +260,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         String parentUID = editedAccount.getParentUID();
 
         assertThat(parentUID).isNotNull();
-        assertThat(DUMMY_ACCOUNT_UID).isEqualTo(parentUID);
+        assertThat(parentUID).isEqualTo(SIMPLE_ACCOUNT_UID);
     }
 
     /**
@@ -232,7 +270,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
      */
     @Test
     public void shouldHideParentAccountViewWhenNoParentsExist(){
-        onView(allOf(withText(DUMMY_ACCOUNT_NAME), isDisplayed())).perform(click());
+        onView(allOf(withText(SIMPLE_ACCOUNT_NAME), isDisplayed())).perform(click());
         onView(withId(R.id.fragment_transaction_list)).perform(swipeRight());
         onView(withId(R.id.fab_create_transaction)).check(matches(isDisplayed())).perform(click());
         sleep(1000);
@@ -252,54 +290,59 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         onView(withId(R.id.menu_save)).perform(click());
         sleep(1000);
         //no sub-accounts
-        assertThat(mAccountsDbAdapter.getSubAccountCount(DUMMY_ACCOUNT_UID)).isEqualTo(0);
+        assertThat(mAccountsDbAdapter.getSubAccountCount(SIMPLE_ACCOUNT_UID)).isEqualTo(0);
         assertThat(mAccountsDbAdapter.getSubAccountCount(mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID())).isEqualTo(2);
         assertThat(mAccountsDbAdapter.getSimpleAccountList()).extracting("mAccountType").contains(AccountType.TRADING);
     }
 
     @Test
-	public void testEditAccount(){
-		String editedAccountName = "Edited Account";
-        sleep(2000);
-        onView(withId(R.id.options_menu)).perform(click());
-        onView(withText(R.string.title_edit_account)).perform(click());
+    public void testEditAccount(){
+        refreshAccountsList();
 
+        onView(allOf(withParent(hasDescendant(withText(SIMPLE_ACCOUNT_NAME))),
+                     withId(R.id.options_menu))).perform(click());
+//        onView(withId(R.id.options_menu)).perform(click()); //there should only be one account visible
+        sleep(1000);
+        onView(withText(R.string.title_edit_account)).check(matches(isDisplayed())).perform(click());
+//        onView(withId(R.id.context_menu_edit_accounts)).check(matches(isDisplayed())).perform(click());
         onView(withId(R.id.fragment_account_form)).check(matches(isDisplayed()));
 
+        String editedAccountName = "An Edited Account";
         onView(withId(R.id.input_account_name)).perform(clearText()).perform(typeText(editedAccountName));
 
         onView(withId(R.id.menu_save)).perform(click());
 
-		List<Account> accounts = mAccountsDbAdapter.getAllRecords();
-		Account latest = accounts.get(0);  //will be the first due to alphabetical sorting
+        List<Account> accounts = mAccountsDbAdapter.getAllRecords();
+        Account latest = accounts.get(0);  //will be the first due to alphabetical sorting
 
         assertThat(latest.getName()).isEqualTo(editedAccountName);
-        assertThat(latest.getCurrency().getCurrencyCode()).isEqualTo(DUMMY_ACCOUNT_CURRENCY_CODE);
-	}
+        assertThat(latest.getCommodity().getCurrencyCode()).isEqualTo(ACCOUNTS_CURRENCY_CODE);
+    }
 
     @Test
     public void editingAccountShouldNotDeleteTransactions(){
-        onView(allOf(withId(R.id.options_menu), isDisplayed()))
-                .perform(click());
+        onView(allOf(withParent(hasDescendant(withText(SIMPLE_ACCOUNT_NAME))),
+                     withId(R.id.options_menu),
+                     isDisplayed())).perform(click());
 
         Account account = new Account("Transfer Account");
-        account.setCommodity(Commodity.getInstance(DUMMY_ACCOUNT_CURRENCY.getCurrencyCode()));
-        Transaction transaction = new Transaction("Simple trxn");
-        transaction.setCurrencyCode(DUMMY_ACCOUNT_CURRENCY.getCurrencyCode());
-        Split split = new Split(new Money(BigDecimal.TEN, DUMMY_ACCOUNT_CURRENCY), account.getUID());
+        account.setCommodity(Commodity.getInstance(ACCOUNTS_CURRENCY.getCurrencyCode()));
+        Transaction transaction = new Transaction("Simple transaction");
+        transaction.setCurrencyCode(ACCOUNTS_CURRENCY.getCurrencyCode());
+        Split split = new Split(new Money(BigDecimal.TEN, ACCOUNTS_CURRENCY), account.getUID());
         transaction.addSplit(split);
-        transaction.addSplit(split.createPair(DUMMY_ACCOUNT_UID));
+        transaction.addSplit(split.createPair(SIMPLE_ACCOUNT_UID));
         account.addTransaction(transaction);
-        mAccountsDbAdapter.addRecord(account);
+        mAccountsDbAdapter.addRecord(account, DatabaseAdapter.UpdateMethod.insert);
 
-        assertThat(mAccountsDbAdapter.getRecord(DUMMY_ACCOUNT_UID).getTransactionCount()).isEqualTo(1);
+        assertThat(mAccountsDbAdapter.getRecord(SIMPLE_ACCOUNT_UID).getTransactionCount()).isEqualTo(1);
         assertThat(mSplitsDbAdapter.getSplitsForTransaction(transaction.getUID())).hasSize(2);
 
         onView(withText(R.string.title_edit_account)).perform(click());
 
         onView(withId(R.id.menu_save)).perform(click());
-        assertThat(mAccountsDbAdapter.getRecord(DUMMY_ACCOUNT_UID).getTransactionCount()).isEqualTo(1);
-        assertThat(mSplitsDbAdapter.fetchSplitsForAccount(DUMMY_ACCOUNT_UID).getCount()).isEqualTo(1);
+        assertThat(mAccountsDbAdapter.getRecord(SIMPLE_ACCOUNT_UID).getTransactionCount()).isEqualTo(1);
+        assertThat(mSplitsDbAdapter.fetchSplitsForAccount(SIMPLE_ACCOUNT_UID).getCount()).isEqualTo(1);
         assertThat(mSplitsDbAdapter.getSplitsForTransaction(transaction.getUID())).hasSize(2);
 
     }
@@ -316,86 +359,153 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         }
     }
 
-    //TODO: Add test for moving content of accounts before deleting it
-    @Test(expected = IllegalArgumentException.class)
-	public void testDeleteSimpleAccount() {
-        sleep(2000);
-        onView(withId(R.id.options_menu)).perform(click());
+    public void testDeleteSimpleAccount() {
+        refreshAccountsList();
+        assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(2);
+        onView(allOf(withParent(hasDescendant(withText(SIMPLE_ACCOUNT_NAME))),
+                withId(R.id.options_menu))).perform(click());
+
         onView(withText(R.string.menu_delete)).perform(click());
 
-        //the account has no sub-accounts
-//        onView(withId(R.id.accounts_options)).check(matches(not(isDisplayed())));
-//        onView(withId(R.id.transactions_options)).check(matches(isDisplayed()));
+        assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(1);
 
-//        onView(withText(R.string.label_delete_transactions)).perform(click());
-//        onView(withId(R.id.btn_save)).perform(click());
-
-        //should throw expected exception
-        mAccountsDbAdapter.getID(DUMMY_ACCOUNT_UID);;
+        List<Account> accounts = mAccountsDbAdapter.getAllRecords();
+        assertThat(accounts).hasSize(0); //root account is never returned
     }
 
-	//TODO: Test import of account file
+    @Test
+    public void testDeleteAccountWithSubaccounts() {
+        refreshAccountsList();
+        Account account = new Account("Sub-account");
+        account.setParentUID(SIMPLE_ACCOUNT_UID);
+        account.setUID(CHILD_ACCOUNT_UID);
+        mAccountsDbAdapter.addRecord(account);
+
+        refreshAccountsList();
+
+        onView(allOf(withParent(hasDescendant(withText(SIMPLE_ACCOUNT_NAME))),
+                     withId(R.id.options_menu))).perform(click());
+        onView(withText(R.string.menu_delete)).perform(click());
+
+        onView(allOf(withParent(withId(R.id.accounts_options)),
+                     withId(R.id.radio_delete))).perform(click());
+        onView(withText(R.string.alert_dialog_ok_delete)).perform(click());
+
+        assertThat(accountExists(SIMPLE_ACCOUNT_UID)).isFalse();
+        assertThat(accountExists(CHILD_ACCOUNT_UID)).isFalse();
+    }
+
+    @Test
+    public void testDeleteAccountMovingSubaccounts() {
+        long accountCount = mAccountsDbAdapter.getRecordsCount();
+        Account subAccount = new Account("Child account");
+        subAccount.setParentUID(SIMPLE_ACCOUNT_UID);
+
+        Account tranferAcct = new Account("Other account");
+        mAccountsDbAdapter.addRecord(subAccount, DatabaseAdapter.UpdateMethod.insert);
+        mAccountsDbAdapter.addRecord(tranferAcct, DatabaseAdapter.UpdateMethod.insert);
+
+        assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(accountCount+2);
+
+        refreshAccountsList();
+
+        onView(allOf(withParent(hasDescendant(withText(SIMPLE_ACCOUNT_NAME))),
+                withId(R.id.options_menu))).perform(click());
+        onView(withText(R.string.menu_delete)).perform(click());
+
+        //// FIXME: 17.08.2016 This enabled check fails during some test runs - not reliable, investigate why
+        onView(allOf(withParent(withId(R.id.accounts_options)),
+                withId(R.id.radio_move))).check(matches(isEnabled())).perform(click());
+
+        onView(withText(R.string.alert_dialog_ok_delete)).perform(click());
+
+        assertThat(accountExists(SIMPLE_ACCOUNT_UID)).isFalse();
+        assertThat(accountExists(subAccount.getUID())).isTrue();
+
+        String newParentUID = mAccountsDbAdapter.getParentAccountUID(subAccount.getUID());
+        assertThat(newParentUID).isEqualTo(tranferAcct.getUID());
+    }
+
+    /**
+     * Checks if an account exists in the database
+     * @param accountUID GUID of the account
+     * @return {@code true} if the account exists, {@code false} otherwise
+     */
+    private boolean accountExists(String accountUID) {
+        try {
+            mAccountsDbAdapter.getID(accountUID);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    //TODO: Test import of account file
     //TODO: test settings activity
     @Test
-	public void testIntentAccountCreation(){
-		Intent intent = new Intent(Intent.ACTION_INSERT);
+    public void testIntentAccountCreation(){
+        Intent intent = new Intent(Intent.ACTION_INSERT);
         intent.putExtra(Intent.EXTRA_TITLE, "Intent Account");
         intent.putExtra(Intent.EXTRA_UID, "intent-account");
         intent.putExtra(Account.EXTRA_CURRENCY_CODE, "EUR");
         intent.setType(Account.MIME_TYPE);
 
-        new AccountCreator().onReceive(mAcccountsActivity, intent);
+        new AccountCreator().onReceive(mAccountsActivity, intent);
 
-		Account account = mAccountsDbAdapter.getRecord("intent-account");
-		assertThat(account).isNotNull();
+        Account account = mAccountsDbAdapter.getRecord("intent-account");
+        assertThat(account).isNotNull();
         assertThat(account.getName()).isEqualTo("Intent Account");
         assertThat(account.getUID()).isEqualTo("intent-account");
-        assertThat(account.getCurrency().getCurrencyCode()).isEqualTo("EUR");
-	}
+        assertThat(account.getCommodity().getCurrencyCode()).isEqualTo("EUR");
+    }
 
     /**
      * Tests that the setup wizard is displayed on first run
      */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void shouldShowWizardOnFirstRun() throws Throwable {
-        PreferenceManager.getDefaultSharedPreferences(mAcccountsActivity)
-                .edit()
-                .remove(mAcccountsActivity.getString(R.string.key_first_run))
-                .commit();
+        Editor editor = PreferenceManager.getDefaultSharedPreferences(mAccountsActivity)
+                .edit();
+        //commit for immediate effect
+        editor.remove(mAccountsActivity.getString(R.string.key_first_run)).commit();
 
-        runTestOnUiThread(new Runnable() {
+
+        mActivityRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mAcccountsActivity.recreate();
+                mAccountsActivity.recreate();
             }
         });
 
         //check that wizard is shown
-        onView(withText(mAcccountsActivity.getString(R.string.title_setup_gnucash)))
+        onView(withText(mAccountsActivity.getString(R.string.title_setup_gnucash)))
                 .check(matches(isDisplayed()));
+
+        editor.putBoolean(mAccountsActivity.getString(R.string.key_first_run), false).apply();
     }
 
-	@After
-	public void tearDown() throws Exception {
-        mAcccountsActivity.finish();
-		super.tearDown();
-	}
+    @After
+    public void tearDown() throws Exception {
+        if (mAccountsActivity != null) {
+            mAccountsActivity.finish();
+        }
+    }
 
     /**
      * Refresh the account list fragment
      */
     private void refreshAccountsList(){
         try {
-            runTestOnUiThread(new Runnable() {
+            mActivityRule.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Fragment fragment = mAcccountsActivity.getCurrentAccountListFragment();
+                    Fragment fragment = mAccountsActivity.getCurrentAccountListFragment();
                     ((AccountsListFragment) fragment).refresh();
                 }
             });
         } catch (Throwable throwable) {
             System.err.println("Failed to refresh fragment");
         }
-
     }
 }

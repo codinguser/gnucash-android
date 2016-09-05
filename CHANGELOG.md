@@ -1,11 +1,21 @@
 Change Log
 ===============================================================================
+Version 2.1.0 *(2016-09-01)*
+----------------------------
+* Feature: Use multiple GnuCash books in single application
+* Feature: Backup/Export to ownCloud servers
+* Feature: Compact transactions list view for single-entry mode
+* Improved: Redesign of passcode screen with included alphabet keys
+* Improved: Scheduled transactions now have more accurate timestamps
+* Improved: Generate all scheduled transactions even if a scheduled is missed (e.g. device off)
+* Improved: Updated translations (and extracted some hard-coded strings)
+* Fixed: Accounts lists not properly refreshed after switching between recent and all
+* Fixed: Inaccurate execution of some scheduled transactions
+
 Version 2.0.7 *(2016-05-05)*
 ----------------------------
 * Fixed: Currency exchange rate does not accept very small rates (> 2 decimal places)
-* Improved: Updated translations for Japanese, Polish, French, 
-
-Version 2.0.6 *(2016-02-20)*
+* Improved: Updated translations for Japanese, Polish, French, Version 2.0.6 *(2016-02-20)*
 ----------------------------
 * Fixed: Saving transaction gets slower with increase in size of database
 * Fixed: Imbalance amount wrongly computed in split editor (for some accounts)

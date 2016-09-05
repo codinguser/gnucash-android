@@ -24,10 +24,11 @@ import android.util.Log;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
-import org.gnucash.android.db.SplitsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.SplitsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
+import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.ui.wizard.FirstRunWizardActivity;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,7 +66,7 @@ public class FirstRunWizardActivityTest extends ActivityInstrumentationTestCase2
         injectInstrumentation(InstrumentationRegistry.getInstrumentation());
 
         mActivity = getActivity();
-        mDbHelper = new DatabaseHelper(mActivity);
+        mDbHelper = new DatabaseHelper(mActivity, BaseModel.generateUID());
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {

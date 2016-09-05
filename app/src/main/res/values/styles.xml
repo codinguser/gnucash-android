@@ -110,7 +110,7 @@
         <item name="android:password">true</item>
         <item name="android:maxLength">1</item>
         <item name="android:hint">*</item>
-        <item name="android:textSize">33sp</item>
+        <item name="android:textSize">23sp</item>
     </style>
 
     <style name="Divider">

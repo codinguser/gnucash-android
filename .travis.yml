@@ -4,7 +4,7 @@ android:
   components:
     - platform-tools
     - tools
-    - build-tools-23.0.2
+    - build-tools-23.0.3
 
     # The SDK version used to compile your project
     - android-23

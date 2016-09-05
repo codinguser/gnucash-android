@@ -1,9 +1,13 @@
 package org.gnucash.android.model;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+
+import java.sql.Timestamp;
 
 /**
  * A split amount in a transaction.
@@ -15,7 +19,24 @@ import org.gnucash.android.db.AccountsDbAdapter;
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class Split extends BaseModel{
+public class Split extends BaseModel implements Parcelable{
+
+    /**
+     * Flag indicating that the split has been reconciled
+     */
+    public static final char FLAG_RECONCILED        = 'y';
+
+    /**
+     * Flag indicating that the split has not been reconciled
+     */
+    public static final char FLAG_NOT_RECONCILED    = 'n';
+
+    /**
+     * Flag indicating that the split has been cleared, but not reconciled
+     */
+    public static final char FLAG_CLEARED           = 'c';
+
+
     /**
      * Amount value of this split which is in the currency of the transaction
      */
@@ -46,6 +67,13 @@ public class Split extends BaseModel{
      */
     private String mMemo;
 
+    private char mReconcileState = FLAG_NOT_RECONCILED;
+
+    /**
+     * Database required non-null field
+     */
+    private Timestamp mReconcileDate = new Timestamp(System.currentTimeMillis());
+
     /**
      * Initialize split with a value amount and account
      * @param value Money value amount of this split
@@ -63,12 +91,13 @@ public class Split extends BaseModel{
 
     /**
      * Initialize split with a value amount and account
-     * @param amount Money value amount of this split. Value is always in the currency the owning transaction
-     * @param accountUID String UID of transfer account
+     * @param amount Money value amount of this split. Value is always in the currency the owning transaction.
+     *               This amount will be assigned as both the value and the quantity of this split
+     * @param accountUID String UID of owning account
      */
     public Split(@NonNull Money amount, String accountUID){
-        setQuantity(amount);
         setValue(amount);
+        setQuantity(new Money(amount));
         setAccountUID(accountUID);
         //NOTE: This is a rather simplististic approach to the split type.
         //It typically also depends on the account type of the account. But we do not want to access
@@ -209,7 +238,7 @@ public class Split extends BaseModel{
      * @see TransactionType#invert()
      */
     public Split createPair(String accountUID){
-        Split pair = new Split(mValue.absolute(), accountUID);
+        Split pair = new Split(mValue.abs(), accountUID);
         pair.setType(mSplitType.invert());
         pair.setMemo(mMemo);
         pair.setTransactionUID(mTransactionUID);
@@ -239,7 +268,7 @@ public class Split extends BaseModel{
      * @return whether the two splits are a pair
      */
     public boolean isPairOf(Split other) {
-        return mValue.absolute().equals(other.mValue.absolute())
+        return mValue.abs().equals(other.mValue.abs())
                 && mSplitType.invert().equals(other.mSplitType);
     }
 
@@ -272,7 +301,7 @@ public class Split extends BaseModel{
      */
     public static Money getFormattedAmount(Money amount, String accountUID, TransactionType splitType){
         boolean isDebitAccount = AccountsDbAdapter.getInstance().getAccountType(accountUID).hasDebitNormalBalance();
-        Money absAmount = amount.absolute();
+        Money absAmount = amount.abs();
 
         boolean isDebitSplit = splitType == TransactionType.DEBIT;
         if (isDebitAccount) {
@@ -290,6 +319,63 @@ public class Split extends BaseModel{
         }
     }
 
+    /**
+     * Return the reconciled state of this split
+     * <p>
+     *     The reconciled state is one of the following values:
+     *     <ul>
+     *         <li><b>y</b>: means this split has been reconciled</li>
+     *         <li><b>n</b>: means this split is not reconciled</li>
+     *         <li><b>c</b>: means split has been cleared, but not reconciled</li>
+     *     </ul>
+     * </p> <br>
+     * You can check the return value against the reconciled flags {@link #FLAG_RECONCILED}, {@link #FLAG_NOT_RECONCILED}, {@link #FLAG_CLEARED}
+     * @return Character showing reconciled state
+     */
+    public char getReconcileState() {
+        return mReconcileState;
+    }
+
+    /**
+     * Check if this split is reconciled
+     * @return {@code true} if the split is reconciled, {@code false} otherwise
+     */
+    public boolean isReconciled(){
+        return mReconcileState == FLAG_RECONCILED;
+    }
+
+    /**
+     * Set reconciled state of this split.
+     * <p>
+     *     The reconciled state is one of the following values:
+     *     <ul>
+     *         <li><b>y</b>: means this split has been reconciled</li>
+     *         <li><b>n</b>: means this split is not reconciled</li>
+     *         <li><b>c</b>: means split has been cleared, but not reconciled</li>
+     *     </ul>
+     * </p>
+     * @param reconcileState One of the following flags {@link #FLAG_RECONCILED}, {@link #FLAG_NOT_RECONCILED}, {@link #FLAG_CLEARED}
+     */
+    public void setReconcileState(char reconcileState) {
+        this.mReconcileState = reconcileState;
+    }
+
+    /**
+     * Return the date of reconciliation
+     * @return Timestamp
+     */
+    public Timestamp getReconcileDate() {
+        return mReconcileDate;
+    }
+
+    /**
+     * Set reconciliation date for this split
+     * @param reconcileDate Timestamp of reconciliation
+     */
+    public void setReconcileDate(Timestamp reconcileDate) {
+        this.mReconcileDate = reconcileDate;
+    }
+
     @Override
     public String toString() {
         return mSplitType.name() + " of " + mValue.toString() + " in account: " + mAccountUID;
@@ -305,7 +391,7 @@ public class Split extends BaseModel{
      */
     public String toCsv(){
         String sep = ";";
-
+        //TODO: add reconciled state and date
         String splitString = getUID() + sep + mValue.getNumerator() + sep + mValue.getDenominator() + sep + mValue.getCurrency().getCurrencyCode() + sep
                 + mQuantity.getNumerator() + sep + mQuantity.getDenominator() + sep + mQuantity.getCurrency().getCurrencyCode()
                 + sep + mTransactionUID + sep + mAccountUID + sep + mSplitType.name();
@@ -325,6 +411,7 @@ public class Split extends BaseModel{
      * @return Split instance parsed from the string
      */
     public static Split parseSplit(String splitCsvString) {
+        //TODO: parse reconciled state and date
         String[] tokens = splitCsvString.split(";");
         if (tokens.length < 8) { //old format splits
             Money amount = new Money(tokens[0], tokens[1]);
@@ -357,4 +444,132 @@ public class Split extends BaseModel{
             return split;
         }
     }
+
+    /**
+     * Two splits are considered equivalent if all the fields (excluding GUID and timestamps - created, modified, reconciled) are equal.
+     * Any two splits which are equal are also equivalent, but the reverse is not true
+     * <p>The difference with to {@link #equals(Object)} is that the GUID of the split is not considered.
+     * This is useful in cases where a new split is generated for a transaction with the same properties,
+     * but a new GUID is generated e.g. when editing a transaction and modifying the splits</p>
+     *
+     * @param split Other split for which to test equivalence
+     * @return {@code true} if both splits are equivalent, {@code false} otherwise
+     */
+    public boolean isEquivalentTo(Split split){
+        if (this == split) return true;
+        if (super.equals(split)) return true;
+
+        if (mReconcileState != split.mReconcileState) return false;
+        if (!mValue.equals(split.mValue)) return false;
+        if (!mQuantity.equals(split.mQuantity)) return false;
+        if (!mTransactionUID.equals(split.mTransactionUID)) return false;
+        if (!mAccountUID.equals(split.mAccountUID)) return false;
+        if (mSplitType != split.mSplitType) return false;
+        return mMemo != null ? mMemo.equals(split.mMemo) : split.mMemo == null;
+    }
+
+    /**
+     * Two splits are considered equal if all their properties excluding timestampes (created, modified, reconciled) are equal.
+     * @param o Other split to compare for equality
+     * @return {@code true} if this split is equal to {@code o}, {@code false} otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Split split = (Split) o;
+
+        if (mReconcileState != split.mReconcileState) return false;
+        if (!mValue.equals(split.mValue)) return false;
+        if (!mQuantity.equals(split.mQuantity)) return false;
+        if (!mTransactionUID.equals(split.mTransactionUID)) return false;
+        if (!mAccountUID.equals(split.mAccountUID)) return false;
+        if (mSplitType != split.mSplitType) return false;
+        return mMemo != null ? mMemo.equals(split.mMemo) : split.mMemo == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + mValue.hashCode();
+        result = 31 * result + mQuantity.hashCode();
+        result = 31 * result + mTransactionUID.hashCode();
+        result = 31 * result + mAccountUID.hashCode();
+        result = 31 * result + mSplitType.hashCode();
+        result = 31 * result + (mMemo != null ? mMemo.hashCode() : 0);
+        result = 31 * result + (int) mReconcileState;
+        return result;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(getUID());
+        dest.writeString(mAccountUID);
+        dest.writeString(mTransactionUID);
+        dest.writeString(mSplitType.name());
+
+        dest.writeLong(mValue.getNumerator());
+        dest.writeLong(mValue.getDenominator());
+        dest.writeString(mValue.getCommodity().getCurrencyCode());
+
+        dest.writeLong(mQuantity.getNumerator());
+        dest.writeLong(mQuantity.getDenominator());
+        dest.writeString(mQuantity.getCommodity().getCurrencyCode());
+
+        dest.writeString(mMemo == null ? "" : mMemo);
+        dest.writeString(String.valueOf(mReconcileState));
+        dest.writeString(mReconcileDate.toString());
+    }
+
+    /**
+     * Constructor for creating a Split object from a Parcel
+     * @param source Source parcel containing the split
+     * @see #CREATOR
+     */
+    private Split(Parcel source){
+        setUID(source.readString());
+        mAccountUID = source.readString();
+        mTransactionUID = source.readString();
+        mSplitType = TransactionType.valueOf(source.readString());
+
+        long valueNum = source.readLong();
+        long valueDenom = source.readLong();
+        String valueCurrency = source.readString();
+        mValue = new Money(valueNum, valueDenom, valueCurrency);
+
+        long qtyNum = source.readLong();
+        long qtyDenom = source.readLong();
+        String qtyCurrency = source.readString();
+        mQuantity = new Money(qtyNum, qtyDenom, qtyCurrency);
+
+        String memo = source.readString();
+        mMemo = memo.isEmpty() ? null : memo;
+        mReconcileState = source.readString().charAt(0);
+        mReconcileDate = Timestamp.valueOf(source.readString());
+    }
+
+    /**
+     * Creates new Parcels containing the information in this split during serialization
+     */
+    public static final Parcelable.Creator<Split> CREATOR
+            = new Parcelable.Creator<Split>() {
+
+        @Override
+        public Split createFromParcel(Parcel source) {
+            return new Split(source);
+        }
+
+        @Override
+        public Split[] newArray(int size) {
+            return new Split[size];
+        }
+    };
+
 }

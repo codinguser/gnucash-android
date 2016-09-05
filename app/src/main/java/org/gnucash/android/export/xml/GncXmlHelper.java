@@ -17,9 +17,6 @@
 
 package org.gnucash.android.export.xml;
 
-import android.support.annotation.NonNull;
-
-import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 
@@ -28,11 +25,8 @@ import java.math.BigInteger;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Currency;
 import java.util.Date;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Collection of helper tags and methods for Gnc XML export
@@ -50,6 +44,7 @@ public abstract class GncXmlHelper {
     public static final String ATTR_VALUE_NUMERIC   = "numeric";
     public static final String ATTR_VALUE_GUID      = "guid";
     public static final String ATTR_VALUE_BOOK      = "book";
+    public static final String ATTR_VALUE_FRAME     = "frame";
     public static final String TAG_GDATE            = "gdate";
 
     /*
@@ -61,18 +56,20 @@ public abstract class GncXmlHelper {
     public static final String TAG_COUNT_DATA       = "gnc:count-data";
 
     public static final String TAG_COMMODITY        = "gnc:commodity";
-    public static final String TAG_NAME             = "act:name";
-    public static final String TAG_ACCT_ID          = "act:id";
-    public static final String TAG_TYPE             = "act:type";
     public static final String TAG_COMMODITY_ID     = "cmdty:id";
     public static final String TAG_COMMODITY_SPACE  = "cmdty:space";
-    public static final String TAG_ACCOUNT_COMMODITY = "act:commodity";
+
+    public static final String TAG_ACCOUNT          = "gnc:account";
+    public static final String TAG_ACCT_NAME        = "act:name";
+    public static final String TAG_ACCT_ID          = "act:id";
+    public static final String TAG_ACCT_TYPE        = "act:type";
+    public static final String TAG_ACCT_COMMODITY   = "act:commodity";
     public static final String TAG_COMMODITY_SCU    = "act:commodity-scu";
     public static final String TAG_PARENT_UID       = "act:parent";
-    public static final String TAG_ACCOUNT          = "gnc:account";
+
     public static final String TAG_SLOT_KEY         = "slot:key";
     public static final String TAG_SLOT_VALUE       = "slot:value";
-    public static final String TAG_ACT_SLOTS        = "act:slots";
+    public static final String TAG_ACCT_SLOTS       = "act:slots";
     public static final String TAG_SLOT             = "slot";
     public static final String TAG_ACCT_DESCRIPTION = "act:description";
 
@@ -91,21 +88,27 @@ public abstract class GncXmlHelper {
     public static final String TAG_SPLIT_ID         = "split:id";
     public static final String TAG_SPLIT_MEMO       = "split:memo";
     public static final String TAG_RECONCILED_STATE = "split:reconciled-state";
+    public static final String TAG_RECONCILED_DATE  = "split:recondiled-date";
     public static final String TAG_SPLIT_ACCOUNT    = "split:account";
     public static final String TAG_SPLIT_VALUE      = "split:value";
     public static final String TAG_SPLIT_QUANTITY   = "split:quantity";
     public static final String TAG_SPLIT_SLOTS      = "split:slots";
 
-    public static final String TAG_PRICEDB = "gnc:pricedb";
-    public static final String TAG_PRICE = "price";
-    public static final String TAG_PRICE_ID = "price:id";
-    public static final String TAG_PRICE_COMMODITY = "price:commodity";
-    public static final String TAG_PRICE_CURRENCY = "price:currency";
-    public static final String TAG_PRICE_TIME = "price:time";
-    public static final String TAG_PRICE_SOURCE = "price:source";
-    public static final String TAG_PRICE_TYPE = "price:type";
-    public static final String TAG_PRICE_VALUE = "price:value";
+    public static final String TAG_PRICEDB          = "gnc:pricedb";
+    public static final String TAG_PRICE            = "price";
+    public static final String TAG_PRICE_ID         = "price:id";
+    public static final String TAG_PRICE_COMMODITY  = "price:commodity";
+    public static final String TAG_PRICE_CURRENCY   = "price:currency";
+    public static final String TAG_PRICE_TIME       = "price:time";
+    public static final String TAG_PRICE_SOURCE     = "price:source";
+    public static final String TAG_PRICE_TYPE       = "price:type";
+    public static final String TAG_PRICE_VALUE      = "price:value";
 
+    /**
+     * Periodicity of the recurrence.
+     * <p>Only currently used for reading old backup files. May be removed in the future. </p>
+     * @deprecated Use {@link #TAG_GNC_RECURRENCE} instead
+     */
     @Deprecated
     public static final String TAG_RECURRENCE_PERIOD = "trn:recurrence_period";
 
@@ -126,10 +129,20 @@ public abstract class GncXmlHelper {
     public static final String TAG_SX_TAG                   = "sx:tag";
     public static final String TAG_SX_TEMPL_ACCOUNT         = "sx:templ-acct";
     public static final String TAG_SX_SCHEDULE              = "sx:schedule";
-    public static final String TAG_RECURRENCE               = "gnc:recurrence";
+    public static final String TAG_GNC_RECURRENCE           = "gnc:recurrence";
+
     public static final String TAG_RX_MULT                  = "recurrence:mult";
     public static final String TAG_RX_PERIOD_TYPE           = "recurrence:period_type";
     public static final String TAG_RX_START                 = "recurrence:start";
+
+
+    public static final String TAG_BUDGET                   = "gnc:budget";
+    public static final String TAG_BUDGET_ID                = "bgt:id";
+    public static final String TAG_BUDGET_NAME              = "bgt:name";
+    public static final String TAG_BUDGET_DESCRIPTION       = "bgt:description";
+    public static final String TAG_BUDGET_NUM_PERIODS       = "bgt:num-periods";
+    public static final String TAG_BUDGET_RECURRENCE        = "bgt:recurrence";
+    public static final String TAG_BUDGET_SLOTS             = "bgt:slots";
 
 
     public static final String RECURRENCE_VERSION           = "1.0.0";
@@ -198,6 +211,7 @@ public abstract class GncXmlHelper {
      * @param amount Split amount as BigDecimal
      * @param commodity Commodity of the transaction
      * @return Formatted split amount
+     * @deprecated Just use the values for numerator and denominator which are saved in the database
      */
     public static String formatSplitAmount(BigDecimal amount, Commodity commodity){
         int denomInt = commodity.getSmallestFraction();

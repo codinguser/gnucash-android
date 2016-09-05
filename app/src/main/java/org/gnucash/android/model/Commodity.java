@@ -16,7 +16,7 @@
 package org.gnucash.android.model;
 
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 
 /**
  * Commodities are the currencies used in the application.
@@ -188,6 +188,15 @@ public class Commodity extends BaseModel {
 
     public void setQuoteFlag(int quoteFlag) {
         this.mQuoteFlag = quoteFlag;
+    }
+
+    @Override
+    /**
+     * Returns the full name of the currency, or the currency code if there is no full name
+     * @return String representation of the commodity
+     */
+    public String toString() {
+        return mFullname == null || mFullname.isEmpty() ? mMnemonic : mFullname;
     }
 
     /**

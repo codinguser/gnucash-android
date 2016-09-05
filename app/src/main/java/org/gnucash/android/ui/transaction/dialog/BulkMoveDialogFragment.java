@@ -29,13 +29,13 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.gnucash.android.R;
-import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
+import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
-import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 /**
@@ -154,13 +154,14 @@ public class BulkMoveDialogFragment extends DialogFragment {
 				}
 
 				long dstAccountId = mDestinationAccountSpinner.getSelectedItemId();
+				String dstAccountUID = AccountsDbAdapter.getInstance().getUID(dstAccountId);
 				TransactionsDbAdapter trxnAdapter = TransactionsDbAdapter.getInstance();
-				if (!trxnAdapter.getAccountCurrencyCode(dstAccountId).equals(trxnAdapter.getAccountCurrencyCode(mOriginAccountUID))) {
+				if (!trxnAdapter.getAccountCurrencyCode(dstAccountUID).equals(trxnAdapter.getAccountCurrencyCode(mOriginAccountUID))) {
 					Toast.makeText(getActivity(), R.string.toast_incompatible_currency, Toast.LENGTH_LONG).show();
 					return;
 				}
 				String srcAccountUID = ((TransactionsActivity) getActivity()).getCurrentAccountUID();
-				String dstAccountUID = AccountsDbAdapter.getInstance().getUID(dstAccountId);
+
 				for (long trxnId : mTransactionIds) {
 					trxnAdapter.moveTransaction(trxnAdapter.getUID(trxnId), srcAccountUID, dstAccountUID);
 				}

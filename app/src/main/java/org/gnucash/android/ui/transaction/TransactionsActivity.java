@@ -32,7 +32,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.SparseArray;
@@ -47,30 +46,27 @@ import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.ui.common.BaseDrawerActivity;
-import org.gnucash.android.ui.common.FormActivity;
-import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.account.AccountsListFragment;
+import org.gnucash.android.ui.account.OnAccountClickedListener;
+import org.gnucash.android.ui.common.BaseDrawerActivity;
+import org.gnucash.android.ui.common.FormActivity;
+import org.gnucash.android.ui.common.Refreshable;
+import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.util.AccountBalanceTask;
-import org.gnucash.android.ui.util.OnAccountClickedListener;
-import org.gnucash.android.ui.util.OnTransactionClickedListener;
-import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 import org.joda.time.LocalDate;
 
 import java.math.BigDecimal;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 
 /**
  * Activity for displaying, creating and editing transactions
@@ -115,9 +111,9 @@ public class TransactionsActivity extends BaseDrawerActivity implements
      */
     private Cursor mAccountsCursor = null;
 
-    @Bind(R.id.pager) ViewPager mViewPager;
-    @Bind(R.id.spinner_toolbar) Spinner mToolbarSpinner;
-    @Bind(R.id.tab_layout) TabLayout mTabLayout;
+    @Bind(R.id.pager)            ViewPager mViewPager;
+    @Bind(R.id.toolbar_spinner)  Spinner mToolbarSpinner;
+    @Bind(R.id.tab_layout)       TabLayout mTabLayout;
     @Bind(R.id.transactions_sum) TextView mSumTextView;
     @Bind(R.id.fab_create_transaction) FloatingActionButton mCreateFloatingButton;
 
@@ -274,17 +270,21 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         setTitleIndicatorColor();
     }
 
-	@Override
+    @Override
+    public int getContentView() {
+        return R.layout.activity_transactions;
+    }
+
+    @Override
+    public int getTitleRes() {
+        return R.string.title_transactions;
+    }
+
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_transactions);
-        setUpDrawer();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        ButterKnife.bind(this);
 
 		mAccountUID = getIntent().getStringExtra(UxArgument.SELECTED_ACCOUNT_UID);
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
@@ -381,7 +381,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 		mAccountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
 
         SpinnerAdapter mSpinnerAdapter = new QualifiedAccountNameCursorAdapter(
-                getSupportActionBar().getThemedContext(), mAccountsCursor);
+                getSupportActionBar().getThemedContext(), mAccountsCursor, R.layout.account_spinner_item);
 
         mToolbarSpinner.setAdapter(mSpinnerAdapter);
         mToolbarSpinner.setOnItemSelectedListener(mTransactionListNavigationListener);

@@ -25,6 +25,7 @@
   <string name="label_account_name">Nome conto</string>
   <string name="btn_cancel">Annulla</string>
   <string name="btn_save">Salva</string>
+  <string name="btn_test">Prova</string>
   <string name="label_passcode">Inserisci codice di accesso</string>
   <string name="toast_wrong_passcode">Codice di accesso errato, riprova</string>
   <string name="toast_passcode_set">Codice di accesso impostato</string>
@@ -64,6 +65,7 @@
     <item>Scheda SD</item>
     <item>Dropbox</item>
     <item>Google Drive</item>
+    <item>ownCloud</item>
     <item>Invia a&#8230;</item>
   </string-array>
   <string name="btn_move">Sposta</string>
@@ -130,12 +132,12 @@
   <string name="summary_xml_ofx_header">Abilitare questa opzione quando si esporta verso un\'applicazione diversa da GnuCash per desktop</string>
   <string name="title_whats_new">Novità</string>
   <string name="whats_new">
-- App in Material Design \n
-        - Transazioni in valute multiple\n
-        - Calcolatrice per gli importi delle transazioni\n
-        - Opzioni migliori per i resoconti\n
-        - Nuova sezione Aiuto &amp; Feedback\n
-        - Numerose correzioni di bug e miglioramenti\n
+- Supporto per più libri differenti \n
+	- Aggiunto ownCloud come destinazione per le esportazioni\n
+        - Vista compatta per la lista delle transazioni\n
+	- Ridisegno della schermata di blocco per il codice di accesso\n
+	- Migliorata la gestione delle transazioni pianificate\n
+	- Sistemati molti bug e molti miglioramenti\n
 	</string>
   <string name="label_dismiss">Chiudi</string>
   <string name="toast_transanction_amount_required">Inserire un importo per salvare la transazione</string>
@@ -208,7 +210,7 @@
   <string name="title_all_accounts">Tutti</string>
   <string name="summary_create_default_accounts">Crea la struttura predefinita di GnuCash dei conti comunemente utilizzati</string>
   <string name="title_create_default_accounts">Crea conti predefiniti</string>
-  <string name="msg_confirm_create_default_accounts_setting">Tutti i conti e le transazioni nel dispositivo verranno cancellate.\n\nContinuare?</string>
+  <string name="msg_confirm_create_default_accounts_setting">Verrà aperto un nuovo libro con i conti predefiniti.\n\nI conti e le transazioni correnti non verranno modificate!</string>
   <string name="menu_scheduled_transactions">Transazioni pianificate</string>
   <string name="msg_confirm_create_default_accounts_first_run">Benvenuti in GnuCash per Android! \nÈ possibile
         creare una struttura dei conti più comunemente utilizzati o importare la propria struttura da GnuCash. \n\nEntrambe le
@@ -276,9 +278,11 @@
   <string name="label_tap_to_create_schedule">Tocca per creare una pianificazione</string>
   <string name="title_restore_backup">Ripristina backup&#8230;</string>
   <string name="header_backup_and_export_settings">Backup e esportazione</string>
-  <string name="title_dropbox_sync_preference">Sincronizzazione Dropbox</string>
+  <string name="title_dropbox_sync_preference">Abilita DropBox</string>
+  <string name="title_owncloud_sync_preference">Abilita ownCloud </string>
   <string name="title_backup_preference_category">Backup</string>
-  <string name="summary_dropbox_sync">Abilita la sincronizzazione con Dropbox</string>
+  <string name="summary_dropbox_sync">Attiva l\'esportazione su DropBox</string>
+  <string name="summary_owncloud_sync">Attiva l\'esportazione su ownCloud</string>
   <string name="title_select_gnucash_xml_file">Seleziona un file XML di GnuCash</string>
   <string name="title_backup_prefs">Preferenze di backup</string>
   <string name="title_create_backup_pref">Crea backup</string>
@@ -287,8 +291,8 @@
   <string name="toast_backup_successful">Backup riuscito</string>
   <string name="toast_backup_failed">Backup non riuscito</string>
   <string name="export_warning_xml">Esporta tutti i conti e tutte le transazioni</string>
-  <string name="title_google_drive_sync_pref">Sincronizzazione Google Drive</string>
-  <string name="summary_google_drive_sync">Abilita la sincronizzazione con Google Drive</string>
+  <string name="title_google_drive_sync_pref">Abilita Google Drive</string>
+  <string name="summary_google_drive_sync">Attiva l\'esportazione su Google Drive</string>
   <string name="toast_install_file_manager">Installa un file manager per selezionare i file</string>
   <string name="title_select_backup_to_restore">Seleziona il backup da ripristinare</string>
   <string name="nav_menu_favorites">Preferiti</string>
@@ -297,6 +301,16 @@
   <string name="nav_menu_scheduled_transactions">Transazioni pianificate</string>
   <string name="nav_menu_export">Esporta&#8230;</string>
   <string name="nav_menu_settings">Impostazioni</string>
+  <string name="username">Nome utente</string>
+  <string name="password">Password</string>
+  <string name="owncloud_pref">owncloud</string>
+  <string name="owncloud_server">https://</string>
+  <string name="owncloud_server_invalid">Server OC non trovato</string>
+  <string name="owncloud_user_invalid">Nome utente/password OC non validi</string>
+  <string name="owncloud_dir_invalid">Caratteri non validi: \\ &lt; &gt; : \&quot; | * ? </string>
+  <string name="owncloud_server_ok">Server OC OK</string>
+  <string name="owncloud_user_ok">Nome utente/password OC OK</string>
+  <string name="owncloud_dir_ok">Nome directory OK</string>
   <plurals name="label_every_x_days">
     <item quantity="one">Ogni giorno</item>
     <item quantity="other">Ogni %d giorni</item>
@@ -384,8 +398,16 @@
   <string name="summary_google_plus">Condivi idee, discuti dei cambiamenti o segnala dei problemi</string>
   <string name="summary_translate_gnucash">Traduci o revisiona su Crowdin</string>
   <string name="toast_no_compatible_apps_to_receive_export">Nessuna app compatibile con la ricezione delle transazioni esportate!</string>
-  <string name="menu_move_transaction">Sposta...</string>
+  <string name="menu_move_transaction">Sposta&#8230;</string>
   <string name="menu_duplicate_transaction">Duplica</string>
+  <string name="nav_menu_budgets">Bilanci</string>
+  <string name="title_cash_flow_report">Flusso di liquidi</string>
+  <string name="title_budgets">Bilanci</string>
+  <string name="title_use_compact_list">Attiva visualizzazione compatta</string>
+  <string name="summary_use_compact_list">Attiva per visualizzare sempre la lista delle transazioni in forma compatta</string>
+  <string name="error_invalid_exchange_rate">Tasso di cambio non valido</string>
+  <string name="sample_exchange_rate">es. 1 %1$s = x.xx %2$s</string>
+  <string name="error_invalid_amount">Importo non valido</string>
   <string-array name="report_time_range">
     <item>Mese corrente</item>
     <item>Ultimi 3 mesi</item>
@@ -394,4 +416,63 @@
     <item>Da sempre</item>
     <item>Intervallo personalizzato&#8230;</item>
   </string-array>
+  <!-- Passcode lock -->
+  <string name="digit_one">1</string>
+  <!-- In the English locale, digit 1 has no text on it. This is simply empty space. If your locale has text on digit 1, then translate-->
+  <string name="digit_one_text"> </string>
+  <string name="digit_two">2</string>
+  <string name="digit_two_text">ABC</string>
+  <string name="digit_three">3</string>
+  <string name="digit_three_text">DEF</string>
+  <string name="digit_four">4</string>
+  <string name="digit_four_text">GHI</string>
+  <string name="digit_five">5</string>
+  <string name="digit_five_text">JKL</string>
+  <string name="digit_six">6</string>
+  <string name="digit_six_text">MNO</string>
+  <string name="digit_seven">7</string>
+  <string name="digit_seven_text">PQRS</string>
+  <string name="digit_eight">8</string>
+  <string name="digit_eight_text">TUV</string>
+  <string name="digit_nine">9</string>
+  <string name="digit_nine_text">WXYZ</string>
+  <string name="digit_zero">0</string>
+  <string name="digit_zero_text">+</string>
+  <string name="title_manage_books">Gestione libri</string>
+  <string name="menu_manage_books">Gestione libri&#8230;</string>
+  <string name="select_chart_to_view_details">Seleziona qualsiasi parte del grafico per vederne i dettagli</string>
+  <string name="title_confirm_delete_book">Conferma eliminazione libro</string>
+  <string name="msg_all_book_data_will_be_deleted">Tutti i conti e le transazioni in questo libro verranno eliminate!</string>
+  <string name="btn_delete_book">Elimina libro</string>
+  <string name="label_last_export_time">Ultima esportazione:</string>
+  <string name="menu_title_enable_sync">Attiva sincronizzazione</string>
+  <string name="menu_title_new_book">Nuovo libro</string>
+  <string name="toast_transaction_has_no_splits_and_cannot_open">La transazione selezionata non ha suddivisioni e non può essere aperta</string>
+  <string name="label_split_count">%1$d suddivisioni</string>
+  <string name="label_inside_account_with_name">in %1$s</string>
+  <plurals name="book_account_stats">
+    <item quantity="one">%d conto</item>
+    <item quantity="other">%d conti</item>
+  </plurals>
+  <plurals name="book_transaction_stats">
+    <item quantity="one">%d transazione</item>
+    <item quantity="other">%d transazioni</item>
+  </plurals>
+  <string-array name="report_account_types">
+    <item>USCITA</item>
+    <item>ENTRATA</item>
+  </string-array>
+  <string name="toast_connected_to_google_drive">Connesso a Google Drive</string>
+  <string name="toast_unable_to_connect_to_google_drive">Impossibile connettersi a Google Drive</string>
+  <string name="toast_enter_amount_to_split">Inserisci un importo da dividere</string>
+  <string name="label_export_target_external_service">servizio esterno</string>
+  <string name="toast_updated_transaction_recurring_schedule">Pianificazione ricorrente della transazione aggiornata</string>
+  <string name="label_export_transactions_since_date">Da</string>
+  <string name="switch_export_transactions_from_all_time">Da sempre</string>
+  <string name="label_recommend_app">Consigliala sul Play Store</string>
+  <string name="repeat_until_date">fino al %1$s</string>
+  <string name="repeat_on_weekday">il %1$s</string>
+  <string name="repeat_x_times">per %1$s volte</string>
+  <string name="menu_show_compact_view">Visualizzazione compatta</string>
+  <string name="book_default_name">Book %1$d</string>
 </resources>
