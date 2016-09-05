@@ -187,7 +187,13 @@ public class ScheduledActionService extends IntentService {
         int executionCount = 0;
         String actionUID = scheduledAction.getActionUID();
         TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
-        Transaction trxnTemplate = transactionsDbAdapter.getRecord(actionUID);
+        Transaction trxnTemplate = null;
+        try {
+            trxnTemplate = transactionsDbAdapter.getRecord(actionUID);
+        } catch (IllegalArgumentException ex){ //if the record could not be found, abort
+            return executionCount;
+        }
+
 
         long now = System.currentTimeMillis();
         //if there is an end time in the past, we execute all schedules up to the end time.

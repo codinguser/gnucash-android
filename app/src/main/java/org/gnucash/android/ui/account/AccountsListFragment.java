@@ -318,7 +318,8 @@ public class AccountsListFragment extends Fragment implements
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mAccountRecyclerAdapter.swapCursor(null);
+        if (mAccountRecyclerAdapter != null)
+            mAccountRecyclerAdapter.swapCursor(null);
     }
 
     /**
