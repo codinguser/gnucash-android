@@ -1466,9 +1466,11 @@ public class MigrationHelper {
         //cancel the existing pending intent so that the alarm can be rescheduled
         Intent alarmIntent = new Intent(context, ScheduledActionService.class);
         PendingIntent pendingIntent = PendingIntent.getService(context, 0, alarmIntent, PendingIntent.FLAG_NO_CREATE);
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(pendingIntent);
-        pendingIntent.cancel();
+        if (pendingIntent != null) {
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            alarmManager.cancel(pendingIntent);
+            pendingIntent.cancel();
+        }
 
         GnuCashApplication.startScheduledActionExecutionService(GnuCashApplication.getAppContext());
 
