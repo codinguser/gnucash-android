@@ -938,8 +938,9 @@ public class TransactionFormFragment extends Fragment implements
      * @return {@code true} if the transaction can be saved, {@code false} otherwise
      */
     private boolean canSave(){
-        return (mAmountEditText.isInputValid())
-                && (mUseDoubleEntry && mTransferAccountSpinner.getCount() > 0);
+        return (mUseDoubleEntry && mAmountEditText.isInputValid()
+                                && mTransferAccountSpinner.getCount() > 0)
+               || (!mUseDoubleEntry && mAmountEditText.isInputValid());
     }
 
     /**
