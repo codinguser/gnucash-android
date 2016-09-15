@@ -142,10 +142,11 @@ public class ScheduledActionService extends IntentService {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_LAST_RUN, System.currentTimeMillis());
         contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_EXECUTION_COUNT, executionCount);
-        new ScheduledActionDbAdapter(db, new RecurrenceDbAdapter(db)).updateRecord(scheduledAction.getUID(), contentValues);
+        db.update(DatabaseSchema.ScheduledActionEntry.TABLE_NAME, contentValues,
+                DatabaseSchema.ScheduledActionEntry.COLUMN_UID + "=?", new String[]{scheduledAction.getUID()});
 
-        //set the values in the object because they will be checked for the next iteration in the calling loop
-        scheduledAction.setExecutionCount(executionCount);
+        //set the execution count in the object because it will be checked for the next iteration in the calling loop
+        scheduledAction.setExecutionCount(executionCount); //this call is important, do not remove!!
     }
 
     /**
@@ -191,6 +192,7 @@ public class ScheduledActionService extends IntentService {
         try {
             trxnTemplate = transactionsDbAdapter.getRecord(actionUID);
         } catch (IllegalArgumentException ex){ //if the record could not be found, abort
+            Log.e(LOG_TAG, "Scheduled action with UID " + actionUID + " could not be found in the db with path " + db.getPath());
             return executionCount;
         }
 

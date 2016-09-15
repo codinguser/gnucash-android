@@ -16,6 +16,7 @@
 package org.gnucash.android.test.unit.service;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
 
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
@@ -187,6 +188,9 @@ public class ScheduledActionServiceTest {
         ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.TRANSACTION);
         DateTime startTime = new DateTime(2016, 6, 6, 9, 0);
         scheduledAction.setStartTime(startTime.getMillis());
+        DateTime endTime = new DateTime(2016, 9, 12, 8, 0); //end just before last appointment
+        scheduledAction.setEndTime(endTime.getMillis());
+
         scheduledAction.setActionUID(mActionUID);
 
         scheduledAction.setRecurrence(PeriodType.WEEK, 2);
@@ -257,7 +261,7 @@ public class ScheduledActionServiceTest {
     /**
      * Test that only scheduled actions with action UIDs are processed
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test //(expected = IllegalArgumentException.class)
     public void recurringTransactions_shouldHaveScheduledActionUID(){
         ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.TRANSACTION);
         DateTime startTime = new DateTime(2016, 7, 4, 12 ,0);
@@ -270,6 +274,9 @@ public class ScheduledActionServiceTest {
         List<ScheduledAction> actions = new ArrayList<>();
         actions.add(scheduledAction);
         ScheduledActionService.processScheduledActions(actions, mDb);
+
+        //no change in the database since no action UID was specified
+        assertThat(transactionsDbAdapter.getRecordsCount()).isZero();
     }
 
     @Test
