@@ -82,6 +82,10 @@ public class ScheduledActionService extends IntentService {
                 Log.i(LOG_TAG, String.format("Processing %d total scheduled actions for Book: %s",
                         scheduledActions.size(), book.getDisplayName()));
                 processScheduledActions(scheduledActions, db);
+
+                //close all databases except the currently active database
+                if (!db.getPath().equals(GnuCashApplication.getActiveDb().getPath()))
+                    db.close();
             }
 
             Log.i(LOG_TAG, "Completed service @ " + java.text.DateFormat.getDateTimeInstance().format(new Date()));
@@ -195,7 +199,7 @@ public class ScheduledActionService extends IntentService {
         try {
             trxnTemplate = transactionsDbAdapter.getRecord(actionUID);
         } catch (IllegalArgumentException ex){ //if the record could not be found, abort
-            Log.e(LOG_TAG, "Scheduled action with UID " + actionUID + " could not be found in the db with path " + db.getPath());
+            Log.e(LOG_TAG, "Scheduled transaction with UID " + actionUID + " could not be found in the db with path " + db.getPath());
             return executionCount;
         }
 

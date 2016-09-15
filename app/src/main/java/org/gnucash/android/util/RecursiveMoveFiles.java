@@ -74,7 +74,7 @@ public class RecursiveMoveFiles implements Runnable {
      */
     private int recursiveMove(File src, File dst){
         int copyCount = 0;
-        if (src.isDirectory()){
+        if (src.isDirectory() && src.listFiles() != null){
             dst.mkdirs(); //we assume it works everytime. Great, right?
             for (File file : src.listFiles()) {
                 File target = new File(dst, file.getName());
