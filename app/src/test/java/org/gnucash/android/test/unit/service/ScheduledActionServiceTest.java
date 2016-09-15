@@ -44,6 +44,7 @@ import org.gnucash.android.test.unit.testutil.GnucashTestRunner;
 import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
 import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.joda.time.Weeks;
 import org.junit.After;
 import org.junit.Before;
@@ -302,6 +303,36 @@ public class ScheduledActionServiceTest {
         File[] backupFiles = backupFolder.listFiles();
         assertThat(backupFiles).hasSize(1);
         assertThat(backupFiles[0]).exists().hasExtension("gnca");
+    }
+
+    /**
+     * Tests that a scheduled backup isn't executed before the next scheduled
+     * execution according to its recurrence.
+     *
+     * <p>Tests for bug https://github.com/codinguser/gnucash-android/issues/583</p>
+     */
+    @Test
+    public void scheduledBackups_shouldNotRunBeforeNextScheduledExecution(){
+        ScheduledAction scheduledBackup = new ScheduledAction(ScheduledAction.ActionType.BACKUP);
+        scheduledBackup.setStartTime(LocalDateTime.now().minusDays(2).toDate().getTime());
+        scheduledBackup.setExecutionCount(1);
+        scheduledBackup.setRecurrence(PeriodType.WEEK, 1);
+
+        ExportParams backupParams = new ExportParams(ExportFormat.XML);
+        backupParams.setExportTarget(ExportParams.ExportTarget.SD_CARD);
+        scheduledBackup.setTag(backupParams.toCsv());
+
+        File backupFolder = new File(
+                Exporter.getExportFolderPath(BooksDbAdapter.getInstance().getActiveBookUID()));
+        assertThat(backupFolder).exists();
+        assertThat(backupFolder.listFiles()).isEmpty();
+
+        List<ScheduledAction> actions = new ArrayList<>();
+        actions.add(scheduledBackup);
+        ScheduledActionService.processScheduledActions(actions, mDb);
+
+        assertThat(scheduledBackup.getExecutionCount()).isEqualTo(1);
+        assertThat(backupFolder.listFiles()).hasSize(0);
     }
 
     @After
