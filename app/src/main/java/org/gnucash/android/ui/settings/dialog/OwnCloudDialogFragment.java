@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.CheckBoxPreference;
 import android.support.v7.preference.Preference;
 import android.util.Log;
@@ -180,19 +181,23 @@ public class OwnCloudDialogFragment extends DialogFragment {
                     Log.e("OC", result.getLogMessage(), result.getException());
 
                     if (caller instanceof GetRemoteStatusOperation) {
+                        mServerError.setTextColor(ContextCompat.getColor(getContext(), R.color.debit_red));
                         mServerError.setText(getString(R.string.owncloud_server_invalid));
                         mServerError.setVisibility(View.VISIBLE);
 
                     } else if (caller instanceof GetRemoteUserNameOperation &&
                             mServerError.getText().toString().equals(getString(R.string.owncloud_server_ok))) {
+                        mUsernameError.setTextColor(ContextCompat.getColor(getContext(), R.color.debit_red));
                         mUsernameError.setText(getString(R.string.owncloud_user_invalid));
                         mUsernameError.setVisibility(View.VISIBLE);
                     }
                 } else {
                     if (caller instanceof GetRemoteStatusOperation) {
+                        mServerError.setTextColor(ContextCompat.getColor(getContext(), R.color.theme_primary));
                         mServerError.setText(getString(R.string.owncloud_server_ok));
                         mServerError.setVisibility(View.VISIBLE);
                     } else if (caller instanceof GetRemoteUserNameOperation) {
+                        mUsernameError.setTextColor(ContextCompat.getColor(getContext(), R.color.theme_primary));
                         mUsernameError.setText(getString(R.string.owncloud_user_ok));
                         mUsernameError.setVisibility(View.VISIBLE);
                     }
@@ -208,10 +213,12 @@ public class OwnCloudDialogFragment extends DialogFragment {
         gu.execute(mClient, listener, mHandler);
 
         if (FileUtils.isValidPath(mOC_dir, false)) {
+            mDirError.setTextColor(ContextCompat.getColor(getContext(), R.color.theme_primary));
             mDirError.setText(getString(R.string.owncloud_dir_ok));
             mDirError.setVisibility(View.VISIBLE);
         } else {
             mDirError.setText(getString(R.string.owncloud_dir_invalid));
+            mDirError.setTextColor(ContextCompat.getColor(getContext(), R.color.debit_red));
             mDirError.setVisibility(View.VISIBLE);
         }
         saveButton();
