@@ -164,6 +164,9 @@ public class ScheduledActionService extends IntentService {
         if (endTime > 0 && endTime < now)
             return executionCount;
 
+        if (scheduledAction.computeNextScheduledExecutionTime() > now)
+            return 0;
+
         ExportParams params = ExportParams.parseCsv(scheduledAction.getTag());
         try {
             //wait for async task to finish before we proceed (we are holding a wake lock)
