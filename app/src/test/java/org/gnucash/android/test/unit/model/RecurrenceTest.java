@@ -18,10 +18,10 @@ package org.gnucash.android.test.unit.model;
 
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Recurrence;
+import org.joda.time.DateTime;
 import org.junit.Test;
 
 import java.sql.Timestamp;
-import java.util.Calendar;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,14 +33,13 @@ public class RecurrenceTest {
     @Test
     public void settingCount_shouldComputeCorrectEndTime(){
         Recurrence recurrence = new Recurrence(PeriodType.MONTH);
-        Calendar cal = Calendar.getInstance();
-        cal.set(2015, Calendar.OCTOBER, 5);
 
-        recurrence.setPeriodStart(new Timestamp(cal.getTimeInMillis()));
+        DateTime startTime = new DateTime(2015, 10, 5, 0, 0);
+        recurrence.setPeriodStart(new Timestamp(startTime.getMillis()));
         recurrence.setPeriodEnd(3);
 
-        cal.set(2016, Calendar.JANUARY, 5);
-        assertThat(recurrence.getPeriodEnd().getTime()).isEqualTo(cal.getTimeInMillis());
+        DateTime expectedEndtime = new DateTime(2016, 1, 5, 0, 0);
+        assertThat(recurrence.getPeriodEnd().getTime()).isEqualTo(expectedEndtime.getMillis());
     }
 
     /**
@@ -49,13 +48,40 @@ public class RecurrenceTest {
     @Test
     public void testRecurrenceCountComputation(){
         Recurrence recurrence = new Recurrence(PeriodType.MONTH);
-        Calendar cal = Calendar.getInstance();
-        cal.set(2015, Calendar.OCTOBER, 5);
 
-        recurrence.setPeriodStart(new Timestamp(cal.getTimeInMillis()));
-        cal.set(2016, Calendar.AUGUST, 5);
-        recurrence.setPeriodEnd(new Timestamp(cal.getTimeInMillis()));
+        DateTime start = new DateTime(2015, 10, 5, 0, 0);
+        recurrence.setPeriodStart(new Timestamp(start.getMillis()));
+
+        DateTime end = new DateTime(2016, 8, 5, 0, 0);
+        recurrence.setPeriodEnd(new Timestamp(end.getMillis()));
 
         assertThat(recurrence.getCount()).isEqualTo(10);
+
+        //test case where last appointment is just a little before end time, but not a complete period since last
+        DateTime startTime = new DateTime(2016, 6, 6, 9, 0);
+        DateTime endTime = new DateTime(2016, 8, 29, 10, 0);
+        PeriodType biWeekly = PeriodType.WEEK;
+        biWeekly.setMultiplier(2);
+        recurrence = new Recurrence(biWeekly);
+        recurrence.setPeriodStart(new Timestamp(startTime.getMillis()));
+        recurrence.setPeriodEnd(new Timestamp(endTime.getMillis()));
+
+        assertThat(recurrence.getCount()).isEqualTo(7);
+
+    }
+
+    /**
+     * When no end period is set, getCount() should return the special value -1.
+     *
+     * <p>Tests for bug https://github.com/codinguser/gnucash-android/issues/526</p>
+     */
+    @Test
+    public void notSettingEndDate_shouldReturnSpecialCountValue() {
+        Recurrence recurrence = new Recurrence(PeriodType.MONTH);
+
+        DateTime start = new DateTime(2015, 10, 5, 0, 0);
+        recurrence.setPeriodStart(new Timestamp(start.getMillis()));
+
+        assertThat(recurrence.getCount()).isEqualTo(-1);
     }
 }

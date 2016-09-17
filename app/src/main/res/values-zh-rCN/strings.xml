@@ -104,7 +104,7 @@
   <string name="title_about">关于</string>
   <string name="toast_format_exported_to">%1$s文件保存到：\n</string>
   <string name="title_export_email">GnuCash Android %1$s 的导出文件</string>
-  <string name="description_export_email">GnuCash Android Export from </string>
+  <string name="description_export_email">GnuCash 导出的数据 </string>
   <string name="header_transaction_settings">交易</string>
   <string name="title_transaction_preferences">交易设置</string>
   <string name="title_account_preferences">科目设置</string>
@@ -121,7 +121,7 @@
   <string name="title_always_delete_exported_transactions">删除已导出的交易</string>
   <string name="title_default_export_email">Email设置</string>
   <string name="summary_default_export_email">默认发送导出的OFX文件到这个email地址，当然在导出过程时你仍然可以临时变更。</string>
-  <string name="label_double_entry_account">交易科目</string>
+  <string name="label_double_entry_account">过户帐</string>
   <string name="summary_use_double_entry">所有交易会显示成两行，复式簿记</string>
   <string name="title_use_double_entry">使用双行模式</string>
   <string name="account_balance">帐户余额</string>
@@ -132,13 +132,13 @@
   <string name="summary_xml_ofx_header">当导出数据到GnuCash桌面版以外的程序时需要开启这个选项。</string>
   <string name="title_whats_new">新功能</string>
   <string name="whats_new">
-        - 新的界面外观（Material Design） \n
-        - 同时使用多种货币 \n
-        - 使用计算器输入金额 \n
-        - 改进报表的可选参数设计 \n
-        - 新增帮助菜单 \n
-        - 其他一些小问题的修复\n
-    </string>
+- 支持多个账簿 \n
+- 支持ownCloud\n
+- 紧凑列表视图\n
+- 重新设计的锁屏界面\n
+- 改进计划交易功能\n
+- 多个缺陷修复以及性能提升\n
+	</string>
   <string name="label_dismiss">知道了</string>
   <string name="toast_transanction_amount_required">输入金额才能保存交易</string>
   <string name="toast_error_edit_multi_currency_transaction">不支持修改多币种的交易</string>
@@ -174,7 +174,7 @@
   <string name="label_no_recurring_transactions">没有要显示的计划交易</string>
   <string name="toast_recurring_transaction_deleted">计划交易已删除</string>
   <string name="label_placeholder_account">占位符</string>
-  <string name="label_default_transfer_account">默认的转账帐户</string>
+  <string name="label_default_transfer_account">默认的转账科目</string>
   <plurals name="label_sub_accounts">
     <item quantity="other">%d 子科目</item>
   </plurals>
@@ -185,7 +185,7 @@
     <item>资产</item>
     <item>负债</item>
     <item>收入</item>
-    <item>费用</item>
+    <item>支出</item>
     <item>应付账款</item>
     <item>应收账款</item>
     <item>所有者权益</item>
@@ -210,7 +210,8 @@
   <string name="title_all_accounts">所有</string>
   <string name="summary_create_default_accounts">创建通用的科目结构</string>
   <string name="title_create_default_accounts">创建默认科目</string>
-  <string name="msg_confirm_create_default_accounts_setting">将会删除所有科目和交易信息。\n\n确定继续？</string>
+  <string name="msg_confirm_create_default_accounts_setting">将会创建新的账簿附带默认的科目
+现在这个账簿不会受到影响</string>
   <string name="menu_scheduled_transactions">计划的交易</string>
   <string name="msg_confirm_create_default_accounts_first_run">欢迎使用GnuCash Android！ \n你可以选择：1）创建常用的科目结构，2）导入自定义的科目结构。\或者稍后再决定，两种选择也能在设置中找到。
     </string>
@@ -271,7 +272,7 @@
   <string name="label_delete_account_transactions_description">科目中包含交易信息。 \n如何处理交易信息</string>
   <string name="label_delete_account_subaccounts_description">还存在子科目。 \n如何处理这些子科目</string>
   <string name="label_delete_transactions">删除交易</string>
-  <string name="toast_disable_double_entry_to_save_transaction">请选择一个转账科目，否则在“设置”中关闭双航模式（复式簿记）</string>
+  <string name="toast_disable_double_entry_to_save_transaction">请选择一个转账科目，否则在“设置”中关闭双行模式（复式簿记）</string>
   <string name="label_tap_to_create_schedule">点击然后创建计划任务</string>
   <string name="title_restore_backup">从备份恢复&#8230;</string>
   <string name="header_backup_and_export_settings">备份和导出</string>
@@ -435,12 +436,35 @@
   <string name="menu_manage_books">管理账簿</string>
   <string name="select_chart_to_view_details">选择图表的某处以查看详细信息</string>
   <string name="title_confirm_delete_book">确认删除帐簿</string>
-  <string name="msg_all_book_data_will_be_deleted">该帐簿中所有帐目和交易都会被删除！</string>
+  <string name="msg_all_book_data_will_be_deleted">该帐簿中所有科目和交易都会被删除！</string>
   <string name="btn_delete_book">删除帐簿</string>
-  <string name="label_last_export_time">最后导出：</string>
+  <string name="label_last_export_time">最后导出时间：</string>
   <string name="menu_title_enable_sync">启用同步</string>
   <string name="menu_title_new_book">新建帐簿</string>
-  <string name="toast_transaction_has_no_splits_and_cannot_open">The selected transaction has no splits and cannot be opened</string>
-  <string name="label_split_count">%1$d splits</string>
-  <string name="label_inside_account_with_name">in %1$s</string>
+  <string name="toast_transaction_has_no_splits_and_cannot_open">所选交易没有分割项，无法开启</string>
+  <string name="label_split_count">%1$d 项分割</string>
+  <string name="label_inside_account_with_name">于 %1$s</string>
+  <plurals name="book_account_stats">
+    <item quantity="other">%d个科目</item>
+  </plurals>
+  <plurals name="book_transaction_stats">
+    <item quantity="other">%d笔交易</item>
+  </plurals>
+  <string-array name="report_account_types">
+    <item>支出</item>
+    <item>收入</item>
+  </string-array>
+  <string name="toast_connected_to_google_drive">已连接到Google Drive</string>
+  <string name="toast_unable_to_connect_to_google_drive">无法连接到Google Drive</string>
+  <string name="toast_enter_amount_to_split">请输入拆分金额</string>
+  <string name="label_export_target_external_service">其他服务……</string>
+  <string name="toast_updated_transaction_recurring_schedule">计划交易已经更新</string>
+  <string name="label_export_transactions_since_date">时间点：</string>
+  <string name="switch_export_transactions_from_all_time">全部</string>
+  <string name="label_recommend_app">在Paly Store上推荐</string>
+  <string name="repeat_until_date">直到%1$s</string>
+  <string name="repeat_on_weekday">在%1$s</string>
+  <string name="repeat_x_times">共%1$s次</string>
+  <string name="menu_show_compact_view">紧凑视图</string>
+  <string name="book_default_name">Book %1$d</string>
 </resources>

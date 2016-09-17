@@ -16,20 +16,23 @@
 
 package org.gnucash.android.model;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
+import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.ui.util.RecurrenceParser;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Months;
+import org.joda.time.ReadablePeriod;
 import org.joda.time.Weeks;
 import org.joda.time.Years;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 /**
  * Model for recurrences in the database
@@ -98,6 +101,7 @@ public class Recurrence extends BaseModel {
      * <p>The period is approximate because months do not all have the same number of days,
      * but that is assumed</p>
      * @return Milliseconds since Epoch representing the period
+     * @deprecated Do not use in new code. Uses fixed period values for months and years (which have variable units of time)
      */
     public long getPeriod(){
         long baseMillis = 0;
@@ -123,16 +127,18 @@ public class Recurrence extends BaseModel {
      * @return String description of repeat schedule
      */
     public String getRepeatString(){
-        String dayOfWeek = new SimpleDateFormat("EEEE", Locale.US).format(new Date(mPeriodStart.getTime()));
-
         StringBuilder repeatBuilder = new StringBuilder(mPeriodType.getFrequencyRepeatString());
+        Context context = GnuCashApplication.getAppContext();
 
+        String dayOfWeek = new SimpleDateFormat("EEEE", GnuCashApplication.getDefaultLocale())
+                .format(new Date(mPeriodStart.getTime()));
         if (mPeriodType == PeriodType.WEEK) {
-            repeatBuilder.append(" on ").append(dayOfWeek);
+            repeatBuilder.append(" ").append(context.getString(R.string.repeat_on_weekday, dayOfWeek));
         }
 
         if (mPeriodEnd != null){
-            repeatBuilder.append(" until " + SimpleDateFormat.getDateInstance().format(new Date(mPeriodEnd.getTime())));
+            String endDateString = SimpleDateFormat.getDateInstance().format(new Date(mPeriodEnd.getTime()));
+            repeatBuilder.append(", ").append(context.getString(R.string.repeat_until_date, endDateString));
         }
         return repeatBuilder.toString();
     }
@@ -195,14 +201,16 @@ public class Recurrence extends BaseModel {
     }
 
     /**
-     * Returns the number of periods from the start date of this occurence until the end of the
+     * Returns the number of periods from the start date of this recurrence until the end of the
      * interval multiplier specified in the {@link PeriodType}
+     * //fixme: Improve the documentation
      * @return Number of periods in this recurrence
      */
     public int getNumberOfPeriods(int numberOfPeriods) {
         LocalDate startDate = new LocalDate(mPeriodStart.getTime());
         LocalDate endDate;
         int interval = mPeriodType.getMultiplier();
+        //// TODO: 15.08.2016 Why do we add the number of periods. maybe rename method or param
         switch (mPeriodType){
 
             case DAY:
@@ -259,29 +267,58 @@ public class Recurrence extends BaseModel {
 
     /**
      * Computes the number of occurrences of this recurrences between start and end date
-     * <p>If there is no end date, it returns -1</p>
+     * <p>If there is no end date or the PeriodType is unknown, it returns -1</p>
      * @return Number of occurrences, or -1 if there is no end date
      */
     public int getCount(){
-        int count = 0;
-        LocalDate startDate = new LocalDate(mPeriodStart.getTime());
-        LocalDate endDate = new LocalDate(mPeriodEnd.getTime());
+        if (mPeriodEnd == null)
+            return -1;
+
+        int multiple = mPeriodType.getMultiplier();
+        ReadablePeriod jodaPeriod;
         switch (mPeriodType){
             case DAY:
-                count = Days.daysBetween(startDate, endDate).getDays();
+                jodaPeriod = Days.days(multiple);
                 break;
             case WEEK:
-                count = Weeks.weeksBetween(startDate, endDate).getWeeks();
+                jodaPeriod = Weeks.weeks(multiple);
                 break;
             case MONTH:
-                count = Months.monthsBetween(startDate, endDate).getMonths();
+                jodaPeriod = Months.months(multiple);
                 break;
             case YEAR:
-                count = Years.yearsBetween(startDate, endDate).getYears();
+                jodaPeriod = Years.years(multiple);
                 break;
+            default:
+                jodaPeriod = Months.months(multiple);
         }
+        int count = 0;
+        LocalDateTime startTime = new LocalDateTime(mPeriodStart.getTime());
+        while (startTime.toDateTime().getMillis() < mPeriodEnd.getTime()){
+            ++count;
+            startTime = startTime.plus(jodaPeriod);
+        }
+        return count;
 
-        return count/mPeriodType.getMultiplier();
+/*
+        //this solution does not use looping, but is not very accurate
+
+        int multiplier = mPeriodType.getMultiplier();
+        LocalDateTime startDate = new LocalDateTime(mPeriodStart.getTime());
+        LocalDateTime endDate = new LocalDateTime(mPeriodEnd.getTime());
+        switch (mPeriodType){
+            case DAY:
+                return Days.daysBetween(startDate, endDate).dividedBy(multiplier).getDays();
+            case WEEK:
+                return Weeks.weeksBetween(startDate, endDate).dividedBy(multiplier).getWeeks();
+            case MONTH:
+                return Months.monthsBetween(startDate, endDate).dividedBy(multiplier).getMonths();
+            case YEAR:
+                return Years.yearsBetween(startDate, endDate).dividedBy(multiplier).getYears();
+            default:
+                return -1;
+        }
+*/
     }
 
     /**
@@ -294,22 +331,20 @@ public class Recurrence extends BaseModel {
         int occurrenceDuration = numberOfOccurences * mPeriodType.getMultiplier();
         switch (mPeriodType){
             case DAY:
-                endDate = localDate.dayOfWeek().getLocalDateTime().plusDays(occurrenceDuration);
+                endDate = localDate.plusDays(occurrenceDuration);
                 break;
             case WEEK:
-                endDate = localDate.dayOfWeek().getLocalDateTime().plusWeeks(occurrenceDuration);
+                endDate = localDate.plusWeeks(occurrenceDuration);
                 break;
+            default:
             case MONTH:
-                endDate = localDate.dayOfMonth().getLocalDateTime().plusMonths(occurrenceDuration);
+                endDate = localDate.plusMonths(occurrenceDuration);
                 break;
             case YEAR:
-                endDate = localDate.monthOfYear().getLocalDateTime().plusYears(occurrenceDuration);
-                break;
-            default: //default to monthly
-                endDate = localDate.dayOfMonth().getLocalDateTime().plusMonths(occurrenceDuration);
+                endDate = localDate.plusYears(occurrenceDuration);
                 break;
         }
-        mPeriodEnd = new Timestamp(endDate.toDate().getTime());
+        mPeriodEnd = new Timestamp(endDate.toDateTime().getMillis());
     }
 
     /**

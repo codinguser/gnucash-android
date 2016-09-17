@@ -71,6 +71,17 @@ public class MultiBookTest {
         Intents.intended(hasComponent(PreferenceActivity.class.getName()));
     }
 
+    public void testLoadBookFromBookManager(){
+        Book book = new Book();
+        book.setDisplayName("Launch Codes");
+        BooksDbAdapter.getInstance().addRecord(book);
+
+        shouldOpenBookManager();
+        onView(withText(book.getDisplayName())).perform(click());
+
+        assertThat(BooksDbAdapter.getInstance().getActiveBookUID()).isEqualTo(book.getUID());
+    }
+
     @Test
     public void creatingNewAccounts_shouldCreatedNewBook(){
         long booksCount = mBooksDbAdapter.getRecordsCount();
@@ -90,6 +101,7 @@ public class MultiBookTest {
 
         assertThat(mBooksDbAdapter.getRecordsCount()).isEqualTo(booksCount+1);
 
+        //// TODO: 25.08.2016 Delete all books before the start of this test
         Book activeBook = mBooksDbAdapter.getRecord(mBooksDbAdapter.getActiveBookUID());
         assertThat(activeBook.getDisplayName()).isEqualTo("Book " + (booksCount+1));
     }

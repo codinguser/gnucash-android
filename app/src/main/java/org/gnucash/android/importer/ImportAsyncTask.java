@@ -19,8 +19,8 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -32,14 +32,10 @@ import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
-import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.util.TaskDelegate;
 
-import java.io.File;
 import java.io.InputStream;
 
 /**
@@ -50,6 +46,8 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
     private final Activity mContext;
     private TaskDelegate mDelegate;
     private ProgressDialog mProgressDialog;
+
+    private String mImportedBookUID;
 
     public ImportAsyncTask(Activity context){
         this.mContext = context;
@@ -79,10 +77,9 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
 
     @Override
     protected Boolean doInBackground(Uri... uris) {
-        String bookUID = null;
         try {
             InputStream accountInputStream = mContext.getContentResolver().openInputStream(uris[0]);
-            bookUID = GncXmlImporter.parse(accountInputStream);
+            mImportedBookUID = GncXmlImporter.parse(accountInputStream);
 
         } catch (Exception exception){
             Log.e(ImportAsyncTask.class.getName(), "" + exception.getMessage());
@@ -101,12 +98,6 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
                 }
             });
 
-            //a database is always created at the beginning of import
-            //if there was an error during import, delete the created database
-            if (bookUID != null) {
-                mContext.deleteDatabase(bookUID);
-            }
-
             return false;
         }
 
@@ -117,21 +108,22 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
             ContentValues contentValues = new ContentValues();
             contentValues.put(DatabaseSchema.BookEntry.COLUMN_DISPLAY_NAME, displayName);
             contentValues.put(DatabaseSchema.BookEntry.COLUMN_SOURCE_URI, uris[0].toString());
-            BooksDbAdapter.getInstance().updateRecord(bookUID, contentValues);
+            BooksDbAdapter.getInstance().updateRecord(mImportedBookUID, contentValues);
 
             cursor.close();
         }
 
-        ((GnuCashApplication)mContext.getApplication()).loadBook(bookUID);
+        //set the preferences to their default values
+        mContext.getSharedPreferences(mImportedBookUID, Context.MODE_PRIVATE)
+                .edit()
+                .putBoolean(mContext.getString(R.string.key_use_double_entry), true)
+                .apply();
 
         return true;
     }
 
     @Override
     protected void onPostExecute(Boolean importSuccess) {
-        if (mDelegate != null)
-            mDelegate.onTaskComplete();
-
         try {
             if (mProgressDialog != null && mProgressDialog.isShowing())
                 mProgressDialog.dismiss();
@@ -145,6 +137,10 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
         int message = importSuccess ? R.string.toast_success_importing_accounts : R.string.toast_error_importing_accounts;
         Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
 
-        AccountsActivity.start(mContext);
+        if (mImportedBookUID != null)
+            GnuCashApplication.loadBook(mImportedBookUID);
+
+        if (mDelegate != null)
+            mDelegate.onTaskComplete();
     }
 }

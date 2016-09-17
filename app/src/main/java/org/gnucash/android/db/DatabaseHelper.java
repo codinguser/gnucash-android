@@ -294,8 +294,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Crashlytics.logException(e);
                 throw new RuntimeException(e);
             } catch (InvocationTargetException e){
-                Crashlytics.logException(e);
-                throw new RuntimeException(e);
+                Crashlytics.logException(e.getTargetException());
+                throw new RuntimeException(e.getTargetException());
             }
         }
 	}

@@ -16,8 +16,12 @@
 package org.gnucash.android.test.unit.db;
 
 import org.gnucash.android.BuildConfig;
+import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.DatabaseAdapter;
+import org.gnucash.android.importer.GncXmlImporter;
 import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Book;
 import org.gnucash.android.test.unit.testutil.GnucashTestRunner;
@@ -27,6 +31,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
+import org.xml.sax.SAXException;
+
+import java.io.File;
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -110,6 +120,23 @@ public class BooksDbAdapterTest {
     }
 
     /**
+     * Test that deleting a book record also deletes the book database
+     */
+    @Test
+    public void deletingBook_shouldDeleteDbFile(){
+        String bookUID = createNewBookWithDefaultAccounts();
+        File dbPath = GnuCashApplication.getAppContext().getDatabasePath(bookUID);
+        assertThat(dbPath).exists();
+        BooksDbAdapter booksDbAdapter = BooksDbAdapter.getInstance();
+        assertThat(booksDbAdapter.getRecord(bookUID)).isNotNull();
+
+        long booksCount = booksDbAdapter.getRecordsCount();
+        booksDbAdapter.deleteBook(bookUID);
+        assertThat(dbPath).doesNotExist();
+        assertThat(booksDbAdapter.getRecordsCount()).isEqualTo(booksCount - 1);
+    }
+
+    /**
      * Test that book names never conflict and that the ordinal attached to the book name is
      * increased irrespective of the order in which books are added to and deleted from the db
      */
@@ -131,5 +158,19 @@ public class BooksDbAdapterTest {
         String generatedName = mBooksDbAdapter.generateDefaultBookName();
         assertThat(generatedName).isNotEqualTo(book3.getDisplayName());
         assertThat(generatedName).isEqualTo("Book 4");
+    }
+
+    /**
+     * Creates a new database with default accounts
+     * @return The book UID for the new database
+     * @throws RuntimeException if the new books could not be created
+     */
+    private String createNewBookWithDefaultAccounts(){
+        try {
+            return GncXmlImporter.parse(GnuCashApplication.getAppContext().getResources().openRawResource(R.raw.default_accounts));
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Could not create default accounts");
+        }
     }
 }

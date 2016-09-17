@@ -132,12 +132,12 @@
   <string name="summary_xml_ofx_header">Abilitare questa opzione quando si esporta verso un\'applicazione diversa da GnuCash per desktop</string>
   <string name="title_whats_new">Novità</string>
   <string name="whats_new">
-- App in Material Design \n
-        - Transazioni in valute multiple\n
-        - Calcolatrice per gli importi delle transazioni\n
-        - Opzioni migliori per i resoconti\n
-        - Nuova sezione Aiuto &amp; Feedback\n
-        - Numerose correzioni di bug e miglioramenti\n
+- Supporto per più libri differenti \n
+	- Aggiunto ownCloud come destinazione per le esportazioni\n
+        - Vista compatta per la lista delle transazioni\n
+	- Ridisegno della schermata di blocco per il codice di accesso\n
+	- Migliorata la gestione delle transazioni pianificate\n
+	- Sistemati molti bug e molti miglioramenti\n
 	</string>
   <string name="label_dismiss">Chiudi</string>
   <string name="toast_transanction_amount_required">Inserire un importo per salvare la transazione</string>
@@ -210,7 +210,7 @@
   <string name="title_all_accounts">Tutti</string>
   <string name="summary_create_default_accounts">Crea la struttura predefinita di GnuCash dei conti comunemente utilizzati</string>
   <string name="title_create_default_accounts">Crea conti predefiniti</string>
-  <string name="msg_confirm_create_default_accounts_setting">Tutti i conti e le transazioni nel dispositivo verranno cancellate.\n\nContinuare?</string>
+  <string name="msg_confirm_create_default_accounts_setting">Verrà aperto un nuovo libro con i conti predefiniti.\n\nI conti e le transazioni correnti non verranno modificate!</string>
   <string name="menu_scheduled_transactions">Transazioni pianificate</string>
   <string name="msg_confirm_create_default_accounts_first_run">Benvenuti in GnuCash per Android! \nÈ possibile
         creare una struttura dei conti più comunemente utilizzati o importare la propria struttura da GnuCash. \n\nEntrambe le
@@ -419,7 +419,7 @@
   <!-- Passcode lock -->
   <string name="digit_one">1</string>
   <!-- In the English locale, digit 1 has no text on it. This is simply empty space. If your locale has text on digit 1, then translate-->
-  <string name="digit_one_text">​</string>
+  <string name="digit_one_text"> </string>
   <string name="digit_two">2</string>
   <string name="digit_two_text">ABC</string>
   <string name="digit_three">3</string>
@@ -450,4 +450,29 @@
   <string name="toast_transaction_has_no_splits_and_cannot_open">La transazione selezionata non ha suddivisioni e non può essere aperta</string>
   <string name="label_split_count">%1$d suddivisioni</string>
   <string name="label_inside_account_with_name">in %1$s</string>
+  <plurals name="book_account_stats">
+    <item quantity="one">%d conto</item>
+    <item quantity="other">%d conti</item>
+  </plurals>
+  <plurals name="book_transaction_stats">
+    <item quantity="one">%d transazione</item>
+    <item quantity="other">%d transazioni</item>
+  </plurals>
+  <string-array name="report_account_types">
+    <item>USCITA</item>
+    <item>ENTRATA</item>
+  </string-array>
+  <string name="toast_connected_to_google_drive">Connesso a Google Drive</string>
+  <string name="toast_unable_to_connect_to_google_drive">Impossibile connettersi a Google Drive</string>
+  <string name="toast_enter_amount_to_split">Inserisci un importo da dividere</string>
+  <string name="label_export_target_external_service">servizio esterno</string>
+  <string name="toast_updated_transaction_recurring_schedule">Pianificazione ricorrente della transazione aggiornata</string>
+  <string name="label_export_transactions_since_date">Da</string>
+  <string name="switch_export_transactions_from_all_time">Da sempre</string>
+  <string name="label_recommend_app">Consigliala sul Play Store</string>
+  <string name="repeat_until_date">fino al %1$s</string>
+  <string name="repeat_on_weekday">il %1$s</string>
+  <string name="repeat_x_times">per %1$s volte</string>
+  <string name="menu_show_compact_view">Visualizzazione compatta</string>
+  <string name="book_default_name">Book %1$d</string>
 </resources>

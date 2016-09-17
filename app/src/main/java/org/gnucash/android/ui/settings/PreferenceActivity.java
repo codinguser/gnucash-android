@@ -34,7 +34,9 @@ import android.view.MenuItem;
 import android.view.View;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
+import org.gnucash.android.model.Book;
 import org.gnucash.android.ui.passcode.PasscodeLockActivity;
 
 import butterknife.Bind;
@@ -147,12 +149,20 @@ public class PreferenceActivity extends PasscodeLockActivity implements
     /**
      * Returns the shared preferences file for the currently active book.
      * Should be used instead of {@link PreferenceManager#getDefaultSharedPreferences(Context)}
-     * @param context Application context
      * @return Shared preferences file
      */
-    public static SharedPreferences getActiveBookSharedPreferences(Context context){
-        //// TODO: 21.12.2015 optimize the getActiveBookUID retrieval by caching it somewhere
-        return context.getSharedPreferences(BooksDbAdapter.getInstance().getActiveBookUID(), Context.MODE_PRIVATE);
+    public static SharedPreferences getActiveBookSharedPreferences(){
+        return getBookSharedPreferences(BooksDbAdapter.getInstance().getActiveBookUID());
+    }
+
+    /**
+     * Return the {@link SharedPreferences} for a specific book
+     * @param bookUID GUID of the book
+     * @return Shared preferences
+     */
+    public static SharedPreferences getBookSharedPreferences(String bookUID){
+        Context context = GnuCashApplication.getAppContext();
+        return context.getSharedPreferences(bookUID, Context.MODE_PRIVATE);
     }
 
     @Override

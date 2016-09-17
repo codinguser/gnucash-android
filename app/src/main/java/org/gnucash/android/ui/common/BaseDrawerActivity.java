@@ -46,7 +46,6 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.ui.account.AccountsActivity;
-import org.gnucash.android.ui.budget.BudgetsActivity;
 import org.gnucash.android.ui.passcode.PasscodeLockActivity;
 import org.gnucash.android.ui.report.ReportsActivity;
 import org.gnucash.android.ui.settings.PreferenceActivity;
@@ -298,7 +297,7 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
             case AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE:
                 AccountsActivity.importXmlFileFromIntent(this, data, null);
                 break;
-            case BaseDrawerActivity.REQUEST_OPEN_DOCUMENT:
+            case BaseDrawerActivity.REQUEST_OPEN_DOCUMENT: //this uses the Storage Access Framework
                 final int takeFlags = data.getFlags()
                         & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 AccountsActivity.importXmlFileFromIntent(this, data, null);
@@ -323,7 +322,7 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
         BooksDbAdapter booksDbAdapter = BooksDbAdapter.getInstance();
         String bookUID = booksDbAdapter.getUID(id);
         if (!bookUID.equals(booksDbAdapter.getActiveBookUID())){
-            ((GnuCashApplication) getApplication()).loadBook(bookUID);
+            GnuCashApplication.loadBook(bookUID);
             finish();
         }
         AccountsActivity.start(GnuCashApplication.getAppContext());

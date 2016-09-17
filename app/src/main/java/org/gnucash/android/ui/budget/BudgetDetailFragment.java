@@ -51,9 +51,9 @@ import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.BudgetAmount;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.common.FormActivity;
+import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
-import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
 
 import java.math.BigDecimal;
@@ -254,7 +254,7 @@ public class BudgetDetailFragment extends Fragment implements Refreshable {
             //todo: refactor getNumberOfPeriods into budget
             int budgetPeriods = (int) mBudget.getNumberOfPeriods();
             budgetPeriods = budgetPeriods == 0 ? 12 : budgetPeriods;
-            int periods = mBudget.getRecurrence().getNumberOfPeriods(budgetPeriods);
+            int periods = mBudget.getRecurrence().getNumberOfPeriods(budgetPeriods); //// FIXME: 15.08.2016 why do we need number of periods
 
             for (int periodNum = 1; periodNum <= periods; periodNum++) {
                 BigDecimal amount = accountsDbAdapter.getAccountBalance(budgetAmount.getAccountUID(),

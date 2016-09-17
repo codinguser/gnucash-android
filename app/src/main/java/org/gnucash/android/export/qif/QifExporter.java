@@ -18,6 +18,7 @@ package org.gnucash.android.export.qif;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
@@ -50,9 +51,23 @@ import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
  * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
 public class QifExporter extends Exporter{
+    /**
+     * Initialize the exporter
+     * @param params Export options
+     */
     public QifExporter(ExportParams params){
         super(params, null);
-        LOG_TAG = "QifExporter";
+        LOG_TAG = "OfxExporter";
+    }
+
+    /**
+     * Initialize the exporter
+     * @param params Options for export
+     * @param db SQLiteDatabase to export
+     */
+    public QifExporter(ExportParams params, SQLiteDatabase db){
+        super(params, db);
+        LOG_TAG = "OfxExporter";
     }
 
     @Override

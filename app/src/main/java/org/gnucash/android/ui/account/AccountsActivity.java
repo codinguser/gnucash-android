@@ -350,7 +350,10 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
         setIntent(intent);
         setCurrentTab();
 
-        getCurrentAccountListFragment().refresh();
+        int index = mViewPager.getCurrentItem();
+        Fragment fragment = (Fragment) mFragmentPageReferenceMap.get(index);
+        if (fragment != null)
+            ((Refreshable)fragment).refresh();
 
         handleOpenFileIntent(intent);
     }
@@ -377,10 +380,11 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
         boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);
 
         if (firstRun){
-            startActivity(new Intent(this, FirstRunWizardActivity.class));
+            startActivity(new Intent(GnuCashApplication.getAppContext(), FirstRunWizardActivity.class));
 
             //default to using double entry and save the preference explicitly
             prefs.edit().putBoolean(getString(R.string.key_use_double_entry), true).apply();
+            finish();
         } else {
             getSDWritePermission();
         }

@@ -125,7 +125,7 @@
             android:enabled="true"
             android:exported="false"
             android:label="Dropbox Sync" />
-        <service android:name=".service.SchedulerService"
+        <service android:name=".service.ScheduledActionService"
             android:exported="false"
             android:label="GnuCash Android Scheduler Execution Service"/>
         <receiver android:name=".receivers.TransactionRecorder"

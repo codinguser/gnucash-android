@@ -53,9 +53,9 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import org.gnucash.android.R;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
-import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
@@ -238,7 +238,7 @@ public class AccountFormFragment extends Fragment {
 		setHasOptionsMenu(true);
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
-        SharedPreferences sharedPrefs = PreferenceActivity.getActiveBookSharedPreferences(getActivity());
+        SharedPreferences sharedPrefs = PreferenceActivity.getActiveBookSharedPreferences();
         mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), true);
 	}
 	
@@ -376,7 +376,7 @@ public class AccountFormFragment extends Fragment {
             setParentAccountSelection(mAccountsDbAdapter.getID(mParentAccountUID));
         }
 
-        String currencyCode = account.getCurrency().getCurrencyCode();
+        String currencyCode = account.getCommodity().getCurrencyCode();
         setSelectedCurrency(currencyCode);
 
         if (mAccountsDbAdapter.getTransactionMaxSplitNum(mAccount.getUID()) > 1)

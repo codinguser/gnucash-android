@@ -23,7 +23,6 @@ import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
 
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.transaction.TransactionsActivity;

@@ -17,9 +17,6 @@
 package org.gnucash.android.test.ui;
 
 import android.content.Context;
-import android.content.Intent;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.action.CoordinatesProvider;
 import android.support.test.espresso.action.GeneralClickAction;
@@ -27,17 +24,14 @@ import android.support.test.espresso.action.Press;
 import android.support.test.espresso.action.Tap;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.util.Log;
 import android.view.View;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.adapter.DatabaseAdapter;
-import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.importer.GncXmlImporter;
 import org.gnucash.android.model.AccountType;
@@ -47,7 +41,6 @@ import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.test.ui.util.DisableAnimationsRule;
-import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.report.BaseReportFragment;
 import org.gnucash.android.ui.report.ReportsActivity;
 import org.gnucash.android.ui.report.piechart.PieChartFragment;
@@ -131,7 +124,7 @@ public class PieChartReportTest {
 
         CURRENCY = CommoditiesDbAdapter.getInstance().getCommodity("USD");
 
-        PreferenceActivity.getActiveBookSharedPreferences(context).edit()
+        PreferenceActivity.getActiveBookSharedPreferences().edit()
                 .putString(context.getString(R.string.key_default_currency), CURRENCY.getCurrencyCode())
                 .commit();
     }

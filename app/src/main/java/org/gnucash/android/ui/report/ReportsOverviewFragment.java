@@ -35,7 +35,6 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 
 import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
@@ -49,9 +48,7 @@ import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Currency;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -151,7 +148,7 @@ public class ReportsOverviewFragment extends BaseReportFragment {
             mChart.setData(pieData);
             float sum = mChart.getData().getYValueSum();
             String total = getResources().getString(R.string.label_chart_total);
-            String currencySymbol = Currency.getInstance(GnuCashApplication.getDefaultCurrencyCode()).getSymbol(Locale.getDefault());
+            String currencySymbol = mCommodity.getSymbol();
             mChart.setCenterText(String.format(PieChartFragment.TOTAL_VALUE_LABEL_PATTERN, total, sum, currencySymbol));
             mChartHasData = true;
         } else {
@@ -178,14 +175,13 @@ public class ReportsOverviewFragment extends BaseReportFragment {
      * @return {@code PieData} instance
      */
     private PieData getData() {
-        String mCurrencyCode = GnuCashApplication.getDefaultCurrencyCode();
         PieDataSet dataSet = new PieDataSet(null, "");
         List<String> labels = new ArrayList<>();
         List<Integer> colors = new ArrayList<>();
         for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
             if (account.getAccountType() == AccountType.EXPENSE
                     && !account.isPlaceholderAccount()
-                    && account.getCurrency() == Currency.getInstance(mCurrencyCode)) {
+                    && account.getCommodity().equals(mCommodity)) {
 
                 long start = new LocalDate().minusMonths(2).dayOfMonth().withMinimumValue().toDate().getTime();
                 long end = new LocalDate().plusDays(1).toDate().getTime();

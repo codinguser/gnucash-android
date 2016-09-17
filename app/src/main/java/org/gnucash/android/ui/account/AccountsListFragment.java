@@ -51,7 +51,6 @@ import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
@@ -60,10 +59,10 @@ import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.common.FormActivity;
+import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.util.AccountBalanceTask;
 import org.gnucash.android.ui.util.CursorRecyclerAdapter;
-import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
 
 import java.util.List;
@@ -289,6 +288,10 @@ public class AccountsListFragment extends Fragment implements
 
 
     @Override
+    /**
+     * Refresh the account list as a sublist of another account
+     * @param parentAccountUID GUID of the parent account
+     */
     public void refresh(String parentAccountUID) {
         getArguments().putString(UxArgument.PARENT_ACCOUNT_UID, parentAccountUID);
         refresh();
@@ -300,9 +303,7 @@ public class AccountsListFragment extends Fragment implements
      */
     @Override
     public void refresh() {
-        if (!isDetached()) {
-            getLoaderManager().restartLoader(0, null, this);
-        }
+        getLoaderManager().restartLoader(0, null, this);
     }
 
     @Override

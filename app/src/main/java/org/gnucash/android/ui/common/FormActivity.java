@@ -34,8 +34,8 @@ import org.gnucash.android.ui.budget.BudgetAmountEditorFragment;
 import org.gnucash.android.ui.budget.BudgetFormFragment;
 import org.gnucash.android.ui.export.ExportFormFragment;
 import org.gnucash.android.ui.passcode.PasscodeLockActivity;
-import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.transaction.SplitEditorFragment;
+import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.util.widget.CalculatorKeyboard;
 
 /**

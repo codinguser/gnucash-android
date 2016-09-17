@@ -41,7 +41,6 @@ import org.gnucash.android.ui.report.ReportsActivity;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.Bind;
 
@@ -120,7 +119,7 @@ public class PieChartFragment extends BaseReportFragment {
             mChart.setData(mGroupSmallerSlices ? groupSmallerSlices(pieData, getActivity()) : pieData);
             float sum = mChart.getData().getYValueSum();
             String total = getResources().getString(R.string.label_chart_total);
-            String currencySymbol = mCurrency.getSymbol(Locale.getDefault());
+            String currencySymbol = mCommodity.getSymbol();
             mChart.setCenterText(String.format(TOTAL_VALUE_LABEL_PATTERN, total, sum, currencySymbol));
         } else {
             mChartDataPresent = false;
@@ -152,7 +151,7 @@ public class PieChartFragment extends BaseReportFragment {
         for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
             if (account.getAccountType() == mAccountType
                     && !account.isPlaceholderAccount()
-                    && account.getCurrency() == mCurrency) {
+                    && account.getCommodity().equals(mCommodity)) {
 
                 double balance = mAccountsDbAdapter.getAccountsBalance(Collections.singletonList(account.getUID()),
                         mReportPeriodStart, mReportPeriodEnd).asDouble();

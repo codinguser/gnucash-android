@@ -27,7 +27,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,7 +51,6 @@ import java.util.Date;
 import java.util.List;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 
 /**
  * Activity for displaying report fragments (which must implement {@link BaseReportFragment})
@@ -136,15 +134,21 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
         mTimeRangeSpinner.setOnItemSelectedListener(this);
         mTimeRangeSpinner.setSelection(1);
 
-        ArrayAdapter<AccountType> dataAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item,
-                Arrays.asList(AccountType.EXPENSE, AccountType.INCOME));
+        ArrayAdapter<CharSequence> dataAdapter = ArrayAdapter.createFromResource(this,
+                R.array.report_account_types, android.R.layout.simple_spinner_item);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mAccountTypeSpinner.setAdapter(dataAdapter);
         mAccountTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                mAccountType = (AccountType) mAccountTypeSpinner.getSelectedItem();
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                switch(position) {
+                    default:
+                    case 0:
+                        mAccountType = AccountType.EXPENSE;
+                        break;
+                    case 1:
+                        mAccountType = AccountType.INCOME;
+                }
                 updateAccountTypeOnFragments();
             }
 
@@ -164,8 +168,11 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
     @Override
     public void onAttachFragment(Fragment fragment) {
         super.onAttachFragment(fragment);
-        BaseReportFragment reportFragment = (BaseReportFragment)fragment;
-        updateReportTypeSpinner(reportFragment.getReportType(), getString(reportFragment.getTitle()));
+
+        if (fragment instanceof BaseReportFragment) {
+            BaseReportFragment reportFragment = (BaseReportFragment)fragment;
+            updateReportTypeSpinner(reportFragment.getReportType(), getString(reportFragment.getTitle()));
+        }
     }
 
     /**

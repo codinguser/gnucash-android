@@ -15,7 +15,14 @@
  */
 package org.gnucash.android.model;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
+
+import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -67,7 +74,7 @@ public class ScheduledAction extends BaseModel{
     private ActionType mActionType;
 
     /**
-     * Number of times this event is to be executed
+     * Number of times this event is planned to be executed
      */
     private int mTotalFrequency = 0;
 
@@ -78,7 +85,6 @@ public class ScheduledAction extends BaseModel{
 
     /**
      * Flag for whether the scheduled transaction should be auto-created
-     * TODO: Add this flag to the database. At the moment we always treat it as true
      */
     private boolean mAutoCreate = true;
     private boolean mAutoNotify = false;
@@ -126,6 +132,7 @@ public class ScheduledAction extends BaseModel{
 
     /**
      * Returns the timestamp of the last execution of this scheduled action
+     * <p>This is not necessarily the time when the scheduled action was due, only when it was actually last executed.</p>
      * @return Timestamp in milliseconds since Epoch
      */
     public long getLastRunTime() {
@@ -133,31 +140,65 @@ public class ScheduledAction extends BaseModel{
     }
 
     /**
-     * Computes the next time that this scheduled action is supposed to be executed, taking the
-     * last execution time into account
+     * Returns the time when the last schedule in the sequence of planned executions was executed.
+     * This relies on the number of executions of the scheduled action
+     * <p>This is different from {@link #getLastRunTime()} which returns the date when the system last
+     * run the scheduled action.</p>
+     * @return Time of last schedule, or -1 if the scheduled action has never been run
+     */
+    public long getTimeOfLastSchedule(){
+        if (mExecutionCount == 0)
+            return  -1;
+
+        LocalDateTime startTime = LocalDateTime.fromDateFields(new Date(mStartDate));
+        int multiplier = mRecurrence.getPeriodType().getMultiplier();
+
+        int factor = (mExecutionCount-1) * multiplier;
+        switch (mRecurrence.getPeriodType()){
+            case DAY:
+                startTime = startTime.plusDays(factor);
+                break;
+            case WEEK:
+                startTime = startTime.plusWeeks(factor);
+                break;
+            case MONTH:
+                startTime = startTime.plusMonths(factor);
+                break;
+            case YEAR:
+                startTime = startTime.plusYears(factor);
+                break;
+        }
+
+        return startTime.toDate().getTime();
+    }
+
+    /**
+     * Computes the next time that this scheduled action is supposed to be executed
      * <p>This method does not consider the end time, or number of times it should be run.
      * It only considers when the next execution would theoretically be due</p>
      * @return Next run time in milliseconds
      */
-    public long computeNextRunTime(){
+    public long computeNextScheduledExecutionTime(){
         int multiplier = mRecurrence.getPeriodType().getMultiplier();
-        long time = mLastRun;
-        if (time == 0) {
-            time = mStartDate;
+        //this is the last planned time for the action to occur, not the last run time
+        long lastActionTime = getTimeOfLastSchedule(); //mStartDate + ((mExecutionCount-1)*getPeriod());
+        if (lastActionTime < 0){
+            return mStartDate;
         }
-        LocalDate localDate = LocalDate.fromDateFields(new Date(mLastRun));
+
+        LocalDateTime localDate = LocalDateTime.fromDateFields(new Date(lastActionTime));
         switch (mRecurrence.getPeriodType()) {
             case DAY:
-                localDate.plusDays(multiplier);
+                localDate = localDate.plusDays(multiplier);
                 break;
             case WEEK:
-                localDate.plusWeeks(multiplier);
+                localDate = localDate.plusWeeks(multiplier);
                 break;
             case MONTH:
-                localDate.plusMonths(multiplier);
+                localDate = localDate.plusMonths(multiplier);
                 break;
             case YEAR:
-                localDate.plusYears(multiplier);
+                localDate = localDate.plusYears(multiplier);
                 break;
         }
         return localDate.toDate().getTime();
@@ -172,8 +213,9 @@ public class ScheduledAction extends BaseModel{
     }
 
     /**
-     * Returns the period of this scheduled action
+     * Returns the period of this scheduled action in milliseconds.
      * @return Period in milliseconds since Epoch
+     * @deprecated Uses fixed values for time of months and years (which actually vary depending on number of days in month or leap year)
      */
     public long getPeriod() {
         return mRecurrence.getPeriod();
@@ -213,7 +255,7 @@ public class ScheduledAction extends BaseModel{
     public void setEndTime(long endDate) {
         this.mEndDate = endDate;
         if (mRecurrence != null){
-            mRecurrence.setPeriodStart(new Timestamp(mEndDate));
+            mRecurrence.setPeriodEnd(new Timestamp(mEndDate));
         }
     }
 
@@ -255,19 +297,19 @@ public class ScheduledAction extends BaseModel{
     }
 
     /**
-     * Returns the total number of occurences of this scheduled action.
-     * @return Total number of occurences of this action
+     * Returns the total number of planned occurrences of this scheduled action.
+     * @return Total number of planned occurrences of this action
      */
-    public int getTotalFrequency(){
+    public int getTotalPlannedExecutionCount(){
         return mTotalFrequency;
     }
 
     /**
      * Sets the number of occurences of this action
-     * @param occurencesCount Number of occurences
+     * @param plannedExecutions Number of occurences
      */
-    public void setTotalFrequency(int occurencesCount){
-        this.mTotalFrequency = occurencesCount;
+    public void setTotalPlannedExecutionCount(int plannedExecutions){
+        this.mTotalFrequency = plannedExecutions;
     }
 
     /**
@@ -384,15 +426,11 @@ public class ScheduledAction extends BaseModel{
      */
     public String getRepeatString(){
         StringBuilder ruleBuilder = new StringBuilder(mRecurrence.getRepeatString());
-
-        if (mEndDate > 0){
-            ruleBuilder.append(", ");
-            ruleBuilder.append(" until ")
-                    .append(SimpleDateFormat.getDateInstance(DateFormat.SHORT).format(new Date(mEndDate)));
-        } else if (mTotalFrequency > 0){
-            ruleBuilder.append(", ");
-            ruleBuilder.append(" for ").append(mTotalFrequency).append(" times");
+        Context context = GnuCashApplication.getAppContext();
+        if (mEndDate <= 0 && mTotalFrequency > 0){
+            ruleBuilder.append(", ").append(context.getString(R.string.repeat_x_times, mTotalFrequency));
         }
+
         return ruleBuilder.toString();
     }
 
@@ -426,11 +464,25 @@ public class ScheduledAction extends BaseModel{
     }
 
     /**
+     * Overloaded method for setting the recurrence of the scheduled action.
+     * <p>This method allows you to specify the periodicity and the ordinal of it. For example,
+     * a recurrence every fortnight would give parameters: {@link PeriodType#WEEK}, ordinal:2</p>
+     * @param periodType Periodicity of the scheduled action
+     * @param ordinal Ordinal of the periodicity. If unsure, specify 1
+     * @see #setRecurrence(Recurrence)
+     */
+    public void setRecurrence(PeriodType periodType, int ordinal){
+        periodType.setMultiplier(ordinal);
+        Recurrence recurrence = new Recurrence(periodType);
+        setRecurrence(recurrence);
+    }
+
+    /**
      * Sets the recurrence pattern of this scheduled action
      * <p>This also sets the start period of the recurrence object, if there is one</p>
      * @param recurrence {@link Recurrence} object
      */
-    public void setRecurrence(Recurrence recurrence) {
+    public void setRecurrence(@NonNull Recurrence recurrence) {
         this.mRecurrence = recurrence;
         //if we were parsing XML and parsed the start and end date from the scheduled action first,
         //then use those over the values which might be gotten from the recurrence

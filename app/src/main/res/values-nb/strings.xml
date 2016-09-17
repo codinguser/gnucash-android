@@ -58,7 +58,7 @@
   <string name="hint_export_choice">Standard eksporteres bare nye transaksjoner siden siste eksport. Merk dette alternativet for å eksportere alle transaksjoner</string>
   <string name="toast_export_error">Feil ved eksport av %1$s</string>
   <string name="btn_export">Eksporter</string>
-  <string name="option_delete_after_export">Delete transactions after export</string>
+  <string name="option_delete_after_export">Slett transaksjoner etter eksport</string>
   <string name="hint_delete_after_export">Alle eksporterte transaksjoner slettes når eksport er fullført</string>
   <string name="title_settings">Innstillinger</string>
   <string-array name="export_destinations">
@@ -66,7 +66,7 @@
     <item>DropBox</item>
     <item>Google Disk</item>
     <item>ownCloud</item>
-    <item>Send to&#8230;</item>
+    <item>Send til&#8230;</item>
   </string-array>
   <string name="btn_move">Flytt</string>
   <string name="title_move_transactions">Flytt %1$d transaksjon(er)</string>
@@ -132,12 +132,13 @@
   <string name="summary_xml_ofx_header">Aktiver dette alternativet når du eksporterer til tredjeparts programvare, borsett fra GnuCash for PC</string>
   <string name="title_whats_new">Hva er nytt</string>
   <string name="whats_new">
-- Nytt Material app design \n
-- Multivaluta transaksjoner \n
-- Kalkulator til transaksjonsbeløp \n
-- Forbedrede rapport muligheter \n
-- Ny Hjelp &amp; Tilbakemeldingsseksjon \n
-- Mange feilrettinger og forbedringer \n</string>
+        - Support for multiple different books \n
+        - Adds ownCloud as destination for exports\n
+        - Compact view for transactions list\n
+        - Re-design of passcode lock screen\n
+        - Improved handling of scheduled transactions\n
+        - Multiple bug fixes and improvements\n
+	</string>
   <string name="label_dismiss">Avvis</string>
   <string name="toast_transanction_amount_required">Angi et beløp for å lagre transaksjonen</string>
   <string name="toast_error_edit_multi_currency_transaction">Multi-valutatransaksjoner kan ikke endres</string>
@@ -208,7 +209,7 @@
   <string name="title_all_accounts">Alle</string>
   <string name="summary_create_default_accounts">Oppretter standard GnuCash kontostruktur</string>
   <string name="title_create_default_accounts">Opprette standardkontoer</string>
-  <string name="msg_confirm_create_default_accounts_setting">Alle eksisterende kontoer og transaksjoner på enheten blir slettet.\n\nEr du sikker på at du vil fortsette?</string>
+  <string name="msg_confirm_create_default_accounts_setting">En ny bok åpnes med standard accounts\n\nYour gjeldende kontoer og transaksjoner vil ikke bli endret!</string>
   <string name="menu_scheduled_transactions">Planlagte transaksjoner</string>
   <string name="msg_confirm_create_default_accounts_first_run">Velkommen til GnuCash Android! \nDu kan enten opprette et hierarki av brukte kontoer, eller importere din egen GnuCash kontostruktur. \n\nBegge alternativer er også tilgjengelige i app innstillinger så du kan velge senere.</string>
   <string name="title_scheduled_transactions">Transaksjoner</string>
@@ -272,11 +273,11 @@
   <string name="label_tap_to_create_schedule">Trykk for å opprette plan</string>
   <string name="title_restore_backup">Gjenopprette sikkerhetskopi&#8230;</string>
   <string name="header_backup_and_export_settings">Backup &amp; eksport</string>
-  <string name="title_dropbox_sync_preference">Enable DropBox</string>
-  <string name="title_owncloud_sync_preference">Enable ownCloud </string>
+  <string name="title_dropbox_sync_preference">Aktiver DropBox</string>
+  <string name="title_owncloud_sync_preference">Aktiver ownCloud </string>
   <string name="title_backup_preference_category">Sikkerhetskopiering</string>
-  <string name="summary_dropbox_sync">Enable exporting to DropBox</string>
-  <string name="summary_owncloud_sync">Enable exporting to ownCloud</string>
+  <string name="summary_dropbox_sync">Aktiver eksportering til DropBox</string>
+  <string name="summary_owncloud_sync">Aktiver eksport til ownCloud</string>
   <string name="title_select_gnucash_xml_file">Velg GnuCash XML-fil</string>
   <string name="title_backup_prefs">Innstillinger for sikkerhetskopiering</string>
   <string name="title_create_backup_pref">Opprett sikkerhetskopi</string>
@@ -285,8 +286,8 @@
   <string name="toast_backup_successful">Sikkerhetskopiering vellykket</string>
   <string name="toast_backup_failed">Sikkerhetskopiering mislyktes</string>
   <string name="export_warning_xml">Eksporterer alle kontoer og transaksjoner</string>
-  <string name="title_google_drive_sync_pref">Enable Google Drive</string>
-  <string name="summary_google_drive_sync">Enable exporting to Google Drive</string>
+  <string name="title_google_drive_sync_pref">Aktiver Google Drive</string>
+  <string name="summary_google_drive_sync">Aktiver eksportering til Google Drive</string>
   <string name="toast_install_file_manager">Installer en filbehandler for å velge filer</string>
   <string name="title_select_backup_to_restore">Velg sikkerhetskopien som skal gjenopprettes</string>
   <string name="nav_menu_favorites">Favoritter</string>
@@ -295,13 +296,13 @@
   <string name="nav_menu_scheduled_transactions">Planlagte transaksjoner</string>
   <string name="nav_menu_export">Eksport&#8230;</string>
   <string name="nav_menu_settings">Innstillinger</string>
-  <string name="username">User Name</string>
-  <string name="password">Password</string>
-  <string name="owncloud_pref">owncloud</string>
+  <string name="username">Brukernavn</string>
+  <string name="password">Passord</string>
+  <string name="owncloud_pref">ownCloud</string>
   <string name="owncloud_server">https://</string>
-  <string name="owncloud_server_invalid">OC server not found</string>
-  <string name="owncloud_user_invalid">OC username/password invalid</string>
-  <string name="owncloud_dir_invalid">Invalid chars: \\ &lt; &gt; : \&quot; | * ? </string>
+  <string name="owncloud_server_invalid">Finner ikke OC-server</string>
+  <string name="owncloud_user_invalid">OC brukernavn/passord ugyldig</string>
+  <string name="owncloud_dir_invalid">Ugyldige tegn: \\ &lt; &gt;: \ \"| * ? </string>
   <string name="owncloud_server_ok">OC server OK</string>
   <string name="owncloud_user_ok">OC username/password OK</string>
   <string name="owncloud_dir_ok">Dir name OK</string>
@@ -395,13 +396,13 @@
   <string name="menu_move_transaction">Move&#8230;</string>
   <string name="menu_duplicate_transaction">Duplicate</string>
   <string name="nav_menu_budgets">Budgets</string>
-  <string name="title_cash_flow_report">Cash Flow</string>
+  <string name="title_cash_flow_report">Kontantstrøm</string>
   <string name="title_budgets">Budgets</string>
   <string name="title_use_compact_list">Enable compact view</string>
   <string name="summary_use_compact_list">Enable to always use compact view for transactions list</string>
-  <string name="error_invalid_exchange_rate">Invalid exchange rate</string>
+  <string name="error_invalid_exchange_rate">Ugyldig valutakurs</string>
   <string name="sample_exchange_rate">e.g. 1 %1$s = x.xx %2$s</string>
-  <string name="error_invalid_amount">Invalid amount</string>
+  <string name="error_invalid_amount">Ugyldig beløp</string>
   <string-array name="report_time_range">
     <item>Gjeldende måned</item>
     <item>Siste 3 måneder</item>
@@ -444,4 +445,29 @@
   <string name="toast_transaction_has_no_splits_and_cannot_open">The selected transaction has no splits and cannot be opened</string>
   <string name="label_split_count">%1$d splits</string>
   <string name="label_inside_account_with_name">in %1$s</string>
+  <plurals name="book_account_stats">
+    <item quantity="one">%d account</item>
+    <item quantity="other">%d accounts</item>
+  </plurals>
+  <plurals name="book_transaction_stats">
+    <item quantity="one">%d transaction</item>
+    <item quantity="other">%d transactions</item>
+  </plurals>
+  <string-array name="report_account_types">
+    <item>EXPENSE</item>
+    <item>INCOME</item>
+  </string-array>
+  <string name="toast_connected_to_google_drive">Connected to Google Drive</string>
+  <string name="toast_unable_to_connect_to_google_drive">Unable to connect to Google Drive</string>
+  <string name="toast_enter_amount_to_split">Please enter an amount to split</string>
+  <string name="label_export_target_external_service">external service</string>
+  <string name="toast_updated_transaction_recurring_schedule">Updated transaction recurring schedule</string>
+  <string name="label_export_transactions_since_date">Since</string>
+  <string name="switch_export_transactions_from_all_time">All time</string>
+  <string name="label_recommend_app">Recommend in Play Store</string>
+  <string name="repeat_until_date">until %1$s</string>
+  <string name="repeat_on_weekday">on %1$s</string>
+  <string name="repeat_x_times">for %1$s times</string>
+  <string name="menu_show_compact_view">Compact View</string>
+  <string name="book_default_name">Book %1$d</string>
 </resources>

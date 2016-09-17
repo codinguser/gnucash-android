@@ -30,7 +30,7 @@
         android:title="@string/header_backup_and_export_settings" />
     <Preference app:fragment="org.gnucash.android.ui.settings.AboutPreferenceFragment"
         android:title="@string/header_about_gnucash" />
-    <Preference android:title="Rate in Play Store">
+    <Preference android:title="@string/label_recommend_app">
         <intent android:action="android.intent.action.VIEW"
             android:data="market://details?id=org.gnucash.android" />
     </Preference>

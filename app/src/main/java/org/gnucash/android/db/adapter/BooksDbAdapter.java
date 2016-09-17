@@ -17,15 +17,18 @@
 package org.gnucash.android.db.adapter;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema.BookEntry;
 import org.gnucash.android.model.Book;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.util.TimestampHelper;
 
 /**
@@ -92,11 +95,34 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
         return stmt;
     }
 
+
+    /**
+     * Deletes a book - removes the book record from the database and deletes the database file from the disk
+     * @param bookUID GUID of the book
+     * @return <code>true</code> if deletion was successful, <code>false</code> otherwise
+     * @see #deleteRecord(String)
+     */
+    public boolean deleteBook(@NonNull String bookUID){
+        Context context = GnuCashApplication.getAppContext();
+        boolean result = context.deleteDatabase(bookUID);
+        if (result) //delete the db entry only if the file deletion was successful
+            result &= deleteRecord(bookUID);
+
+        PreferenceActivity.getBookSharedPreferences(bookUID).edit().clear().apply();
+
+        return result;
+    }
+
     /**
      * Sets the book with unique identifier {@code uid} as active and all others as inactive
+     * <p>If the parameter is null, then the currently active book is not changed</p>
      * @param bookUID Unique identifier of the book
+     * @return GUID of the currently active book
      */
-    public void setActive(String bookUID){
+    public String setActive(@NonNull String bookUID){
+        if (bookUID == null)
+            return getActiveBookUID();
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(BookEntry.COLUMN_ACTIVE, 0);
         mDb.update(mTableName, contentValues, null, null); //disable all
@@ -104,6 +130,8 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
         contentValues.clear();
         contentValues.put(BookEntry.COLUMN_ACTIVE, 1);
         mDb.update(mTableName, contentValues, BookEntry.COLUMN_UID + " = ?", new String[]{bookUID});
+
+        return bookUID;
     }
 
     /**
@@ -117,23 +145,6 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
     }
 
     /**
-     * Returns the root account GUID of the current active book
-     * @return GUID of the root account
-     */
-    public @NonNull String getActiveRootAccountUID(){
-        Cursor cursor = mDb.query(mTableName, new String[]{BookEntry.COLUMN_ROOT_GUID},
-                BookEntry.COLUMN_ACTIVE + "= 1", null, null, null, null, "1");
-        try{
-            if (cursor.moveToFirst()){
-                return cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_ROOT_GUID));
-            }
-        } finally {
-            cursor.close();
-        }
-        return null;
-    }
-
-    /**
      * Returns the GUID of the current active book
      * @return GUID of the active book
      */
@@ -142,7 +153,7 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
                 BookEntry.COLUMN_ACTIVE + "= 1", null, null, null, null, "1");
         try{
             if (cursor.getCount() == 0)
-                throw new RuntimeException("There is no active book in the app. This should NEVER happen!");
+                throw new RuntimeException("There is no active book in the app. This should NEVER happen, fix your bugs!");
             cursor.moveToFirst();
             return cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_UID));
         } finally {
@@ -181,7 +192,9 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
         SQLiteStatement statement = mDb.compileStatement(sql);
 
         while (true) {
-            String name = "Book" + " " + bookCount;
+            Context context = GnuCashApplication.getAppContext();
+            String name = context.getString(R.string.book_default_name, bookCount);
+            //String name = "Book" + " " + bookCount;
 
             statement.clearBindings();
             statement.bindString(1, name);

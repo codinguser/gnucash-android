@@ -131,7 +131,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
         String reconcileState = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_RECONCILE_STATE));
         String reconcileDate  = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_RECONCILE_DATE));
 
-        String transactionCurrency = TransactionsDbAdapter.getInstance().getAttribute(transxUID, TransactionEntry.COLUMN_CURRENCY);
+        String transactionCurrency = getAttribute(TransactionEntry.TABLE_NAME, transxUID, TransactionEntry.COLUMN_CURRENCY);
         Money value = new Money(valueNum, valueDenom, transactionCurrency);
         String currencyCode = getAccountCurrencyCode(accountUID);
         Money quantity = new Money(quantityNum, quantityDenom, currencyCode);

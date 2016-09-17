@@ -4,6 +4,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
+import android.util.Log;
+
+import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
@@ -110,6 +113,10 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
         Commodity commodity = null;
         if (cursor.moveToNext()){
             commodity = buildModelInstance(cursor);
+        } else {
+            String msg = "Commodity not found in the database: " + currencyCode;
+            Log.e(LOG_TAG, msg);
+            Crashlytics.log(msg);
         }
         cursor.close();
         return commodity;

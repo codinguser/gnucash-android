@@ -16,7 +16,6 @@
 
 package org.gnucash.android.ui.settings;
 
-import android.annotation.TargetApi;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -25,7 +24,6 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
-import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.ui.account.AccountsActivity;
 
 

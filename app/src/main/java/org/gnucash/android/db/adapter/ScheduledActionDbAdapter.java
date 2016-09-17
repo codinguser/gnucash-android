@@ -26,7 +26,6 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
-import org.gnucash.android.util.TimestampHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +39,7 @@ import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
  */
 public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
 
-    RecurrenceDbAdapter mRecurrenceDbAdapter;
+    private RecurrenceDbAdapter mRecurrenceDbAdapter;
 
     public ScheduledActionDbAdapter(SQLiteDatabase db, RecurrenceDbAdapter recurrenceDbAdapter){
         super(db, ScheduledActionEntry.TABLE_NAME,  new String[]{
@@ -96,7 +95,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
     /**
      * Updates only the recurrence attributes of the scheduled action.
      * The recurrence attributes are the period, start time, end time and/or total frequency.
-     * All other properties of a scheduled event are only used for interal database tracking and are
+     * All other properties of a scheduled event are only used for internal database tracking and are
      * not central to the recurrence schedule.
      * <p><b>The GUID of the scheduled action should already exist in the database</b></p>
      * @param scheduledAction Scheduled action
@@ -105,7 +104,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
     public long updateRecurrenceAttributes(ScheduledAction scheduledAction){
         //since we are updating, first fetch the existing recurrence UID and set it to the object
         //so that it will be updated and not a new one created
-        RecurrenceDbAdapter recurrenceDbAdapter = RecurrenceDbAdapter.getInstance();
+        RecurrenceDbAdapter recurrenceDbAdapter = new RecurrenceDbAdapter(mDb);
         String recurrenceUID = recurrenceDbAdapter.getAttribute(scheduledAction.getUID(), ScheduledActionEntry.COLUMN_RECURRENCE_UID);
 
         Recurrence recurrence = scheduledAction.getRecurrence();
@@ -117,7 +116,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
         contentValues.put(ScheduledActionEntry.COLUMN_START_TIME, scheduledAction.getStartTime());
         contentValues.put(ScheduledActionEntry.COLUMN_END_TIME,  scheduledAction.getEndTime());
         contentValues.put(ScheduledActionEntry.COLUMN_TAG,       scheduledAction.getTag());
-        contentValues.put(ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY, scheduledAction.getTotalFrequency());
+        contentValues.put(ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY, scheduledAction.getTotalPlannedExecutionCount());
 
         Log.d(LOG_TAG, "Updating scheduled event recurrence attributes");
         String where = ScheduledActionEntry.COLUMN_UID + "=?";
@@ -138,8 +137,8 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
         if (schedxAction.getTag() == null)
             stmt.bindNull(8);
         else
-            stmt.bindString(9, schedxAction.getTag());
-        stmt.bindString(9, Integer.toString(schedxAction.getTotalFrequency()));
+            stmt.bindString(8, schedxAction.getTag());
+        stmt.bindString(9, Integer.toString(schedxAction.getTotalPlannedExecutionCount()));
         stmt.bindString(10, schedxAction.getRecurrence().getUID());
         stmt.bindLong(11,   schedxAction.shouldAutoCreate() ? 1 : 0);
         stmt.bindLong(12,   schedxAction.shouldAutoNotify() ? 1 : 0);
@@ -183,7 +182,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
         event.setLastRun(lastRun);
         event.setTag(tag);
         event.setEnabled(enabled);
-        event.setTotalFrequency(numOccurrences);
+        event.setTotalPlannedExecutionCount(numOccurrences);
         event.setExecutionCount(execCount);
         event.setAutoCreate(autoCreate == 1);
         event.setAutoNotify(autoNotify == 1);
@@ -220,7 +219,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
 
     /**
      * Returns all enabled scheduled actions in the database
-     * @return List of enalbed scheduled actions
+     * @return List of enabled scheduled actions
      */
     public List<ScheduledAction> getAllEnabledScheduledActions(){
         Cursor cursor = mDb.query(mTableName,

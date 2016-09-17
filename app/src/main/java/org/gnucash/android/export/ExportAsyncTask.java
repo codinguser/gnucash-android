@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -58,6 +59,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.DatabaseAdapter;
+import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.export.qif.QifExporter;
@@ -93,6 +95,8 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
     private ProgressDialog mProgressDialog;
 
+    private SQLiteDatabase mDb;
+
     /**
      * Log tag
      */
@@ -108,8 +112,9 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
     private Exporter mExporter;
 
-    public ExportAsyncTask(Context context){
+    public ExportAsyncTask(Context context, SQLiteDatabase db){
         this.mContext = context;
+        this.mDb = db;
     }
 
     @Override
@@ -140,16 +145,16 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
         switch (mExportParams.getExportFormat()) {
                 case QIF:
-                    mExporter = new QifExporter(mExportParams);
+                    mExporter = new QifExporter(mExportParams, mDb);
                     break;
 
                 case OFX:
-                    mExporter = new OfxExporter(mExportParams);
+                    mExporter = new OfxExporter(mExportParams, mDb);
                     break;
 
                 case XML:
                 default:
-                    mExporter = new GncXmlExporter(mExportParams);
+                    mExporter = new GncXmlExporter(mExportParams, mDb);
                     break;
         }
 
@@ -239,7 +244,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                                 "ownCloud sync not enabled";
                         break;
                     default:
-                        targetLocation = "external service";
+                        targetLocation = mContext.getString(R.string.label_export_target_external_service);
                 }
                 Toast.makeText(mContext,
                         String.format(mContext.getString(R.string.toast_exported_to), targetLocation),
@@ -409,11 +414,11 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     private List<String> moveExportToSDCard() {
         Log.i(TAG, "Moving exported file to external storage");
-        new File(Exporter.getExportFolderPath());
+        new File(Exporter.getExportFolderPath(mExporter.mBookUID));
         List<String> dstFiles = new ArrayList<>();
 
         for (String src: mExportedFiles) {
-            String dst = Exporter.getExportFolderPath() + stripPathPart(src);
+            String dst = Exporter.getExportFolderPath(mExporter.mBookUID) + stripPathPart(src);
             try {
                 moveFile(src, dst);
                 dstFiles.add(dst);
@@ -440,11 +445,11 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         GncXmlExporter.createBackup(); //create backup before deleting everything
         List<Transaction> openingBalances = new ArrayList<>();
         boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
-        if (preserveOpeningBalances) {
-            openingBalances = AccountsDbAdapter.getInstance().getAllOpeningBalanceTransactions();
-        }
 
-        TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
+        TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(mDb, new SplitsDbAdapter(mDb));
+        if (preserveOpeningBalances) {
+            openingBalances = new AccountsDbAdapter(mDb, transactionsDbAdapter).getAllOpeningBalanceTransactions();
+        }
         transactionsDbAdapter.deleteAllNonTemplateTransactions();
 
         if (preserveOpeningBalances) {
@@ -517,7 +522,6 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      * @throws IOException if the file could not be moved.
      */
     public void moveFile(String src, String dst) throws IOException {
-        //TODO: Make this asynchronous at some time, t in the future.
         File srcFile = new File(src);
         File dstFile = new File(dst);
         FileChannel inChannel = new FileInputStream(srcFile).getChannel();

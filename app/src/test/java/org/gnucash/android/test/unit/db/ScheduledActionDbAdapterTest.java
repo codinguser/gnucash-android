@@ -1,6 +1,10 @@
 package org.gnucash.android.test.unit.db;
 
+import android.content.res.Resources;
+
 import org.gnucash.android.BuildConfig;
+import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.PeriodType;
@@ -63,11 +67,59 @@ public class ScheduledActionDbAdapterTest {
         PeriodType periodType = PeriodType.MONTH;
         periodType.setMultiplier(2);
         scheduledAction.setRecurrence(new Recurrence(periodType));
-        scheduledAction.setTotalFrequency(4);
+        scheduledAction.setTotalPlannedExecutionCount(4);
+        Resources res = GnuCashApplication.getAppContext().getResources();
+        String repeatString = res.getQuantityString(R.plurals.label_every_x_months, 2, 2) + ", " +
+                res.getString(R.string.repeat_x_times, 4);
 
-        String repeatString = "Every 2 months,  for 4 times";
         assertThat(scheduledAction.getRepeatString().trim()).isEqualTo(repeatString);
 
     }
 
+    @Test
+    public void testAddGetRecord() {
+        ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.BACKUP);
+        scheduledAction.setActionUID("Some UID");
+        scheduledAction.setAdvanceCreateDays(1);
+        scheduledAction.setAdvanceNotifyDays(2);
+        scheduledAction.setAutoCreate(true);
+        scheduledAction.setAutoNotify(true);
+        scheduledAction.setEnabled(true);
+        scheduledAction.setStartTime(11111);
+        scheduledAction.setEndTime(33333);
+        scheduledAction.setLastRun(22222);
+        scheduledAction.setExecutionCount(3);
+        scheduledAction.setRecurrence(new Recurrence(PeriodType.MONTH));
+        scheduledAction.setTag("QIF;SD_CARD;2016-06-25 12:56:07.175;false");
+        mScheduledActionDbAdapter.addRecord(scheduledAction);
+
+        ScheduledAction scheduledActionFromDb =
+                mScheduledActionDbAdapter.getRecord(scheduledAction.getUID());
+        assertThat(scheduledActionFromDb.getUID()).isEqualTo(
+                scheduledAction.getUID());
+        assertThat(scheduledActionFromDb.getActionUID()).isEqualTo(
+                scheduledAction.getActionUID());
+        assertThat(scheduledActionFromDb.getAdvanceCreateDays()).isEqualTo(
+                scheduledAction.getAdvanceCreateDays());
+        assertThat(scheduledActionFromDb.getAdvanceNotifyDays()).isEqualTo(
+                scheduledAction.getAdvanceNotifyDays());
+        assertThat(scheduledActionFromDb.shouldAutoCreate()).isEqualTo(
+                scheduledAction.shouldAutoCreate());
+        assertThat(scheduledActionFromDb.shouldAutoNotify()).isEqualTo(
+                scheduledAction.shouldAutoNotify());
+        assertThat(scheduledActionFromDb.isEnabled()).isEqualTo(
+                scheduledAction.isEnabled());
+        assertThat(scheduledActionFromDb.getStartTime()).isEqualTo(
+                scheduledAction.getStartTime());
+        assertThat(scheduledActionFromDb.getEndTime()).isEqualTo(
+                scheduledAction.getEndTime());
+        assertThat(scheduledActionFromDb.getLastRunTime()).isEqualTo(
+                scheduledAction.getLastRunTime());
+        assertThat(scheduledActionFromDb.getExecutionCount()).isEqualTo(
+                scheduledAction.getExecutionCount());
+        assertThat(scheduledActionFromDb.getRecurrence()).isEqualTo(
+                scheduledAction.getRecurrence());
+        assertThat(scheduledActionFromDb.getTag()).isEqualTo(
+                scheduledAction.getTag());
+    }
 }

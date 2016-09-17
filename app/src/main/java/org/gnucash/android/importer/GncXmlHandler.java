@@ -439,7 +439,13 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_COMMODITY_ID:
                 String currencyCode = mISO4217Currency ? characterString : NO_CURRENCY_CODE;
                 if (mAccount != null) {
-                    mAccount.setCurrencyCode(currencyCode);
+                    Commodity commodity = mCommoditiesDbAdapter.getCommodity(currencyCode);
+                    if (commodity != null) {
+                        mAccount.setCommodity(commodity);
+                    } else {
+                        throw new SAXException("Commodity with '" + currencyCode
+                                + "' currency code not found in the database");
+                    }
                     if (mCurrencyCount.containsKey(currencyCode)) {
                         mCurrencyCount.put(currencyCode, mCurrencyCount.get(currencyCode) + 1);
                     } else {
@@ -682,7 +688,7 @@ public class GncXmlHandler extends DefaultHandler {
                 break;
             case GncXmlHelper.TAG_TRANSACTION:
                 mTransaction.setTemplate(mInTemplates);
-                Split imbSplit = mTransaction.getAutoBalanceSplit();
+                Split imbSplit = mTransaction.createAutoBalanceSplit();
                 if (imbSplit != null) {
                     mAutoBalanceSplits.add(imbSplit);
                 }
@@ -723,7 +729,7 @@ public class GncXmlHandler extends DefaultHandler {
                 break;
             //todo: export auto_notify, advance_create, advance_notify
             case GncXmlHelper.TAG_SX_NUM_OCCUR:
-                mScheduledAction.setTotalFrequency(Integer.parseInt(characterString));
+                mScheduledAction.setTotalPlannedExecutionCount(Integer.parseInt(characterString));
                 break;
             case GncXmlHelper.TAG_RX_MULT:
                 mRecurrenceMultiplier = Integer.parseInt(characterString);
@@ -893,6 +899,7 @@ public class GncXmlHandler extends DefaultHandler {
 
         // Set the account for created balancing splits to correct imbalance accounts
         for (Split split: mAutoBalanceSplits) {
+            // XXX: yes, getAccountUID() returns a currency code in this case (see Transaction.createAutoBalanceSplit())
             String currencyCode = split.getAccountUID();
             Account imbAccount = mapImbalanceAccount.get(currencyCode);
             if (imbAccount == null) {
@@ -1043,11 +1050,16 @@ public class GncXmlHandler extends DefaultHandler {
      */
     private void handleEndOfTemplateNumericSlot(String characterString, TransactionType splitType) {
         try {
-            BigDecimal amountBigD = GncXmlHelper.parseSplitAmount(characterString);
-            Money amount = new Money(amountBigD, getCommodityForAccount(mSplit.getAccountUID()));
-            mSplit.setValue(amount.abs());
-            mSplit.setType(splitType);
-            mIgnoreTemplateTransaction = false; //we have successfully parsed an amount
+            // HACK: Check for bug #562. If a value has already been set, ignore the one just read
+            if (mSplit.getValue().equals(
+                    new Money(BigDecimal.ZERO, mSplit.getValue().getCommodity()))) {
+                BigDecimal amountBigD = GncXmlHelper.parseSplitAmount(characterString);
+                Money amount = new Money(amountBigD, getCommodityForAccount(mSplit.getAccountUID()));
+
+                mSplit.setValue(amount.abs());
+                mSplit.setType(splitType);
+                mIgnoreTemplateTransaction = false; //we have successfully parsed an amount
+            }
         } catch (NumberFormatException | ParseException e) {
             String msg = "Error parsing template credit split amount " + characterString;
             Log.e(LOG_TAG, msg + "\n" + e.getMessage());
@@ -1071,7 +1083,7 @@ public class GncXmlHandler extends DefaultHandler {
         if (scheduledAction.getActionType() != ScheduledAction.ActionType.TRANSACTION
                 || !scheduledAction.isEnabled() || !scheduledAction.shouldAutoCreate()
                 || (scheduledAction.getEndTime() > 0 && scheduledAction.getEndTime() > System.currentTimeMillis())
-                || (scheduledAction.getTotalFrequency() > 0 && scheduledAction.getExecutionCount() >= scheduledAction.getTotalFrequency())){
+                || (scheduledAction.getTotalPlannedExecutionCount() > 0 && scheduledAction.getExecutionCount() >= scheduledAction.getTotalPlannedExecutionCount())){
             return 0;
         }
 
@@ -1090,6 +1102,10 @@ public class GncXmlHandler extends DefaultHandler {
                     transaction.setTime(lastRuntime);
                     transaction.setScheduledActionUID(scheduledAction.getUID());
                     mTransactionList.add(transaction);
+                    //autobalance splits are generated with the currency of the transactions as the GUID
+                    //so we add them to the mAutoBalanceSplits which will be updated to real GUIDs before saving
+                    List<Split> autoBalanceSplits = transaction.getSplits(transaction.getCurrencyCode());
+                    mAutoBalanceSplits.addAll(autoBalanceSplits);
                     scheduledAction.setExecutionCount(scheduledAction.getExecutionCount() + 1);
                     ++generatedTransactionCount;
                     break;

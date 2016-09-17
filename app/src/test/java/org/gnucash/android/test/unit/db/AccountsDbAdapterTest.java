@@ -15,7 +15,9 @@
  */
 package org.gnucash.android.test.unit.db;
 
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v7.preference.PreferenceManager;
 
 import org.assertj.core.data.Index;
 import org.gnucash.android.BuildConfig;
@@ -498,10 +500,7 @@ public class AccountsDbAdapterTest{
      * Opening an XML file should set the default currency to that used by the most accounts in the file
      */
     @Test
-    public void importingXml_shouldSetDefaultCurrency(){
-        String expectedCode = GnuCashApplication.getDefaultCurrencyCode();
-        Commodity expectedDefaultCommodity = CommoditiesDbAdapter.getInstance().getCommodity(expectedCode);
-
+    public void importingXml_shouldSetDefaultCurrencyFromXml(){
         GnuCashApplication.setDefaultCurrencyCode("JPY");
 
         assertThat(GnuCashApplication.getDefaultCurrencyCode()).isEqualTo("JPY");
@@ -511,10 +510,11 @@ public class AccountsDbAdapterTest{
         loadDefaultAccounts();
 
         assertThat(GnuCashApplication.getDefaultCurrencyCode()).isNotEqualTo("JPY");
-        assertThat(GnuCashApplication.getDefaultCurrencyCode()).isEqualTo(expectedCode);
-        assertThat(Commodity.DEFAULT_COMMODITY).isEqualTo(expectedDefaultCommodity);
+        //the book has USD occuring most often and this will be used as the default currency
+        assertThat(GnuCashApplication.getDefaultCurrencyCode()).isEqualTo("USD");
+        assertThat(Commodity.DEFAULT_COMMODITY).isEqualTo(Commodity.USD);
 
-        System.out.println("Default currency is now: " + expectedCode);
+        System.out.println("Default currency is now: " + Commodity.DEFAULT_COMMODITY);
     }
 
     /**

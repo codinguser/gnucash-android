@@ -17,6 +17,8 @@
 package org.gnucash.android.db.adapter;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
@@ -24,6 +26,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.DatabaseSchema.AccountEntry;
 import org.gnucash.android.db.DatabaseSchema.CommonColumns;
@@ -31,6 +34,7 @@ import org.gnucash.android.db.DatabaseSchema.SplitEntry;
 import org.gnucash.android.db.DatabaseSchema.TransactionEntry;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.util.TimestampHelper;
 
 import java.util.ArrayList;
@@ -721,7 +725,24 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      * @throws IllegalArgumentException if either the {@code recordUID} or {@code columnName} do not exist in the database
      */
     public String getAttribute(@NonNull String recordUID, @NonNull String columnName){
-        Cursor cursor = mDb.query(mTableName,
+        return getAttribute(mTableName, recordUID, columnName);
+    }
+
+    /**
+     * Returns an attribute from a specific column in the database for a specific record and specific table.
+     * <p>The attribute is returned as a string which can then be converted to another type if
+     * the caller was expecting something other type </p>
+     * <p>This method is an override of {@link #getAttribute(String, String)} which allows to select a value from a
+     * different table than the one of current adapter instance
+     * </p>
+     * @param tableName Database table name. See {@link DatabaseSchema}
+     * @param recordUID GUID of the record
+     * @param columnName Name of the column to be retrieved
+     * @return String value of the column entry
+     * @throws IllegalArgumentException if either the {@code recordUID} or {@code columnName} do not exist in the database
+     */
+    protected String getAttribute(@NonNull String tableName, @NonNull String recordUID, @NonNull String columnName){
+        Cursor cursor = mDb.query(tableName,
                 new String[]{columnName},
                 AccountEntry.COLUMN_UID + " = ?",
                 new String[]{recordUID}, null, null, null);

@@ -228,7 +228,7 @@ public class AccountsActivityTest {
         Account newestAccount = accounts.get(0); //because of alphabetical sorting
 
         assertThat(newestAccount.getName()).isEqualTo(NEW_ACCOUNT_NAME);
-        assertThat(newestAccount.getCurrency().getCurrencyCode()).isEqualTo(Money.DEFAULT_CURRENCY_CODE);
+        assertThat(newestAccount.getCommodity().getCurrencyCode()).isEqualTo(Money.DEFAULT_CURRENCY_CODE);
         assertThat(newestAccount.isPlaceholderAccount()).isTrue();
     }
 
@@ -316,7 +316,7 @@ public class AccountsActivityTest {
         Account latest = accounts.get(0);  //will be the first due to alphabetical sorting
 
         assertThat(latest.getName()).isEqualTo(editedAccountName);
-        assertThat(latest.getCurrency().getCurrencyCode()).isEqualTo(ACCOUNTS_CURRENCY_CODE);
+        assertThat(latest.getCommodity().getCurrencyCode()).isEqualTo(ACCOUNTS_CURRENCY_CODE);
     }
 
     @Test
@@ -402,7 +402,6 @@ public class AccountsActivityTest {
         subAccount.setParentUID(SIMPLE_ACCOUNT_UID);
 
         Account tranferAcct = new Account("Other account");
-        tranferAcct.setCurrencyCode(ACCOUNTS_CURRENCY_CODE);
         mAccountsDbAdapter.addRecord(subAccount, DatabaseAdapter.UpdateMethod.insert);
         mAccountsDbAdapter.addRecord(tranferAcct, DatabaseAdapter.UpdateMethod.insert);
 
@@ -414,6 +413,7 @@ public class AccountsActivityTest {
                 withId(R.id.options_menu))).perform(click());
         onView(withText(R.string.menu_delete)).perform(click());
 
+        //// FIXME: 17.08.2016 This enabled check fails during some test runs - not reliable, investigate why
         onView(allOf(withParent(withId(R.id.accounts_options)),
                 withId(R.id.radio_move))).check(matches(isEnabled())).perform(click());
 
@@ -456,7 +456,7 @@ public class AccountsActivityTest {
         assertThat(account).isNotNull();
         assertThat(account.getName()).isEqualTo("Intent Account");
         assertThat(account.getUID()).isEqualTo("intent-account");
-        assertThat(account.getCurrency().getCurrencyCode()).isEqualTo("EUR");
+        assertThat(account.getCommodity().getCurrencyCode()).isEqualTo("EUR");
     }
 
     /**
