@@ -463,5 +463,5 @@
   <string name="repeat_on_weekday">%1$s に</string>
   <string name="repeat_x_times">%1$s 回</string>
   <string name="menu_show_compact_view">コンパクト表示</string>
-  <string name="book_default_name">Book %1$d</string>
+  <string name="book_default_name">帳簿 %1$d</string>
 </resources>

@@ -82,6 +82,10 @@ public class ScheduledActionService extends IntentService {
                 Log.i(LOG_TAG, String.format("Processing %d total scheduled actions for Book: %s",
                         scheduledActions.size(), book.getDisplayName()));
                 processScheduledActions(scheduledActions, db);
+
+                //close all databases except the currently active database
+                if (!db.getPath().equals(GnuCashApplication.getActiveDb().getPath()))
+                    db.close();
             }
 
             Log.i(LOG_TAG, "Completed service @ " + java.text.DateFormat.getDateTimeInstance().format(new Date()));
@@ -142,10 +146,11 @@ public class ScheduledActionService extends IntentService {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_LAST_RUN, System.currentTimeMillis());
         contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_EXECUTION_COUNT, executionCount);
-        new ScheduledActionDbAdapter(db, new RecurrenceDbAdapter(db)).updateRecord(scheduledAction.getUID(), contentValues);
+        db.update(DatabaseSchema.ScheduledActionEntry.TABLE_NAME, contentValues,
+                DatabaseSchema.ScheduledActionEntry.COLUMN_UID + "=?", new String[]{scheduledAction.getUID()});
 
-        //set the values in the object because they will be checked for the next iteration in the calling loop
-        scheduledAction.setExecutionCount(executionCount);
+        //set the execution count in the object because it will be checked for the next iteration in the calling loop
+        scheduledAction.setExecutionCount(executionCount); //this call is important, do not remove!!
     }
 
     /**
@@ -162,6 +167,9 @@ public class ScheduledActionService extends IntentService {
 
         if (endTime > 0 && endTime < now)
             return executionCount;
+
+        if (scheduledAction.computeNextScheduledExecutionTime() > now)
+            return 0;
 
         ExportParams params = ExportParams.parseCsv(scheduledAction.getTag());
         try {
@@ -187,7 +195,14 @@ public class ScheduledActionService extends IntentService {
         int executionCount = 0;
         String actionUID = scheduledAction.getActionUID();
         TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
-        Transaction trxnTemplate = transactionsDbAdapter.getRecord(actionUID);
+        Transaction trxnTemplate = null;
+        try {
+            trxnTemplate = transactionsDbAdapter.getRecord(actionUID);
+        } catch (IllegalArgumentException ex){ //if the record could not be found, abort
+            Log.e(LOG_TAG, "Scheduled transaction with UID " + actionUID + " could not be found in the db with path " + db.getPath());
+            return executionCount;
+        }
+
 
         long now = System.currentTimeMillis();
         //if there is an end time in the past, we execute all schedules up to the end time.

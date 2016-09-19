@@ -482,5 +482,5 @@
   <string name="repeat_on_weekday">в %1$s</string>
   <string name="repeat_x_times">для %1$s раз</string>
   <string name="menu_show_compact_view">Компактный вид</string>
-  <string name="book_default_name">Book %1$d</string>
+  <string name="book_default_name">Книга %1$d</string>
 </resources>
