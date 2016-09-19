@@ -126,7 +126,7 @@ public class GnuCashApplication extends Application{
         BookDbHelper bookDbHelper = new BookDbHelper(getApplicationContext());
         mBooksDbAdapter = new BooksDbAdapter(bookDbHelper.getWritableDatabase());
 
-        initDatabaseAdapters();
+        initializeDatabaseAdapters();
         setDefaultCurrencyCode(getDefaultCurrencyCode());
 
         if (BuildConfig.DEBUG && !isRoboUnitTest())
@@ -137,7 +137,7 @@ public class GnuCashApplication extends Application{
      * Initialize database adapter singletons for use in the application
      * This method should be called every time a new book is opened
      */
-    private static void initDatabaseAdapters() {
+    private static void initializeDatabaseAdapters() {
         if (mDbHelper != null){ //close if open
             mDbHelper.getReadableDatabase().close();
         }
@@ -205,13 +205,21 @@ public class GnuCashApplication extends Application{
     }
 
     /**
-     * Loads the book with GUID {@code bookUID}
+     * Loads the book with GUID {@code bookUID} and opens the AccountsActivity
      * @param bookUID GUID of the book to be loaded
      */
     public static void loadBook(@NonNull String bookUID){
-        mBooksDbAdapter.setActive(bookUID);
-        initDatabaseAdapters();
+        activateBook(bookUID);
         AccountsActivity.start(getAppContext());
+    }
+
+    /**
+     * Activates the book with unique identifer {@code bookUID}, and refreshes the database adapters
+     * @param bookUID GUID of the book to be activated
+     */
+    public static void activateBook(@NonNull String bookUID){
+        mBooksDbAdapter.setActive(bookUID);
+        initializeDatabaseAdapters();
     }
 
     /**

@@ -21,8 +21,11 @@ import android.content.Context;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 
+import org.gnucash.android.db.adapter.BooksDbAdapter;
+import org.gnucash.android.model.Book;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 
 /**
  * {@link AppWidgetProvider} which is responsible for managing widgets on the homescreen
@@ -43,13 +46,13 @@ public class TransactionAppWidgetProvider extends AppWidgetProvider {
         for (int i=0; i<N; i++) {
             int appWidgetId = appWidgetIds[i];
 
-            String accountUID = PreferenceManager
-                    .getDefaultSharedPreferences(context)
+            String accountUID = PreferenceActivity.getActiveBookSharedPreferences()
                     .getString(UxArgument.SELECTED_ACCOUNT_UID + appWidgetId, null);
             if (accountUID == null)
             	return;
             
-            WidgetConfigurationActivity.updateWidget(context, appWidgetId, accountUID);
+            WidgetConfigurationActivity.updateWidget(context, appWidgetId, accountUID,
+					BooksDbAdapter.getInstance().getActiveBookUID());
         }
 	}
 
@@ -62,11 +65,11 @@ public class TransactionAppWidgetProvider extends AppWidgetProvider {
     @Override
 	public void onDeleted(Context context, int[] appWidgetIds) {
 		super.onDeleted(context, appWidgetIds);		
-		Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+		Editor editor = PreferenceActivity.getActiveBookSharedPreferences().edit();
 		
 		for (int appWidgetId : appWidgetIds) {
 			editor.remove(UxArgument.SELECTED_ACCOUNT_UID + appWidgetId);
 		}
-		editor.commit();		
+		editor.apply();
 	}
 }
