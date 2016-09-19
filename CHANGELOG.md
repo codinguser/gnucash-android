@@ -1,5 +1,17 @@
 Change Log
 ===============================================================================
+Version 2.1.2 *(2016-09-21)*
+----------------------------
+* Fixed: Scheduled exports always run daily (no matter the actual schedule)
+* Fixed: New transactions cannot be saved in single-entry mode
+* Fixed: ownCloud connect success messages displayed in red (now green)
+* Fixed: Crash when scheduled action service cannot find transaction in db
+* Improved: German and Brazilian Portuguese translations
+
+Version 2.1.1 *(2016-09-05)*
+----------------------------
+* Fixed: Bug cause crash during start-up for devices with no scheduled transactions
+
 Version 2.1.0 *(2016-09-01)*
 ----------------------------
 * Feature: Use multiple GnuCash books in single application
@@ -15,7 +27,9 @@ Version 2.1.0 *(2016-09-01)*
 Version 2.0.7 *(2016-05-05)*
 ----------------------------
 * Fixed: Currency exchange rate does not accept very small rates (> 2 decimal places)
-* Improved: Updated translations for Japanese, Polish, French, Version 2.0.6 *(2016-02-20)*
+* Improved: Updated translations for Japanese, Polish, French,
+
+Version 2.0.6 *(2016-02-20)*
 ----------------------------
 * Fixed: Saving transaction gets slower with increase in size of database
 * Fixed: Imbalance amount wrongly computed in split editor (for some accounts)

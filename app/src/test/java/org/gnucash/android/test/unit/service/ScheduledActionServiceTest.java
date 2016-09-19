@@ -16,6 +16,7 @@
 package org.gnucash.android.test.unit.service;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
 
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
@@ -43,6 +44,7 @@ import org.gnucash.android.test.unit.testutil.GnucashTestRunner;
 import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
 import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.joda.time.Weeks;
 import org.junit.After;
 import org.junit.Before;
@@ -187,6 +189,9 @@ public class ScheduledActionServiceTest {
         ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.TRANSACTION);
         DateTime startTime = new DateTime(2016, 6, 6, 9, 0);
         scheduledAction.setStartTime(startTime.getMillis());
+        DateTime endTime = new DateTime(2016, 9, 12, 8, 0); //end just before last appointment
+        scheduledAction.setEndTime(endTime.getMillis());
+
         scheduledAction.setActionUID(mActionUID);
 
         scheduledAction.setRecurrence(PeriodType.WEEK, 2);
@@ -257,7 +262,7 @@ public class ScheduledActionServiceTest {
     /**
      * Test that only scheduled actions with action UIDs are processed
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test //(expected = IllegalArgumentException.class)
     public void recurringTransactions_shouldHaveScheduledActionUID(){
         ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.TRANSACTION);
         DateTime startTime = new DateTime(2016, 7, 4, 12 ,0);
@@ -270,6 +275,9 @@ public class ScheduledActionServiceTest {
         List<ScheduledAction> actions = new ArrayList<>();
         actions.add(scheduledAction);
         ScheduledActionService.processScheduledActions(actions, mDb);
+
+        //no change in the database since no action UID was specified
+        assertThat(transactionsDbAdapter.getRecordsCount()).isZero();
     }
 
     @Test
@@ -295,6 +303,36 @@ public class ScheduledActionServiceTest {
         File[] backupFiles = backupFolder.listFiles();
         assertThat(backupFiles).hasSize(1);
         assertThat(backupFiles[0]).exists().hasExtension("gnca");
+    }
+
+    /**
+     * Tests that a scheduled backup isn't executed before the next scheduled
+     * execution according to its recurrence.
+     *
+     * <p>Tests for bug https://github.com/codinguser/gnucash-android/issues/583</p>
+     */
+    @Test
+    public void scheduledBackups_shouldNotRunBeforeNextScheduledExecution(){
+        ScheduledAction scheduledBackup = new ScheduledAction(ScheduledAction.ActionType.BACKUP);
+        scheduledBackup.setStartTime(LocalDateTime.now().minusDays(2).toDate().getTime());
+        scheduledBackup.setExecutionCount(1);
+        scheduledBackup.setRecurrence(PeriodType.WEEK, 1);
+
+        ExportParams backupParams = new ExportParams(ExportFormat.XML);
+        backupParams.setExportTarget(ExportParams.ExportTarget.SD_CARD);
+        scheduledBackup.setTag(backupParams.toCsv());
+
+        File backupFolder = new File(
+                Exporter.getExportFolderPath(BooksDbAdapter.getInstance().getActiveBookUID()));
+        assertThat(backupFolder).exists();
+        assertThat(backupFolder.listFiles()).isEmpty();
+
+        List<ScheduledAction> actions = new ArrayList<>();
+        actions.add(scheduledBackup);
+        ScheduledActionService.processScheduledActions(actions, mDb);
+
+        assertThat(scheduledBackup.getExecutionCount()).isEqualTo(1);
+        assertThat(backupFolder.listFiles()).hasSize(0);
     }
 
     @After
