@@ -110,8 +110,8 @@ public class GncXmlHandlerTest {
      * </pre>
      */
     @Test
-    public void testAccountsImport() {
-        String bookUID = importGnuCashXml("testAccountsImport.xml");
+    public void accountsImport() {
+        String bookUID = importGnuCashXml("accountsImport.xml");
         setUpDbAdapters(bookUID);
 
         assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(5); // 4 accounts + root
@@ -286,8 +286,8 @@ public class GncXmlHandlerTest {
      */
     //@Test Disabled as currently amounts are only read from credit/debit-numeric
     // slots and transactions without amount are ignored.
-    public void testImportSimpleScheduledTransaction() throws ParseException {
-        String bookUID = importGnuCashXml("testImportSimpleScheduledTransaction.xml");
+    public void simpleScheduledTransactionImport() throws ParseException {
+        String bookUID = importGnuCashXml("simpleScheduledTransactionImport.xml");
         setUpDbAdapters(bookUID);
 
         assertThat(mTransactionsDbAdapter.getTemplateTransactionsCount()).isEqualTo(1);
