@@ -1,5 +1,13 @@
 Change Log
 ===============================================================================
+Version 2.1.2 *(2016-09-21)*
+----------------------------
+* Fixed: Scheduled exports always run daily (no matter the actual schedule)
+* Fixed: New transactions cannot be saved in single-entry mode
+* Fixed: ownCloud connect success messages displayed in red (now green)
+* Fixed: Crash when scheduled action service cannot find transaction in db
+* Improved: German and Brazilian Portuguese translations
+
 Version 2.1.1 *(2016-09-05)*
 ----------------------------
 * Fixed: Bug cause crash during start-up for devices with no scheduled transactions
