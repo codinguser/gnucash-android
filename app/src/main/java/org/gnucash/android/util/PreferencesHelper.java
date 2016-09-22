@@ -84,4 +84,20 @@ public final class PreferencesHelper {
         Log.d(LOG_TAG, "Retrieving '" + utcString + "' as lastExportTime from Android Preferences.");
         return TimestampHelper.getTimestampFromUtcString(utcString);
     }
+
+    /**
+     * Get the time for the last export operation of a specific book.
+     *
+     * @return A {@link Timestamp} with the time.
+     */
+    public static Timestamp getLastExportTime(String bookUID) {
+        final String utcString =
+                GnuCashApplication.getAppContext()
+                .getSharedPreferences(bookUID, Context.MODE_PRIVATE)
+                .getString(PREFERENCE_LAST_EXPORT_TIME_KEY,
+                           TimestampHelper.getUtcStringFromTimestamp(
+                                TimestampHelper.getTimestampFromEpochZero()));
+        Log.d(LOG_TAG, "Retrieving '" + utcString + "' as lastExportTime from Android Preferences.");
+        return TimestampHelper.getTimestampFromUtcString(utcString);
+    }
 }
