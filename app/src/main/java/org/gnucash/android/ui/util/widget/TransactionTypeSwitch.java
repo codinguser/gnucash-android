@@ -177,14 +177,10 @@ public class TransactionTypeSwitch extends SwitchCompat {
                 mCurrencyTextView.setTextColor(green);
             }
             BigDecimal amount = mAmountEditText.getValue();
-            if (amount != null){
-                if ((isChecked && amount.signum() > 0) //we switched to debit but the amount is +ve
-                        || (!isChecked && amount.signum() < 0)){ //credit but amount is -ve
-                    mAmountEditText.setValue(amount.negate());
-                }
-
+            if (amount != null && ((isChecked && amount.signum() > 0) //we switched to debit but the amount is +ve
+                        || (!isChecked && amount.signum() < 0))){ //credit but amount is -ve
+                mAmountEditText.setValue(amount.negate());
             }
-
             for (OnCheckedChangeListener listener : mOnCheckedChangeListeners) {
                 listener.onCheckedChanged(compoundButton, isChecked);
             }

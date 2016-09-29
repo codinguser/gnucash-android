@@ -471,11 +471,9 @@ public class TransactionFormFragment extends Fragment implements
 
         if (mSplitsList.size() == 2){
             for (Split split : mSplitsList) {
-                if (split.getAccountUID().equals(mAccountUID)) {
-                    if (!split.getQuantity().getCurrency().equals(mTransaction.getCurrency())){
-                        mSplitQuantity = split.getQuantity();
-                    }
-                }
+            	if (split.getAccountUID().equals(mAccountUID) && !split.getQuantity().getCurrency().equals(mTransaction.getCurrency())) {
+            		mSplitQuantity = split.getQuantity();
+            	}
             }
         }
         //if there are more than two splits (which is the default for one entry), then
