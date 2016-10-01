@@ -142,9 +142,10 @@ public class ScheduledActionService extends IntentService {
         //the last run time is computed instead of just using "now" so that if the more than
         // one period has been skipped, all intermediate transactions can be created
 
+        scheduledAction.setLastRun(System.currentTimeMillis());
         //update the last run time and execution count
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_LAST_RUN, System.currentTimeMillis());
+        contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_LAST_RUN, scheduledAction.getLastRunTime());
         contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_EXECUTION_COUNT, executionCount);
         db.update(DatabaseSchema.ScheduledActionEntry.TABLE_NAME, contentValues,
                 DatabaseSchema.ScheduledActionEntry.COLUMN_UID + "=?", new String[]{scheduledAction.getUID()});
@@ -162,13 +163,7 @@ public class ScheduledActionService extends IntentService {
      */
     private static int executeBackup(ScheduledAction scheduledAction, SQLiteDatabase db) {
         int executionCount = 0;
-        long now = System.currentTimeMillis();
-        long endTime = scheduledAction.getEndTime();
-
-        if (endTime > 0 && endTime < now)
-            return executionCount;
-
-        if (scheduledAction.computeNextScheduledExecutionTime() > now)
+        if (!shouldExecuteScheduledBackup(scheduledAction))
             return 0;
 
         ExportParams params = ExportParams.parseCsv(scheduledAction.getTag());
@@ -181,6 +176,19 @@ public class ScheduledActionService extends IntentService {
             Log.e(LOG_TAG, e.getMessage());
         }
         return executionCount;
+    }
+
+    private static boolean shouldExecuteScheduledBackup(ScheduledAction scheduledAction) {
+        long now = System.currentTimeMillis();
+        long endTime = scheduledAction.getEndTime();
+
+        if (endTime > 0 && endTime < now)
+            return false;
+
+        if (scheduledAction.computeNextTimeBasedScheduledExecutionTime() > now)
+            return false;
+
+        return true;
     }
 
     /**
@@ -214,7 +222,7 @@ public class ScheduledActionService extends IntentService {
 
         //we may be executing scheduled action significantly after scheduled time (depending on when Android fires the alarm)
         //so compute the actual transaction time from pre-known values
-        long transactionTime = scheduledAction.computeNextScheduledExecutionTime();
+        long transactionTime = scheduledAction.computeNextCountBasedScheduledExecutionTime();
         while (transactionTime <= endTime) {
             Transaction recurringTrxn = new Transaction(trxnTemplate, true);
             recurringTrxn.setTime(transactionTime);
@@ -224,7 +232,7 @@ public class ScheduledActionService extends IntentService {
 
             if (totalPlannedExecutions > 0 && executionCount >= totalPlannedExecutions)
                 break; //if we hit the total planned executions set, then abort
-            transactionTime = scheduledAction.computeNextScheduledExecutionTime();
+            transactionTime = scheduledAction.computeNextCountBasedScheduledExecutionTime();
         }
 
         transactionsDbAdapter.bulkAddRecords(transactions, DatabaseAdapter.UpdateMethod.insert);
