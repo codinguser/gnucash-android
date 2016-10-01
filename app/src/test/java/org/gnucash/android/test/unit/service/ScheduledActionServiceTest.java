@@ -280,10 +280,25 @@ public class ScheduledActionServiceTest {
         assertThat(transactionsDbAdapter.getRecordsCount()).isZero();
     }
 
+    /**
+     * Scheduled backups should run only once.
+     *
+     * <p>Backups may have been missed since the last run, but still only
+     * one should be done.</p>
+     *
+     * <p>For example, if we have set up a daily backup, the last one
+     * was done on Monday and it's Thursday, two backups have been
+     * missed. Doing the two missed backups plus today's wouldn't be
+     * useful, so just one should be done.</p>
+     *
+     * <p><i>Note</i>: the execution count will include the missed runs
+     * as computeNextScheduledExecutionTime depends on it.</p>
+     */
     @Test
     public void scheduledBackups_shouldRunOnlyOnce(){
         ScheduledAction scheduledBackup = new ScheduledAction(ScheduledAction.ActionType.BACKUP);
-        scheduledBackup.setStartTime(new DateTime(2016, 2, 17, 17, 0).getMillis());
+        scheduledBackup.setStartTime(LocalDateTime.now()
+                .minusMonths(4).minusDays(2).toDate().getTime());
         scheduledBackup.setRecurrence(PeriodType.MONTH, 1);
         scheduledBackup.setExecutionCount(2);
 
@@ -297,10 +312,18 @@ public class ScheduledActionServiceTest {
 
         List<ScheduledAction> actions = new ArrayList<>();
         actions.add(scheduledBackup);
-        ScheduledActionService.processScheduledActions(actions, mDb);
 
-        assertThat(scheduledBackup.getExecutionCount()).isEqualTo(3);
+        // Check there's not a backup for each missed run
+        ScheduledActionService.processScheduledActions(actions, mDb);
+        assertThat(scheduledBackup.getExecutionCount()).isEqualTo(5);
         File[] backupFiles = backupFolder.listFiles();
+        assertThat(backupFiles).hasSize(1);
+        assertThat(backupFiles[0]).exists().hasExtension("gnca");
+
+        // Check also across service runs
+        ScheduledActionService.processScheduledActions(actions, mDb);
+        assertThat(scheduledBackup.getExecutionCount()).isEqualTo(5);
+        backupFiles = backupFolder.listFiles();
         assertThat(backupFiles).hasSize(1);
         assertThat(backupFiles[0]).exists().hasExtension("gnca");
     }

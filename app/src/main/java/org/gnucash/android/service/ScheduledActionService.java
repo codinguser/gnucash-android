@@ -175,12 +175,30 @@ public class ScheduledActionService extends IntentService {
         try {
             //wait for async task to finish before we proceed (we are holding a wake lock)
             new ExportAsyncTask(GnuCashApplication.getAppContext(), db).execute(params).get();
-            scheduledAction.setExecutionCount(++executionCount);
+            ++executionCount;
         } catch (InterruptedException | ExecutionException e) {
             Crashlytics.logException(e);
             Log.e(LOG_TAG, e.getMessage());
         }
+
+        // HACK: Add missed runs to executionCount so computeNextScheduledExecutionTime()
+        // returns the correct date when called again
+        executionCount += getMissedExecutionCount(scheduledAction);
+
         return executionCount;
+    }
+
+    private static int getMissedExecutionCount(ScheduledAction scheduledAction) {
+        long now = System.currentTimeMillis();
+        int previousExecutionCount = scheduledAction.getExecutionCount();
+        // We've just executed it, so add one
+        scheduledAction.setExecutionCount(scheduledAction.getExecutionCount() + 1);
+        while (scheduledAction.computeNextScheduledExecutionTime() < now)
+            scheduledAction.setExecutionCount(scheduledAction.getExecutionCount() + 1);
+        int missedExecutions = scheduledAction.getExecutionCount() - previousExecutionCount - 1;
+        // We don't want to modify scheduledAction here, so restore it's state
+        scheduledAction.setExecutionCount(previousExecutionCount);
+        return missedExecutions;
     }
 
     /**
