@@ -313,7 +313,12 @@ public class ScheduledAction extends BaseModel{
     }
 
     /**
-     * Returns how many times this scheduled action has already been executed
+     * Returns how many times this scheduled action has already been executed.
+     *
+     * <p><b>Note:</b> the number returned here will include not only the
+     * real execution count but the missed ones too. This is because
+     * computeNextScheduledExecutionTime depends on it to give the correct date.</p>
+     *
      * @return Number of times this action has been executed
      */
     public int getExecutionCount(){
@@ -322,6 +327,11 @@ public class ScheduledAction extends BaseModel{
 
     /**
      * Sets the number of times this scheduled action has been executed
+     *
+     * <p><b>Important:</b> when updating this field include not only the real
+     * execution count but the missed executions too. This is because
+     * computeNextScheduledExecutionTime depends on it to give the correct date.</p>
+     *
      * @param executionCount Number of executions
      */
     public void setExecutionCount(int executionCount){
