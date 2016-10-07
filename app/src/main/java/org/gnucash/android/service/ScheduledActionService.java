@@ -143,15 +143,16 @@ public class ScheduledActionService extends IntentService {
         // one period has been skipped, all intermediate transactions can be created
 
         scheduledAction.setLastRun(System.currentTimeMillis());
-        //update the last run time and execution count
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_LAST_RUN, scheduledAction.getLastRunTime());
-        contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_EXECUTION_COUNT, executionCount);
-        db.update(DatabaseSchema.ScheduledActionEntry.TABLE_NAME, contentValues,
-                DatabaseSchema.ScheduledActionEntry.COLUMN_UID + "=?", new String[]{scheduledAction.getUID()});
-
         //set the execution count in the object because it will be checked for the next iteration in the calling loop
         scheduledAction.setExecutionCount(executionCount); //this call is important, do not remove!!
+        //update the last run time and execution count
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_LAST_RUN,
+                          scheduledAction.getLastRunTime());
+        contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_EXECUTION_COUNT,
+                          scheduledAction.getExecutionCount());
+        db.update(DatabaseSchema.ScheduledActionEntry.TABLE_NAME, contentValues,
+                DatabaseSchema.ScheduledActionEntry.COLUMN_UID + "=?", new String[]{scheduledAction.getUID()});
     }
 
     /**
@@ -162,7 +163,6 @@ public class ScheduledActionService extends IntentService {
      * @return Number of times backup is executed. This should either be 1 or 0
      */
     private static int executeBackup(ScheduledAction scheduledAction, SQLiteDatabase db) {
-        int executionCount = 0;
         if (!shouldExecuteScheduledBackup(scheduledAction))
             return 0;
 
@@ -170,12 +170,11 @@ public class ScheduledActionService extends IntentService {
         try {
             //wait for async task to finish before we proceed (we are holding a wake lock)
             new ExportAsyncTask(GnuCashApplication.getAppContext(), db).execute(params).get();
-            scheduledAction.setExecutionCount(++executionCount);
         } catch (InterruptedException | ExecutionException e) {
             Crashlytics.logException(e);
             Log.e(LOG_TAG, e.getMessage());
         }
-        return executionCount;
+        return 1;
     }
 
     private static boolean shouldExecuteScheduledBackup(ScheduledAction scheduledAction) {
