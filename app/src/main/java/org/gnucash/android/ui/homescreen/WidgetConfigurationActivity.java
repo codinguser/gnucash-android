@@ -233,7 +233,7 @@ public class WidgetConfigurationActivity extends Activity {
 
 		views.setTextViewText(R.id.transactions_summary,
 				accountBalance.formattedString(Locale.getDefault()));
-		int color = account.getBalance().isNegative() ? R.color.debit_red : R.color.credit_green;
+		int color = accountBalance.isNegative() ? R.color.debit_red : R.color.credit_green;
 		views.setTextColor(R.id.transactions_summary, context.getResources().getColor(color));
 
 
