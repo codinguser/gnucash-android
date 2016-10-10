@@ -142,15 +142,17 @@ public class ScheduledActionService extends IntentService {
         //the last run time is computed instead of just using "now" so that if the more than
         // one period has been skipped, all intermediate transactions can be created
 
-        //update the last run time and execution count
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_LAST_RUN, System.currentTimeMillis());
-        contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_EXECUTION_COUNT, executionCount);
-        db.update(DatabaseSchema.ScheduledActionEntry.TABLE_NAME, contentValues,
-                DatabaseSchema.ScheduledActionEntry.COLUMN_UID + "=?", new String[]{scheduledAction.getUID()});
-
+        scheduledAction.setLastRun(System.currentTimeMillis());
         //set the execution count in the object because it will be checked for the next iteration in the calling loop
         scheduledAction.setExecutionCount(executionCount); //this call is important, do not remove!!
+        //update the last run time and execution count
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_LAST_RUN,
+                          scheduledAction.getLastRunTime());
+        contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_EXECUTION_COUNT,
+                          scheduledAction.getExecutionCount());
+        db.update(DatabaseSchema.ScheduledActionEntry.TABLE_NAME, contentValues,
+                DatabaseSchema.ScheduledActionEntry.COLUMN_UID + "=?", new String[]{scheduledAction.getUID()});
     }
 
     /**
@@ -161,26 +163,31 @@ public class ScheduledActionService extends IntentService {
      * @return Number of times backup is executed. This should either be 1 or 0
      */
     private static int executeBackup(ScheduledAction scheduledAction, SQLiteDatabase db) {
-        int executionCount = 0;
-        long now = System.currentTimeMillis();
-        long endTime = scheduledAction.getEndTime();
-
-        if (endTime > 0 && endTime < now)
-            return executionCount;
-
-        if (scheduledAction.computeNextScheduledExecutionTime() > now)
+        if (!shouldExecuteScheduledBackup(scheduledAction))
             return 0;
 
         ExportParams params = ExportParams.parseCsv(scheduledAction.getTag());
         try {
             //wait for async task to finish before we proceed (we are holding a wake lock)
             new ExportAsyncTask(GnuCashApplication.getAppContext(), db).execute(params).get();
-            scheduledAction.setExecutionCount(++executionCount);
         } catch (InterruptedException | ExecutionException e) {
             Crashlytics.logException(e);
             Log.e(LOG_TAG, e.getMessage());
         }
-        return executionCount;
+        return 1;
+    }
+
+    private static boolean shouldExecuteScheduledBackup(ScheduledAction scheduledAction) {
+        long now = System.currentTimeMillis();
+        long endTime = scheduledAction.getEndTime();
+
+        if (endTime > 0 && endTime < now)
+            return false;
+
+        if (scheduledAction.computeNextTimeBasedScheduledExecutionTime() > now)
+            return false;
+
+        return true;
     }
 
     /**
@@ -214,7 +221,7 @@ public class ScheduledActionService extends IntentService {
 
         //we may be executing scheduled action significantly after scheduled time (depending on when Android fires the alarm)
         //so compute the actual transaction time from pre-known values
-        long transactionTime = scheduledAction.computeNextScheduledExecutionTime();
+        long transactionTime = scheduledAction.computeNextCountBasedScheduledExecutionTime();
         while (transactionTime <= endTime) {
             Transaction recurringTrxn = new Transaction(trxnTemplate, true);
             recurringTrxn.setTime(transactionTime);
@@ -224,7 +231,7 @@ public class ScheduledActionService extends IntentService {
 
             if (totalPlannedExecutions > 0 && executionCount >= totalPlannedExecutions)
                 break; //if we hit the total planned executions set, then abort
-            transactionTime = scheduledAction.computeNextScheduledExecutionTime();
+            transactionTime = scheduledAction.computeNextCountBasedScheduledExecutionTime();
         }
 
         transactionsDbAdapter.bulkAddRecords(transactions, DatabaseAdapter.UpdateMethod.insert);
