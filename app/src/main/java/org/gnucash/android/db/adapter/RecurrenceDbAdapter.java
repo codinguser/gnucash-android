@@ -61,9 +61,9 @@ public class RecurrenceDbAdapter extends DatabaseAdapter<Recurrence> {
         String byDay = cursor.getString(cursor.getColumnIndexOrThrow(RecurrenceEntry.COLUMN_BYDAY));
 
         PeriodType periodType = PeriodType.valueOf(type);
-        periodType.setMultiplier((int) multiplier);
 
         Recurrence recurrence = new Recurrence(periodType);
+        recurrence.setMultiplier((int) multiplier);
         recurrence.setPeriodStart(Timestamp.valueOf(periodStart));
         if (periodEnd != null)
             recurrence.setPeriodEnd(Timestamp.valueOf(periodEnd));
@@ -77,7 +77,7 @@ public class RecurrenceDbAdapter extends DatabaseAdapter<Recurrence> {
     @Override
     protected @NonNull SQLiteStatement setBindings(@NonNull SQLiteStatement stmt, @NonNull final Recurrence recurrence) {
         stmt.clearBindings();
-        stmt.bindLong(1, recurrence.getPeriodType().getMultiplier());
+        stmt.bindLong(1, recurrence.getMultiplier());
         stmt.bindString(2, recurrence.getPeriodType().name());
         if (recurrence.getByDay() != null)
             stmt.bindString(3, recurrence.getByDay());

@@ -42,7 +42,6 @@ import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
@@ -1360,13 +1359,12 @@ public class MigrationHelper {
                 String uid = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_UID));
                 long period = cursor.getLong(cursor.getColumnIndexOrThrow("period"));
                 long startTime = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_START_TIME));
-                PeriodType periodType = PeriodType.parse(period);
-                Recurrence recurrence = new Recurrence(periodType);
+                Recurrence recurrence = Recurrence.fromLegacyPeriod(period);
                 recurrence.setPeriodStart(new Timestamp(startTime));
 
                 contentValues.clear();
                 contentValues.put(RecurrenceEntry.COLUMN_UID, recurrence.getUID());
-                contentValues.put(RecurrenceEntry.COLUMN_MULTIPLIER, recurrence.getPeriodType().getMultiplier());
+                contentValues.put(RecurrenceEntry.COLUMN_MULTIPLIER, recurrence.getMultiplier());
                 contentValues.put(RecurrenceEntry.COLUMN_PERIOD_TYPE, recurrence.getPeriodType().name());
                 contentValues.put(RecurrenceEntry.COLUMN_PERIOD_START, recurrence.getPeriodStart().toString());
                 db.insert(RecurrenceEntry.TABLE_NAME, null, contentValues);

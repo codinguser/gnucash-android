@@ -20,12 +20,9 @@ import android.support.annotation.NonNull;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -151,7 +148,7 @@ public class ScheduledAction extends BaseModel{
             return  -1;
 
         LocalDateTime startTime = LocalDateTime.fromDateFields(new Date(mStartDate));
-        int multiplier = mRecurrence.getPeriodType().getMultiplier();
+        int multiplier = mRecurrence.getMultiplier();
 
         int factor = (mExecutionCount-1) * multiplier;
         switch (mRecurrence.getPeriodType()){
@@ -179,7 +176,7 @@ public class ScheduledAction extends BaseModel{
      * @return Next run time in milliseconds
      */
     public long computeNextScheduledExecutionTime(){
-        int multiplier = mRecurrence.getPeriodType().getMultiplier();
+        int multiplier = mRecurrence.getMultiplier();
         //this is the last planned time for the action to occur, not the last run time
         long lastActionTime = getTimeOfLastSchedule(); //mStartDate + ((mExecutionCount-1)*getPeriod());
         if (lastActionTime < 0){
@@ -472,8 +469,8 @@ public class ScheduledAction extends BaseModel{
      * @see #setRecurrence(Recurrence)
      */
     public void setRecurrence(PeriodType periodType, int ordinal){
-        periodType.setMultiplier(ordinal);
         Recurrence recurrence = new Recurrence(periodType);
+        recurrence.setMultiplier(ordinal);
         setRecurrence(recurrence);
     }
 
@@ -510,7 +507,7 @@ public class ScheduledAction extends BaseModel{
     public static ScheduledAction parseScheduledAction(Transaction transaction, long period){
         ScheduledAction scheduledAction = new ScheduledAction(ActionType.TRANSACTION);
         scheduledAction.mActionUID = transaction.getUID();
-        Recurrence recurrence = new Recurrence(PeriodType.parse(period));
+        Recurrence recurrence = Recurrence.fromLegacyPeriod(period);
         scheduledAction.setRecurrence(recurrence);
         return scheduledAction;
     }
