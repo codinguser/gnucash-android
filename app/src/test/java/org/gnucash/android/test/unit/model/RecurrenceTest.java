@@ -61,8 +61,8 @@ public class RecurrenceTest {
         DateTime startTime = new DateTime(2016, 6, 6, 9, 0);
         DateTime endTime = new DateTime(2016, 8, 29, 10, 0);
         PeriodType biWeekly = PeriodType.WEEK;
-        biWeekly.setMultiplier(2);
         recurrence = new Recurrence(biWeekly);
+        recurrence.setMultiplier(2);
         recurrence.setPeriodStart(new Timestamp(startTime.getMillis()));
         recurrence.setPeriodEnd(new Timestamp(endTime.getMillis()));
 

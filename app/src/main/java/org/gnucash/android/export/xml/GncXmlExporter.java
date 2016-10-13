@@ -23,10 +23,9 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
-import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
-import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
@@ -36,9 +35,9 @@ import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Book;
-import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.BudgetAmount;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Recurrence;
@@ -49,7 +48,6 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -704,7 +702,7 @@ public class GncXmlExporter extends Exporter{
     private void exportRecurrence(XmlSerializer xmlSerializer, Recurrence recurrence) throws IOException{
         PeriodType periodType = recurrence.getPeriodType();
         xmlSerializer.startTag(null, GncXmlHelper.TAG_RX_MULT);
-        xmlSerializer.text(String.valueOf(periodType.getMultiplier()));
+        xmlSerializer.text(String.valueOf(recurrence.getMultiplier()));
         xmlSerializer.endTag(null, GncXmlHelper.TAG_RX_MULT);
         xmlSerializer.startTag(null, GncXmlHelper.TAG_RX_PERIOD_TYPE);
         xmlSerializer.text(periodType.name().toLowerCase());
