@@ -31,6 +31,7 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.RemoteViews;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -58,6 +59,7 @@ public class WidgetConfigurationActivity extends Activity {
     private int mAppWidgetId;
 	
 	private Spinner mAccountsSpinner;
+	private CheckBox mShouldDisplayBalance;
 	private Button mOkButton;
 	private Button mCancelButton;
 	
@@ -68,6 +70,7 @@ public class WidgetConfigurationActivity extends Activity {
 		setResult(RESULT_CANCELED);
 		
 		mAccountsSpinner = (Spinner) findViewById(R.id.input_accounts_spinner);
+		mShouldDisplayBalance = (CheckBox) findViewById(R.id.input_should_display_balance);
 		mOkButton 		= (Button) findViewById(R.id.btn_save);
 		mCancelButton 	= (Button) findViewById(R.id.btn_cancel);
 
@@ -83,7 +86,11 @@ public class WidgetConfigurationActivity extends Activity {
 		//without this line, the app crashes when a user tries to select an account
 		cursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mAccountsSpinner.setAdapter(cursorAdapter);
-		
+
+		boolean passcodeEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+				.getBoolean(UxArgument.ENABLED_PASSCODE, false);
+		mShouldDisplayBalance.setChecked(!passcodeEnabled);
+
 		bindListeners();
 	}
 
@@ -109,13 +116,15 @@ public class WidgetConfigurationActivity extends Activity {
 				}					
 				
 				long accountId = mAccountsSpinner.getSelectedItemId();
+				boolean shouldDisplayBalance = mShouldDisplayBalance.isChecked();
                 String accountUID = mAccountsDbAdapter.getUID(accountId);
 				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(WidgetConfigurationActivity.this);
 				Editor editor = prefs.edit();
 				editor.putString(UxArgument.SELECTED_ACCOUNT_UID + mAppWidgetId, accountUID);
+				editor.putBoolean(UxArgument.SHOULD_DISPLAY_BALANCE + mAppWidgetId, shouldDisplayBalance);
 				editor.commit();	
 				
-				updateWidget(WidgetConfigurationActivity.this, mAppWidgetId, accountUID);
+				updateWidget(WidgetConfigurationActivity.this, mAppWidgetId, accountUID, shouldDisplayBalance);
 						
 				Intent resultValue = new Intent();
 				resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
@@ -140,7 +149,7 @@ public class WidgetConfigurationActivity extends Activity {
      * @param appWidgetId ID of the widget to be updated
      * @param accountUID GUID of the account tied to the widget
 	 */
-	public static void updateWidget(final Context context, int appWidgetId, String accountUID) {
+	public static void updateWidget(final Context context, int appWidgetId, String accountUID, boolean shouldDisplayBalance) {
 		Log.i("WidgetConfiguration", "Updating widget: " + appWidgetId);
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 
@@ -173,10 +182,14 @@ public class WidgetConfigurationActivity extends Activity {
 
 		Money accountBalance = accountsDbAdapter.getAccountBalance(accountUID, -1, System.currentTimeMillis());
 
-		views.setTextViewText(R.id.transactions_summary,
-				accountBalance.formattedString(Locale.getDefault()));
-		int color = accountBalance.isNegative() ? R.color.debit_red : R.color.credit_green;
-		views.setTextColor(R.id.transactions_summary, context.getResources().getColor(color));
+		if (shouldDisplayBalance) {
+			views.setTextViewText(R.id.transactions_summary,
+					accountBalance.formattedString(Locale.getDefault()));
+			int color = accountBalance.isNegative() ? R.color.debit_red : R.color.credit_green;
+			views.setTextColor(R.id.transactions_summary, context.getResources().getColor(color));
+		} else {
+			views.setViewVisibility(R.id.transactions_summary, View.GONE);
+		}
 
 
 		Intent accountViewIntent = new Intent(context, TransactionsActivity.class);
@@ -219,11 +232,13 @@ public class WidgetConfigurationActivity extends Activity {
 				for (final int widgetId : appWidgetIds) {
 					final String accountUID = defaultSharedPrefs
 							.getString(UxArgument.SELECTED_ACCOUNT_UID + widgetId, null);
+					final boolean shouldDisplayBalance = defaultSharedPrefs
+							.getBoolean(UxArgument.SHOULD_DISPLAY_BALANCE + widgetId, true);
 
 					if (accountUID == null)
 						continue;
 
-					updateWidget(context, widgetId, accountUID);
+					updateWidget(context, widgetId, accountUID, shouldDisplayBalance);
 				}
 			}
 		}).start();

@@ -73,6 +73,11 @@ public final class UxArgument {
     public static final String SELECTED_ACCOUNT_UID = "account_uid";
 
     /**
+     * Key for passing whether a widget should display the balance
+     */
+    public static final String SHOULD_DISPLAY_BALANCE = "should_display_balance";
+
+    /**
      * Key for passing argument for the parent account GUID.
      */
     public static final String PARENT_ACCOUNT_UID = "parent_account_uid";
