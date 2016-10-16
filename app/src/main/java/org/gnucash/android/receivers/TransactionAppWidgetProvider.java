@@ -18,6 +18,7 @@ package org.gnucash.android.receivers;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 
@@ -42,14 +43,15 @@ public class TransactionAppWidgetProvider extends AppWidgetProvider {
         // Perform this loop procedure for each App Widget that belongs to this provider
         for (int i=0; i<N; i++) {
             int appWidgetId = appWidgetIds[i];
-
-            String accountUID = PreferenceManager
-                    .getDefaultSharedPreferences(context)
+            SharedPreferences defaultSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+            String accountUID = defaultSharedPrefs
                     .getString(UxArgument.SELECTED_ACCOUNT_UID + appWidgetId, null);
+            boolean shouldDisplayBalance = defaultSharedPrefs
+                    .getBoolean(UxArgument.SHOULD_DISPLAY_BALANCE + appWidgetId, true);
             if (accountUID == null)
             	return;
             
-            WidgetConfigurationActivity.updateWidget(context, appWidgetId, accountUID);
+            WidgetConfigurationActivity.updateWidget(context, appWidgetId, accountUID, shouldDisplayBalance);
         }
 	}
 
