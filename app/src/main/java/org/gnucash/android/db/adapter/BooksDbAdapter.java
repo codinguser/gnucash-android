@@ -31,6 +31,8 @@ import org.gnucash.android.model.Book;
 import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.util.TimestampHelper;
 
+import java.util.List;
+
 /**
  * Database adapter for creating/modifying book entries
  */

@@ -102,6 +102,12 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
         super.onCreate(savedInstanceState);
         setContentView(getContentView());
 
+        //if a parameter was passed to open an account within a specific book, then switch
+        String bookUID = getIntent().getStringExtra(UxArgument.BOOK_UID);
+        if (bookUID != null && !bookUID.equals(BooksDbAdapter.getInstance().getActiveBookUID())){
+            GnuCashApplication.activateBook(bookUID);
+        }
+
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
         final ActionBar actionBar = getSupportActionBar();

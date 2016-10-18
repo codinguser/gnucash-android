@@ -22,18 +22,33 @@
     android:orientation="vertical" >
     
     <TextView
-	    android:id="@+id/label_account"
-	    android:text="@string/label_display_account"
+	    android:id="@+id/label_book"
+	    android:text="Book"
 	    android:layout_height="wrap_content"
 	    android:layout_width="wrap_content"
 	    android:layout_marginBottom="-8dp"
 	    android:layout_marginTop="8dp"
 	    style="@style/TextAppearance.EditTransaction_LabelSmall" />
     <Spinner
-        android:id="@+id/input_accounts_spinner"        
+        android:id="@+id/input_books_spinner"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
+        android:layout_height="wrap_content"
+		android:layout_marginBottom="@dimen/dialog_padding"
         android:minHeight="?android:attr/listPreferredItemHeight" />
+
+	<TextView
+		android:id="@+id/label_account"
+		android:text="@string/label_display_account"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:layout_marginBottom="-8dp"
+		android:layout_marginTop="8dp"
+		style="@style/TextAppearance.EditTransaction_LabelSmall" />
+	<Spinner
+		android:id="@+id/input_accounts_spinner"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:minHeight="?android:attr/listPreferredItemHeight" />
 
 	<CheckBox
 		android:id="@+id/input_should_display_balance"

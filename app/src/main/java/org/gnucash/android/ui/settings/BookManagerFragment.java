@@ -161,7 +161,7 @@ public class BookManagerFragment extends ListFragment implements
             final String bookUID = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_UID));
 
             TextView lastSyncText = (TextView) view.findViewById(R.id.last_sync_time);
-            lastSyncText.setText(PreferencesHelper.getLastExportTime().toString());
+            lastSyncText.setText(PreferencesHelper.getLastExportTime(bookUID).toString());
 
             TextView labelLastSync = (TextView) view.findViewById(R.id.label_last_sync);
             labelLastSync.setText(R.string.label_last_export_time);

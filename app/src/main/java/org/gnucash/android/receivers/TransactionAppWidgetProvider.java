@@ -22,8 +22,11 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 
+import org.gnucash.android.db.adapter.BooksDbAdapter;
+import org.gnucash.android.model.Book;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 
 /**
  * {@link AppWidgetProvider} which is responsible for managing widgets on the homescreen
@@ -43,15 +46,17 @@ public class TransactionAppWidgetProvider extends AppWidgetProvider {
         // Perform this loop procedure for each App Widget that belongs to this provider
         for (int i=0; i<N; i++) {
             int appWidgetId = appWidgetIds[i];
-            SharedPreferences defaultSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-            String accountUID = defaultSharedPrefs
+
+			SharedPreferences bookSharedPreferences = PreferenceActivity.getActiveBookSharedPreferences();
+			String accountUID = bookSharedPreferences
                     .getString(UxArgument.SELECTED_ACCOUNT_UID + appWidgetId, null);
-            boolean shouldDisplayBalance = defaultSharedPrefs
+            boolean shouldDisplayBalance = bookSharedPreferences
                     .getBoolean(UxArgument.SHOULD_DISPLAY_BALANCE + appWidgetId, true);
             if (accountUID == null)
             	return;
             
-            WidgetConfigurationActivity.updateWidget(context, appWidgetId, accountUID, shouldDisplayBalance);
+            WidgetConfigurationActivity.updateWidget(context, appWidgetId, accountUID,
+					BooksDbAdapter.getInstance().getActiveBookUID(), shouldDisplayBalance);
         }
 	}
 
@@ -64,11 +69,11 @@ public class TransactionAppWidgetProvider extends AppWidgetProvider {
     @Override
 	public void onDeleted(Context context, int[] appWidgetIds) {
 		super.onDeleted(context, appWidgetIds);		
-		Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+		Editor editor = PreferenceActivity.getActiveBookSharedPreferences().edit();
 		
 		for (int appWidgetId : appWidgetIds) {
 			editor.remove(UxArgument.SELECTED_ACCOUNT_UID + appWidgetId);
 		}
-		editor.commit();		
+		editor.apply();
 	}
 }
