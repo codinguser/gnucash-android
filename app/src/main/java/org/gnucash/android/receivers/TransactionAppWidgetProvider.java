@@ -20,10 +20,8 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.preference.PreferenceManager;
 
 import org.gnucash.android.db.adapter.BooksDbAdapter;
-import org.gnucash.android.model.Book;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 import org.gnucash.android.ui.settings.PreferenceActivity;
@@ -51,7 +49,7 @@ public class TransactionAppWidgetProvider extends AppWidgetProvider {
 			String accountUID = bookSharedPreferences
                     .getString(UxArgument.SELECTED_ACCOUNT_UID + appWidgetId, null);
             boolean shouldDisplayBalance = bookSharedPreferences
-                    .getBoolean(UxArgument.SHOULD_DISPLAY_BALANCE + appWidgetId, true);
+                    .getBoolean(UxArgument.HIDE_ACCOUNT_BALANCE_IN_WIDGET + appWidgetId, true);
             if (accountUID == null)
             	return;
             

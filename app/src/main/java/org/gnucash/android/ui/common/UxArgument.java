@@ -73,9 +73,9 @@ public final class UxArgument {
     public static final String SELECTED_ACCOUNT_UID = "account_uid";
 
     /**
-     * Key for passing whether a widget should display the balance
+     * Key for passing whether a widget should hide the account balance or not
      */
-    public static final String SHOULD_DISPLAY_BALANCE = "should_display_balance";
+    public static final String HIDE_ACCOUNT_BALANCE_IN_WIDGET = "hide_account_balance";
 
     /**
      * Key for passing argument for the parent account GUID.

@@ -71,7 +71,7 @@ public class WidgetConfigurationActivity extends Activity {
 	
 	@Bind(R.id.input_accounts_spinner) Spinner mAccountsSpinner;
 	@Bind(R.id.input_books_spinner) Spinner mBooksSpinner;
-	@Bind(R.id.input_should_display_balance) CheckBox mShouldDisplayBalance;
+	@Bind(R.id.input_hide_account_balance) CheckBox mHideAccountBalance;
 	@Bind(R.id.btn_save) Button mOkButton;
 	@Bind(R.id.btn_cancel) Button mCancelButton;
 
@@ -123,7 +123,7 @@ public class WidgetConfigurationActivity extends Activity {
 
 		boolean passcodeEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
 				.getBoolean(UxArgument.ENABLED_PASSCODE, false);
-		mShouldDisplayBalance.setChecked(!passcodeEnabled);
+		mHideAccountBalance.setChecked(passcodeEnabled);
 
 		bindListeners();
 	}
@@ -168,7 +168,7 @@ public class WidgetConfigurationActivity extends Activity {
 				}					
 				
 				long accountId = mAccountsSpinner.getSelectedItemId();
-				boolean shouldDisplayBalance = mShouldDisplayBalance.isChecked();
+				boolean hideAccountBalance = mHideAccountBalance.isChecked();
                 String accountUID = mAccountsDbAdapter.getUID(accountId);
 
 				long bookId = mBooksSpinner.getSelectedItemId();
@@ -178,10 +178,10 @@ public class WidgetConfigurationActivity extends Activity {
 				//PreferenceManager.getDefaultSharedPreferences(WidgetConfigurationActivity.this);
 				Editor editor = prefs.edit();
 				editor.putString(UxArgument.SELECTED_ACCOUNT_UID + mAppWidgetId, accountUID);
-				editor.putBoolean(UxArgument.SHOULD_DISPLAY_BALANCE + mAppWidgetId, shouldDisplayBalance);
-				editor.apply();
+				editor.putBoolean(UxArgument.HIDE_ACCOUNT_BALANCE_IN_WIDGET + mAppWidgetId, hideAccountBalance);
+				editor.commit();
 				
-				updateWidget(WidgetConfigurationActivity.this, mAppWidgetId, accountUID, bookUID, shouldDisplayBalance);
+				updateWidget(WidgetConfigurationActivity.this, mAppWidgetId, accountUID, bookUID, hideAccountBalance);
 						
 				Intent resultValue = new Intent();
 				resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
@@ -206,9 +206,9 @@ public class WidgetConfigurationActivity extends Activity {
 	 * @param appWidgetId ID of the widget to be updated
      * @param accountUID GUID of the account tied to the widget
 	 * @param bookUID GUID of the book containing the widget
-	 * @param shouldDisplayBalance Flag if the account balance should be displayed in the widget or not
+	 * @param hideAccountBalance Flag if the account balance should be hidden in the widget or not
 	 */
-	public static void updateWidget(final Context context, int appWidgetId, String accountUID, String bookUID, boolean shouldDisplayBalance) {
+	public static void updateWidget(final Context context, int appWidgetId, String accountUID, String bookUID, boolean hideAccountBalance) {
 		Log.i("WidgetConfiguration", "Updating widget: " + appWidgetId);
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 
@@ -242,13 +242,13 @@ public class WidgetConfigurationActivity extends Activity {
 
 		Money accountBalance = accountsDbAdapter.getAccountBalance(accountUID, -1, System.currentTimeMillis());
 
-		if (shouldDisplayBalance) {
+		if (hideAccountBalance) {
+			views.setViewVisibility(R.id.transactions_summary, View.GONE);
+		} else {
 			views.setTextViewText(R.id.transactions_summary,
 					accountBalance.formattedString(Locale.getDefault()));
 			int color = accountBalance.isNegative() ? R.color.debit_red : R.color.credit_green;
 			views.setTextColor(R.id.transactions_summary, context.getResources().getColor(color));
-		} else {
-			views.setViewVisibility(R.id.transactions_summary, View.GONE);
 		}
 
 
@@ -294,14 +294,14 @@ public class WidgetConfigurationActivity extends Activity {
 				for (final int widgetId : appWidgetIds) {
 					final String accountUID = defaultSharedPrefs
 							.getString(UxArgument.SELECTED_ACCOUNT_UID + widgetId, null);
-					final boolean shouldDisplayBalance = defaultSharedPrefs
-							.getBoolean(UxArgument.SHOULD_DISPLAY_BALANCE + widgetId, true);
+					final boolean hideAccountBalance = defaultSharedPrefs
+							.getBoolean(UxArgument.HIDE_ACCOUNT_BALANCE_IN_WIDGET + widgetId, true);
 
 					if (accountUID == null)
 						continue;
 
 					updateWidget(context, widgetId, accountUID,
-							BooksDbAdapter.getInstance().getActiveBookUID(), shouldDisplayBalance);
+							BooksDbAdapter.getInstance().getActiveBookUID(), hideAccountBalance);
 				}
 			}
 		}).start();
