@@ -105,11 +105,11 @@ public class ScheduledActionTest {
         recurrence.setPeriodStart(new Timestamp(startDate.getMillis()));
         scheduledAction.setRecurrence(recurrence);
 
-        assertThat(scheduledAction.computeNextScheduledExecutionTime()).isEqualTo(startDate.getMillis());
+        assertThat(scheduledAction.computeNextCountBasedScheduledExecutionTime()).isEqualTo(startDate.getMillis());
 
         scheduledAction.setExecutionCount(3);
         DateTime expectedTime = new DateTime(2016, 2, 15, 12, 0);
-        assertThat(scheduledAction.computeNextScheduledExecutionTime()).isEqualTo(expectedTime.getMillis());
+        assertThat(scheduledAction.computeNextCountBasedScheduledExecutionTime()).isEqualTo(expectedTime.getMillis());
     }
 
     @Test

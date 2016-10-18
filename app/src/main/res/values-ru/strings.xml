@@ -17,10 +17,10 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="title_create_account">Создать счёт</string>
-  <string name="title_edit_account">Редактировать счёт</string>
+  <string name="title_edit_account">Изменить счёт</string>
   <string name="info_details">Информация</string>
-  <string name="menu_export">Экспортировать OFX</string>
-  <string name="description_add_transaction_icon">Добавить к счёту новую проводку</string>
+  <string name="menu_export">Экспорт&#8230;</string>
+  <string name="description_add_transaction_icon">Новая проводка</string>
   <string name="label_no_accounts">Нет счетов</string>
   <string name="label_account_name">Имя счёта</string>
   <string name="btn_cancel">Отмена</string>
@@ -41,24 +41,24 @@
   <string name="label_credit">КРЕДИТ</string>
   <string name="title_accounts">Счета</string>
   <string name="title_transactions">Проводки</string>
-  <string name="menu_delete">УДАЛИТЬ</string>
+  <string name="menu_delete">Удалить</string>
   <string name="alert_dialog_ok_delete">Удалить</string>
   <string name="alert_dialog_cancel">Отмена</string>
   <string name="toast_account_deleted">Счёт удалён</string>
   <string name="title_confirm_delete">Подтвердите удаление</string>
   <string name="delete_account_confirmation_message">Все проводки этого счёта будут удалены</string>
   <string name="title_edit_transaction">Редактировать проводку</string>
-  <string name="label_transaction_description">Замечание</string>
+  <string name="label_transaction_description">Заметка</string>
   <string name="menu_move">ПЕРЕНЕСТИ</string>
   <string name="title_selected">%1$d выбрано</string>
   <string name="label_account_balance">Баланс:</string>
-  <string name="label_export_destination">Экспортировать в:</string>
+  <string name="label_export_destination">Экспорт в:</string>
   <string name="title_export_dialog">Экспорт проводок</string>
-  <string name="option_export_all_transactions">Экспортировать все</string>
-  <string name="hint_export_choice">Экспортировать все проводки, а не только новые.</string>
-  <string name="toast_export_error">Ошибка при экспорте %1$s</string>
+  <string name="option_export_all_transactions">Экспорт всех проводок</string>
+  <string name="hint_export_choice">По умолчанию экспортируются проводки после последнего экспорта. Отметьте для экспорта всех проводок</string>
+  <string name="toast_export_error">Ошибка экспорта %1$s</string>
   <string name="btn_export">Экспорт</string>
-  <string name="option_delete_after_export">Удаление транзакций после экспорта</string>
+  <string name="option_delete_after_export">Удалить проводки после экспорта</string>
   <string name="hint_delete_after_export">Все экспортированные проводки будут удалены по завершении.</string>
   <string name="title_settings">Настройки</string>
   <string-array name="export_destinations">
@@ -69,20 +69,20 @@
     <item>Отправить&#8230;</item>
   </string-array>
   <string name="btn_move">Перенести</string>
-  <string name="title_move_transactions">Перенести %1$d проводк(у,и,ок)</string>
+  <string name="title_move_transactions">Перенести %1$d проводку (и)</string>
   <string name="label_move_destination">Счёт-получатель</string>
   <string name="permission_access_sdcard">Доступ к карте памяти</string>
-  <string name="toast_incompatible_currency">Невозможно перенести проводки.\nСчёт-получатель использует другую валюту.</string>
+  <string name="toast_incompatible_currency">Невозможно перенести проводки.\nСчёт-получатель в другой валюте</string>
   <string name="header_general_settings">Общие</string>
   <string name="header_about_gnucash">О программе</string>
   <string name="title_choose_currency">Выберите валюту по умолчанию</string>
   <string name="title_default_currency">Валюта по умолчанию</string>
-  <string name="summary_default_currency">Валюта для новых счетов</string>
+  <string name="summary_default_currency">Валюта новых счетов</string>
   <string name="label_permission_record_transactions">Запись проводок в Gnucash для Android</string>
   <string name="label_permission_create_accounts">Создание счетов в Gnucash для Android</string>
   <string name="label_permission_group">Ваши данные Gnucash</string>
   <string name="description_permission_group">Чтение и модификация данных Gnucash</string>
-  <string name="label_permission_record_transaction">Запись транзакций в GnuCash</string>
+  <string name="label_permission_record_transaction">Запись проводок в GnuCash</string>
   <string name="label_permission_create_account">Создайте учетные записи в GnuCash</string>
   <string name="label_display_account">Показать счёт</string>
   <string name="btn_create_accounts">Создать счета</string>
@@ -118,14 +118,14 @@
   <string name="msg_delete_transaction_confirmation">Вы действительно хотите удалить эту проводку?</string>
   <string name="title_export_preference_category">Экспорт</string>
   <string name="title_export_all_transactions">Экспорт всех проводок</string>
-  <string name="title_always_delete_exported_transactions">Всегда удалять экспортированное</string>
+  <string name="title_always_delete_exported_transactions">Всегда удалять после экспорта</string>
   <string name="title_default_export_email">E-mail для экспорта</string>
   <string name="summary_default_export_email">Почтовый ящик по умолчанию для экспорта. Можете менять его в процессе.</string>
   <string name="label_double_entry_account">Трансфертный счёт</string>
   <string name="summary_use_double_entry">Все проводки будут переводами с одного счёта на другой.</string>
   <string name="title_use_double_entry">Вести двойную запись</string>
   <string name="account_balance">Баланс</string>
-  <string name="toast_no_account_name_entered">Введите имя создаваемого счёта</string>
+  <string name="toast_no_account_name_entered">Введите имя нового счёта</string>
   <string name="label_account_currency">Валюта</string>
   <string name="label_parent_account">Родительский счёт</string>
   <string name="title_xml_ofx_header">Использовать XML-заголовок OFX</string>
@@ -139,15 +139,15 @@
         - Улучшена обработка запланированных операций\n
         - Множество других исправлений ошибок и улучшений\n
 	</string>
-  <string name="label_dismiss">Отказаться</string>
+  <string name="label_dismiss">Отмена</string>
   <string name="toast_transanction_amount_required">Введите сумму, чтобы сохранить проводку</string>
-  <string name="toast_error_edit_multi_currency_transaction">Не могу редактировать мультивалютные проводки</string>
-  <string name="menu_import_accounts">Импортировать счета из GnuCash</string>
-  <string name="btn_import_accounts">Импортировать счета</string>
-  <string name="toast_error_importing_accounts">Произошла ошибка при импорте счетов из GnuCash</string>
+  <string name="toast_error_edit_multi_currency_transaction">Мультивалютные проводки не изменяются</string>
+  <string name="menu_import_accounts">Импорт счетов из GnuCash</string>
+  <string name="btn_import_accounts">Импорт счетов</string>
+  <string name="toast_error_importing_accounts">Ошибка импорта счетов из GnuCash</string>
   <string name="toast_success_importing_accounts">Счета из GnuCash успешно импортированы</string>
   <string name="summary_import_accounts">Импорт структуры счетов из GnuCash для ПК</string>
-  <string name="title_import_accounts">Импортировать счета из GnuCash</string>
+  <string name="title_import_accounts">Импорт счетов из GnuCash</string>
   <string name="summary_delete_all_accounts">Удалить все счета из базы. Все проводки тоже удалятся.</string>
   <string name="title_delete_all_accounts">Удалить все счета</string>
   <string name="header_account_settings">Счета</string>
@@ -165,14 +165,14 @@
   <string name="title_default_export_format">Формат экспорта по умолчанию</string>
   <string name="summary_default_export_format">Формат файла, используемый по умолчанию при экспорте</string>
   <string name="menu_export_transactions">Экспортировать проводки&#8230;</string>
-  <string name="label_recurring_transaction">Запланированная проводка</string>
+  <string name="label_recurring_transaction">Периодическая проводка</string>
   <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">Дисбаланс</string>
   <string name="title_progress_exporting_transactions">Проводки экспортируются</string>
-  <string name="label_no_recurring_transactions">Нет запланированных проводок.</string>
-  <string name="toast_recurring_transaction_deleted">Запланированная проводка успешно удалена</string>
+  <string name="label_no_recurring_transactions">Нет периодических проводок.</string>
+  <string name="toast_recurring_transaction_deleted">Периодическая проводка удалена</string>
   <string name="label_placeholder_account">Виртуальный счёт</string>
-  <string name="label_default_transfer_account">Трансфертный счёт по умолчанию</string>
+  <string name="label_default_transfer_account">Счет-получатель по умолчанию</string>
   <plurals name="label_sub_accounts">
     <item quantity="one">%d дочерний счёт</item>
     <item quantity="few">%d шт. дочерних счетов</item>
@@ -208,30 +208,29 @@
   <string name="title_recent_accounts">Последние</string>
   <string name="title_favorite_accounts">Избранные</string>
   <string name="title_all_accounts">Все</string>
-  <string name="summary_create_default_accounts">Создание структуры счетов GnuCash по умолчанию</string>
-  <string name="title_create_default_accounts">Создание счетов по умолчанию</string>
-  <string name="msg_confirm_create_default_accounts_setting">Новая книга будет открыта с помощью учетной записи по умолчанию\n\nВаши текущие счета и операции не будут изменяться!</string>
+  <string name="summary_create_default_accounts">Создать структуру счетов GnuCash по умолчанию</string>
+  <string name="title_create_default_accounts">Создать счета по умолчанию</string>
+  <string name="msg_confirm_create_default_accounts_setting">Новая книга будет открыта с помощью учетной записи по умолчанию\n\nВаши текущие счета и операции не изменятся!</string>
   <string name="menu_scheduled_transactions">Запланированные проводки</string>
   <string name="msg_confirm_create_default_accounts_first_run">Добро
-        пожаловать в GnuCash для Android!\nВы можете как создать структуру
-        часто используемых счетов, так и импортировать её из GnuCash.\n\nОбе
+        пожаловать в GnuCash для Android!\nВы можете создать структуру счетов или импортировать её из GnuCash.\n\nОбе
         возможности будут доступны из настроек приложения, если вы захотите
         сделать это позже.
     </string>
   <string name="title_scheduled_transactions">Запланированные проводки</string>
   <string name="title_select_export_destination">Выберите получателя экспорта</string>
-  <string name="hint_split_memo">Памятка</string>
+  <string name="hint_split_memo">Заметка</string>
   <string name="label_spend">Расход</string>
   <string name="label_receive">Приход</string>
   <string name="label_withdrawal">Возврат</string>
   <string name="label_deposit">Депозит</string>
   <string name="label_payment">Платёж</string>
-  <string name="label_charge">Долг</string>
+  <string name="label_charge">Оплата</string>
   <string name="label_decrease">Уменьшение</string>
   <string name="label_increase">Увеличение</string>
-  <string name="label_income">Входящее</string>
+  <string name="label_income">Приход</string>
   <string name="label_rebate">Скидка</string>
-  <string name="label_expense">Трата</string>
+  <string name="label_expense">Расход</string>
   <string name="label_bill">Счёт</string>
   <string name="label_invoice">Чек</string>
   <string name="label_buy">Покупка</string>
@@ -240,9 +239,9 @@
   <string name="toast_no_recent_backup">Нет резервной копии</string>
   <string name="account_name_opening_balances">Начальное сальдо</string>
   <string name="account_name_equity">Собственные средства</string>
-  <string name="summary_save_opening_balances">Включите чтобы сохранить текущий баланс (перед удалением проводок) как новое начальное сальдо после их удаления
+  <string name="summary_save_opening_balances">Сохранить текущий баланс (перед удалением проводок) как новое начальное сальдо после их удаления
     </string>
-  <string name="title_save_opening_balances">Сохранять начальное сальдо счетов</string>
+  <string name="title_save_opening_balances">Сохранить начальное сальдо счетов</string>
   <string name="export_warning_ofx">OFX не поддерживает двойную запись</string>
   <string name="export_warning_qif">Создаёт на каждую валюту отдельный QIF-файл</string>
   <string name="title_transaction_splits">Части проводки</string>
@@ -277,7 +276,7 @@
   <string name="label_delete_account_subaccounts_description">Есть вложенные счета.\nЧто с ними делать?</string>
   <string name="label_delete_transactions">Удалить проводки</string>
   <string name="toast_disable_double_entry_to_save_transaction">Создайте и укажите трансфертный счёт или отключите двойную запись в настройках</string>
-  <string name="label_tap_to_create_schedule">Тыкните, чтобы создать расписание</string>
+  <string name="label_tap_to_create_schedule">Создать расписание</string>
   <string name="title_restore_backup">Восстановить из резервной копии&#8230;</string>
   <string name="header_backup_and_export_settings">Резервное копирование &amp; экспорт</string>
   <string name="title_dropbox_sync_preference">Включить DropBox</string>
@@ -409,9 +408,9 @@
   <string name="nav_menu_budgets">Бюджеты</string>
   <string name="title_cash_flow_report">Денежный поток</string>
   <string name="title_budgets">Бюджеты</string>
-  <string name="title_use_compact_list">Включить компактный вид</string>
-  <string name="summary_use_compact_list">Разрешить всегда использовать компактный вид для списка транзакций</string>
-  <string name="error_invalid_exchange_rate">Недопустимый валютный курс</string>
+  <string name="title_use_compact_list">Компактный вид</string>
+  <string name="summary_use_compact_list">Использовать компактный вид для списка проводок</string>
+  <string name="error_invalid_exchange_rate">Недопустимый курс валют</string>
   <string name="sample_exchange_rate">например, 1 %1$s = x.xx %2$s</string>
   <string name="error_invalid_amount">Неверная сумма</string>
   <string-array name="report_time_range">

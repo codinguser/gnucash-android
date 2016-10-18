@@ -83,18 +83,16 @@ public class FirstRunWizardActivity extends AppCompatActivity implements
 
 
     public void onCreate(Bundle savedInstanceState) {
+        // we need to construct the wizard model before we call super.onCreate, because it's used in
+        // onGetPage (which is indirectly called through super.onCreate if savedInstanceState is not
+        // null)
+        mWizardModel = createWizardModel(savedInstanceState);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first_run_wizard);
         ButterKnife.bind(this);
 
         setTitle(getString(R.string.title_setup_gnucash));
-
-        mWizardModel = new FirstRunWizardModel(this);
-        if (savedInstanceState != null) {
-            mWizardModel.load(savedInstanceState.getBundle("model"));
-        }
-
-        mWizardModel.registerListener(this);
 
         mPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
@@ -195,6 +193,24 @@ public class FirstRunWizardActivity extends AppCompatActivity implements
 
         onPageTreeChanged();
         updateBottomBar();
+    }
+
+    /**
+     * Create the wizard model for the activity, taking into accoun the savedInstanceState if it
+     * exists (and if it contains a "model" key that we can use).
+     * @param savedInstanceState    the instance state available in {{@link #onCreate(Bundle)}}
+     * @return  an appropriate wizard model for this activity
+     */
+    private AbstractWizardModel createWizardModel(Bundle savedInstanceState) {
+        AbstractWizardModel model = new FirstRunWizardModel(this);
+        if (savedInstanceState != null) {
+            Bundle wizardModel = savedInstanceState.getBundle("model");
+            if (wizardModel != null) {
+                model.load(wizardModel);
+            }
+        }
+        model.registerListener(this);
+        return model;
     }
 
     /**

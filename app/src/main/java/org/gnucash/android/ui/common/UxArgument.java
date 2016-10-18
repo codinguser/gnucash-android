@@ -102,6 +102,11 @@ public final class UxArgument {
      */
     public static final String BUDGET_AMOUNT_LIST = "budget_amount_list";
 
+    /**
+     * GUID of a book which is relevant for a specific action
+     */
+    public static final String BOOK_UID = "book_uid";
+
     //prevent initialization of instances of this class
     private UxArgument(){
         //prevent even the native class from calling the ctor

@@ -30,5 +30,11 @@ The following (incomplete list of) people (in no particular order) contributed (
 * Terry Chung <terrywmc@gmail.com>
 * Caesar Wirth <cjwirth@gmail.com>
 * Alceu Rodrigues Neto <alceurneto@gmail.com>
+* Carlo Zancanaro <carlo@zancanaro.id.au>
+* Eric Daly <edaly@hpsnet.com>
+* Weslly Oliveira <weslly99@hotmail.com>
+* Felipe Morato <me@fmorato.com>
+* Alceu Rodrigues Neto <alceurneto@gmail.com>
+* Salama AB <aksalj@aksalj.me>
 
 Please visit https://crowdin.com/project/gnucash-android for a more complete list of translation contributions

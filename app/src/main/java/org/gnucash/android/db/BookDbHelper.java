@@ -125,6 +125,16 @@ public class BookDbHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * Returns the database for the book
+     * @param bookUID GUID of the book
+     * @return SQLiteDatabase of the book
+     */
+    public static SQLiteDatabase getDatabase(String bookUID){
+        DatabaseHelper dbHelper = new DatabaseHelper(GnuCashApplication.getAppContext(), bookUID);
+        return dbHelper.getWritableDatabase();
+    }
+
+    /**
      * Inserts the book into the database
      * @param db Book database
      * @param book Book to insert
