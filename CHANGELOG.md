@@ -1,5 +1,13 @@
 Change Log
 ===============================================================================
+Version 2.1.3 *(2016-10-20)*
+----------------------------
+* Fixed: Scheduled exports execute too often or not at all in some cases
+* Fixed: Crash if device is rotated during first-run wizard execution
+* Fixed: Negative values displayed as green on homescreen widget
+* Improved: Homescreen widget now allows to select the book to use
+* Improved: Update Russian translation
+
 Version 2.1.2 *(2016-09-21)*
 ----------------------------
 * Fixed: Scheduled exports always run daily (no matter the actual schedule)
