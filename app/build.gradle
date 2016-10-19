@@ -148,44 +148,15 @@ def initCrashlyticsPropertiesIfNeeded() {
     }
 }
 
-def adb = Os.isFamily(Os.FAMILY_WINDOWS) ? "..\\scripts\\adb_all.bat" : "../scripts/adb_all.sh"
-//def adb = android.getAdbExe().toString()
-
 afterEvaluate {
+    apply plugin: 'spoon'
+    spoon {
+        debug = true
+        grantAllPermissions = true
+    }
     initCrashlyticsPropertiesIfNeeded()
-
-    task grantTestPermissionsDevel(type: Exec, dependsOn: 'installDevelopmentDebug') { // or install{productFlavour}{buildType}
-        if (Os.isFamily(Os.FAMILY_WINDOWS)){
-            commandLine "cmd", "/c", "$adb", "shell pm grant $android.productFlavors.development.applicationId android.permission.SET_ANIMATION_SCALE"
-//            commandLine "cmd", "/c", "$adb", "shell pm grant $android.productFlavors.development.applicationId android.permission.WRITE_EXTERNAL_STORAGE"
-        } else {
-            commandLine "$adb shell pm grant $android.productFlavors.development.applicationId android.permission.SET_ANIMATION_SCALE".split(' ')
-//            commandLine "$adb shell pm grant $android.productFlavors.development.applicationId android.permission.WRITE_EXTERNAL_STORAGE".split(' ')
-        }
-    }
-
-    task grantTestPermissionsProduction(type: Exec, dependsOn: 'installProductionDebug'){
-        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-            commandLine "cmd", "/c", "$adb", "shell pm grant $android.productFlavors.development.applicationId android.permission.SET_ANIMATION_SCALE"
-            commandLine "cmd", "/c", "$adb", "shell pm grant $android.productFlavors.development.applicationId android.permission.WRITE_EXTERNAL_STORAGE"
-        } else {
-            commandLine "$adb shell pm grant $android.defaultConfig.applicationId android.permission.SET_ANIMATION_SCALE".split(' ')
-            commandLine "$adb shell pm grant $android.defaultConfig.applicationId android.permission.WRITE_EXTERNAL_STORAGE".split(' ')
-        }
-    }
-
-    // When launching individual tests from Android Studio, it seems that only the assemble tasks
-    // get called directly, not the install* versions
-    tasks.each { task ->
-        if (task.name.startsWith('assembleDevelopmentDebugAndroidTest')){
-            task.dependsOn grantTestPermissionsDevel
-        } else if (task.name.startsWith('assembleBetaDebugAndroidTest')){
-            task.dependsOn grantTestPermissionsProduction
-        } else if (task.name.startsWith('assembleProductionDebugAndroidTest')){
-            task.dependsOn grantTestPermissionsProduction
-        }
-    }
 }
+
 
 def androidSupportVersion       = "24.2.1"
 def androidEspressoVersion      = "2.2.2"
@@ -255,4 +226,6 @@ dependencies {
     androidTestCompile('com.squareup.assertj:assertj-android:1.1.1'){
         exclude group: 'com.android.support', module:'support-annotations'
     }
+
+    androidTestCompile 'com.squareup.spoon:spoon-client:1.6.4'
 }
