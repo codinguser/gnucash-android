@@ -34,6 +34,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.RemoteViews;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -261,15 +262,21 @@ public class WidgetConfigurationActivity extends Activity {
 				.getActivity(context, appWidgetId, accountViewIntent, 0);
 		views.setOnClickPendingIntent(R.id.widget_layout, accountPendingIntent);
 		
-		Intent newTransactionIntent = new Intent(context, FormActivity.class);
-		newTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-		newTransactionIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		newTransactionIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION.name());
-		newTransactionIntent.putExtra(UxArgument.BOOK_UID, bookUID);
-		newTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
-		PendingIntent pendingIntent = PendingIntent
-				.getActivity(context, appWidgetId, newTransactionIntent, 0);	            
-		views.setOnClickPendingIntent(R.id.btn_new_transaction, pendingIntent);
+		if (accountsDbAdapter.isPlaceholderAccount(accountUID)) {
+			views.setOnClickPendingIntent(R.id.btn_view_account, accountPendingIntent);
+			views.setViewVisibility(R.id.btn_new_transaction, View.GONE);
+		} else {
+			Intent newTransactionIntent = new Intent(context, FormActivity.class);
+			newTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
+			newTransactionIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			newTransactionIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION.name());
+			newTransactionIntent.putExtra(UxArgument.BOOK_UID, bookUID);
+			newTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
+			PendingIntent pendingIntent = PendingIntent
+					.getActivity(context, appWidgetId, newTransactionIntent, 0);
+			views.setOnClickPendingIntent(R.id.btn_new_transaction, pendingIntent);
+			views.setViewVisibility(R.id.btn_view_account, View.GONE);
+		}
 		
 		appWidgetManager.updateAppWidget(appWidgetId, views);
 	}
