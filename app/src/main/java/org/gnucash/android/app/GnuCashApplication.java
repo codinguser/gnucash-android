@@ -69,6 +69,11 @@ import io.fabric.sdk.android.Fabric;
 public class GnuCashApplication extends Application{
 
     /**
+     * Authority (domain) for the file provider. Also used in the app manifest
+     */
+    public static final String FILE_PROVIDER_AUTHORITY = "org.gnucash.android.fileprovider";
+
+    /**
      * Lifetime of passcode session
      */
     public static final long SESSION_TIMEOUT = 5 * 1000;

@@ -20,6 +20,7 @@ package org.gnucash.android.export;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,6 +31,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -181,8 +183,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
         switch (mExportParams.getExportTarget()) {
             case SHARING:
-                List<String> sdCardExportedFiles = moveExportToSDCard();
-                shareFiles(sdCardExportedFiles);
+                shareFiles(mExportedFiles);
                 return true;
 
             case DROPBOX:
@@ -467,8 +468,8 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         shareIntent.setType("text/xml");
 
         ArrayList<Uri> exportFiles = convertFilePathsToUris(paths);
-//        shareIntent.putExtra(Intent.EXTRA_STREAM, exportFiles);
         shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, exportFiles);
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, mContext.getString(R.string.title_export_email,
                 mExportParams.getExportFormat().name()));
@@ -508,9 +509,8 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
         for (String path : paths) {
             File file = new File(path);
-            file.setReadable(true, false);
-            exportFiles.add(Uri.fromFile(file));
-//            exportFiles.add(Uri.parse("file://" + file));
+            Uri contentUri = FileProvider.getUriForFile(GnuCashApplication.getAppContext(), GnuCashApplication.FILE_PROVIDER_AUTHORITY, file);
+            exportFiles.add(contentUri);
         }
         return exportFiles;
     }
