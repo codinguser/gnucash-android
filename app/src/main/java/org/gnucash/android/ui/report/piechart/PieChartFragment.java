@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 import static com.github.mikephil.charting.components.Legend.LegendForm;
 import static com.github.mikephil.charting.components.Legend.LegendPosition;
@@ -67,7 +67,7 @@ public class PieChartFragment extends BaseReportFragment {
      */
     private static final double GROUPING_SMALLER_SLICES_THRESHOLD = 5;
 
-    @Bind(R.id.pie_chart) PieChart mChart;
+    @BindView(R.id.pie_chart) PieChart mChart;
 
     private AccountsDbAdapter mAccountsDbAdapter;
 

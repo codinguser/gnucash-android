@@ -98,26 +98,26 @@ public class ScheduledActionTest {
     public void testComputingNextScheduledExecution(){
         ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.TRANSACTION);
         PeriodType periodType = PeriodType.MONTH;
-        periodType.setMultiplier(2);
 
         Recurrence recurrence = new Recurrence(periodType);
+        recurrence.setMultiplier(2);
         DateTime startDate = new DateTime(2015, 8, 15, 12, 0);
         recurrence.setPeriodStart(new Timestamp(startDate.getMillis()));
         scheduledAction.setRecurrence(recurrence);
 
-        assertThat(scheduledAction.computeNextScheduledExecutionTime()).isEqualTo(startDate.getMillis());
+        assertThat(scheduledAction.computeNextCountBasedScheduledExecutionTime()).isEqualTo(startDate.getMillis());
 
         scheduledAction.setExecutionCount(3);
         DateTime expectedTime = new DateTime(2016, 2, 15, 12, 0);
-        assertThat(scheduledAction.computeNextScheduledExecutionTime()).isEqualTo(expectedTime.getMillis());
+        assertThat(scheduledAction.computeNextCountBasedScheduledExecutionTime()).isEqualTo(expectedTime.getMillis());
     }
 
     @Test
     public void testComputingTimeOfLastSchedule(){
         ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.TRANSACTION);
         PeriodType periodType = PeriodType.WEEK;
-        periodType.setMultiplier(2);
         Recurrence recurrence = new Recurrence(periodType);
+        recurrence.setMultiplier(2);
         scheduledAction.setRecurrence(recurrence);
         DateTime startDate = new DateTime(2016, 6, 6, 9, 0);
         scheduledAction.setStartTime(startDate.getMillis());

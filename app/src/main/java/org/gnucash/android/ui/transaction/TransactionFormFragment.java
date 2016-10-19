@@ -94,7 +94,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -145,65 +145,65 @@ public class TransactionFormFragment extends Fragment implements
 	/**
 	 * Button for setting the transaction type, either credit or debit
 	 */
-	@Bind(R.id.input_transaction_type) TransactionTypeSwitch mTransactionTypeSwitch;
+	@BindView(R.id.input_transaction_type) TransactionTypeSwitch mTransactionTypeSwitch;
 
 	/**
 	 * Input field for the transaction name (description)
 	 */
-	@Bind(R.id.input_transaction_name) AutoCompleteTextView mDescriptionEditText;
+	@BindView(R.id.input_transaction_name) AutoCompleteTextView mDescriptionEditText;
 
 	/**
 	 * Input field for the transaction amount
 	 */
-	@Bind(R.id.input_transaction_amount) CalculatorEditText mAmountEditText;
+	@BindView(R.id.input_transaction_amount) CalculatorEditText mAmountEditText;
 
 	/**
 	 * Field for the transaction currency.
 	 * The transaction uses the currency of the account
 	 */
-	@Bind(R.id.currency_symbol) TextView mCurrencyTextView;
+	@BindView(R.id.currency_symbol) TextView mCurrencyTextView;
 
 	/**
 	 * Input field for the transaction description (note)
 	 */
-	@Bind(R.id.input_description) EditText mNotesEditText;
+	@BindView(R.id.input_description) EditText mNotesEditText;
 
 	/**
 	 * Input field for the transaction date
 	 */
-	@Bind(R.id.input_date) TextView mDateTextView;
+	@BindView(R.id.input_date) TextView mDateTextView;
 
 	/**
 	 * Input field for the transaction time
 	 */
-	@Bind(R.id.input_time) TextView mTimeTextView;
+	@BindView(R.id.input_time) TextView mTimeTextView;
 
 	/**
 	 * Spinner for selecting the transfer account
 	 */
-	@Bind(R.id.input_transfer_account_spinner) Spinner mTransferAccountSpinner;
+	@BindView(R.id.input_transfer_account_spinner) Spinner mTransferAccountSpinner;
 
     /**
      * Checkbox indicating if this transaction should be saved as a template or not
      */
-    @Bind(R.id.checkbox_save_template) CheckBox mSaveTemplateCheckbox;
+    @BindView(R.id.checkbox_save_template) CheckBox mSaveTemplateCheckbox;
 
-    @Bind(R.id.input_recurrence) TextView mRecurrenceTextView;
+    @BindView(R.id.input_recurrence) TextView mRecurrenceTextView;
 
     /**
      * View which displays the calculator keyboard
      */
-    @Bind(R.id.calculator_keyboard) KeyboardView mKeyboardView;
+    @BindView(R.id.calculator_keyboard) KeyboardView mKeyboardView;
 
     /**
      * Open the split editor
      */
-    @Bind(R.id.btn_split_editor) ImageView mOpenSplitEditor;
+    @BindView(R.id.btn_split_editor) ImageView mOpenSplitEditor;
 
     /**
      * Layout for transfer account and associated views
      */
-    @Bind(R.id.layout_double_entry) View mDoubleEntryLayout;
+    @BindView(R.id.layout_double_entry) View mDoubleEntryLayout;
 
     /**
      * Flag to note if double entry accounting is in use or not
@@ -640,9 +640,9 @@ public class TransactionFormFragment extends Fragment implements
                 int year = calendar.get(Calendar.YEAR);
                 int monthOfYear = calendar.get(Calendar.MONTH);
                 int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-                CalendarDatePickerDialogFragment datePickerDialog = CalendarDatePickerDialogFragment.newInstance(
-                        TransactionFormFragment.this,
-                        year, monthOfYear, dayOfMonth);
+                CalendarDatePickerDialogFragment datePickerDialog = new CalendarDatePickerDialogFragment()
+                        .setOnDateSetListener(TransactionFormFragment.this)
+                        .setPreselectedDate(year, monthOfYear, dayOfMonth);
                 datePickerDialog.show(getFragmentManager(), "date_picker_fragment");
             }
         });
@@ -662,9 +662,10 @@ public class TransactionFormFragment extends Fragment implements
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTimeInMillis(timeMillis);
 
-                RadialTimePickerDialogFragment timePickerDialog = RadialTimePickerDialogFragment.newInstance(
-                        TransactionFormFragment.this, calendar.get(Calendar.HOUR_OF_DAY),
-                        calendar.get(Calendar.MINUTE), true);
+                RadialTimePickerDialogFragment timePickerDialog = new RadialTimePickerDialogFragment()
+                        .setOnTimeSetListener(TransactionFormFragment.this)
+                        .setStartTime(calendar.get(Calendar.HOUR_OF_DAY),
+                                calendar.get(Calendar.MINUTE));
                 timePickerDialog.show(getFragmentManager(), "time_picker_dialog_fragment");
             }
         });
@@ -938,8 +939,9 @@ public class TransactionFormFragment extends Fragment implements
      * @return {@code true} if the transaction can be saved, {@code false} otherwise
      */
     private boolean canSave(){
-        return (mAmountEditText.isInputValid())
-                && (mUseDoubleEntry && mTransferAccountSpinner.getCount() > 0);
+        return (mUseDoubleEntry && mAmountEditText.isInputValid()
+                                && mTransferAccountSpinner.getCount() > 0)
+               || (!mUseDoubleEntry && mAmountEditText.isInputValid());
     }
 
     /**

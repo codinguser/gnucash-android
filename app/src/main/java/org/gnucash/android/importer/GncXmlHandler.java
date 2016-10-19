@@ -737,8 +737,8 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_RX_PERIOD_TYPE:
                 try {
                     PeriodType periodType = PeriodType.valueOf(characterString.toUpperCase());
-                    periodType.setMultiplier(mRecurrenceMultiplier);
                     mRecurrence.setPeriodType(periodType);
+                    mRecurrence.setMultiplier(mRecurrenceMultiplier);
                 } catch (IllegalArgumentException ex){ //the period type constant is not supported
                     String msg = "Unsupported period constant: " + characterString;
                     Log.e(LOG_TAG, msg);

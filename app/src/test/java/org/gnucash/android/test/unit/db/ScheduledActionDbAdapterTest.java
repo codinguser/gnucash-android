@@ -65,8 +65,9 @@ public class ScheduledActionDbAdapterTest {
     public void testGenerateRepeatString(){
         ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.TRANSACTION);
         PeriodType periodType = PeriodType.MONTH;
-        periodType.setMultiplier(2);
-        scheduledAction.setRecurrence(new Recurrence(periodType));
+        Recurrence recurrence = new Recurrence(periodType);
+        recurrence.setMultiplier(2);
+        scheduledAction.setRecurrence(recurrence);
         scheduledAction.setTotalPlannedExecutionCount(4);
         Resources res = GnuCashApplication.getAppContext().getResources();
         String repeatString = res.getQuantityString(R.plurals.label_every_x_months, 2, 2) + ", " +

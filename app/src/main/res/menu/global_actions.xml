@@ -20,7 +20,7 @@
 
     <item android:id="@+id/menu_search"
           android:title="@string/menu_search_accounts"
-          android:icon="@drawable/abc_ic_search_api_mtrl_alpha"
+          android:icon="@drawable/ic_search_white_24dp"
           app:showAsAction="collapseActionView|ifRoom"
           app:actionViewClass="android.support.v7.widget.SearchView" />
 

@@ -73,6 +73,11 @@ public final class UxArgument {
     public static final String SELECTED_ACCOUNT_UID = "account_uid";
 
     /**
+     * Key for passing whether a widget should hide the account balance or not
+     */
+    public static final String HIDE_ACCOUNT_BALANCE_IN_WIDGET = "hide_account_balance";
+
+    /**
      * Key for passing argument for the parent account GUID.
      */
     public static final String PARENT_ACCOUNT_UID = "parent_account_uid";
@@ -101,6 +106,11 @@ public final class UxArgument {
      * List of budget amounts (as csv)
      */
     public static final String BUDGET_AMOUNT_LIST = "budget_amount_list";
+
+    /**
+     * GUID of a book which is relevant for a specific action
+     */
+    public static final String BOOK_UID = "book_uid";
 
     //prevent initialization of instances of this class
     private UxArgument(){

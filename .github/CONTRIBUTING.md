@@ -5,8 +5,15 @@ GnuCash Android is built by people like you! Please [join us](https://github.com
 * You can maintain your stable installation of GnuCash and test with another installation.
 The two instances of GnuCash Android will live side-by-side on your device and not affect each other. You can install the development version by executing `gradle installDD` inside the root project directory
 * The latest changes are in the `develop` branch.
+  * Always rebase develop before working on a fix or issuing a pull request
 * The master branch contains only stable releases.
   * Pull requests to the `master` branch will be rejected.
+* The `hotfix/patches` branch is reserved for very small fixes to the current release
+  * This branch may diverge significantly from the `develop` branch
+  * When working on a hotfix, always rebase and start off the `origin/hotfix/patches` branch
+  * Examples of such are typos, translation updates, critical bugs (e.g. cannot save transactions)
+  * Any bigger changes should be made to develop
+
 * Make a new branch for every feature you're working on.
 * Try to make clean commits that are easily readable (including descriptive commit messages!)
 * Test before you push make sure all test pass on your machine.

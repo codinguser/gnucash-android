@@ -37,7 +37,7 @@ public final class PreferencesHelper {
     /**
      * Tag for logging
      */
-    protected static final String LOG_TAG = "PreferencesHelper";
+    private static final String LOG_TAG = "PreferencesHelper";
 
     /**
      * Preference key for saving the last export time
@@ -52,14 +52,13 @@ public final class PreferencesHelper {
      * @see #setLastExportTime(Timestamp, String)
      */
     public static void setLastExportTime(Timestamp lastExportTime) {
-        final String utcString = TimestampHelper.getUtcStringFromTimestamp(lastExportTime);
         Log.v(LOG_TAG, "Saving last export time for the currently active book");
         setLastExportTime(lastExportTime, BooksDbAdapter.getInstance().getActiveBookUID());
     }
 
     /**
      * Set the last export time in UTC time zone for a specific book.
-     * This value vill be used during export to determine new transactions since the last export
+     * This value will be used during export to determine new transactions since the last export
      *
      * @param lastExportTime the last export time to set.
      */
@@ -81,6 +80,22 @@ public final class PreferencesHelper {
         final String utcString = PreferenceActivity.getActiveBookSharedPreferences()
                 .getString(PREFERENCE_LAST_EXPORT_TIME_KEY,
                         TimestampHelper.getUtcStringFromTimestamp(TimestampHelper.getTimestampFromEpochZero()));
+        Log.d(LOG_TAG, "Retrieving '" + utcString + "' as lastExportTime from Android Preferences.");
+        return TimestampHelper.getTimestampFromUtcString(utcString);
+    }
+
+    /**
+     * Get the time for the last export operation of a specific book.
+     *
+     * @return A {@link Timestamp} with the time.
+     */
+    public static Timestamp getLastExportTime(String bookUID) {
+        final String utcString =
+                GnuCashApplication.getAppContext()
+                .getSharedPreferences(bookUID, Context.MODE_PRIVATE)
+                .getString(PREFERENCE_LAST_EXPORT_TIME_KEY,
+                           TimestampHelper.getUtcStringFromTimestamp(
+                                TimestampHelper.getTimestampFromEpochZero()));
         Log.d(LOG_TAG, "Retrieving '" + utcString + "' as lastExportTime from Android Preferences.");
         return TimestampHelper.getTimestampFromUtcString(utcString);
     }

@@ -85,6 +85,7 @@
     <string name="label_permission_record_transaction">Record transactions in GnuCash</string>
     <string name="label_permission_create_account">Create accounts in GnuCash</string>
     <string name="label_display_account">Display account</string>
+    <string name="label_hide_account_balance">Hide account balance in widget</string>
     <string name="btn_create_accounts">Create Accounts</string>
     <string name="title_default_accounts">Select accounts to create</string>
 	<string name="error_no_accounts">No accounts exist in GnuCash.\nCreate an account before adding a widget</string>

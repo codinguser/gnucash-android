@@ -110,8 +110,8 @@ public class GncXmlHandlerTest {
      * </pre>
      */
     @Test
-    public void testAccountsImport() {
-        String bookUID = importGnuCashXml("testAccountsImport.xml");
+    public void accountsImport() {
+        String bookUID = importGnuCashXml("accountsImport.xml");
         setUpDbAdapters(bookUID);
 
         assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(5); // 4 accounts + root
@@ -193,12 +193,101 @@ public class GncXmlHandlerTest {
     }
 
     /**
+     * Tests importing a transaction with non-default splits.
+     *
+     * @throws ParseException
+     */
+    @Test
+    public void transactionWithNonDefaultSplitsImport() throws ParseException {
+        String bookUID = importGnuCashXml("transactionWithNonDefaultSplitsImport.xml");
+        setUpDbAdapters(bookUID);
+
+        assertThat(mTransactionsDbAdapter.getRecordsCount()).isEqualTo(1);
+
+        Transaction transaction = mTransactionsDbAdapter.getRecord("042ff745a80e94e6237fb0549f6d32ae");
+
+        // Ensure it's the correct one
+        assertThat(transaction.getDescription()).isEqualTo("Tandoori Mahal");
+
+        // Check splits
+        assertThat(transaction.getSplits().size()).isEqualTo(3);
+        // FIXME: don't depend on the order
+        Split expenseSplit = transaction.getSplits().get(0);
+        assertThat(expenseSplit.getUID()).isEqualTo("c50cce06e2bf9085730821c82d0b36ca");
+        assertThat(expenseSplit.getAccountUID()).isEqualTo("6a7cf8267314992bdddcee56d71a3908");
+        assertThat(expenseSplit.getTransactionUID()).isEqualTo("042ff745a80e94e6237fb0549f6d32ae");
+        assertThat(expenseSplit.getType()).isEqualTo(TransactionType.DEBIT);
+        assertThat(expenseSplit.getMemo()).isNull();
+        assertThat(expenseSplit.getValue()).isEqualTo(new Money("50", "USD"));
+        assertThat(expenseSplit.getQuantity()).isEqualTo(new Money("50", "USD"));
+
+        Split assetSplit1 = transaction.getSplits().get(1);
+        assertThat(assetSplit1.getUID()).isEqualTo("4930f412665a705eedba39789b6c3a35");
+        assertThat(assetSplit1.getAccountUID()).isEqualTo("dae686a1636addc0dae1ae670701aa4a");
+        assertThat(assetSplit1.getTransactionUID()).isEqualTo("042ff745a80e94e6237fb0549f6d32ae");
+        assertThat(assetSplit1.getType()).isEqualTo(TransactionType.CREDIT);
+        assertThat(assetSplit1.getMemo()).isEqualTo("tip");
+        assertThat(assetSplit1.getValue()).isEqualTo(new Money("5", "USD"));
+        assertThat(assetSplit1.getQuantity()).isEqualTo(new Money("5", "USD"));
+        assertThat(assetSplit1.isPairOf(expenseSplit)).isFalse();
+
+        Split assetSplit2 = transaction.getSplits().get(2);
+        assertThat(assetSplit2.getUID()).isEqualTo("b97cd9bbaa17f181d0a5b39b260dabda");
+        assertThat(assetSplit2.getAccountUID()).isEqualTo("ee139a5658a0d37507dc26284798e347");
+        assertThat(assetSplit2.getTransactionUID()).isEqualTo("042ff745a80e94e6237fb0549f6d32ae");
+        assertThat(assetSplit2.getType()).isEqualTo(TransactionType.CREDIT);
+        assertThat(assetSplit2.getMemo()).isNull();
+        assertThat(assetSplit2.getValue()).isEqualTo(new Money("45", "USD"));
+        assertThat(assetSplit2.getQuantity()).isEqualTo(new Money("45", "USD"));
+        assertThat(assetSplit2.isPairOf(expenseSplit)).isFalse();
+    }
+
+    /**
+     * Tests importing a transaction with multiple currencies.
+     *
+     * @throws ParseException
+     */
+    @Test
+    public void multiCurrencyTransactionImport() throws ParseException {
+        String bookUID = importGnuCashXml("multiCurrencyTransactionImport.xml");
+        setUpDbAdapters(bookUID);
+
+        assertThat(mTransactionsDbAdapter.getRecordsCount()).isEqualTo(1);
+
+        Transaction transaction = mTransactionsDbAdapter.getRecord("ded49386f8ea319ccaee043ba062b3e1");
+
+        // Ensure it's the correct one
+        assertThat(transaction.getDescription()).isEqualTo("Salad express");
+        assertThat(transaction.getCommodity().getCurrencyCode()).isEqualTo("USD");
+
+        // Check splits
+        assertThat(transaction.getSplits().size()).isEqualTo(2);
+        // FIXME: don't depend on the order
+        Split split1 = transaction.getSplits().get(0);
+        assertThat(split1.getUID()).isEqualTo("88bbbbac7689a8657b04427f8117a783");
+        assertThat(split1.getAccountUID()).isEqualTo("6a7cf8267314992bdddcee56d71a3908");
+        assertThat(split1.getTransactionUID()).isEqualTo("ded49386f8ea319ccaee043ba062b3e1");
+        assertThat(split1.getType()).isEqualTo(TransactionType.DEBIT);
+        assertThat(split1.getValue()).isEqualTo(new Money("20", "USD"));
+        assertThat(split1.getQuantity()).isEqualTo(new Money("20", "USD"));
+
+        Split split2 = transaction.getSplits().get(1);
+        assertThat(split2.getUID()).isEqualTo("e0dd885065bfe3c9ef63552fe84c6d23");
+        assertThat(split2.getAccountUID()).isEqualTo("0469e915a22ba7846aca0e69f9f9b683");
+        assertThat(split2.getTransactionUID()).isEqualTo("ded49386f8ea319ccaee043ba062b3e1");
+        assertThat(split2.getType()).isEqualTo(TransactionType.CREDIT);
+        assertThat(split2.getValue()).isEqualTo(new Money("20", "USD"));
+        assertThat(split2.getQuantity()).isEqualTo(new Money("17.93", "EUR"));
+        assertThat(split2.isPairOf(split1)).isTrue();
+    }
+
+    /**
      * Tests importing a simple scheduled transaction with default splits.
      */
     //@Test Disabled as currently amounts are only read from credit/debit-numeric
     // slots and transactions without amount are ignored.
-    public void testImportSimpleScheduledTransaction() throws ParseException {
-        String bookUID = importGnuCashXml("testImportSimpleScheduledTransaction.xml");
+    public void simpleScheduledTransactionImport() throws ParseException {
+        String bookUID = importGnuCashXml("simpleScheduledTransactionImport.xml");
         setUpDbAdapters(bookUID);
 
         assertThat(mTransactionsDbAdapter.getTemplateTransactionsCount()).isEqualTo(1);

@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
@@ -60,9 +61,9 @@ import org.gnucash.android.util.PreferencesHelper;
 public class BookManagerFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<Cursor>, Refreshable{
 
-    private static String LOG_TAG = "BookManagerFragment";
+    private static final String LOG_TAG = "BookManagerFragment";
 
-    SimpleCursorAdapter mCursorAdapter;
+    private SimpleCursorAdapter mCursorAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -149,7 +150,7 @@ public class BookManagerFragment extends ListFragment implements
 
     private class BooksCursorAdapter extends SimpleCursorAdapter {
 
-        public BooksCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
+        BooksCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
             super(context, layout, c, from, to, 0);
         }
 
@@ -160,7 +161,7 @@ public class BookManagerFragment extends ListFragment implements
             final String bookUID = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_UID));
 
             TextView lastSyncText = (TextView) view.findViewById(R.id.last_sync_time);
-            lastSyncText.setText(PreferencesHelper.getLastExportTime().toString());
+            lastSyncText.setText(PreferencesHelper.getLastExportTime(bookUID).toString());
 
             TextView labelLastSync = (TextView) view.findViewById(R.id.label_last_sync);
             labelLastSync.setText(R.string.label_last_export_time);
@@ -231,9 +232,7 @@ public class BookManagerFragment extends ListFragment implements
                         AlertDialog dialog = dialogBuilder.create();
                         dialog.show(); //must be called before you can access buttons
                         dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                                .setTextColor(getResources().getColor(R.color.account_red));
-
-
+                                .setTextColor(ContextCompat.getColor(context, R.color.account_red));
                     }
                 });
             }
@@ -255,7 +254,7 @@ public class BookManagerFragment extends ListFragment implements
      * @author Ngewi Fet <ngewif@gmail.com>
      */
     private static class BooksCursorLoader extends DatabaseCursorLoader {
-        public BooksCursorLoader(Context context){
+        BooksCursorLoader(Context context){
             super(context);
         }
 

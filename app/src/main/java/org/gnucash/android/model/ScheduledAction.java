@@ -20,12 +20,9 @@ import android.support.annotation.NonNull;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -151,7 +148,7 @@ public class ScheduledAction extends BaseModel{
             return  -1;
 
         LocalDateTime startTime = LocalDateTime.fromDateFields(new Date(mStartDate));
-        int multiplier = mRecurrence.getPeriodType().getMultiplier();
+        int multiplier = mRecurrence.getMultiplier();
 
         int factor = (mExecutionCount-1) * multiplier;
         switch (mRecurrence.getPeriodType()){
@@ -173,35 +170,64 @@ public class ScheduledAction extends BaseModel{
     }
 
     /**
-     * Computes the next time that this scheduled action is supposed to be executed
+     * Computes the next time that this scheduled action is supposed to be
+     * executed based on the execution count.
+     *
      * <p>This method does not consider the end time, or number of times it should be run.
-     * It only considers when the next execution would theoretically be due</p>
+     * It only considers when the next execution would theoretically be due.</p>
+     *
      * @return Next run time in milliseconds
      */
-    public long computeNextScheduledExecutionTime(){
-        int multiplier = mRecurrence.getPeriodType().getMultiplier();
-        //this is the last planned time for the action to occur, not the last run time
-        long lastActionTime = getTimeOfLastSchedule(); //mStartDate + ((mExecutionCount-1)*getPeriod());
-        if (lastActionTime < 0){
+    public long computeNextCountBasedScheduledExecutionTime(){
+        return computeNextScheduledExecutionTimeStartingAt(getTimeOfLastSchedule());
+    }
+
+    /**
+     * Computes the next time that this scheduled action is supposed to be
+     * executed based on the time of the last run.
+     *
+     * <p>This method does not consider the end time, or number of times it should be run.
+     * It only considers when the next execution would theoretically be due.</p>
+     *
+     * @return Next run time in milliseconds
+     */
+    public long computeNextTimeBasedScheduledExecutionTime() {
+        return computeNextScheduledExecutionTimeStartingAt(getLastRunTime());
+    }
+
+    /**
+     * Computes the next time that this scheduled action is supposed to be
+     * executed starting at startTime.
+     *
+     * <p>This method does not consider the end time, or number of times it should be run.
+     * It only considers when the next execution would theoretically be due.</p>
+     *
+     * @param startTime time in milliseconds to use as start to compute the next schedule.
+     *
+     * @return Next run time in milliseconds
+     */
+    private long computeNextScheduledExecutionTimeStartingAt(long startTime) {
+        if (startTime <= 0){ // has never been run
             return mStartDate;
         }
 
-        LocalDateTime localDate = LocalDateTime.fromDateFields(new Date(lastActionTime));
+        int multiplier = mRecurrence.getMultiplier();
+        LocalDateTime nextScheduledExecution = LocalDateTime.fromDateFields(new Date(startTime));
         switch (mRecurrence.getPeriodType()) {
             case DAY:
-                localDate = localDate.plusDays(multiplier);
+                nextScheduledExecution = nextScheduledExecution.plusDays(multiplier);
                 break;
             case WEEK:
-                localDate = localDate.plusWeeks(multiplier);
+                nextScheduledExecution = nextScheduledExecution.plusWeeks(multiplier);
                 break;
             case MONTH:
-                localDate = localDate.plusMonths(multiplier);
+                nextScheduledExecution = nextScheduledExecution.plusMonths(multiplier);
                 break;
             case YEAR:
-                localDate = localDate.plusYears(multiplier);
+                nextScheduledExecution = nextScheduledExecution.plusYears(multiplier);
                 break;
         }
-        return localDate.toDate().getTime();
+        return nextScheduledExecution.toDate().getTime();
     }
 
     /**
@@ -472,8 +498,8 @@ public class ScheduledAction extends BaseModel{
      * @see #setRecurrence(Recurrence)
      */
     public void setRecurrence(PeriodType periodType, int ordinal){
-        periodType.setMultiplier(ordinal);
         Recurrence recurrence = new Recurrence(periodType);
+        recurrence.setMultiplier(ordinal);
         setRecurrence(recurrence);
     }
 
@@ -510,7 +536,7 @@ public class ScheduledAction extends BaseModel{
     public static ScheduledAction parseScheduledAction(Transaction transaction, long period){
         ScheduledAction scheduledAction = new ScheduledAction(ActionType.TRANSACTION);
         scheduledAction.mActionUID = transaction.getUID();
-        Recurrence recurrence = new Recurrence(PeriodType.parse(period));
+        Recurrence recurrence = Recurrence.fromLegacyPeriod(period);
         scheduledAction.setRecurrence(recurrence);
         return scheduledAction;
     }

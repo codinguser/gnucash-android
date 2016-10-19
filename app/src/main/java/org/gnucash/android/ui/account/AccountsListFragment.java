@@ -67,7 +67,7 @@ import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -82,8 +82,8 @@ public class AccountsListFragment extends Fragment implements
         android.support.v7.widget.SearchView.OnCloseListener {
 
     AccountRecyclerAdapter mAccountRecyclerAdapter;
-    @Bind(R.id.account_recycler_view)  EmptyRecyclerView mRecyclerView;
-    @Bind(R.id.empty_view) TextView mEmptyTextView;
+    @BindView(R.id.account_recycler_view)  EmptyRecyclerView mRecyclerView;
+    @BindView(R.id.empty_view) TextView mEmptyTextView;
 
     /**
      * Describes the kinds of accounts that should be loaded in the accounts list.
@@ -318,7 +318,8 @@ public class AccountsListFragment extends Fragment implements
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mAccountRecyclerAdapter.swapCursor(null);
+        if (mAccountRecyclerAdapter != null)
+            mAccountRecyclerAdapter.swapCursor(null);
     }
 
     /**
@@ -567,14 +568,14 @@ public class AccountsListFragment extends Fragment implements
 
 
         class AccountViewHolder extends RecyclerView.ViewHolder implements PopupMenu.OnMenuItemClickListener{
-            @Bind(R.id.primary_text) TextView accountName;
-            @Bind(R.id.secondary_text) TextView description;
-            @Bind(R.id.account_balance) TextView accountBalance;
-            @Bind(R.id.create_transaction) ImageView createTransaction;
-            @Bind(R.id.favorite_status) ImageView favoriteStatus;
-            @Bind(R.id.options_menu) ImageView optionsMenu;
-            @Bind(R.id.account_color_strip) View colorStripView;
-            @Bind(R.id.budget_indicator) ProgressBar budgetIndicator;
+            @BindView(R.id.primary_text) TextView accountName;
+            @BindView(R.id.secondary_text) TextView description;
+            @BindView(R.id.account_balance) TextView accountBalance;
+            @BindView(R.id.create_transaction) ImageView createTransaction;
+            @BindView(R.id.favorite_status) ImageView favoriteStatus;
+            @BindView(R.id.options_menu) ImageView optionsMenu;
+            @BindView(R.id.account_color_strip) View colorStripView;
+            @BindView(R.id.budget_indicator) ProgressBar budgetIndicator;
             long accoundId;
 
             public AccountViewHolder(View itemView) {
