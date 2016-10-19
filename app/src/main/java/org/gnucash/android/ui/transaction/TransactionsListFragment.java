@@ -63,7 +63,7 @@ import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -85,7 +85,7 @@ public class TransactionsListFragment extends Fragment implements
 	private boolean mUseCompactView = false;
 
 	private TransactionRecyclerAdapter mTransactionRecyclerAdapter;
-	@Bind(R.id.transaction_recycler_view) EmptyRecyclerView mRecyclerView;
+	@BindView(R.id.transaction_recycler_view) EmptyRecyclerView mRecyclerView;
 
 
 	@Override
@@ -323,14 +323,14 @@ public class TransactionsListFragment extends Fragment implements
 		}
 
 		public class ViewHolder extends RecyclerView.ViewHolder implements PopupMenu.OnMenuItemClickListener{
-			@Bind(R.id.primary_text) 		public TextView primaryText;
-			@Bind(R.id.secondary_text) 		public TextView secondaryText;
-			@Bind(R.id.transaction_amount)	public TextView transactionAmount;
-			@Bind(R.id.options_menu)		public ImageView optionsMenu;
+			@BindView(R.id.primary_text) 		public TextView primaryText;
+			@BindView(R.id.secondary_text) 		public TextView secondaryText;
+			@BindView(R.id.transaction_amount)	public TextView transactionAmount;
+			@BindView(R.id.options_menu)		public ImageView optionsMenu;
 
 			//these views are not used in the compact view, hence the nullability
-			@Nullable @Bind(R.id.transaction_date)	public TextView transactionDate;
-			@Nullable @Bind(R.id.edit_transaction)	public ImageView editTransaction;
+			@Nullable @BindView(R.id.transaction_date)	public TextView transactionDate;
+			@Nullable @BindView(R.id.edit_transaction)	public ImageView editTransaction;
 
 			long transactionId;
 

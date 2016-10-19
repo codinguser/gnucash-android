@@ -38,7 +38,7 @@ import org.gnucash.android.ui.transaction.TransactionsActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 /**
  * Balance sheet report fragment
@@ -46,11 +46,11 @@ import butterknife.Bind;
  */
 public class BalanceSheetFragment extends BaseReportFragment {
 
-    @Bind(R.id.table_assets) TableLayout mAssetsTableLayout;
-    @Bind(R.id.table_liabilities) TableLayout mLiabilitiesTableLayout;
-    @Bind(R.id.table_equity) TableLayout mEquityTableLayout;
+    @BindView(R.id.table_assets) TableLayout mAssetsTableLayout;
+    @BindView(R.id.table_liabilities) TableLayout mLiabilitiesTableLayout;
+    @BindView(R.id.table_equity) TableLayout mEquityTableLayout;
 
-    @Bind(R.id.total_liability_and_equity) TextView mNetWorth;
+    @BindView(R.id.total_liability_and_equity) TextView mNetWorth;
 
     AccountsDbAdapter mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 

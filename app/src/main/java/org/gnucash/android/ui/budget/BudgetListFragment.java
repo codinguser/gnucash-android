@@ -62,7 +62,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Currency;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -79,8 +79,8 @@ public class BudgetListFragment extends Fragment implements Refreshable,
 
     private BudgetsDbAdapter mBudgetsDbAdapter;
 
-    @Bind(R.id.budget_recycler_view) EmptyRecyclerView mRecyclerView;
-    @Bind(R.id.empty_view) Button mProposeBudgets;
+    @BindView(R.id.budget_recycler_view) EmptyRecyclerView mRecyclerView;
+    @BindView(R.id.empty_view) Button mProposeBudgets;
 
     @Nullable
     @Override
@@ -260,12 +260,12 @@ public class BudgetListFragment extends Fragment implements Refreshable,
         }
 
         class BudgetViewHolder extends RecyclerView.ViewHolder implements PopupMenu.OnMenuItemClickListener{
-            @Bind(R.id.primary_text)        TextView budgetName;
-            @Bind(R.id.secondary_text)      TextView accountName;
-            @Bind(R.id.budget_amount)       TextView budgetAmount;
-            @Bind(R.id.options_menu)        ImageView optionsMenu;
-            @Bind(R.id.budget_indicator)    ProgressBar budgetIndicator;
-            @Bind(R.id.budget_recurrence)   TextView budgetRecurrence;
+            @BindView(R.id.primary_text)        TextView budgetName;
+            @BindView(R.id.secondary_text)      TextView accountName;
+            @BindView(R.id.budget_amount)       TextView budgetAmount;
+            @BindView(R.id.options_menu)        ImageView optionsMenu;
+            @BindView(R.id.budget_indicator)    ProgressBar budgetIndicator;
+            @BindView(R.id.budget_recurrence)   TextView budgetRecurrence;
             long budgetId;
 
             public BudgetViewHolder(View itemView) {

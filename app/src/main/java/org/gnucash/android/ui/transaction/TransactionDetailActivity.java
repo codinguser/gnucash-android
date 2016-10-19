@@ -30,7 +30,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.MissingFormatArgumentException;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -40,16 +40,16 @@ import butterknife.OnClick;
  */
 public class TransactionDetailActivity extends PasscodeLockActivity {
 
-    @Bind(R.id.trn_description) TextView mTransactionDescription;
-    @Bind(R.id.trn_time_and_date) TextView mTimeAndDate;
-    @Bind(R.id.trn_recurrence) TextView mRecurrence;
-    @Bind(R.id.trn_notes) TextView mNotes;
-    @Bind(R.id.toolbar) Toolbar mToolBar;
-    @Bind(R.id.transaction_account) TextView mTransactionAccount;
-    @Bind(R.id.balance_debit) TextView mDebitBalance;
-    @Bind(R.id.balance_credit) TextView mCreditBalance;
+    @BindView(R.id.trn_description) TextView mTransactionDescription;
+    @BindView(R.id.trn_time_and_date) TextView mTimeAndDate;
+    @BindView(R.id.trn_recurrence) TextView mRecurrence;
+    @BindView(R.id.trn_notes) TextView mNotes;
+    @BindView(R.id.toolbar) Toolbar mToolBar;
+    @BindView(R.id.transaction_account) TextView mTransactionAccount;
+    @BindView(R.id.balance_debit) TextView mDebitBalance;
+    @BindView(R.id.balance_credit) TextView mCreditBalance;
 
-    @Bind(R.id.fragment_transaction_details)
+    @BindView(R.id.fragment_transaction_details)
     TableLayout mDetailTableLayout;
 
     private String mTransactionUID;
@@ -92,9 +92,9 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
     }
 
     class SplitAmountViewHolder {
-        @Bind(R.id.split_account_name) TextView accountName;
-        @Bind(R.id.split_debit) TextView splitDebit;
-        @Bind(R.id.split_credit) TextView splitCredit;
+        @BindView(R.id.split_account_name) TextView accountName;
+        @BindView(R.id.split_debit) TextView splitDebit;
+        @BindView(R.id.split_credit) TextView splitCredit;
 
         View itemView;
 

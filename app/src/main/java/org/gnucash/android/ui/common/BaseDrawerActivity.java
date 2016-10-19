@@ -51,7 +51,7 @@ import org.gnucash.android.ui.report.ReportsActivity;
 import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
@@ -77,10 +77,10 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
     PopupMenu.OnMenuItemClickListener {
 
     public static final int ID_MANAGE_BOOKS = 0xB00C;
-    @Bind(R.id.drawer_layout) DrawerLayout mDrawerLayout;
-    @Bind(R.id.nav_view) NavigationView mNavigationView;
-    @Bind(R.id.toolbar) Toolbar mToolbar;
-    @Bind(R.id.toolbar_progress) ProgressBar mToolbarProgress;
+    @BindView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
+    @BindView(R.id.nav_view) NavigationView mNavigationView;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.toolbar_progress) ProgressBar mToolbarProgress;
     protected TextView mBookNameTextView;
 
     protected ActionBarDrawerToggle mDrawerToggle;

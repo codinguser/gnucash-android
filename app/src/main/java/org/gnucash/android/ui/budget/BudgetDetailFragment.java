@@ -61,17 +61,17 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
  * Fragment for displaying budget details
  */
 public class BudgetDetailFragment extends Fragment implements Refreshable {
-    @Bind(R.id.primary_text)        TextView mBudgetNameTextView;
-    @Bind(R.id.secondary_text)      TextView mBudgetDescriptionTextView;
-    @Bind(R.id.budget_recurrence)   TextView mBudgetRecurrence;
-    @Bind(R.id.budget_amount_recycler) EmptyRecyclerView mRecyclerView;
+    @BindView(R.id.primary_text)        TextView mBudgetNameTextView;
+    @BindView(R.id.secondary_text)      TextView mBudgetDescriptionTextView;
+    @BindView(R.id.budget_recurrence)   TextView mBudgetRecurrence;
+    @BindView(R.id.budget_amount_recycler) EmptyRecyclerView mRecyclerView;
 
     private String mBudgetUID;
     private BudgetsDbAdapter mBudgetsDbAdapter;
@@ -293,12 +293,12 @@ public class BudgetDetailFragment extends Fragment implements Refreshable {
         }
 
         class BudgetAmountViewHolder extends RecyclerView.ViewHolder {
-            @Bind(R.id.budget_account)      TextView budgetAccount;
-            @Bind(R.id.budget_amount)       TextView budgetAmount;
-            @Bind(R.id.budget_spent)        TextView budgetSpent;
-            @Bind(R.id.budget_left)         TextView budgetLeft;
-            @Bind(R.id.budget_indicator)    ProgressBar budgetIndicator;
-            @Bind(R.id.budget_chart)        BarChart budgetChart;
+            @BindView(R.id.budget_account)      TextView budgetAccount;
+            @BindView(R.id.budget_amount)       TextView budgetAmount;
+            @BindView(R.id.budget_spent)        TextView budgetSpent;
+            @BindView(R.id.budget_left)         TextView budgetLeft;
+            @BindView(R.id.budget_indicator)    ProgressBar budgetIndicator;
+            @BindView(R.id.budget_chart)        BarChart budgetChart;
 
             public BudgetAmountViewHolder(View itemView) {
                 super(itemView);

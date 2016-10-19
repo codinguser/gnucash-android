@@ -76,7 +76,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
@@ -96,40 +96,40 @@ public class ExportFormFragment extends Fragment implements
 	 * The destination could either be SD card, or another application which
 	 * accepts files, like Google Drive.
 	 */
-	@Bind(R.id.spinner_export_destination) Spinner mDestinationSpinner;
+	@BindView(R.id.spinner_export_destination) Spinner mDestinationSpinner;
 	
 	/**
 	 * Checkbox for deleting all transactions after exporting them
 	 */
-	@Bind(R.id.checkbox_post_export_delete) CheckBox mDeleteAllCheckBox;
+	@BindView(R.id.checkbox_post_export_delete) CheckBox mDeleteAllCheckBox;
 
     /**
      * Text view for showing warnings based on chosen export format
      */
-    @Bind(R.id.export_warning) TextView mExportWarningTextView;
+    @BindView(R.id.export_warning) TextView mExportWarningTextView;
 
 	/**
 	 * Recurrence text view
 	 */
-	@Bind(R.id.input_recurrence) TextView mRecurrenceTextView;
+	@BindView(R.id.input_recurrence) TextView mRecurrenceTextView;
 
 	/**
 	 * Text view displaying start date to export from
 	 */
-	@Bind(R.id.export_start_date) TextView mExportStartDate;
+	@BindView(R.id.export_start_date) TextView mExportStartDate;
 
-	@Bind(R.id.export_start_time) TextView mExportStartTime;
+	@BindView(R.id.export_start_time) TextView mExportStartTime;
 
 	/**
 	 * Switch toggling whether to export all transactions or not
 	 */
-	@Bind(R.id.switch_export_all) SwitchCompat mExportAllSwitch;
+	@BindView(R.id.switch_export_all) SwitchCompat mExportAllSwitch;
 
-	@Bind(R.id.export_date_layout) LinearLayout mExportDateLayout;
+	@BindView(R.id.export_date_layout) LinearLayout mExportDateLayout;
 
-	@Bind(R.id.radio_ofx_format) RadioButton mOfxRadioButton;
-	@Bind(R.id.radio_qif_format) RadioButton mQifRadioButton;
-	@Bind(R.id.radio_xml_format) RadioButton mXmlRadioButton;
+	@BindView(R.id.radio_ofx_format) RadioButton mOfxRadioButton;
+	@BindView(R.id.radio_qif_format) RadioButton mQifRadioButton;
+	@BindView(R.id.radio_xml_format) RadioButton mXmlRadioButton;
 
 	/**
 	 * Event recurrence options
@@ -363,7 +363,7 @@ public class ExportFormFragment extends Fragment implements
 		Timestamp timestamp = PreferencesHelper.getLastExportTime();
 		mExportStartCalendar.setTimeInMillis(timestamp.getTime());
 
-		Date date = new Date(timestamp.getTime());
+		final Date date = new Date(timestamp.getTime());
 		mExportStartDate.setText(TransactionFormFragment.DATE_FORMATTER.format(date));
 		mExportStartTime.setText(TransactionFormFragment.TIME_FORMATTER.format(date));
 
@@ -384,9 +384,9 @@ public class ExportFormFragment extends Fragment implements
 				int year = calendar.get(Calendar.YEAR);
 				int monthOfYear = calendar.get(Calendar.MONTH);
 				int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-				CalendarDatePickerDialogFragment datePickerDialog = CalendarDatePickerDialogFragment.newInstance(
-						ExportFormFragment.this,
-						year, monthOfYear, dayOfMonth);
+				CalendarDatePickerDialogFragment datePickerDialog = new CalendarDatePickerDialogFragment();
+				datePickerDialog.setOnDateSetListener(ExportFormFragment.this);
+				datePickerDialog.setPreselectedDate(year, monthOfYear, dayOfMonth);
 				datePickerDialog.show(getFragmentManager(), "date_picker_fragment");
 			}
 		});
@@ -406,9 +406,10 @@ public class ExportFormFragment extends Fragment implements
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTimeInMillis(timeMillis);
 
-				RadialTimePickerDialogFragment timePickerDialog = RadialTimePickerDialogFragment.newInstance(
-						ExportFormFragment.this, calendar.get(Calendar.HOUR_OF_DAY),
-						calendar.get(Calendar.MINUTE), true);
+				RadialTimePickerDialogFragment timePickerDialog = new RadialTimePickerDialogFragment();
+				timePickerDialog.setOnTimeSetListener(ExportFormFragment.this);
+				timePickerDialog.setStartTime(calendar.get(Calendar.HOUR_OF_DAY),
+						calendar.get(Calendar.MINUTE));
 				timePickerDialog.show(getFragmentManager(), "time_picker_dialog_fragment");
 			}
 		});

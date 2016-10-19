@@ -57,7 +57,7 @@ import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.util.Locale;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -69,11 +69,11 @@ public class WidgetConfigurationActivity extends Activity {
 	private AccountsDbAdapter mAccountsDbAdapter;
     private int mAppWidgetId;
 	
-	@Bind(R.id.input_accounts_spinner) Spinner mAccountsSpinner;
-	@Bind(R.id.input_books_spinner) Spinner mBooksSpinner;
-	@Bind(R.id.input_hide_account_balance) CheckBox mHideAccountBalance;
-	@Bind(R.id.btn_save) Button mOkButton;
-	@Bind(R.id.btn_cancel) Button mCancelButton;
+	@BindView(R.id.input_accounts_spinner) Spinner mAccountsSpinner;
+	@BindView(R.id.input_books_spinner) Spinner mBooksSpinner;
+	@BindView(R.id.input_hide_account_balance) CheckBox mHideAccountBalance;
+	@BindView(R.id.btn_save) Button mOkButton;
+	@BindView(R.id.btn_cancel) Button mCancelButton;
 
 
 	private SimpleCursorAdapter mAccountsCursorAdapter;

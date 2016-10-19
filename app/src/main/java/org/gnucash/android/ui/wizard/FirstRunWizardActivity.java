@@ -55,7 +55,7 @@ import org.gnucash.android.ui.util.TaskDelegate;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -64,7 +64,7 @@ import butterknife.ButterKnife;
 public class FirstRunWizardActivity extends AppCompatActivity implements
         PageFragmentCallbacks, ReviewFragment.Callbacks, ModelCallbacks {
 
-    @Bind(R.id.pager) ViewPager mPager;
+    @BindView(R.id.pager) ViewPager mPager;
     private MyPagerAdapter mPagerAdapter;
 
     private boolean mEditingAfterReview;
@@ -73,9 +73,9 @@ public class FirstRunWizardActivity extends AppCompatActivity implements
 
     private boolean mConsumePageSelectedEvent;
 
-    @Bind(R.id.btn_save)    AppCompatButton mNextButton;
-    @Bind(R.id.btn_cancel)  Button mPrevButton;
-    @Bind(R.id.strip)       StepPagerStrip mStepPagerStrip;
+    @BindView(R.id.btn_save)    AppCompatButton mNextButton;
+    @BindView(R.id.btn_cancel)  Button mPrevButton;
+    @BindView(R.id.strip)       StepPagerStrip mStepPagerStrip;
 
     private List<Page> mCurrentPageSequence;
     private String mAccountOptions;

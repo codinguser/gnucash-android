@@ -35,7 +35,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -45,9 +45,9 @@ import butterknife.ButterKnife;
  */
 public class DateRangePickerDialogFragment extends DialogFragment{
 
-    @Bind(R.id.calendar_view) CalendarPickerView mCalendarPickerView;
-    @Bind(R.id.btn_save)    Button mDoneButton;
-    @Bind(R.id.btn_cancel)  Button mCancelButton;
+    @BindView(R.id.calendar_view) CalendarPickerView mCalendarPickerView;
+    @BindView(R.id.btn_save)    Button mDoneButton;
+    @BindView(R.id.btn_cancel)  Button mCancelButton;
 
     private Date mStartRange = LocalDate.now().minusMonths(1).toDate();
     private Date mEndRange = LocalDate.now().toDate();
