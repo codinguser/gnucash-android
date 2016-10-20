@@ -35,15 +35,6 @@ android {
         buildConfigField "boolean", "CAN_REQUEST_RATING", "false"
         buildConfigField "String", "BUILD_TIME", "\"${buildTime()}\""
 
-        if (project.hasProperty("RELEASE_DROPBOX_APP_KEY")){
-            resValue "string", "dropbox_app_key", RELEASE_DROPBOX_APP_KEY
-            resValue "string", "dropbox_app_secret", RELEASE_DROPBOX_APP_SECRET
-            resValue "string", "manifest_dropbox_app_key", "db-${RELEASE_DROPBOX_APP_KEY}"
-        } else {
-            resValue "string", "dropbox_app_key", "dhjh8ke9wf05948"
-            resValue "string", "dropbox_app_secret", "h2t9fphj3nr4wkw"
-            resValue "string", "manifest_dropbox_app_key", "db-dhjh8ke9wf05948"
-        }
         testInstrumentationRunner "org.gnucash.android.test.ui.util.GnucashAndroidTestRunner"
 
     }
@@ -108,17 +99,41 @@ android {
             resValue "string", "app_name", "GnuCash-devel"
             versionName "${versionMajor}.${versionMinor}.${versionPatch}-dev${versionBuild}_r${gitSha()}"
             resValue "string", "app_version_name", "${versionName}"
+
+            resValue "string", "dropbox_app_key", "dhjh8ke9wf05948"
+            resValue "string", "dropbox_app_secret", "h2t9fphj3nr4wkw"
+            resValue "string", "manifest_dropbox_app_key", "db-dhjh8ke9wf05948"
         }
 
         beta {
             resValue "string", "app_name", "GnuCash - beta"
             versionName "${versionMajor}.${versionMinor}.${versionPatch}-beta${versionBuild}"
             resValue "string", "app_version_name", "${versionName}"
+
+            if (project.hasProperty("RELEASE_DROPBOX_APP_KEY")){
+                resValue "string", "dropbox_app_key", RELEASE_DROPBOX_APP_KEY
+                resValue "string", "dropbox_app_secret", RELEASE_DROPBOX_APP_SECRET
+                resValue "string", "manifest_dropbox_app_key", "db-${RELEASE_DROPBOX_APP_KEY}"
+            } else {
+                resValue "string", "dropbox_app_key", "dhjh8ke9wf05948"
+                resValue "string", "dropbox_app_secret", "h2t9fphj3nr4wkw"
+                resValue "string", "manifest_dropbox_app_key", "db-dhjh8ke9wf05948"
+            }
         }
 
         production {
             resValue "string", "app_name", "GnuCash"
             buildConfigField "boolean", "CAN_REQUEST_RATING", "true"
+
+            if (project.hasProperty("RELEASE_DROPBOX_APP_KEY")){
+                resValue "string", "dropbox_app_key", RELEASE_DROPBOX_APP_KEY
+                resValue "string", "dropbox_app_secret", RELEASE_DROPBOX_APP_SECRET
+                resValue "string", "manifest_dropbox_app_key", "db-${RELEASE_DROPBOX_APP_KEY}"
+            } else {
+                resValue "string", "dropbox_app_key", "dhjh8ke9wf05948"
+                resValue "string", "dropbox_app_secret", "h2t9fphj3nr4wkw"
+                resValue "string", "manifest_dropbox_app_key", "db-dhjh8ke9wf05948"
+            }
         }
 
     }
@@ -185,7 +200,8 @@ dependencies {
             'com.squareup:android-times-square:1.6.5@aar',
             'com.github.techfreak:wizardpager:1.0.3',
             'net.objecthunter:exp4j:0.4.7',
-            'org.apache.jackrabbit:jackrabbit-webdav:2.13.3'
+            'org.apache.jackrabbit:jackrabbit-webdav:2.13.3',
+            'com.dropbox.core:dropbox-core-sdk:2.1.2'
     )
 
     compile 'com.jakewharton:butterknife:8.4.0'

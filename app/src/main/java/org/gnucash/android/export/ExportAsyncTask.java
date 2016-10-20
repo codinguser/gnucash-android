@@ -20,7 +20,6 @@ package org.gnucash.android.export;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,11 +35,9 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.dropbox.sync.android.DbxAccountManager;
-import com.dropbox.sync.android.DbxException;
-import com.dropbox.sync.android.DbxFile;
-import com.dropbox.sync.android.DbxFileSystem;
-import com.dropbox.sync.android.DbxPath;
+import com.dropbox.core.v2.DbxClientV2;
+import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.Metadata;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.drive.Drive;
@@ -335,31 +332,33 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         });
     }
 
+    /**
+     * Move the exported files (in the cache directory) to Dropbox
+     */
     private void moveExportToDropbox() {
-        Log.i(TAG, "Copying exported file to DropBox");
+        Log.i(TAG, "Uploading exported files to DropBox");
         String dropboxAppKey = mContext.getString(R.string.dropbox_app_key, BackupPreferenceFragment.DROPBOX_APP_KEY);
         String dropboxAppSecret = mContext.getString(R.string.dropbox_app_secret, BackupPreferenceFragment.DROPBOX_APP_SECRET);
-        DbxAccountManager mDbxAcctMgr = DbxAccountManager.getInstance(mContext.getApplicationContext(),
-                dropboxAppKey, dropboxAppSecret);
-        DbxFile dbExportFile = null;
-        try {
-            DbxFileSystem dbxFileSystem = DbxFileSystem.forAccount(mDbxAcctMgr.getLinkedAccount());
-            for (String exportedFilePath : mExportedFiles) {
-                File exportedFile = new File(exportedFilePath);
-                dbExportFile = dbxFileSystem.create(new DbxPath(exportedFile.getName()));
-                dbExportFile.writeFromExistingFile(exportedFile, false);
+
+        DbxClientV2 dbxClient = DropboxHelper.getClient();
+
+        for (String exportedFilePath : mExportedFiles) {
+            File exportedFile = new File(exportedFilePath);
+            FileInputStream inputStream = null;
+            try {
+                inputStream = new FileInputStream(exportedFile);
+                List<Metadata> entries = dbxClient.files().listFolder("").getEntries();
+
+                FileMetadata metadata = dbxClient.files()
+                        .uploadBuilder("/" + exportedFile.getName())
+                        .uploadAndFinish(inputStream);
+                inputStream.close();
                 exportedFile.delete();
-            }
-        } catch (DbxException.Unauthorized unauthorized) {
-            Crashlytics.logException(unauthorized);
-            Log.e(TAG, unauthorized.getMessage());
-            throw new Exporter.ExporterException(mExportParams);
-        } catch (IOException e) {
-            Crashlytics.logException(e);
-            Log.e(TAG, e.getMessage());
-        } finally {
-            if (dbExportFile != null) {
-                dbExportFile.close();
+            } catch (IOException e) {
+                Crashlytics.logException(e);
+                Log.e(TAG, e.getMessage());
+            } catch (com.dropbox.core.DbxException e) {
+                e.printStackTrace();
             }
         }
     }

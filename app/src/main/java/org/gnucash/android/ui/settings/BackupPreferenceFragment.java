@@ -35,7 +35,7 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
-import com.dropbox.sync.android.DbxAccountManager;
+import com.dropbox.core.android.Auth;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -84,9 +84,12 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 	 * Testing app secret for DropBox API
 	 */
 	final static public String DROPBOX_APP_SECRET   = "h2t9fphj3nr4wkw";
+
+	/**
+	 * String for tagging log statements
+	 */
 	public static final String LOG_TAG = "BackupPrefFragment";
 
-	private DbxAccountManager mDbxAccountManager;
 	/**
 	 * Client for Google Drive Sync
 	 */
@@ -107,11 +110,6 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setTitle(R.string.title_backup_prefs);
 
-		String dropboxAppKey = getString(R.string.dropbox_app_key, DROPBOX_APP_KEY);
-		String dropboxAppSecret = getString(R.string.dropbox_app_secret, DROPBOX_APP_SECRET);
-		mDbxAccountManager = DbxAccountManager.getInstance(getActivity().getApplicationContext(),
-				dropboxAppKey, dropboxAppSecret);
-
 		mGoogleApiClient = getGoogleApiClient(getActivity());
 		
 	}	
@@ -119,11 +117,13 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 	@Override
 	public void onResume() {
 		super.onResume();
-		SharedPreferences manager = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		
+		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+		//if we are returning from DropBox authentication, save the key which was generated
+
 		String keyDefaultEmail = getString(R.string.key_default_export_email);		
 		Preference pref = findPreference(keyDefaultEmail);
-		String defaultEmail = manager.getString(keyDefaultEmail, null);
+		String defaultEmail = sharedPrefs.getString(keyDefaultEmail, null);
 		if (defaultEmail != null && !defaultEmail.trim().isEmpty()){
 			pref.setSummary(defaultEmail);			
 		}
@@ -131,7 +131,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 
         String keyDefaultExportFormat = getString(R.string.key_default_export_format);
         pref = findPreference(keyDefaultExportFormat);
-        String defaultExportFormat = manager.getString(keyDefaultExportFormat, null);
+        String defaultExportFormat = sharedPrefs.getString(keyDefaultExportFormat, null);
         if (defaultExportFormat != null && !defaultExportFormat.trim().isEmpty()){
             pref.setSummary(defaultExportFormat);
         }
@@ -225,7 +225,9 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 	 * @param pref DropBox Sync preference
 	 */
 	public void toggleDropboxPreference(Preference pref) {
-		((CheckBoxPreference)pref).setChecked(mDbxAccountManager.hasLinkedAccount());
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		String accessToken = prefs.getString(getString(R.string.key_dropbox_access_token), null);
+		((CheckBoxPreference)pref).setChecked(accessToken != null);
 	}
 
 	/**
@@ -253,10 +255,12 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 	 * If a link exists, it is removed else DropBox authorization is started
 	 */
 	private void toggleDropboxSync() {
-		if (mDbxAccountManager.hasLinkedAccount()){
-			mDbxAccountManager.unlink();
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		String accessToken = prefs.getString(getString(R.string.key_dropbox_access_token), null);
+		if (accessToken == null){
+			Auth.startOAuth2Authentication(getActivity(), getString(R.string.dropbox_app_key));
 		} else {
-			mDbxAccountManager.startLink(getActivity(), REQUEST_LINK_TO_DBX);
+			prefs.edit().remove(getString(R.string.key_dropbox_access_token)).apply();
 		}
 	}
 

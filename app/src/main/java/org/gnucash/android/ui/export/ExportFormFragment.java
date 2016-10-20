@@ -49,12 +49,13 @@ import com.codetroopers.betterpickers.radialtimepicker.RadialTimePickerDialogFra
 import com.codetroopers.betterpickers.recurrencepicker.EventRecurrence;
 import com.codetroopers.betterpickers.recurrencepicker.EventRecurrenceFormatter;
 import com.codetroopers.betterpickers.recurrencepicker.RecurrencePickerDialogFragment;
-import com.dropbox.sync.android.DbxAccountManager;
+import com.dropbox.core.android.Auth;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
+import org.gnucash.android.export.DropboxHelper;
 import org.gnucash.android.export.ExportAsyncTask;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
@@ -235,7 +236,13 @@ public class ExportFormFragment extends Fragment implements
 		getSDWritePermission();
 	}
 
-    @Override
+	@Override
+	public void onResume() {
+		super.onResume();
+		DropboxHelper.retrieveAndSaveToken();
+	}
+
+	@Override
     public void onPause() {
         super.onPause();
         // When the user try to export sharing to 3rd party service like DropBox
@@ -317,10 +324,9 @@ public class ExportFormFragment extends Fragment implements
 						mExportTarget = ExportParams.ExportTarget.DROPBOX;
 						String dropboxAppKey = getString(R.string.dropbox_app_key, BackupPreferenceFragment.DROPBOX_APP_KEY);
 						String dropboxAppSecret = getString(R.string.dropbox_app_secret, BackupPreferenceFragment.DROPBOX_APP_SECRET);
-						DbxAccountManager mDbxAccountManager = DbxAccountManager.getInstance(getActivity().getApplicationContext(),
-								dropboxAppKey, dropboxAppSecret);
-						if (!mDbxAccountManager.hasLinkedAccount()) {
-							mDbxAccountManager.startLink(getActivity(), 0);
+
+						if (!DropboxHelper.hasToken()) {
+							Auth.startOAuth2Authentication(getActivity(), dropboxAppKey);
 						}
 						break;
 					case 2:
