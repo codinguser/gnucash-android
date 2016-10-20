@@ -337,8 +337,6 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     private void moveExportToDropbox() {
         Log.i(TAG, "Uploading exported files to DropBox");
-        String dropboxAppKey = mContext.getString(R.string.dropbox_app_key, BackupPreferenceFragment.DROPBOX_APP_KEY);
-        String dropboxAppSecret = mContext.getString(R.string.dropbox_app_secret, BackupPreferenceFragment.DROPBOX_APP_SECRET);
 
         DbxClientV2 dbxClient = DropboxHelper.getClient();
 
@@ -352,8 +350,9 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 FileMetadata metadata = dbxClient.files()
                         .uploadBuilder("/" + exportedFile.getName())
                         .uploadAndFinish(inputStream);
+                Log.i(TAG, "Successfully uploaded file " + metadata.getName() + " to DropBox");
                 inputStream.close();
-                exportedFile.delete();
+                exportedFile.delete(); //delete file to prevent cache accumulation
             } catch (IOException e) {
                 Crashlytics.logException(e);
                 Log.e(TAG, e.getMessage());
