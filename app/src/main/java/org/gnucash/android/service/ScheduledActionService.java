@@ -127,7 +127,7 @@ public class ScheduledActionService extends IntentService {
      */
     private static void executeScheduledEvent(ScheduledAction scheduledAction, SQLiteDatabase db){
         Log.i(LOG_TAG, "Executing scheduled action: " + scheduledAction.toString());
-        int executionCount = scheduledAction.getExecutionCount();
+        int executionCount = 0;
 
         switch (scheduledAction.getActionType()){
             case TRANSACTION:
@@ -139,20 +139,21 @@ public class ScheduledActionService extends IntentService {
                 break;
         }
 
-        //the last run time is computed instead of just using "now" so that if the more than
-        // one period has been skipped, all intermediate transactions can be created
-
-        scheduledAction.setLastRun(System.currentTimeMillis());
-        //set the execution count in the object because it will be checked for the next iteration in the calling loop
-        scheduledAction.setExecutionCount(executionCount); //this call is important, do not remove!!
-        //update the last run time and execution count
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_LAST_RUN,
-                          scheduledAction.getLastRunTime());
-        contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_EXECUTION_COUNT,
-                          scheduledAction.getExecutionCount());
-        db.update(DatabaseSchema.ScheduledActionEntry.TABLE_NAME, contentValues,
-                DatabaseSchema.ScheduledActionEntry.COLUMN_UID + "=?", new String[]{scheduledAction.getUID()});
+        if (executionCount > 0) {
+            scheduledAction.setLastRun(System.currentTimeMillis());
+            // Set the execution count in the object because it will be checked
+            // for the next iteration in the calling loop.
+            // This call is important, do not remove!!
+            scheduledAction.setExecutionCount(scheduledAction.getExecutionCount() + executionCount);
+            // Update the last run time and execution count
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_LAST_RUN,
+                    scheduledAction.getLastRunTime());
+            contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_EXECUTION_COUNT,
+                    scheduledAction.getExecutionCount());
+            db.update(DatabaseSchema.ScheduledActionEntry.TABLE_NAME, contentValues,
+                    DatabaseSchema.ScheduledActionEntry.COLUMN_UID + "=?", new String[]{scheduledAction.getUID()});
+        }
     }
 
     /**
@@ -219,6 +220,7 @@ public class ScheduledActionService extends IntentService {
         int totalPlannedExecutions = scheduledAction.getTotalPlannedExecutionCount();
         List<Transaction> transactions = new ArrayList<>();
 
+        int previousExecutionCount = scheduledAction.getExecutionCount(); // We'll modify it
         //we may be executing scheduled action significantly after scheduled time (depending on when Android fires the alarm)
         //so compute the actual transaction time from pre-known values
         long transactionTime = scheduledAction.computeNextCountBasedScheduledExecutionTime();
@@ -235,6 +237,8 @@ public class ScheduledActionService extends IntentService {
         }
 
         transactionsDbAdapter.bulkAddRecords(transactions, DatabaseAdapter.UpdateMethod.insert);
+        // Be nice and restore the parameter's original state to avoid confusing the callers
+        scheduledAction.setExecutionCount(previousExecutionCount);
         return executionCount;
     }
 }
