@@ -39,23 +39,9 @@ public class TransactionAppWidgetProvider extends AppWidgetProvider {
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 			int[] appWidgetIds) {
 		super.onUpdate(context, appWidgetManager, appWidgetIds);
-		final int N = appWidgetIds.length;
-
-        // Perform this loop procedure for each App Widget that belongs to this provider
-        for (int i=0; i<N; i++) {
-            int appWidgetId = appWidgetIds[i];
-
-			SharedPreferences bookSharedPreferences = PreferenceActivity.getActiveBookSharedPreferences();
-			String accountUID = bookSharedPreferences
-                    .getString(UxArgument.SELECTED_ACCOUNT_UID + appWidgetId, null);
-            boolean hideAccountBalance = bookSharedPreferences
-                    .getBoolean(UxArgument.HIDE_ACCOUNT_BALANCE_IN_WIDGET + appWidgetId, false);
-            if (accountUID == null)
-            	return;
-            
-            WidgetConfigurationActivity.updateWidget(context, appWidgetId, accountUID,
-					BooksDbAdapter.getInstance().getActiveBookUID(), hideAccountBalance);
-        }
+		for (int appWidgetId : appWidgetIds) {
+			WidgetConfigurationActivity.updateWidget(context, appWidgetId);
+		}
 	}
 
     @Override
@@ -66,12 +52,9 @@ public class TransactionAppWidgetProvider extends AppWidgetProvider {
 
     @Override
 	public void onDeleted(Context context, int[] appWidgetIds) {
-		super.onDeleted(context, appWidgetIds);		
-		Editor editor = PreferenceActivity.getActiveBookSharedPreferences().edit();
-		
+		super.onDeleted(context, appWidgetIds);
 		for (int appWidgetId : appWidgetIds) {
-			editor.remove(UxArgument.SELECTED_ACCOUNT_UID + appWidgetId);
+			WidgetConfigurationActivity.removeWidgetConfiguration(context, appWidgetId);
 		}
-		editor.apply();
 	}
 }
