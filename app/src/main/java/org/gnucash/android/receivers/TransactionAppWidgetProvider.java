@@ -48,13 +48,13 @@ public class TransactionAppWidgetProvider extends AppWidgetProvider {
 			SharedPreferences bookSharedPreferences = PreferenceActivity.getActiveBookSharedPreferences();
 			String accountUID = bookSharedPreferences
                     .getString(UxArgument.SELECTED_ACCOUNT_UID + appWidgetId, null);
-            boolean shouldDisplayBalance = bookSharedPreferences
-                    .getBoolean(UxArgument.HIDE_ACCOUNT_BALANCE_IN_WIDGET + appWidgetId, true);
+            boolean hideAccountBalance = bookSharedPreferences
+                    .getBoolean(UxArgument.HIDE_ACCOUNT_BALANCE_IN_WIDGET + appWidgetId, false);
             if (accountUID == null)
             	return;
             
             WidgetConfigurationActivity.updateWidget(context, appWidgetId, accountUID,
-					BooksDbAdapter.getInstance().getActiveBookUID(), shouldDisplayBalance);
+					BooksDbAdapter.getInstance().getActiveBookUID(), hideAccountBalance);
         }
 	}
 
