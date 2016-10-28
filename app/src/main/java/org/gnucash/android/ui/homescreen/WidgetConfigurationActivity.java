@@ -302,7 +302,7 @@ public class WidgetConfigurationActivity extends Activity {
 					final String accountUID = defaultSharedPrefs
 							.getString(UxArgument.SELECTED_ACCOUNT_UID + widgetId, null);
 					final boolean hideAccountBalance = defaultSharedPrefs
-							.getBoolean(UxArgument.HIDE_ACCOUNT_BALANCE_IN_WIDGET + widgetId, true);
+							.getBoolean(UxArgument.HIDE_ACCOUNT_BALANCE_IN_WIDGET + widgetId, false);
 
 					if (accountUID == null)
 						continue;
