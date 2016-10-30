@@ -41,6 +41,7 @@ import org.gnucash.android.model.Book;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -168,6 +169,8 @@ public class ScheduledActionService extends IntentService {
             return 0;
 
         ExportParams params = ExportParams.parseCsv(scheduledAction.getTag());
+        // HACK: the tag isn't updated with the new date, so set the correct by hand
+        params.setExportStartTime(new Timestamp(scheduledAction.getLastRunTime()));
         try {
             //wait for async task to finish before we proceed (we are holding a wake lock)
             new ExportAsyncTask(GnuCashApplication.getAppContext(), db).execute(params).get();
