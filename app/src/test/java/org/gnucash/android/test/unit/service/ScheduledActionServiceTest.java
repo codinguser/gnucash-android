@@ -290,9 +290,6 @@ public class ScheduledActionServiceTest {
      * was done on Monday and it's Thursday, two backups have been
      * missed. Doing the two missed backups plus today's wouldn't be
      * useful, so just one should be done.</p>
-     *
-     * <p><i>Note</i>: the execution count will include the missed runs
-     * as computeNextCountBasedScheduledExecutionTime depends on it.</p>
      */
     @Test
     public void scheduledBackups_shouldRunOnlyOnce(){
@@ -302,6 +299,7 @@ public class ScheduledActionServiceTest {
         scheduledBackup.setRecurrence(PeriodType.MONTH, 1);
         scheduledBackup.setExecutionCount(2);
         scheduledBackup.setLastRun(LocalDateTime.now().minusMonths(2).toDate().getTime());
+        long previousLastRun = scheduledBackup.getLastRunTime();
 
         ExportParams backupParams = new ExportParams(ExportFormat.XML);
         backupParams.setExportTarget(ExportParams.ExportTarget.SD_CARD);
@@ -317,13 +315,16 @@ public class ScheduledActionServiceTest {
         // Check there's not a backup for each missed run
         ScheduledActionService.processScheduledActions(actions, mDb);
         assertThat(scheduledBackup.getExecutionCount()).isEqualTo(3);
+        assertThat(scheduledBackup.getLastRunTime()).isGreaterThan(previousLastRun);
         File[] backupFiles = backupFolder.listFiles();
         assertThat(backupFiles).hasSize(1);
         assertThat(backupFiles[0]).exists().hasExtension("gnca");
 
         // Check also across service runs
+        previousLastRun = scheduledBackup.getLastRunTime();
         ScheduledActionService.processScheduledActions(actions, mDb);
         assertThat(scheduledBackup.getExecutionCount()).isEqualTo(3);
+        assertThat(scheduledBackup.getLastRunTime()).isEqualTo(previousLastRun);
         backupFiles = backupFolder.listFiles();
         assertThat(backupFiles).hasSize(1);
         assertThat(backupFiles[0]).exists().hasExtension("gnca");
@@ -340,6 +341,7 @@ public class ScheduledActionServiceTest {
         ScheduledAction scheduledBackup = new ScheduledAction(ScheduledAction.ActionType.BACKUP);
         scheduledBackup.setStartTime(LocalDateTime.now().minusDays(2).toDate().getTime());
         scheduledBackup.setLastRun(scheduledBackup.getStartTime());
+        long previousLastRun = scheduledBackup.getLastRunTime();
         scheduledBackup.setExecutionCount(1);
         scheduledBackup.setRecurrence(PeriodType.WEEK, 1);
 
@@ -357,6 +359,7 @@ public class ScheduledActionServiceTest {
         ScheduledActionService.processScheduledActions(actions, mDb);
 
         assertThat(scheduledBackup.getExecutionCount()).isEqualTo(1);
+        assertThat(scheduledBackup.getLastRunTime()).isEqualTo(previousLastRun);
         assertThat(backupFolder.listFiles()).hasSize(0);
     }
 
