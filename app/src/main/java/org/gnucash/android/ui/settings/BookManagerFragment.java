@@ -54,6 +54,8 @@ import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.util.PreferencesHelper;
 
+import java.sql.Timestamp;
+
 /**
  * Fragment for managing the books in the database
  */
@@ -159,8 +161,12 @@ public class BookManagerFragment extends ListFragment implements
 
             final String bookUID = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_UID));
 
+            Timestamp lastSyncTime = PreferencesHelper.getLastExportTime(bookUID);
             TextView lastSyncText = (TextView) view.findViewById(R.id.last_sync_time);
-            lastSyncText.setText(PreferencesHelper.getLastExportTime(bookUID).toString());
+            if (lastSyncTime.equals(new Timestamp(0)))
+                lastSyncText.setText(R.string.last_export_time_never);
+            else
+                lastSyncText.setText(lastSyncTime.toString());
 
             TextView labelLastSync = (TextView) view.findViewById(R.id.label_last_sync);
             labelLastSync.setText(R.string.label_last_export_time);
