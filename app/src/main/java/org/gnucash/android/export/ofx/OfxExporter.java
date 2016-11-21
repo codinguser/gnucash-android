@@ -130,8 +130,6 @@ public class OfxExporter extends Exporter{
      * @throws ExporterException
      */
     private String generateOfxExport() throws ExporterException {
-        mAccountsList = mAccountsDbAdapter.getExportableAccounts(mExportParams.getExportStartTime());
-
         DocumentBuilderFactory docFactory = DocumentBuilderFactory
                 .newInstance();
         DocumentBuilder docBuilder;
@@ -169,6 +167,10 @@ public class OfxExporter extends Exporter{
 
     @Override
     public List<String> generateExport() throws ExporterException {
+        mAccountsList = mAccountsDbAdapter.getExportableAccounts(mExportParams.getExportStartTime());
+        if (mAccountsList.isEmpty())
+            return new ArrayList<>(); // Nothing to export, so no files generated
+
         BufferedWriter writer = null;
 
         try {
