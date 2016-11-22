@@ -158,7 +158,6 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         }
 
         try {
-            // FIXME: detect if there aren't transactions to export and inform the user
             mExportedFiles = mExporter.generateExport();
         } catch (final Exception e) {
             Log.e(TAG, "Error exporting: " + e.getMessage());
@@ -177,6 +176,9 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             }
             return false;
         }
+
+        if (mExportedFiles.isEmpty())
+            return false;
 
         switch (mExportParams.getExportTarget()) {
             case SHARING:
@@ -212,9 +214,16 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     protected void onPostExecute(Boolean exportResult) {
         if (mContext instanceof Activity) {
             if (!exportResult) {
-                Toast.makeText(mContext,
-                        mContext.getString(R.string.toast_export_error, mExportParams.getExportFormat().name()),
-                        Toast.LENGTH_LONG).show();
+                dismissProgressDialog();
+                if (mExportedFiles.isEmpty()) {
+                    Toast.makeText(mContext,
+                            R.string.toast_no_transactions_to_export,
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(mContext,
+                            mContext.getString(R.string.toast_export_error, mExportParams.getExportFormat().name()),
+                            Toast.LENGTH_LONG).show();
+                }
                 return;
             } else {
                 String targetLocation;
@@ -265,6 +274,10 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             }
         }
 
+        dismissProgressDialog();
+    }
+
+    private void dismissProgressDialog() {
         if (mContext instanceof Activity) {
             if (mProgressDialog != null && mProgressDialog.isShowing())
                 mProgressDialog.dismiss();
