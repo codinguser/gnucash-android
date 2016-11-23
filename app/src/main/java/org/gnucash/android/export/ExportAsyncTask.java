@@ -80,6 +80,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Asynchronous task for exporting transactions.
@@ -276,62 +277,50 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
     private void moveExportToGoogleDrive(){
         Log.i(TAG, "Moving exported file to Google Drive");
+        final long TIMEOUT = 5; // seconds
         final GoogleApiClient googleApiClient = BackupPreferenceFragment.getGoogleApiClient(GnuCashApplication.getAppContext());
         googleApiClient.blockingConnect();
-        final ResultCallback<DriveFolder.DriveFileResult> fileCallback = new
-                ResultCallback<DriveFolder.DriveFileResult>() {
-                    @Override
-                    public void onResult(DriveFolder.DriveFileResult result) {
-                        if (!result.getStatus().isSuccess())
-                            Log.e(TAG, "Error while trying to sync to Google Drive");
-                        else
-                            Log.i(TAG, "Created a file with content: " + result.getDriveFile().getDriveId());
-                    }
-                };
 
-        Drive.DriveApi.newDriveContents(googleApiClient).setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
-            @Override
-            public void onResult(DriveApi.DriveContentsResult result) {
-                if (!result.getStatus().isSuccess()) {
-                    Log.e(TAG, "Error while trying to create new file contents");
-                    return;
+        DriveApi.DriveContentsResult driveContentsResult =
+                Drive.DriveApi.newDriveContents(googleApiClient).await(TIMEOUT, TimeUnit.SECONDS);
+        if (!driveContentsResult.getStatus().isSuccess()) {
+            Log.e(TAG, "Error while trying to create new file contents");
+            return;
+        }
+        final DriveContents driveContents = driveContentsResult.getDriveContents();
+        DriveFolder.DriveFileResult driveFileResult = null;
+        try {
+            // write content to DriveContents
+            OutputStream outputStream = driveContents.getOutputStream();
+            for (String exportedFilePath : mExportedFiles) {
+                File exportedFile = new File(exportedFilePath);
+                FileInputStream fileInputStream = new FileInputStream(exportedFile);
+                byte[] buffer = new byte[1024];
+                int count;
+
+                while ((count = fileInputStream.read(buffer)) >= 0) {
+                    outputStream.write(buffer, 0, count);
                 }
-                final DriveContents driveContents = result.getDriveContents();
-                try {
-                    // write content to DriveContents
-                    OutputStream outputStream = driveContents.getOutputStream();
-                    for (String exportedFilePath : mExportedFiles) {
-                        File exportedFile = new File(exportedFilePath);
-                        FileInputStream fileInputStream = new FileInputStream(exportedFile);
-                        byte[] buffer = new byte[1024];
-                        int count;
+                fileInputStream.close();
+                outputStream.flush();
+                exportedFile.delete();
 
-                        while ((count = fileInputStream.read(buffer)) >= 0) {
-                            outputStream.write(buffer, 0, count);
-                        }
-                        fileInputStream.close();
-                        outputStream.flush();
-                        exportedFile.delete();
+                MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
+                        .setTitle(exportedFile.getName())
+                        .setMimeType(mExporter.getExportMimeType())
+                        .build();
 
-                        MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
-                                .setTitle(exportedFile.getName())
-                                .setMimeType(mExporter.getExportMimeType())
-                                .build();
-
-                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-                        String folderId = sharedPreferences.getString(mContext.getString(R.string.key_google_drive_app_folder_id), "");
-                        DriveFolder folder = Drive.DriveApi.getFolder(googleApiClient, DriveId.decodeFromString(folderId));
-                        // create a file on root folder
-                        folder.createFile(googleApiClient, changeSet, driveContents)
-                                .setResultCallback(fileCallback);
-                    }
-
-                } catch (IOException e) {
-                    Crashlytics.logException(e);
-                    Log.e(TAG, e.getMessage());
-                }
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+                String folderId = sharedPreferences.getString(mContext.getString(R.string.key_google_drive_app_folder_id), "");
+                DriveFolder folder = Drive.DriveApi.getFolder(googleApiClient, DriveId.decodeFromString(folderId));
+                // create a file on root folder
+                driveFileResult = folder.createFile(googleApiClient, changeSet, driveContents)
+                                                .await(TIMEOUT, TimeUnit.SECONDS);
             }
-        });
+        } catch (IOException e) {
+            Crashlytics.logException(e);
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     private void moveExportToDropbox() {
