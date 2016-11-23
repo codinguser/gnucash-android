@@ -268,7 +268,7 @@ public class Transaction extends BaseModel{
     public Money getImbalance(){
         Money imbalance = Money.createZeroInstance(mCurrencyCode);
         for (Split split : mSplitList) {
-            if (!split.getQuantity().getCurrency().getCurrencyCode().equals(mCurrencyCode)) {
+            if (!split.getQuantity().getCommodity().getCurrencyCode().equals(mCurrencyCode)) {
                 // this may happen when importing XML exported from GNCA before 2.0.0
                 // these transactions should only be imported from XML exported from GNC desktop
                 // so imbalance split should not be generated for them
@@ -295,16 +295,15 @@ public class Transaction extends BaseModel{
     public static Money computeBalance(String accountUID, List<Split> splitList) {
         AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
         AccountType accountType = accountsDbAdapter.getAccountType(accountUID);
-        String currencyCode = accountsDbAdapter.getAccountCurrencyCode(accountUID);
-        Currency accountCurrency = Currency.getInstance(currencyCode);
+        String accountCurrencyCode = accountsDbAdapter.getAccountCurrencyCode(accountUID);
 
         boolean isDebitAccount = accountType.hasDebitNormalBalance();
-        Money balance = Money.createZeroInstance(currencyCode);
+        Money balance = Money.createZeroInstance(accountCurrencyCode);
         for (Split split : splitList) {
             if (!split.getAccountUID().equals(accountUID))
                 continue;
             Money absAmount;
-            if (split.getValue().getCurrency() == accountCurrency){
+            if (split.getValue().getCommodity().getCurrencyCode().equals(accountCurrencyCode)){
                 absAmount = split.getValue().abs();
             } else { //if this split belongs to the account, then either its value or quantity is in the account currency
                 absAmount = split.getQuantity().abs();

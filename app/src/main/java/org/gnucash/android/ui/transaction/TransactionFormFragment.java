@@ -472,7 +472,7 @@ public class TransactionFormFragment extends Fragment implements
         if (mSplitsList.size() == 2){
             for (Split split : mSplitsList) {
                 if (split.getAccountUID().equals(mAccountUID)) {
-                    if (!split.getQuantity().getCurrency().equals(mTransaction.getCurrency())){
+                    if (!split.getQuantity().getCommodity().equals(mTransaction.getCommodity())){
                         mSplitQuantity = split.getQuantity();
                     }
                 }

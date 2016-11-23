@@ -613,6 +613,20 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     }
 
     /**
+     * Returns the GUID of the imbalance account for the commodity
+     *
+     * <p>This method will not create the imbalance account if it doesn't exist</p>
+     *
+     * @param commodity Commodity for the imbalance account
+     * @return GUID of the account or null if the account doesn't exist yet
+     * @see #getOrCreateImbalanceAccountUID(java.util.Currency)
+     */
+    public String getImbalanceAccountUID(Commodity commodity){
+        String imbalanceAccountName = getImbalanceAccountName(commodity);
+        return findAccountUidByFullName(imbalanceAccountName);
+    }
+
+    /**
      * Creates the account with the specified name and returns its unique identifier.
      * <p>If a full hierarchical account name is provided, then the whole hierarchy is created and the
      * unique ID of the last account (at bottom) of the hierarchy is returned</p>
@@ -1174,6 +1188,16 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      */
     public static String getImbalanceAccountName(Currency currency){
         return getImbalanceAccountPrefix() + currency.getCurrencyCode();
+    }
+
+    /**
+     * Returns the imbalance account where to store transactions which are not double entry.
+     *
+     * @param commodity Commodity of the transaction
+     * @return Imbalance account name
+     */
+    public static String getImbalanceAccountName(Commodity commodity){
+        return getImbalanceAccountPrefix() + commodity.getCurrencyCode();
     }
 
     /**

@@ -114,7 +114,7 @@ public final class Money implements Comparable<Money>{
 	/**
 	 * Overloaded constructor.
 	 * Accepts strings as arguments and parses them to create the Money object
-	 * @param amount Numrical value of the Money
+	 * @param amount Numerical value of the Money
 	 * @param currencyCode Currency code as specified by ISO 4217
 	 */
 	public Money(String amount, String currencyCode){
@@ -154,14 +154,6 @@ public final class Money implements Comparable<Money>{
 		Commodity commodity = Commodity.getInstance(currencyCode);
         return new Money(BigDecimal.ZERO, commodity);
     }
-
-	/**
-	 * Returns the currency of the money object
-	 * @return {@link Currency} of the money value
-	 */
-	public Currency getCurrency() {
-		return Currency.getInstance(mCommodity.getCurrencyCode());
-	}
 
 	/**
 	 * Returns the commodity used by the Money

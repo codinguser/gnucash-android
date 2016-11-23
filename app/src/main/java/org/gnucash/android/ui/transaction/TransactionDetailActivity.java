@@ -130,7 +130,8 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
         LayoutInflater inflater = LayoutInflater.from(this);
         int index = 0;
         for (Split split : transaction.getSplits()) {
-            if (!useDoubleEntry && split.getAccountUID().equals(accountsDbAdapter.getImbalanceAccountUID(split.getValue().getCurrency()))){
+            if (!useDoubleEntry && split.getAccountUID().equals(
+                    accountsDbAdapter.getImbalanceAccountUID(split.getValue().getCommodity()))) {
                 //do now show imbalance accounts for single entry use case
                 continue;
             }
