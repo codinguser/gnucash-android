@@ -408,6 +408,7 @@ public class AccountFormFragment extends Fragment {
         }
 
         mPlaceholderCheckBox.setChecked(account.isPlaceholderAccount());
+        mSelectedColor = account.getColor();
         mColorSquare.setBackgroundColor(account.getColor());
 
         setAccountTypeSelection(account.getAccountType());
