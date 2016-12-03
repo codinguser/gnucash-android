@@ -764,6 +764,21 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     }
 
     /**
+     * Returns a Cursor set of accounts which fulfill <code>where</code>
+     * <p>This method returns the favorite accounts first, sorted by name, and then the other accounts,
+     * sorted by name.</p>
+     * @param where SQL WHERE statement without the 'WHERE' itself
+     * @param whereArgs where args
+     * @return Cursor set of accounts which fulfill <code>where</code>
+     */
+    public Cursor fetchAccountsOrderedByFavoriteAndFullName(String where, String[] whereArgs) {
+        Log.v(LOG_TAG, "Fetching all accounts from db where " + where + " order by Favorite then Name");
+        return mDb.query(AccountEntry.TABLE_NAME,
+                null, where, whereArgs, null, null,
+                AccountEntry.COLUMN_FAVORITE + " DESC " + AccountEntry.COLUMN_FULL_NAME);
+    }
+
+    /**
      * Returns the balance of an account while taking sub-accounts into consideration
      * @return Account Balance of an account including sub-accounts
      */

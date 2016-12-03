@@ -1,0 +1,10 @@
+<<<<<<< Updated upstream
+#Tue Oct 18 19:01:00 CEST 2016
+=======
+#Sat Dec 03 13:18:05 EST 2016
+>>>>>>> Stashed changes
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-2.14.1-all.zip
