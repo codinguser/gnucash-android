@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 - 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2016 David Landry <davidlandry93@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,25 +18,19 @@ package org.gnucash.android.util;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.ContactsContract;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 
 /**
- * Cursor adapter which looks up the fully qualified account name and returns that instead of just the simple name.
+ * Cursor adapter which looks up the fully qualified account name as well as its favorite status.
  * <p>The fully qualified account name includes the parent hierarchy</p>
  *
- * @author Ngewi Fet <ngewif@gmail.com>
+ * @author David Landry <davidlandry93@gmail.com>
  */
 public class FavoritableQualifiedAccountNameCursorAdapter extends SimpleCursorAdapter {
 
@@ -52,16 +46,23 @@ public class FavoritableQualifiedAccountNameCursorAdapter extends SimpleCursorAd
         setDropDownViewResource(R.layout.favorite_transfer_account_spinner_item);
     }
 
+    /**
+     * Binds an account name and its favorite status to an appropriate view.
+     * @param view The view to bind the account to
+     * @param context Application context
+     * @param cursor Cursor to accounts
+     */
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         super.bindView(view, context, cursor);
 
         Integer is_favorite = cursor.getInt(cursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_FAVORITE));
-        String colName = cursor.getString(cursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_NAME));
 
+        View is_favorite_image = view.findViewById(R.id.favorite_status);
         if(is_favorite == 0) {
-            ImageView is_favorite_image = (ImageView) view.findViewById(R.id.favorite_status);
             is_favorite_image.setVisibility(View.INVISIBLE);
+        } else {
+            is_favorite_image.setVisibility(View.VISIBLE);
         }
     }
 
