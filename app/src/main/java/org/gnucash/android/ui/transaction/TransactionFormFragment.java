@@ -82,6 +82,7 @@ import org.gnucash.android.ui.util.RecurrenceParser;
 import org.gnucash.android.ui.util.RecurrenceViewClickListener;
 import org.gnucash.android.ui.util.widget.CalculatorEditText;
 import org.gnucash.android.ui.util.widget.TransactionTypeSwitch;
+import org.gnucash.android.util.FavoritableQualifiedAccountNameCursorAdapter;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.math.BigDecimal;
@@ -120,7 +121,7 @@ public class TransactionFormFragment extends Fragment implements
 	/**
 	 * Adapter for transfer account spinner
 	 */
-	private QualifiedAccountNameCursorAdapter mAccountCursorAdapter;
+	private FavoritableQualifiedAccountNameCursorAdapter mAccountCursorAdapter;
 
 	/**
 	 * Cursor for transfer account spinner
@@ -581,7 +582,7 @@ public class TransactionFormFragment extends Fragment implements
         }
 		mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(conditions, new String[]{mAccountUID, AccountType.ROOT.name()});
 
-        mAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), mCursor);
+        mAccountCursorAdapter = new FavoritableQualifiedAccountNameCursorAdapter(getActivity(), mCursor);
 		mTransferAccountSpinner.setAdapter(mAccountCursorAdapter);
 	}
 

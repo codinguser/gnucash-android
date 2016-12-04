@@ -775,7 +775,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         Log.v(LOG_TAG, "Fetching all accounts from db where " + where + " order by Favorite then Name");
         return mDb.query(AccountEntry.TABLE_NAME,
                 null, where, whereArgs, null, null,
-                AccountEntry.COLUMN_FAVORITE + " DESC, " + AccountEntry.COLUMN_FULL_NAME);
+                AccountEntry.COLUMN_FAVORITE + " DESC, " + AccountEntry.COLUMN_FULL_NAME + " ASC");
     }
 
     /**
