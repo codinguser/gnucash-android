@@ -266,14 +266,17 @@ public class Transaction extends BaseModel{
      * @return Money imbalance of the transaction or zero if it is a multi-currency transaction
      */
     public Money getImbalance(){
-        Money zero = Money.createZeroInstance(mCurrencyCode);
-        Money imbalance = zero;
+        Money imbalance = Money.createZeroInstance(mCurrencyCode);
         for (Split split : mSplitList) {
-            if (!split.getQuantity().getCurrency().getCurrencyCode().equals(mCurrencyCode)) {
+            Money quantity = split.getQuantity();
+            if (quantity.isAmountZero()) {
+                continue;
+            }
+            if (!quantity.getCurrency().getCurrencyCode().equals(mCurrencyCode)) {
                 // this may happen when importing XML exported from GNCA before 2.0.0
                 // these transactions should only be imported from XML exported from GNC desktop
                 // so imbalance split should not be generated for them
-                return zero;
+                return Money.createZeroInstance(mCurrencyCode);
             }
             Money amount = split.getValue().abs();
             if (split.getType() == TransactionType.DEBIT)
