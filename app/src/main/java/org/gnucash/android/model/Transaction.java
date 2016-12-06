@@ -272,7 +272,7 @@ public class Transaction extends BaseModel{
                 // this may happen when importing XML exported from GNCA before 2.0.0
                 // these transactions should only be imported from XML exported from GNC desktop
                 // so imbalance split should not be generated for them
-                return Money.createZeroInstance(mCurrencyCode);
+                return imbalance;
             }
             Money amount = split.getValue().abs();
             if (split.getType() == TransactionType.DEBIT)
