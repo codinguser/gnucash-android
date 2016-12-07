@@ -269,7 +269,7 @@ public class CalculatorEditText extends EditText {
         } catch (RuntimeException e) {
             setError(getContext().getString(R.string.label_error_invalid_expression));
             String msg = "Invalid expression: " + amountString;
-            Log.e(LOG_TAG, msg);
+            Log.e(LOG_TAG, msg, e);
             Crashlytics.log(msg);
             return "";
         }

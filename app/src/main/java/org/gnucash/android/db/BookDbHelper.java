@@ -174,7 +174,7 @@ public class BookDbHelper extends SQLiteOpenHelper {
         try {
             nameFile.createNewFile();
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Error creating name file for the database: " + nameFile.getName());
+            Log.e(LOG_TAG, "Error creating name file for the database: " + nameFile.getName(), e);
             e.printStackTrace();
         }
     }

@@ -130,9 +130,9 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
             Log.d(LOG_TAG, deleted + " splits deleted");
 
             mDb.setTransactionSuccessful();
-        } catch (SQLException sqlEx) {
-            Log.e(LOG_TAG, sqlEx.getMessage());
-            Crashlytics.logException(sqlEx);
+        } catch (SQLException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+            Crashlytics.logException(e);
         } finally {
             mDb.endTransaction();
         }

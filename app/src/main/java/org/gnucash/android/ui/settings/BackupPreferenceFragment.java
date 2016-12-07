@@ -336,7 +336,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 								Log.e(BackupPreferenceFragment.class.getName(), "Trying resolution of Google API connection failure");
 								connectionResult.startResolutionForResult((Activity) context, REQUEST_RESOLVE_CONNECTION);
 							} catch (IntentSender.SendIntentException e) {
-								Log.e(BackupPreferenceFragment.class.getName(), e.getMessage());
+								Log.e(BackupPreferenceFragment.class.getName(), e.getMessage(), e);
 								Toast.makeText(context, R.string.toast_unable_to_connect_to_google_drive, Toast.LENGTH_LONG).show();
 							}
 						} else {

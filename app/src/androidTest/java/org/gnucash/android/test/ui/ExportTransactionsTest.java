@@ -112,7 +112,7 @@ public class ExportTransactionsTest extends
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
-            Log.e(LOG_TAG, "Error getting database: " + e.getMessage());
+            Log.e(LOG_TAG, "Error getting database: " + e.getMessage(), e);
             mDb = mDbHelper.getReadableDatabase();
         }
 

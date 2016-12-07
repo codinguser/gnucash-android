@@ -213,7 +213,7 @@ public final class Money implements Comparable<Money>{
 					" with scale " + getScale() +
 					" has amount " + mAmount.toString();
 			Crashlytics.log(msg);
-			Log.e(LOG_TAG, msg);
+			Log.e(LOG_TAG, msg, e);
 			throw e;
 		}
 	}

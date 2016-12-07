@@ -80,9 +80,8 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
         try {
             InputStream accountInputStream = mContext.getContentResolver().openInputStream(uris[0]);
             mImportedBookUID = GncXmlImporter.parse(accountInputStream);
-
         } catch (Exception exception){
-            Log.e(ImportAsyncTask.class.getName(), "" + exception.getMessage());
+            Log.e(ImportAsyncTask.class.getName(), "" + exception.getMessage(), exception);
             Crashlytics.log("Could not open: " + uris[0].toString());
             Crashlytics.logException(exception);
             exception.printStackTrace();

@@ -435,7 +435,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
             releaseTitle.append(" - v").append(packageInfo.versionName);
         } catch (NameNotFoundException e) {
             Crashlytics.logException(e);
-            Log.e(LOG_TAG, "Error displaying 'Whats new' dialog");
+            Log.e(LOG_TAG, "Error displaying 'Whats new' dialog", e);
         }
 
         return new AlertDialog.Builder(context)

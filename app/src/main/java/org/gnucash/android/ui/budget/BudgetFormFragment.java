@@ -283,7 +283,7 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
             Date date = TransactionFormFragment.DATE_FORMATTER.parse(((TextView) v).getText().toString());
             dateMillis = date.getTime();
         } catch (ParseException e) {
-            Log.e(getTag(), "Error converting input time to Date object");
+            Log.e(getTag(), "Error converting input time to Date object", e);
         }
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(dateMillis);

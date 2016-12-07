@@ -130,7 +130,7 @@ public class AccountsActivityTest {
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
-            Log.e("AccountsActivityTest", "Error getting database: " + e.getMessage());
+            Log.e("AccountsActivityTest", "Error getting database: " + e.getMessage(), e);
             mDb = mDbHelper.getReadableDatabase();
         }
         mSplitsDbAdapter        = SplitsDbAdapter.getInstance();

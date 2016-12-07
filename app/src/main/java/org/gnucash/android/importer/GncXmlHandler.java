@@ -546,10 +546,10 @@ public class GncXmlHandler extends DefaultHandler {
                         try {
                             if (mAccount != null)
                                 mAccount.setColor(color);
-                        } catch (IllegalArgumentException ex) {
+                        } catch (IllegalArgumentException e) {
                             //sometimes the color entry in the account file is "Not set" instead of just blank. So catch!
-                            Log.e(LOG_TAG, "Invalid color code '" + color + "' for account " + mAccount.getName());
-                            Crashlytics.logException(ex);
+                            Log.e(LOG_TAG, "Invalid color code '" + color + "' for account " + mAccount.getName(), e);
+                            Crashlytics.logException(e);
                         }
                     }
                     mInColorSlot = false;
@@ -623,7 +623,7 @@ public class GncXmlHandler extends DefaultHandler {
                 } catch (ParseException e) {
                     Crashlytics.logException(e);
                     String message = "Unable to parse transaction time - " + characterString;
-                    Log.e(LOG_TAG, message + "\n" + e.getMessage());
+                    Log.e(LOG_TAG, message + "\n" + e.getMessage(), e);
                     Crashlytics.log(message);
                     throw new SAXException(message, e);
                 }
@@ -739,10 +739,10 @@ public class GncXmlHandler extends DefaultHandler {
                     PeriodType periodType = PeriodType.valueOf(characterString.toUpperCase());
                     periodType.setMultiplier(mRecurrenceMultiplier);
                     mRecurrence.setPeriodType(periodType);
-                } catch (IllegalArgumentException ex){ //the period type constant is not supported
+                } catch (IllegalArgumentException e) { //the period type constant is not supported
                     String msg = "Unsupported period constant: " + characterString;
-                    Log.e(LOG_TAG, msg);
-                    Crashlytics.logException(ex);
+                    Log.e(LOG_TAG, msg, e);
+                    Crashlytics.logException(e);
                     mIgnoreScheduledAction = true;
                 }
                 break;
@@ -770,7 +770,7 @@ public class GncXmlHandler extends DefaultHandler {
                     }
                 } catch (ParseException e) {
                     String msg = "Error parsing scheduled action date " + characterString;
-                    Log.e(LOG_TAG, msg + e.getMessage());
+                    Log.e(LOG_TAG, msg + "\n" + e.getMessage(), e);
                     Crashlytics.log(msg);
                     Crashlytics.logException(e);
                     throw new SAXException(msg, e);
@@ -1057,7 +1057,7 @@ public class GncXmlHandler extends DefaultHandler {
             mIgnoreTemplateTransaction = false; //we have successfully parsed an amount
         } catch (NumberFormatException | ParseException e) {
             String msg = "Error parsing template credit split amount " + characterString;
-            Log.e(LOG_TAG, msg + "\n" + e.getMessage());
+            Log.e(LOG_TAG, msg + "\n" + e.getMessage(), e);
             Crashlytics.log(msg);
             Crashlytics.logException(e);
         } finally {

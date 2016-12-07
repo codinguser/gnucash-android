@@ -89,7 +89,7 @@ public class CalculatorEditTextTest {
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
-            Log.e("CalculatorEditTextTest", "Error getting database: " + e.getMessage());
+            Log.e("CalculatorEditTextTest", "Error getting database: " + e.getMessage(), e);
             mDb = mDbHelper.getReadableDatabase();
         }
 //        mSplitsDbAdapter = new SplitsDbAdapter(mDb);
