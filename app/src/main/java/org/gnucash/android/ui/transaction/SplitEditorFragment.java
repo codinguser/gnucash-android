@@ -79,6 +79,8 @@ import butterknife.ButterKnife;
  */
 public class SplitEditorFragment extends Fragment {
 
+    private static final String LOG_TAG = "SplitEditorFragment";
+
     @Bind(R.id.split_list_layout)   LinearLayout mSplitsLinearLayout;
     @Bind(R.id.calculator_keyboard) KeyboardView mKeyboardView;
     @Bind(R.id.imbalance_textview)  TextView mImbalanceTextView;
@@ -316,7 +318,7 @@ public class SplitEditorFragment extends Fragment {
             if (expression != null && expression.validate().isValid()) {
                 return new BigDecimal(expression.evaluate());
             } else {
-                Log.v(SplitEditorFragment.this.getClass().getSimpleName(),
+                Log.v(SplitEditorFragment.LOG_TAG,
                         "Incomplete expression for updating imbalance: " + expression);
                 return BigDecimal.ZERO;
             }

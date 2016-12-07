@@ -55,6 +55,9 @@ import java.util.Locale;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class CalculatorEditText extends EditText {
+
+    private static final String LOG_TAG = "CalculatorEditText";
+
     private CalculatorKeyboard mCalculatorKeyboard;
 
     private Commodity mCommodity = Commodity.DEFAULT_COMMODITY;
@@ -266,7 +269,7 @@ public class CalculatorEditText extends EditText {
         } catch (RuntimeException e) {
             setError(getContext().getString(R.string.label_error_invalid_expression));
             String msg = "Invalid expression: " + amountString;
-            Log.e(this.getClass().getSimpleName(), msg);
+            Log.e(LOG_TAG, msg);
             Crashlytics.log(msg);
             return "";
         }
@@ -276,7 +279,7 @@ public class CalculatorEditText extends EditText {
             setValue(result);
         } else {
             setError(getContext().getString(R.string.label_error_invalid_expression));
-            Log.w(VIEW_LOG_TAG, "Expression is null or invalid: " + expression);
+            Log.w(LOG_TAG, "Expression is null or invalid: " + expression);
         }
         return getText().toString();
     }
@@ -318,7 +321,7 @@ public class CalculatorEditText extends EditText {
             return AmountParser.parse(getText().toString());
         } catch (ParseException e){
             String msg = "Error parsing amount string " + getText() + " from CalculatorEditText";
-            Log.i(getClass().getSimpleName(), msg, e);
+            Log.i(LOG_TAG, msg, e);
             return null;
         }
     }

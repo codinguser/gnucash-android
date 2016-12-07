@@ -152,7 +152,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
         long start = System.nanoTime();
         long rowInserted = super.bulkAddRecords(transactionList, updateMethod);
         long end = System.nanoTime();
-        Log.d(getClass().getSimpleName(), String.format("bulk add transaction time %d ", end - start));
+        Log.d(LOG_TAG, String.format("bulk add transaction time %d ", end - start));
         List<Split> splitList = new ArrayList<>(transactionList.size()*3);
         for (Transaction transaction : transactionList) {
             splitList.addAll(transaction.getSplits());

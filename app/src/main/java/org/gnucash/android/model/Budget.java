@@ -35,6 +35,8 @@ import java.util.Set;
  */
 public class Budget extends BaseModel {
 
+    private static final String LOG_TAG = "Budget";
+
     private String mName;
     private String mDescription;
     private Recurrence mRecurrence;
@@ -181,7 +183,7 @@ public class Budget extends BaseModel {
                 try {
                     sum = sum.add(budgetAmount.getAmount().abs());
                 } catch (Money.CurrencyMismatchException ex){
-                    Log.i(getClass().getSimpleName(), "Skip some budget amounts with different currency");
+                    Log.i(LOG_TAG, "Skip some budget amounts with different currency");
                 }
             }
         }
