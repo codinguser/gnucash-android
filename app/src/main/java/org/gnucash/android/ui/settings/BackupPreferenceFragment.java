@@ -352,7 +352,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 	 * Opens a dialog for a user to select a backup to restore and then restores the backup
 	 */
 	private void restoreBackup() {
-		Log.i("Settings", "Opening GnuCash XML backups for restore");
+		Log.i(LOG_TAG, "Opening GnuCash XML backups for restore");
 		String bookUID = BooksDbAdapter.getInstance().getActiveBookUID();
 		File[] backupFiles = new File(Exporter.getBackupFolderPath(bookUID)).listFiles();
 		if (backupFiles == null || backupFiles.length == 0){

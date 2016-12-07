@@ -64,6 +64,8 @@ import butterknife.ButterKnife;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class WidgetConfigurationActivity extends Activity {
+	private static final String LOG_TAG = "WidgetConfiguration";
+
 	private AccountsDbAdapter mAccountsDbAdapter;
     private int mAppWidgetId;
 	
@@ -198,7 +200,7 @@ public class WidgetConfigurationActivity extends Activity {
 	 * @param bookUID GUID of the book with the relevant account
 	 */
 	public static void updateWidget(final Context context, int appWidgetId, String accountUID, String bookUID) {
-		Log.i("WidgetConfiguration", "Updating widget: " + appWidgetId);
+		Log.i(LOG_TAG, "Updating widget: " + appWidgetId);
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 
 		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(BookDbHelper.getDatabase(bookUID));
@@ -207,7 +209,7 @@ public class WidgetConfigurationActivity extends Activity {
         try {
             account = accountsDbAdapter.getRecord(accountUID);
         } catch (IllegalArgumentException e) {
-			Log.i("WidgetConfiguration", "Account not found, resetting widget " + appWidgetId);
+			Log.i(LOG_TAG, "Account not found, resetting widget " + appWidgetId);
 			//if account has been deleted, let the user know
 			RemoteViews views = new RemoteViews(context.getPackageName(),
 					R.layout.widget_4x1);
@@ -264,7 +266,7 @@ public class WidgetConfigurationActivity extends Activity {
 	 * @param context Application context
 	 */
 	public static void updateAllWidgets(final Context context){
-		Log.i("WidgetConfiguration", "Updating all widgets");
+		Log.i(LOG_TAG, "Updating all widgets");
 		AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
 		ComponentName componentName = new ComponentName(context, TransactionAppWidgetProvider.class);
 		final int[] appWidgetIds = widgetManager.getAppWidgetIds(componentName);

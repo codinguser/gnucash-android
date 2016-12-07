@@ -87,8 +87,7 @@ public class GncXmlExporter extends Exporter{
      * @param params Parameters for the export
      */
     public GncXmlExporter(ExportParams params) {
-        super(params, null);
-        LOG_TAG = "GncXmlExporter";
+        this(params, null);
     }
 
     /**
@@ -206,7 +205,7 @@ public class GncXmlExporter extends Exporter{
                 xmlSerializer.text(parentUID);
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_PARENT_UID);
             } else {
-                Log.d("export", "root account : " + cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID)));
+                Log.d(LOG_TAG, "export root account : " + cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID)));
             }
             xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCOUNT);
         }
@@ -920,7 +919,7 @@ public class GncXmlExporter extends Exporter{
             return true;
         } catch (IOException | ExporterException e) {
             Crashlytics.logException(e);
-            Log.e("GncXmlExporter", "Error creating XML  backup", e);
+            Log.e(LOG_TAG, "Error creating XML  backup", e);
             return false;
         }
     }

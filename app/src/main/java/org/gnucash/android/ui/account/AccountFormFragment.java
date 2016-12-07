@@ -84,6 +84,8 @@ import butterknife.ButterKnife;
  */
 public class AccountFormFragment extends Fragment {
 
+    private static final String LOG_TAG = "AccountFormFragment";
+
     /**
      * Tag for the color picker dialog fragment
      */
@@ -724,7 +726,7 @@ public class AccountFormFragment extends Fragment {
      * Reads the fields from the account form and saves as a new account
      */
 	private void saveAccount() {
-        Log.i("AccountFormFragment", "Saving account");
+        Log.i(LOG_TAG, "Saving account");
         if (mAccountsDbAdapter == null)
             mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         // accounts to update, in case we're updating full names of a sub account tree

@@ -30,6 +30,8 @@ import java.nio.channels.FileChannel;
  * The destination directory is assumed to already exist
  */
 public class RecursiveMoveFiles implements Runnable {
+    private static final String LOG_TAG = "RecursiveMoveFiles";
+
     File mSource;
     File mDestination;
 
@@ -89,7 +91,7 @@ public class RecursiveMoveFiles implements Runnable {
                 Log.d(MigrationHelper.LOG_TAG, "Error moving file: " + src.getAbsolutePath());
             }
         }
-        Log.d("RecursiveMoveFiles", String.format("Moved %d files from %s to %s", copyCount, src.getPath(), dst.getPath()));
+        Log.d(LOG_TAG, String.format("Moved %d files from %s to %s", copyCount, src.getPath(), dst.getPath()));
         return copyCount;
     }
 

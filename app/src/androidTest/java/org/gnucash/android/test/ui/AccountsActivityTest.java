@@ -92,6 +92,8 @@ import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
 public class AccountsActivityTest {
+    private static final String LOG_TAG = "AccountsActivityTest";
+
     private static final String ACCOUNTS_CURRENCY_CODE = "USD";
     // Don't add static here, otherwise it gets set to null by super.tearDown()
     private final Commodity ACCOUNTS_CURRENCY = Commodity.getInstance(ACCOUNTS_CURRENCY_CODE);
@@ -130,7 +132,7 @@ public class AccountsActivityTest {
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
-            Log.e("AccountsActivityTest", "Error getting database: " + e.getMessage(), e);
+            Log.e(LOG_TAG, "Error getting database: " + e.getMessage(), e);
             mDb = mDbHelper.getReadableDatabase();
         }
         mSplitsDbAdapter        = SplitsDbAdapter.getInstance();
