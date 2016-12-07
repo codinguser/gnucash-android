@@ -225,16 +225,19 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         switch(updateMethod){
             case insert:
                 synchronized(getInsertStatement()) {
+                    Log.v(LOG_TAG, "insert " + model.getClass().getSimpleName() + " " + model.getUID());
                     setBindings(getInsertStatement(), model).execute();
                 }
                 break;
             case update:
                 synchronized(getUpdateStatement()) {
+                    Log.v(LOG_TAG, "update " + model.getClass().getSimpleName() + " " + model.getUID());
                     setBindings(getUpdateStatement(), model).execute();
                 }
                 break;
             default:
                 synchronized(getReplaceStatement()) {
+                    Log.v(LOG_TAG, "replace " + model.getClass().getSimpleName() + " " + model.getUID());
                     setBindings(getReplaceStatement(), model).execute();
                 }
                 break;
@@ -253,6 +256,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
             case update:
                 synchronized(getUpdateStatement()) {
                     for (Model model : modelList) {
+                        Log.v(LOG_TAG, "update " + model.getClass().getSimpleName() + " " + model.getUID());
                         setBindings(getUpdateStatement(), model).execute();
                         nRow++;
                     }
@@ -261,6 +265,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
             case insert:
                 synchronized(getInsertStatement()) {
                     for (Model model : modelList) {
+                        Log.v(LOG_TAG, "insert " + model.getClass().getSimpleName() + " " + model.getUID());
                         setBindings(getInsertStatement(), model).execute();
                         nRow++;
                     }
@@ -269,6 +274,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
             default:
                 synchronized(getReplaceStatement()) {
                     for (Model model : modelList) {
+                        Log.v(LOG_TAG, "replace " + model.getClass().getSimpleName() + " " + model.getUID());
                         setBindings(getReplaceStatement(), model).execute();
                         nRow++;
                     }
