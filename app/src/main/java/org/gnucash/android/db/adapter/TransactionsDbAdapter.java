@@ -130,9 +130,9 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
             Log.d(LOG_TAG, deleted + " splits deleted");
 
             mDb.setTransactionSuccessful();
-        } catch (SQLException sqlEx) {
-            Log.e(LOG_TAG, sqlEx.getMessage());
-            Crashlytics.logException(sqlEx);
+        } catch (SQLException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+            Crashlytics.logException(e);
         } finally {
             mDb.endTransaction();
         }
@@ -152,7 +152,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
         long start = System.nanoTime();
         long rowInserted = super.bulkAddRecords(transactionList, updateMethod);
         long end = System.nanoTime();
-        Log.d(getClass().getSimpleName(), String.format("bulk add transaction time %d ", end - start));
+        Log.d(LOG_TAG, String.format("bulk add transaction time %d ", end - start));
         List<Split> splitList = new ArrayList<>(transactionList.size()*3);
         for (Transaction transaction : transactionList) {
             splitList.addAll(transaction.getSplits());

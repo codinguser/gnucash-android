@@ -35,7 +35,7 @@ import java.lang.ref.WeakReference;
  * it can take some time and would block the UI thread otherwise.
  */
 public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
-    public static final String LOG_TAG = AccountBalanceTask.class.getName();
+    public static final String LOG_TAG = "AccountBalanceTask";
 
     private final WeakReference<TextView> accountBalanceTextViewReference;
     private final AccountsDbAdapter accountsDbAdapter;
@@ -56,9 +56,9 @@ public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
         Money balance = Money.getZeroInstance();
         try {
             balance = accountsDbAdapter.getAccountBalance(params[0], -1, System.currentTimeMillis());
-        } catch (Exception ex) {
-            Log.e(LOG_TAG, "Error computing account balance ", ex);
-            Crashlytics.logException(ex);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error computing account balance ", e);
+            Crashlytics.logException(e);
         }
         return balance;
     }

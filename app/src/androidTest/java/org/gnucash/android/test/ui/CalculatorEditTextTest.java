@@ -56,6 +56,8 @@ import static org.hamcrest.Matchers.not;
 // TODO: Find out how to press the keys in the KeyboardView.
 @RunWith(AndroidJUnit4.class)
 public class CalculatorEditTextTest {
+    private static final String LOG_TAG = "CalculatorEditTextTest";
+
 	private static final String DUMMY_ACCOUNT_UID = "transactions-account";
 	private static final String DUMMY_ACCOUNT_NAME = "Transactions Account";
 
@@ -89,7 +91,7 @@ public class CalculatorEditTextTest {
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
-            Log.e("CalculatorEditTextTest", "Error getting database: " + e.getMessage());
+            Log.e(LOG_TAG, "Error getting database: " + e.getMessage(), e);
             mDb = mDbHelper.getReadableDatabase();
         }
 //        mSplitsDbAdapter = new SplitsDbAdapter(mDb);

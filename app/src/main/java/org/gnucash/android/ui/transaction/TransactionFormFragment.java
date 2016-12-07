@@ -632,7 +632,7 @@ public class TransactionFormFragment extends Fragment implements
                     Date date = DATE_FORMATTER.parse(mDateTextView.getText().toString());
                     dateMillis = date.getTime();
                 } catch (ParseException e) {
-                    Log.e(getTag(), "Error converting input time to Date object");
+                    Log.e(getTag(), "Error converting input time to Date object", e);
                 }
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTimeInMillis(dateMillis);
@@ -656,7 +656,7 @@ public class TransactionFormFragment extends Fragment implements
                     Date date = TIME_FORMATTER.parse(mTimeTextView.getText().toString());
                     timeMillis = date.getTime();
                 } catch (ParseException e) {
-                    Log.e(getTag(), "Error converting input time to Date object");
+                    Log.e(getTag(), "Error converting input time to Date object", e);
                 }
 
                 Calendar calendar = Calendar.getInstance();

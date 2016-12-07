@@ -83,7 +83,7 @@ public class GncXmlHandler extends DefaultHandler {
     /**
      * Tag for logging
      */
-    private static final String LOG_TAG = "GnuCashAccountImporter";
+    private static final String LOG_TAG = "GncXmlHandler";
 
     /*
         ^             anchor for start of string
@@ -546,10 +546,10 @@ public class GncXmlHandler extends DefaultHandler {
                         try {
                             if (mAccount != null)
                                 mAccount.setColor(color);
-                        } catch (IllegalArgumentException ex) {
+                        } catch (IllegalArgumentException e) {
                             //sometimes the color entry in the account file is "Not set" instead of just blank. So catch!
-                            Log.e(LOG_TAG, "Invalid color code '" + color + "' for account " + mAccount.getName());
-                            Crashlytics.logException(ex);
+                            Log.e(LOG_TAG, "Invalid color code '" + color + "' for account " + mAccount.getName(), e);
+                            Crashlytics.logException(e);
                         }
                     }
                     mInColorSlot = false;
@@ -623,7 +623,7 @@ public class GncXmlHandler extends DefaultHandler {
                 } catch (ParseException e) {
                     Crashlytics.logException(e);
                     String message = "Unable to parse transaction time - " + characterString;
-                    Log.e(LOG_TAG, message + "\n" + e.getMessage());
+                    Log.e(LOG_TAG, message + "\n" + e.getMessage(), e);
                     Crashlytics.log(message);
                     throw new SAXException(message, e);
                 }
@@ -739,10 +739,10 @@ public class GncXmlHandler extends DefaultHandler {
                     PeriodType periodType = PeriodType.valueOf(characterString.toUpperCase());
                     periodType.setMultiplier(mRecurrenceMultiplier);
                     mRecurrence.setPeriodType(periodType);
-                } catch (IllegalArgumentException ex){ //the period type constant is not supported
+                } catch (IllegalArgumentException e) { //the period type constant is not supported
                     String msg = "Unsupported period constant: " + characterString;
-                    Log.e(LOG_TAG, msg);
-                    Crashlytics.logException(ex);
+                    Log.e(LOG_TAG, msg, e);
+                    Crashlytics.logException(e);
                     mIgnoreScheduledAction = true;
                 }
                 break;
@@ -770,7 +770,7 @@ public class GncXmlHandler extends DefaultHandler {
                     }
                 } catch (ParseException e) {
                     String msg = "Error parsing scheduled action date " + characterString;
-                    Log.e(LOG_TAG, msg + e.getMessage());
+                    Log.e(LOG_TAG, msg + "\n" + e.getMessage(), e);
                     Crashlytics.log(msg);
                     Crashlytics.logException(e);
                     throw new SAXException(msg, e);
@@ -817,7 +817,7 @@ public class GncXmlHandler extends DefaultHandler {
                     } else {
                         mPrice.setValueNum(Long.valueOf(parts[0]));
                         mPrice.setValueDenom(Long.valueOf(parts[1]));
-                        Log.d(getClass().getName(), "price " + characterString +
+                        Log.d(LOG_TAG, "price " + characterString +
                         " .. " + mPrice.getValueNum() + "/" + mPrice.getValueDenom());
                     }
                 }
@@ -979,36 +979,36 @@ public class GncXmlHandler extends DefaultHandler {
         
         long startTime = System.nanoTime();
         mAccountsDbAdapter.beginTransaction();
-        Log.d(getClass().getSimpleName(), "bulk insert starts");
+        Log.d(LOG_TAG, "bulk insert starts");
         try {
             // disable foreign key. The database structure should be ensured by the data inserted.
             // it will make insertion much faster.
             mAccountsDbAdapter.enableForeignKey(false);
-            Log.d(getClass().getSimpleName(), "before clean up db");
+            Log.d(LOG_TAG, "before clean up db");
             mAccountsDbAdapter.deleteAllRecords();
-            Log.d(getClass().getSimpleName(), String.format("deb clean up done %d ns", System.nanoTime()-startTime));
+            Log.d(LOG_TAG, String.format("deb clean up done %d ns", System.nanoTime()-startTime));
             long nAccounts = mAccountsDbAdapter.bulkAddRecords(mAccountList, DatabaseAdapter.UpdateMethod.insert);
-            Log.d("Handler:", String.format("%d accounts inserted", nAccounts));
+            Log.d(LOG_TAG, String.format("%d accounts inserted", nAccounts));
             //We need to add scheduled actions first because there is a foreign key constraint on transactions
             //which are generated from scheduled actions (we do auto-create some transactions during import)
             long nSchedActions = mScheduledActionsDbAdapter.bulkAddRecords(mScheduledActionsList, DatabaseAdapter.UpdateMethod.insert);
-            Log.d("Handler:", String.format("%d scheduled actions inserted", nSchedActions));
+            Log.d(LOG_TAG, String.format("%d scheduled actions inserted", nSchedActions));
 
             long nTempTransactions = mTransactionsDbAdapter.bulkAddRecords(mTemplateTransactions, DatabaseAdapter.UpdateMethod.insert);
-            Log.d("Handler:", String.format("%d template transactions inserted", nTempTransactions));
+            Log.d(LOG_TAG, String.format("%d template transactions inserted", nTempTransactions));
 
             long nTransactions = mTransactionsDbAdapter.bulkAddRecords(mTransactionList, DatabaseAdapter.UpdateMethod.insert);
-            Log.d("Handler:", String.format("%d transactions inserted", nTransactions));
+            Log.d(LOG_TAG, String.format("%d transactions inserted", nTransactions));
 
             long nPrices = mPricesDbAdapter.bulkAddRecords(mPriceList, DatabaseAdapter.UpdateMethod.insert);
-            Log.d(getClass().getSimpleName(), String.format("%d prices inserted", nPrices));
+            Log.d(LOG_TAG, String.format("%d prices inserted", nPrices));
 
             //// TODO: 01.06.2016 Re-enable import of Budget stuff when the UI is complete
 //            long nBudgets = mBudgetsDbAdapter.bulkAddRecords(mBudgetList, DatabaseAdapter.UpdateMethod.insert);
-//            Log.d(getClass().getSimpleName(), String.format("%d budgets inserted", nBudgets));
+//            Log.d(LOG_TAG, String.format("%d budgets inserted", nBudgets));
 
             long endTime = System.nanoTime();
-            Log.d(getClass().getSimpleName(), String.format("bulk insert time: %d", endTime - startTime));
+            Log.d(LOG_TAG, String.format("bulk insert time: %d", endTime - startTime));
 
             //if all of the import went smoothly, then add the book to the book db
             booksDbAdapter.addRecord(mBook, DatabaseAdapter.UpdateMethod.insert);
@@ -1057,7 +1057,7 @@ public class GncXmlHandler extends DefaultHandler {
             mIgnoreTemplateTransaction = false; //we have successfully parsed an amount
         } catch (NumberFormatException | ParseException e) {
             String msg = "Error parsing template credit split amount " + characterString;
-            Log.e(LOG_TAG, msg + "\n" + e.getMessage());
+            Log.e(LOG_TAG, msg + "\n" + e.getMessage(), e);
             Crashlytics.log(msg);
             Crashlytics.logException(e);
         } finally {

@@ -303,7 +303,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
     /**
      * Get permission for WRITING SD card
      */
-    @TargetApi(23)
+    @TargetApi(Build.VERSION_CODES.M)
     private void getSDWritePermission(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -379,17 +379,18 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);
 
-        if (firstRun){
+        if (firstRun) {
             startActivity(new Intent(GnuCashApplication.getAppContext(), FirstRunWizardActivity.class));
 
             //default to using double entry and save the preference explicitly
             prefs.edit().putBoolean(getString(R.string.key_use_double_entry), true).apply();
             finish();
+            return;
         } else {
             getSDWritePermission();
         }
 
-        if (hasNewFeatures()){
+        if (hasNewFeatures()) {
             showWhatsNewDialog(this);
         }
         GnuCashApplication.startScheduledActionExecutionService(this);
@@ -434,7 +435,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
             releaseTitle.append(" - v").append(packageInfo.versionName);
         } catch (NameNotFoundException e) {
             Crashlytics.logException(e);
-            Log.e(LOG_TAG, "Error displaying 'Whats new' dialog");
+            Log.e(LOG_TAG, "Error displaying 'Whats new' dialog", e);
         }
 
         return new AlertDialog.Builder(context)

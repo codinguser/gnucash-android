@@ -219,7 +219,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
                 long amount_num = cursor.getLong(0);
                 long amount_denom = cursor.getLong(1);
                 String commodityCode = cursor.getString(2);
-                //Log.d(getClass().getName(), commodity + " " + amount_num + "/" + amount_denom);
+                //Log.d(LOG_TAG, commodity + " " + amount_num + "/" + amount_denom);
                 if (commodityCode.equals("XXX") || amount_num == 0) {
                     // ignore custom currency
                     continue;
@@ -230,7 +230,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
                 if (commodityCode.equals(currencyCode)) {
                     // currency matches
                     total = total.add(new Money(amount_num, amount_denom, currencyCode));
-                    //Log.d(getClass().getName(), "currency " + commodity + " sub - total " + total);
+                    //Log.d(LOG_TAG, "currency " + commodity + " sub - total " + total);
                 } else {
                     // there is a second currency involved
                     if (commoditiesDbAdapter == null) {
@@ -250,7 +250,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
                     BigDecimal amountConverted = amount.multiply(new BigDecimal(price.first))
                             .divide(new BigDecimal(price.second), commodity.getSmallestFractionDigits(), BigDecimal.ROUND_HALF_EVEN);
                     total = total.add(new Money(amountConverted, commodity));
-                    //Log.d(getClass().getName(), "currency " + commodity + " sub - total " + total);
+                    //Log.d(LOG_TAG, "currency " + commodity + " sub - total " + total);
                 }
             }
             return total;

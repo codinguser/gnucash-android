@@ -85,6 +85,8 @@ import static org.hamcrest.Matchers.not;
 public class ExportTransactionsTest extends
 		ActivityInstrumentationTestCase2<AccountsActivity> {
 
+    private static final String LOG_TAG = "ExportTransactionsTest";
+
     private DatabaseHelper mDbHelper;
     private SQLiteDatabase mDb;
     private AccountsDbAdapter mAccountsDbAdapter;
@@ -110,7 +112,7 @@ public class ExportTransactionsTest extends
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
-            Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
+            Log.e(LOG_TAG, "Error getting database: " + e.getMessage(), e);
             mDb = mDbHelper.getReadableDatabase();
         }
 

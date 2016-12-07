@@ -162,7 +162,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             // FIXME: detect if there aren't transactions to export and inform the user
             mExportedFiles = mExporter.generateExport();
         } catch (final Exception e) {
-            Log.e(TAG, "Error exporting: " + e.getMessage());
+            Log.e(TAG, "Error exporting: " + e.getMessage(), e);
             Crashlytics.logException(e);
             e.printStackTrace();
             if (mContext instanceof Activity) {
@@ -328,7 +328,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
                 } catch (IOException e) {
                     Crashlytics.logException(e);
-                    Log.e(TAG, e.getMessage());
+                    Log.e(TAG, e.getMessage(), e);
                 }
             }
         });
@@ -351,11 +351,11 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             }
         } catch (DbxException.Unauthorized unauthorized) {
             Crashlytics.logException(unauthorized);
-            Log.e(TAG, unauthorized.getMessage());
+            Log.e(TAG, unauthorized.getMessage(), unauthorized);
             throw new Exporter.ExporterException(mExportParams);
         } catch (IOException e) {
             Crashlytics.logException(e);
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG, e.getMessage(), e);
         } finally {
             if (dbExportFile != null) {
                 dbExportFile.close();
@@ -424,7 +424,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 dstFiles.add(dst);
             } catch (IOException e) {
                 Crashlytics.logException(e);
-                Log.e(TAG, e.getMessage());
+                Log.e(TAG, e.getMessage(), e);
                 throw new Exporter.ExporterException(mExportParams, e);
             }
         }

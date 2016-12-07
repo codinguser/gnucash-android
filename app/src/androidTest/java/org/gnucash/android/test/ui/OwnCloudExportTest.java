@@ -74,6 +74,8 @@ import static org.hamcrest.Matchers.not;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class OwnCloudExportTest {
 
+    private static final String LOG_TAG = "OwnCloudExportTest";
+
     private AccountsActivity mAccountsActivity;
     private SharedPreferences mPrefs;
 
@@ -114,7 +116,7 @@ public class OwnCloudExportTest {
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
-            Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
+            Log.e(LOG_TAG, "Error getting database: " + e.getMessage(), e);
             mDb = mDbHelper.getReadableDatabase();
         }
 

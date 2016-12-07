@@ -215,7 +215,7 @@ public class OfxExporter extends Exporter{
 
             transformer.transform(source, result);
         } catch (TransformerException tfException) {
-            Log.e(LOG_TAG, tfException.getMessage());
+            Log.e(LOG_TAG, tfException.getMessage(), tfException);
             Crashlytics.logException(tfException);
         }
     }

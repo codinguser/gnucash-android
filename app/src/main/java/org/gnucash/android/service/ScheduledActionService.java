@@ -172,7 +172,7 @@ public class ScheduledActionService extends IntentService {
             new ExportAsyncTask(GnuCashApplication.getAppContext(), db).execute(params).get();
         } catch (InterruptedException | ExecutionException e) {
             Crashlytics.logException(e);
-            Log.e(LOG_TAG, e.getMessage());
+            Log.e(LOG_TAG, e.getMessage(), e);
         }
         return 1;
     }
@@ -205,8 +205,8 @@ public class ScheduledActionService extends IntentService {
         Transaction trxnTemplate = null;
         try {
             trxnTemplate = transactionsDbAdapter.getRecord(actionUID);
-        } catch (IllegalArgumentException ex){ //if the record could not be found, abort
-            Log.e(LOG_TAG, "Scheduled transaction with UID " + actionUID + " could not be found in the db with path " + db.getPath());
+        } catch (IllegalArgumentException e) { //if the record could not be found, abort
+            Log.e(LOG_TAG, "Scheduled transaction with UID " + actionUID + " could not be found in the db with path " + db.getPath(), e);
             return executionCount;
         }
 

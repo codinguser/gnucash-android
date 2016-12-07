@@ -40,9 +40,11 @@ import org.gnucash.android.model.Commodity;
  */
 public class AccountCreator extends BroadcastReceiver {
 
+    private static final String LOG_TAG = "AccountCreator";
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.i("Gnucash", "Received account creation intent");
+        Log.i(LOG_TAG, "Received account creation intent");
         Bundle args = intent.getExtras();
 
         Account account = new Account(args.getString(Intent.EXTRA_TITLE));

@@ -172,7 +172,7 @@ public abstract class Exporter {
             Date date = EXPORT_FILENAME_DATE_FORMAT.parse(tokens[0] + "_" + tokens[1]);
             timeMillis = date.getTime();
         } catch (ParseException e) {
-            Log.e("Exporter", "Error parsing time from file name: " + e.getMessage());
+            Log.e(LOG_TAG, "Error parsing time from file name: " + e.getMessage(), e);
             Crashlytics.logException(e);
         }
         return timeMillis;

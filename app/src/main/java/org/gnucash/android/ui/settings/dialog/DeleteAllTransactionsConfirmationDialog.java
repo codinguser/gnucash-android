@@ -46,6 +46,8 @@ import java.util.List;
  */
 public class DeleteAllTransactionsConfirmationDialog extends DialogFragment {
 
+    private static final String LOG_TAG = "DeleteAllDialog";
+
     public static DeleteAllTransactionsConfirmationDialog newInstance() {
         DeleteAllTransactionsConfirmationDialog frag = new DeleteAllTransactionsConfirmationDialog();
         return frag;
@@ -70,7 +72,7 @@ public class DeleteAllTransactionsConfirmationDialog extends DialogFragment {
                                 }
                                 TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
                                 int count = transactionsDbAdapter.deleteAllNonTemplateTransactions();
-                                Log.i("DeleteDialog", String.format("Deleted %d transactions successfully", count));
+                                Log.i(LOG_TAG, String.format("Deleted %d transactions successfully", count));
 
                                 if (preserveOpeningBalances) {
                                     transactionsDbAdapter.bulkAddRecords(openingBalances, DatabaseAdapter.UpdateMethod.insert);

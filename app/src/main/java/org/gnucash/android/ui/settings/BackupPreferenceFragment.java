@@ -330,13 +330,13 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 				.addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
 					@Override
 					public void onConnectionFailed(ConnectionResult connectionResult) {
-						Log.e(PreferenceActivity.class.getName(), "Connection to Google Drive failed");
+						Log.e(LOG_TAG, "Connection to Google Drive failed");
 						if (connectionResult.hasResolution() && context instanceof Activity) {
 							try {
-								Log.e(BackupPreferenceFragment.class.getName(), "Trying resolution of Google API connection failure");
+								Log.e(LOG_TAG, "Trying resolution of Google API connection failure");
 								connectionResult.startResolutionForResult((Activity) context, REQUEST_RESOLVE_CONNECTION);
 							} catch (IntentSender.SendIntentException e) {
-								Log.e(BackupPreferenceFragment.class.getName(), e.getMessage());
+								Log.e(LOG_TAG, e.getMessage(), e);
 								Toast.makeText(context, R.string.toast_unable_to_connect_to_google_drive, Toast.LENGTH_LONG).show();
 							}
 						} else {
@@ -352,7 +352,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 	 * Opens a dialog for a user to select a backup to restore and then restores the backup
 	 */
 	private void restoreBackup() {
-		Log.i("Settings", "Opening GnuCash XML backups for restore");
+		Log.i(LOG_TAG, "Opening GnuCash XML backups for restore");
 		String bookUID = BooksDbAdapter.getInstance().getActiveBookUID();
 		File[] backupFiles = new File(Exporter.getBackupFolderPath(bookUID)).listFiles();
 		if (backupFiles == null || backupFiles.length == 0){

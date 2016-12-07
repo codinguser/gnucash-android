@@ -55,7 +55,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
 	 * Tag for logging
 	 */
-	public static final String LOG_TAG = DatabaseHelper.class.getName();
+	public static final String LOG_TAG = "DatabaseHelper";
 
     /**
 	 * SQL statement to create the accounts table in the database
@@ -358,7 +358,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             MigrationHelper.importCommodities(db);
         } catch (SAXException | ParserConfigurationException | IOException e) {
-            Log.e(LOG_TAG, "Error loading currencies into the database");
+            Log.e(LOG_TAG, "Error loading currencies into the database", e);
             e.printStackTrace();
             throw new RuntimeException(e);
         }

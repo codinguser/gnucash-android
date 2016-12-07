@@ -376,7 +376,7 @@ public class ExportFormFragment extends Fragment implements
 					Date date = TransactionFormFragment.DATE_FORMATTER.parse(mExportStartDate.getText().toString());
 					dateMillis = date.getTime();
 				} catch (ParseException e) {
-					Log.e(getTag(), "Error converting input time to Date object");
+					Log.e(getTag(), "Error converting input time to Date object", e);
 				}
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTimeInMillis(dateMillis);
@@ -400,7 +400,7 @@ public class ExportFormFragment extends Fragment implements
 					Date date = TransactionFormFragment.TIME_FORMATTER.parse(mExportStartTime.getText().toString());
 					timeMillis = date.getTime();
 				} catch (ParseException e) {
-					Log.e(getTag(), "Error converting input time to Date object");
+					Log.e(getTag(), "Error converting input time to Date object", e);
 				}
 
 				Calendar calendar = Calendar.getInstance();

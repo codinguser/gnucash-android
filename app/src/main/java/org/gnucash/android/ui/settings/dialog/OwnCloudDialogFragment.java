@@ -34,6 +34,8 @@ import org.gnucash.android.R;
  */
 public class OwnCloudDialogFragment extends DialogFragment {
 
+    private static final String LOG_TAG = "OwnCloudDialogFragment";
+
     /**
      * Dialog positive button. Ok to save and validate the data
      */
@@ -178,7 +180,7 @@ public class OwnCloudDialogFragment extends DialogFragment {
             @Override
             public void onRemoteOperationFinish(RemoteOperation caller, RemoteOperationResult result) {
                 if (!result.isSuccess()) {
-                    Log.e("OC", result.getLogMessage(), result.getException());
+                    Log.e(LOG_TAG, result.getLogMessage(), result.getException());
 
                     if (caller instanceof GetRemoteStatusOperation) {
                         mServerError.setTextColor(ContextCompat.getColor(getContext(), R.color.debit_red));

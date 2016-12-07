@@ -28,6 +28,7 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v7.preference.PreferenceManager;
+import android.text.format.DateUtils;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -68,10 +69,12 @@ import io.fabric.sdk.android.Fabric;
  */
 public class GnuCashApplication extends Application{
 
+    private static final String LOG_TAG = "GnuCashApplication";
+
     /**
      * Lifetime of passcode session
      */
-    public static final long SESSION_TIMEOUT = 5 * 1000;
+    public static final long SESSION_TIMEOUT = 5 * DateUtils.SECOND_IN_MILLIS;
 
     /**
      * Init time of passcode session
@@ -149,7 +152,7 @@ public class GnuCashApplication extends Application{
             mainDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
             Crashlytics.logException(e);
-            Log.e("GnuCashApplication", "Error getting database: " + e.getMessage());
+            Log.e(LOG_TAG, "Error getting database: " + e.getMessage(), e);
             mainDb = mDbHelper.getReadableDatabase();
         }
 
@@ -294,7 +297,7 @@ public class GnuCashApplication extends Application{
             currencyCode = Currency.getInstance(locale).getCurrencyCode();
         } catch (Throwable e) {
             Crashlytics.logException(e);
-            Log.e(context.getString(R.string.app_name), "" + e.getMessage());
+            Log.e(context.getString(R.string.app_name), e.getMessage(), e);
         } finally {
             currencyCode = prefs.getString(context.getString(R.string.key_default_currency), currencyCode);
         }

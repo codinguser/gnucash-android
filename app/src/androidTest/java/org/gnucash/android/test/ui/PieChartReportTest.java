@@ -68,7 +68,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(AndroidJUnit4.class)
 public class PieChartReportTest {
 
-    public static final String TAG = PieChartReportTest.class.getName();
+    public static final String TAG = "PieChartReportTest";
 
     private static final String TRANSACTION_NAME = "Pizza";
     private static final double TRANSACTION_AMOUNT = 9.99;

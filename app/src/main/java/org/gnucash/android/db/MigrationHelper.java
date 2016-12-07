@@ -199,7 +199,7 @@ public class MigrationHelper {
                     try {
                         MigrationHelper.moveFile(src, dst);
                     } catch (IOException e) {
-                        Log.e(LOG_TAG, "Error migrating " + src.getName());
+                        Log.e(LOG_TAG, "Error migrating " + src.getName(), e);
                         Crashlytics.logException(e);
                     }
                 }
@@ -215,7 +215,7 @@ public class MigrationHelper {
                     try {
                         MigrationHelper.moveFile(src, dst);
                     } catch (IOException e) {
-                        Log.e(LOG_TAG, "Error migrating backup: " + src.getName());
+                        Log.e(LOG_TAG, "Error migrating backup: " + src.getName(), e);
                         Crashlytics.logException(e);
                     }
                 }

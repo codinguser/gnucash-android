@@ -45,6 +45,8 @@ import java.util.Locale;
  */
 public final class Money implements Comparable<Money>{
 
+    private static final String LOG_TAG = "Money";
+
 	/**
 	 * Currency of the account
 	 */
@@ -211,7 +213,7 @@ public final class Money implements Comparable<Money>{
 					" with scale " + getScale() +
 					" has amount " + mAmount.toString();
 			Crashlytics.log(msg);
-			Log.e(getClass().getName(), msg);
+			Log.e(LOG_TAG, msg, e);
 			throw e;
 		}
 	}
