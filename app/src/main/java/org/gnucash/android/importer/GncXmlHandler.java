@@ -817,7 +817,7 @@ public class GncXmlHandler extends DefaultHandler {
                     } else {
                         mPrice.setValueNum(Long.valueOf(parts[0]));
                         mPrice.setValueDenom(Long.valueOf(parts[1]));
-                        Log.d(getClass().getName(), "price " + characterString +
+                        Log.d(LOG_TAG, "price " + characterString +
                         " .. " + mPrice.getValueNum() + "/" + mPrice.getValueDenom());
                     }
                 }

@@ -56,9 +56,11 @@ import java.util.Currency;
  */
 public class TransactionRecorder extends BroadcastReceiver {
 
+    private static final String LOG_TAG = "TransactionRecorder";
+
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Log.i(this.getClass().getName(), "Received transaction recording intent");
+		Log.i(LOG_TAG, "Received transaction recording intent");
 		Bundle args = intent.getExtras();
 		String name = args.getString(Intent.EXTRA_TITLE);
 		String note = args.getString(Intent.EXTRA_TEXT);

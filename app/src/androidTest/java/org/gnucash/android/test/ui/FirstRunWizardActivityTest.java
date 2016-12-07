@@ -49,6 +49,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(AndroidJUnit4.class)
 public class FirstRunWizardActivityTest extends ActivityInstrumentationTestCase2<FirstRunWizardActivity>{
 
+    private static final String LOG_TAG = "FirstRunWizardActivityTest";
+
     private DatabaseHelper mDbHelper;
     private SQLiteDatabase mDb;
     private AccountsDbAdapter mAccountsDbAdapter;
@@ -70,7 +72,7 @@ public class FirstRunWizardActivityTest extends ActivityInstrumentationTestCase2
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
-            Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
+            Log.e(LOG_TAG, "Error getting database: " + e.getMessage());
             mDb = mDbHelper.getReadableDatabase();
         }
         mSplitsDbAdapter = new SplitsDbAdapter(mDb);
