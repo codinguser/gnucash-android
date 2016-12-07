@@ -55,7 +55,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
 	 * Tag for logging
 	 */
-	public static final String LOG_TAG = DatabaseHelper.class.getName();
+	public static final String LOG_TAG = "DatabaseHelper";
 
     /**
 	 * SQL statement to create the accounts table in the database

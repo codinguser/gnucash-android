@@ -35,7 +35,7 @@ import java.lang.ref.WeakReference;
  * it can take some time and would block the UI thread otherwise.
  */
 public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
-    public static final String LOG_TAG = AccountBalanceTask.class.getName();
+    public static final String LOG_TAG = "AccountBalanceTask";
 
     private final WeakReference<TextView> accountBalanceTextViewReference;
     private final AccountsDbAdapter accountsDbAdapter;

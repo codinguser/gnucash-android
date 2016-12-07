@@ -43,6 +43,9 @@ import java.io.InputStream;
  * The AccountsActivity is opened when importing is done.
  */
 public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
+
+    private static final String LOG_TAG = "ImportAsyncTask";
+
     private final Activity mContext;
     private TaskDelegate mDelegate;
     private ProgressDialog mProgressDialog;
@@ -81,7 +84,7 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
             InputStream accountInputStream = mContext.getContentResolver().openInputStream(uris[0]);
             mImportedBookUID = GncXmlImporter.parse(accountInputStream);
         } catch (Exception exception){
-            Log.e(ImportAsyncTask.class.getName(), "" + exception.getMessage(), exception);
+            Log.e(LOG_TAG, exception.getMessage(), exception);
             Crashlytics.log("Could not open: " + uris[0].toString());
             Crashlytics.logException(exception);
             exception.printStackTrace();

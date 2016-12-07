@@ -330,13 +330,13 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 				.addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
 					@Override
 					public void onConnectionFailed(ConnectionResult connectionResult) {
-						Log.e(PreferenceActivity.class.getName(), "Connection to Google Drive failed");
+						Log.e(LOG_TAG, "Connection to Google Drive failed");
 						if (connectionResult.hasResolution() && context instanceof Activity) {
 							try {
-								Log.e(BackupPreferenceFragment.class.getName(), "Trying resolution of Google API connection failure");
+								Log.e(LOG_TAG, "Trying resolution of Google API connection failure");
 								connectionResult.startResolutionForResult((Activity) context, REQUEST_RESOLVE_CONNECTION);
 							} catch (IntentSender.SendIntentException e) {
-								Log.e(BackupPreferenceFragment.class.getName(), e.getMessage(), e);
+								Log.e(LOG_TAG, e.getMessage(), e);
 								Toast.makeText(context, R.string.toast_unable_to_connect_to_google_drive, Toast.LENGTH_LONG).show();
 							}
 						} else {
