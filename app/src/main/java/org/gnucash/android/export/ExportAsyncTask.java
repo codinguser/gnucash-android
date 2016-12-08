@@ -40,7 +40,6 @@ import com.dropbox.sync.android.DbxFile;
 import com.dropbox.sync.android.DbxFileSystem;
 import com.dropbox.sync.android.DbxPath;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveApi;
 import com.google.android.gms.drive.DriveContents;
@@ -321,6 +320,16 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             Crashlytics.logException(e);
             Log.e(TAG, e.getMessage());
         }
+
+        if (driveFileResult == null)
+            return;
+
+        if (!driveFileResult.getStatus().isSuccess()) {
+            Log.e(TAG, "Error creating file in Google Drive");
+            showToastFromNonUiThread("Couldn't create the file in Google Drive", Toast.LENGTH_LONG);
+        } else {
+            Log.i(TAG, "Created file with id: " + driveFileResult.getDriveFile().getDriveId());
+        }
     }
 
     private void moveExportToDropbox() {
@@ -525,4 +534,14 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         srcFile.delete();
     }
 
+    private void showToastFromNonUiThread(final String message, final int duration) {
+        if (mContext instanceof Activity) {
+            ((Activity) mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(mContext, message, duration).show();
+                }
+            });
+        }
+    }
 }
