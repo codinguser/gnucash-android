@@ -276,12 +276,11 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
     private void moveExportToGoogleDrive(){
         Log.i(TAG, "Moving exported file to Google Drive");
-        final long TIMEOUT = 5; // seconds
         final GoogleApiClient googleApiClient = BackupPreferenceFragment.getGoogleApiClient(GnuCashApplication.getAppContext());
         googleApiClient.blockingConnect();
 
         DriveApi.DriveContentsResult driveContentsResult =
-                Drive.DriveApi.newDriveContents(googleApiClient).await(TIMEOUT, TimeUnit.SECONDS);
+                Drive.DriveApi.newDriveContents(googleApiClient).await(1, TimeUnit.MINUTES);
         if (!driveContentsResult.getStatus().isSuccess()) {
             Log.e(TAG, "Error while trying to create new file contents");
             return;
@@ -314,7 +313,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 DriveFolder folder = Drive.DriveApi.getFolder(googleApiClient, DriveId.decodeFromString(folderId));
                 // create a file on root folder
                 driveFileResult = folder.createFile(googleApiClient, changeSet, driveContents)
-                                                .await(TIMEOUT, TimeUnit.SECONDS);
+                                                .await(1, TimeUnit.MINUTES);
             }
         } catch (IOException e) {
             Crashlytics.logException(e);
