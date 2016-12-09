@@ -142,21 +142,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     @Override
     protected Boolean doInBackground(ExportParams... params) {
         mExportParams = params[0];
-
-        switch (mExportParams.getExportFormat()) {
-                case QIF:
-                    mExporter = new QifExporter(mExportParams, mDb);
-                    break;
-
-                case OFX:
-                    mExporter = new OfxExporter(mExportParams, mDb);
-                    break;
-
-                case XML:
-                default:
-                    mExporter = new GncXmlExporter(mExportParams, mDb);
-                    break;
-        }
+        mExporter = getExporter();
 
         try {
             // FIXME: detect if there aren't transactions to export and inform the user
@@ -271,6 +257,20 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             if (mProgressDialog != null && mProgressDialog.isShowing())
                 mProgressDialog.dismiss();
             ((Activity) mContext).finish();
+        }
+    }
+
+    private Exporter getExporter() {
+        switch (mExportParams.getExportFormat()) {
+            case QIF:
+                return new QifExporter(mExportParams, mDb);
+
+            case OFX:
+                return new OfxExporter(mExportParams, mDb);
+
+            case XML:
+            default:
+                return new GncXmlExporter(mExportParams, mDb);
         }
     }
 
