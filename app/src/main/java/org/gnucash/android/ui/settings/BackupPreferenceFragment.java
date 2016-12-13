@@ -275,6 +275,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 		if (appFolderId != null){
 			sharedPreferences.edit().remove(getString(R.string.key_google_drive_app_folder_id)).commit(); //commit (not apply) because we need it to be saved *now*
 			mGoogleApiClient.disconnect();
+			onGoogleDriveFolderForgot(appFolderId);
 		} else {
 			mGoogleApiClient.connect();
 		}
@@ -326,7 +327,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 											.edit().putString(context.getString(R.string.key_google_drive_app_folder_id),
 											folderId).commit(); //commit because we need it to be saved *now*
 									if (listener != null) {
-										listener.onGoogleDriveCreated(folderId);
+										listener.onGoogleDriveFolderCreated(folderId);
 									}
 								}
 							});
@@ -440,7 +441,14 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 	}
 
 	@Override
-	public void onGoogleDriveCreated(String folderId) {
+	public void onGoogleDriveFolderCreated(String folderId) {
+		if (mGoogleDrivePreference != null) {
+			toggleGoogleDrivePreference(mGoogleDrivePreference);
+		}
+	}
+
+	@Override
+	public void onGoogleDriveFolderForgot(String folderId) {
 		if (mGoogleDrivePreference != null) {
 			toggleGoogleDrivePreference(mGoogleDrivePreference);
 		}
