@@ -179,7 +179,7 @@ public class Transaction extends BaseModel{
      * @return Split whose amount is the imbalance of this transaction
      */
     public Split createAutoBalanceSplit(){
-        Money imbalance = getImbalance(); //returns imbalance of 0 for multicurrency transactions
+        Money imbalance = getImbalance(); //returns imbalance of 0 for multi-currency transactions
         if (!imbalance.isAmountZero()){
             Split split = new Split(imbalance.negate(), mCurrencyCode); //yes, this is on purpose
             //the account UID is set to the currency. This should be overridden before saving to db
@@ -268,7 +268,11 @@ public class Transaction extends BaseModel{
     public Money getImbalance(){
         Money imbalance = Money.createZeroInstance(mCurrencyCode);
         for (Split split : mSplitList) {
-            if (!split.getQuantity().getCommodity().getCurrencyCode().equals(mCurrencyCode)) {
+            Money quantity = split.getQuantity();
+            if (quantity.isAmountZero()) {
+                continue;
+            }
+            if (!quantity.getCommodity().getCurrencyCode().equals(mCurrencyCode)) {
                 // this may happen when importing XML exported from GNCA before 2.0.0
                 // these transactions should only be imported from XML exported from GNC desktop
                 // so imbalance split should not be generated for them
