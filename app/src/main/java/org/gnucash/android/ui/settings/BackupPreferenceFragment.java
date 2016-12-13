@@ -67,7 +67,9 @@ import java.util.List;
  *
  */
 public class BackupPreferenceFragment extends PreferenceFragmentCompat implements
-		Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
+		Preference.OnPreferenceClickListener,
+		Preference.OnPreferenceChangeListener,
+		OnCloudStorageListener {
 
 	/**
 	 * Collects references to the UI elements and binds click listeners
@@ -95,6 +97,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 	 */
 	public static GoogleApiClient mGoogleApiClient;
 
+	private Preference mGoogleDrivePreference;
 
 	@Override
 	public void onCreatePreferences(Bundle bundle, String s) {
@@ -110,10 +113,9 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setTitle(R.string.title_backup_prefs);
 
-		mGoogleApiClient = getGoogleApiClient(getActivity());
-		
-	}	
-	
+		mGoogleApiClient = getGoogleApiClient(getActivity(), this);
+	}
+
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -150,6 +152,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 		pref = findPreference(getString(R.string.key_google_drive_sync));
 		pref.setOnPreferenceClickListener(this);
 		toggleGoogleDrivePreference(pref);
+		mGoogleDrivePreference = pref;
 
 		pref = findPreference(getString(R.string.key_owncloud_sync));
 		pref.setOnPreferenceClickListener(this);
@@ -249,7 +252,6 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 		((CheckBoxPreference)pref).setChecked(appFolderId != null);
 	}
 
-
 	/**
 	 * Toggles the authorization state of a DropBox account.
 	 * If a link exists, it is removed else DropBox authorization is started
@@ -292,8 +294,11 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 		}
 	}
 
-
 	public static GoogleApiClient getGoogleApiClient(final Context context) {
+		return getGoogleApiClient(context, null);
+	}
+
+	public static GoogleApiClient getGoogleApiClient(final Context context, final OnCloudStorageListener listener) {
 		return new GoogleApiClient.Builder(context)
 				.addApi(Drive.API)
 				.addScope(Drive.SCOPE_APPFOLDER)
@@ -301,27 +306,30 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 				.addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
 					@Override
 					public void onConnected(Bundle bundle) {
-						SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+						final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 						String appFolderId = sharedPreferences.getString(context.getString(R.string.key_google_drive_app_folder_id), null);
 						if (appFolderId == null) {
 							MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
 									.setTitle(context.getString(R.string.app_name)).build();
+							// FIXME: check if "changeSet" folder already exists before just creating new folders every time.
 							Drive.DriveApi.getRootFolder(mGoogleApiClient).createFolder(
 									mGoogleApiClient, changeSet).setResultCallback(new ResultCallback<DriveFolder.DriveFolderResult>() {
 								@Override
 								public void onResult(DriveFolder.DriveFolderResult result) {
 									if (!result.getStatus().isSuccess()) {
-										Log.e(LOG_TAG, "Error creating the application folder");
+										Log.e(LOG_TAG, "Error creating the application folder: " + result.getStatus().getStatusMessage());
 										return;
 									}
 
 									String folderId = result.getDriveFolder().getDriveId().toString();
-									PreferenceManager.getDefaultSharedPreferences(context)
+									sharedPreferences
 											.edit().putString(context.getString(R.string.key_google_drive_app_folder_id),
 											folderId).commit(); //commit because we need it to be saved *now*
+									if (listener != null) {
+										listener.onGoogleDriveCreated(folderId);
+									}
 								}
 							});
-
 						}
 						Toast.makeText(context, R.string.toast_connected_to_google_drive, Toast.LENGTH_SHORT).show();
 					}
@@ -428,6 +436,13 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 					toggleDropboxPreference(pref);
 				}
 				break;
+		}
+	}
+
+	@Override
+	public void onGoogleDriveCreated(String folderId) {
+		if (mGoogleDrivePreference != null) {
+			toggleGoogleDrivePreference(mGoogleDrivePreference);
 		}
 	}
 }
