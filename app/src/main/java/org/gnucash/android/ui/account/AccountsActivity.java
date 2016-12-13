@@ -385,9 +385,9 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
             //default to using double entry and save the preference explicitly
             prefs.edit().putBoolean(getString(R.string.key_use_double_entry), true).apply();
             finish();
-        } else {
-            getSDWritePermission();
+            return;
         }
+        getSDWritePermission();
 
         if (hasNewFeatures()){
             showWhatsNewDialog(this);
