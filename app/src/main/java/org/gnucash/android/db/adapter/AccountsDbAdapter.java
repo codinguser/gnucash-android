@@ -749,6 +749,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
                 null, where, whereArgs, null, null,
                 orderBy);
     }
+    
     /**
      * Returns a Cursor set of accounts which fulfill <code>where</code>
      * <p>This method returns the accounts list sorted by the full account name</p>

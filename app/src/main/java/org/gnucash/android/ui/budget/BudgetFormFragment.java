@@ -122,7 +122,7 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
         mBudgetAmounts = new ArrayList<>();
         String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_HIDDEN + " = 0 )";
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
-        Cursor accountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions, null);
+        Cursor accountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(conditions, null);
         mAccountsCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), accountCursor);
     }
 

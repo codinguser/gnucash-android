@@ -82,7 +82,7 @@ import org.gnucash.android.ui.util.RecurrenceParser;
 import org.gnucash.android.ui.util.RecurrenceViewClickListener;
 import org.gnucash.android.ui.util.widget.CalculatorEditText;
 import org.gnucash.android.ui.util.widget.TransactionTypeSwitch;
-import org.gnucash.android.util.FavoritableQualifiedAccountNameCursorAdapter;
+import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -120,7 +120,7 @@ public class TransactionFormFragment extends Fragment implements
 	/**
 	 * Adapter for transfer account spinner
 	 */
-	private FavoritableQualifiedAccountNameCursorAdapter mAccountCursorAdapter;
+	private QualifiedAccountNameCursorAdapter mAccountCursorAdapter;
 
 	/**
 	 * Cursor for transfer account spinner
@@ -323,6 +323,10 @@ public class TransactionFormFragment extends Fragment implements
 
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                // Remove the favorite star from the view to avoid visual clutter.
+                TextView qualifiedAccountName = (TextView) view;
+                qualifiedAccountName.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
+
                 if (mSplitsList.size() == 2) { //when handling simple transfer to one account
                     for (Split split : mSplitsList) {
                         if (!split.getAccountUID().equals(mAccountUID)) {
@@ -581,7 +585,7 @@ public class TransactionFormFragment extends Fragment implements
         }
 		mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(conditions, new String[]{mAccountUID, AccountType.ROOT.name()});
 
-        mAccountCursorAdapter = new FavoritableQualifiedAccountNameCursorAdapter(getActivity(), mCursor);
+        mAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), mCursor);
 		mTransferAccountSpinner.setAdapter(mAccountCursorAdapter);
 	}
 
