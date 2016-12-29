@@ -165,28 +165,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             return false;
         }
 
-        switch (mExportParams.getExportTarget()) {
-            case SHARING:
-                List<String> sdCardExportedFiles = moveExportToSDCard();
-                shareFiles(sdCardExportedFiles);
-                return true;
-
-            case DROPBOX:
-                moveExportToDropbox();
-                return true;
-
-            case GOOGLE_DRIVE:
-                moveExportToGoogleDrive();
-                return true;
-
-            case OWNCLOUD:
-                moveExportToOwnCloud();
-                return true;
-
-            case SD_CARD:
-                moveExportToSDCard();
-                return true;
-        }
+        moveToTarget();
 
         return false;
     }
@@ -271,6 +250,31 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             case XML:
             default:
                 return new GncXmlExporter(mExportParams, mDb);
+        }
+    }
+
+    private void moveToTarget() {
+        switch (mExportParams.getExportTarget()) {
+            case SHARING:
+                List<String> sdCardExportedFiles = moveExportToSDCard();
+                shareFiles(sdCardExportedFiles);
+                break;
+
+            case DROPBOX:
+                moveExportToDropbox();
+                break;
+
+            case GOOGLE_DRIVE:
+                moveExportToGoogleDrive();
+                break;
+
+            case OWNCLOUD:
+                moveExportToOwnCloud();
+                break;
+
+            case SD_CARD:
+                moveExportToSDCard();
+                break;
         }
     }
 
