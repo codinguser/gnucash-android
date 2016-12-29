@@ -35,7 +35,6 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.dropbox.sync.android.DbxAccountManager;
-import com.dropbox.sync.android.DbxException;
 import com.dropbox.sync.android.DbxFile;
 import com.dropbox.sync.android.DbxFileSystem;
 import com.dropbox.sync.android.DbxPath;
@@ -165,9 +164,13 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             return false;
         }
 
-        moveToTarget();
-
-        return false;
+        try {
+            moveToTarget();
+        } catch (Exporter.ExporterException e) {
+            Crashlytics.log(Log.ERROR, TAG, "Error sending exported files to target: " + e.getMessage());
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -253,7 +256,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         }
     }
 
-    private void moveToTarget() {
+    private void moveToTarget() throws Exporter.ExporterException {
         switch (mExportParams.getExportTarget()) {
             case SHARING:
                 List<String> sdCardExportedFiles = moveExportToSDCard();
@@ -275,10 +278,13 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             case SD_CARD:
                 moveExportToSDCard();
                 break;
+
+            default:
+                throw new Exporter.ExporterException(mExportParams, "Invalid target");
         }
     }
 
-    private void moveExportToGoogleDrive(){
+    private void moveExportToGoogleDrive() throws Exporter.ExporterException {
         Log.i(TAG, "Moving exported file to Google Drive");
         final GoogleApiClient googleApiClient = BackupPreferenceFragment.getGoogleApiClient(GnuCashApplication.getAppContext());
         googleApiClient.blockingConnect();
@@ -286,8 +292,8 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         DriveApi.DriveContentsResult driveContentsResult =
                 Drive.DriveApi.newDriveContents(googleApiClient).await(1, TimeUnit.MINUTES);
         if (!driveContentsResult.getStatus().isSuccess()) {
-            Log.e(TAG, "Error while trying to create new file contents");
-            return;
+            throw new Exporter.ExporterException(mExportParams,
+                    "Error while trying to create new file contents");
         }
         final DriveContents driveContents = driveContentsResult.getDriveContents();
         DriveFolder.DriveFileResult driveFileResult = null;
@@ -320,22 +326,19 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                                                 .await(1, TimeUnit.MINUTES);
             }
         } catch (IOException e) {
-            Crashlytics.logException(e);
-            Log.e(TAG, e.getMessage());
+            throw new Exporter.ExporterException(mExportParams, e);
         }
 
         if (driveFileResult == null)
-            return;
+            throw new Exporter.ExporterException(mExportParams, "No result received");
 
-        if (!driveFileResult.getStatus().isSuccess()) {
-            Log.e(TAG, "Error creating file in Google Drive");
-            showToastFromNonUiThread("Couldn't create the file in Google Drive", Toast.LENGTH_LONG);
-        } else {
-            Log.i(TAG, "Created file with id: " + driveFileResult.getDriveFile().getDriveId());
-        }
+        if (!driveFileResult.getStatus().isSuccess())
+            throw new Exporter.ExporterException(mExportParams, "Error creating file in Google Drive");
+
+        Log.i(TAG, "Created file with id: " + driveFileResult.getDriveFile().getDriveId());
     }
 
-    private void moveExportToDropbox() {
+    private void moveExportToDropbox() throws Exporter.ExporterException {
         Log.i(TAG, "Copying exported file to DropBox");
         String dropboxAppKey = mContext.getString(R.string.dropbox_app_key, BackupPreferenceFragment.DROPBOX_APP_KEY);
         String dropboxAppSecret = mContext.getString(R.string.dropbox_app_secret, BackupPreferenceFragment.DROPBOX_APP_SECRET);
@@ -350,13 +353,8 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 dbExportFile.writeFromExistingFile(exportedFile, false);
                 exportedFile.delete();
             }
-        } catch (DbxException.Unauthorized unauthorized) {
-            Crashlytics.logException(unauthorized);
-            Log.e(TAG, unauthorized.getMessage());
-            throw new Exporter.ExporterException(mExportParams);
         } catch (IOException e) {
-            Crashlytics.logException(e);
-            Log.e(TAG, e.getMessage());
+            throw new Exporter.ExporterException(mExportParams);
         } finally {
             if (dbExportFile != null) {
                 dbExportFile.close();
@@ -364,16 +362,15 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         }
     }
 
-    private void moveExportToOwnCloud() {
+    private void moveExportToOwnCloud() throws Exporter.ExporterException {
         Log.i(TAG, "Copying exported file to ownCloud");
 
         SharedPreferences mPrefs = mContext.getSharedPreferences(mContext.getString(R.string.owncloud_pref), Context.MODE_PRIVATE);
 
         Boolean mOC_sync = mPrefs.getBoolean(mContext.getString(R.string.owncloud_sync), false);
 
-        if(!mOC_sync){
-            Log.e(TAG, "ownCloud not enabled.");
-            return;
+        if (!mOC_sync) {
+            throw new Exporter.ExporterException(mExportParams, "ownCloud not enabled.");
         }
 
         String mOC_server = mPrefs.getString(mContext.getString(R.string.key_owncloud_server), null);
@@ -391,7 +388,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             RemoteOperationResult dirResult = new CreateRemoteFolderOperation(
                     mOC_dir, true).execute(mClient);
             if (!dirResult.isSuccess())
-                Log.e(TAG, dirResult.getLogMessage(), dirResult.getException());
+                throw new Exporter.ExporterException(mExportParams, dirResult.getLogMessage());
         }
         for (String exportedFilePath : mExportedFiles) {
             String remotePath = mOC_dir + FileUtils.PATH_SEPARATOR + stripPathPart(exportedFilePath);
@@ -401,10 +398,9 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                     exportedFilePath, remotePath, mimeType).execute(mClient);
 
             if (!result.isSuccess())
-                Log.e(TAG, result.getLogMessage(), result.getException());
-            else {
-                new File(exportedFilePath).delete();
-            }
+                throw new Exporter.ExporterException(mExportParams, result.getLogMessage());
+
+            new File(exportedFilePath).delete();
         }
     }
 
@@ -413,7 +409,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      * external storage, which is accessible to the user.
      * @return The list of files moved to the SD card.
      */
-    private List<String> moveExportToSDCard() {
+    private List<String> moveExportToSDCard() throws Exporter.ExporterException {
         Log.i(TAG, "Moving exported file to external storage");
         new File(Exporter.getExportFolderPath(mExporter.mBookUID));
         List<String> dstFiles = new ArrayList<>();
@@ -424,8 +420,6 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 moveFile(src, dst);
                 dstFiles.add(dst);
             } catch (IOException e) {
-                Crashlytics.logException(e);
-                Log.e(TAG, e.getMessage());
                 throw new Exporter.ExporterException(mExportParams, e);
             }
         }
@@ -535,16 +529,5 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             outChannel.close();
         }
         srcFile.delete();
-    }
-
-    private void showToastFromNonUiThread(final String message, final int duration) {
-        if (mContext instanceof Activity) {
-            ((Activity) mContext).runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(mContext, message, duration).show();
-                }
-            });
-        }
     }
 }
