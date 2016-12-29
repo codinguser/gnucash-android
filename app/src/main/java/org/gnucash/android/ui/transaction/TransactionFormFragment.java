@@ -323,6 +323,10 @@ public class TransactionFormFragment extends Fragment implements
 
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                // Remove the favorite star from the view to avoid visual clutter.
+                TextView qualifiedAccountName = (TextView) view;
+                qualifiedAccountName.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
+
                 if (mSplitsList.size() == 2) { //when handling simple transfer to one account
                     for (Split split : mSplitsList) {
                         if (!split.getAccountUID().equals(mAccountUID)) {
@@ -579,7 +583,7 @@ public class TransactionFormFragment extends Fragment implements
         if (mCursor != null) {
             mCursor.close();
         }
-		mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions, new String[]{mAccountUID, AccountType.ROOT.name()});
+		mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(conditions, new String[]{mAccountUID, AccountType.ROOT.name()});
 
         mAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), mCursor);
 		mTransferAccountSpinner.setAdapter(mAccountCursorAdapter);
