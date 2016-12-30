@@ -187,36 +187,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                         Toast.LENGTH_LONG).show();
                 return;
             } else {
-                String targetLocation;
-                switch (mExportParams.getExportTarget()){
-                    case SD_CARD:
-                        targetLocation = "SD card";
-                        break;
-                    case DROPBOX:
-                        targetLocation = "DropBox -> Apps -> GnuCash";
-                        break;
-                    case GOOGLE_DRIVE:
-                        targetLocation = "Google Drive -> " + mContext.getString(R.string.app_name);
-                        break;
-                    case OWNCLOUD:
-                        targetLocation = mContext.getSharedPreferences(
-                                mContext.getString(R.string.owncloud_pref),
-                                Context.MODE_PRIVATE).getBoolean(
-                                mContext.getString(R.string.owncloud_sync), false) ?
-
-                                "ownCloud -> " +
-                                mContext.getSharedPreferences(
-                                        mContext.getString(R.string.owncloud_pref),
-                                        Context.MODE_PRIVATE).getString(
-                                        mContext.getString(R.string.key_owncloud_dir), null) :
-                                "ownCloud sync not enabled";
-                        break;
-                    default:
-                        targetLocation = mContext.getString(R.string.label_export_target_external_service);
-                }
-                Toast.makeText(mContext,
-                        String.format(mContext.getString(R.string.toast_exported_to), targetLocation),
-                        Toast.LENGTH_LONG).show();
+                reportSuccess();
             }
         }
 
@@ -531,5 +502,38 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             outChannel.close();
         }
         srcFile.delete();
+    }
+
+    private void reportSuccess() {
+        String targetLocation;
+        switch (mExportParams.getExportTarget()){
+            case SD_CARD:
+                targetLocation = "SD card";
+                break;
+            case DROPBOX:
+                targetLocation = "DropBox -> Apps -> GnuCash";
+                break;
+            case GOOGLE_DRIVE:
+                targetLocation = "Google Drive -> " + mContext.getString(R.string.app_name);
+                break;
+            case OWNCLOUD:
+                targetLocation = mContext.getSharedPreferences(
+                        mContext.getString(R.string.owncloud_pref),
+                        Context.MODE_PRIVATE).getBoolean(
+                        mContext.getString(R.string.owncloud_sync), false) ?
+
+                        "ownCloud -> " +
+                                mContext.getSharedPreferences(
+                                        mContext.getString(R.string.owncloud_pref),
+                                        Context.MODE_PRIVATE).getString(
+                                        mContext.getString(R.string.key_owncloud_dir), null) :
+                        "ownCloud sync not enabled";
+                break;
+            default:
+                targetLocation = mContext.getString(R.string.label_export_target_external_service);
+        }
+        Toast.makeText(mContext,
+                String.format(mContext.getString(R.string.toast_exported_to), targetLocation),
+                Toast.LENGTH_LONG).show();
     }
 }
