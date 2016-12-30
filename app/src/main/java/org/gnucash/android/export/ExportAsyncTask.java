@@ -180,29 +180,30 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     @Override
     protected void onPostExecute(Boolean exportResult) {
-        if (mContext instanceof Activity) {
-            if (!exportResult) {
+        if (!exportResult) {
+            if (mContext instanceof Activity) {
                 Toast.makeText(mContext,
                         mContext.getString(R.string.toast_export_error, mExportParams.getExportFormat().name()),
                         Toast.LENGTH_LONG).show();
-                return;
-            } else {
+            }
+        } else {
+            if (mContext instanceof Activity)
                 reportSuccess();
-            }
-        }
 
-        if (mExportParams.shouldDeleteTransactionsAfterExport()) {
-            Log.i(TAG, "Backup and deleting transactions after export");
-            backupAndDeleteTransactions();
+            if (mExportParams.shouldDeleteTransactionsAfterExport()) {
+                Log.i(TAG, "Backup and deleting transactions after export");
+                backupAndDeleteTransactions();
 
-            //now refresh the respective views
-            if (mContext instanceof AccountsActivity){
-                AccountsListFragment fragment = ((AccountsActivity) mContext).getCurrentAccountListFragment();
-                if (fragment != null)
-                    fragment.refresh();
-            }
-            if (mContext instanceof TransactionsActivity){
-                ((TransactionsActivity) mContext).refresh();
+                //now refresh the respective views
+                if (mContext instanceof AccountsActivity){
+                    AccountsListFragment fragment =
+                            ((AccountsActivity) mContext).getCurrentAccountListFragment();
+                    if (fragment != null)
+                        fragment.refresh();
+                }
+                if (mContext instanceof TransactionsActivity){
+                    ((TransactionsActivity) mContext).refresh();
+                }
             }
         }
 
