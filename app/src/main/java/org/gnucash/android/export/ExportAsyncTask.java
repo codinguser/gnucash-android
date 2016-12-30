@@ -176,11 +176,11 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     /**
      * Transmits the exported transactions to the designated location, either SD card or third-party application
      * Finishes the activity if the export was starting  in the context of an activity
-     * @param exportResult Result of background export execution
+     * @param exportSuccessful Result of background export execution
      */
     @Override
-    protected void onPostExecute(Boolean exportResult) {
-        if (exportResult) {
+    protected void onPostExecute(Boolean exportSuccessful) {
+        if (exportSuccessful) {
             if (mContext instanceof Activity)
                 reportSuccess();
 
