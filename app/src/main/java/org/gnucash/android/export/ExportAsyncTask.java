@@ -387,8 +387,10 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         if (mOC_dir.length() != 0) {
             RemoteOperationResult dirResult = new CreateRemoteFolderOperation(
                     mOC_dir, true).execute(mClient);
-            if (!dirResult.isSuccess())
-                throw new Exporter.ExporterException(mExportParams, dirResult.getLogMessage());
+            if (!dirResult.isSuccess()) {
+                Log.w(TAG, "Error creating folder (it may happen if it already exists): "
+                           + dirResult.getLogMessage());
+            }
         }
         for (String exportedFilePath : mExportedFiles) {
             String remotePath = mOC_dir + FileUtils.PATH_SEPARATOR + stripPathPart(exportedFilePath);
