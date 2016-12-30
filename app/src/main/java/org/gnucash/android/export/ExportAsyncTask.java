@@ -185,7 +185,6 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 reportSuccess();
 
             if (mExportParams.shouldDeleteTransactionsAfterExport()) {
-                Log.i(TAG, "Backup and deleting transactions after export");
                 backupAndDeleteTransactions();
                 refreshViews();
             }
@@ -401,6 +400,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      * and deletes all non-template transactions in the database.
      */
     private void backupAndDeleteTransactions(){
+        Log.i(TAG, "Backup and deleting transactions after export");
         GncXmlExporter.createBackup(); //create backup before deleting everything
         List<Transaction> openingBalances = new ArrayList<>();
         boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
