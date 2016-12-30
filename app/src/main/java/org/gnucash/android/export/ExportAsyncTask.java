@@ -180,13 +180,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     @Override
     protected void onPostExecute(Boolean exportResult) {
-        if (!exportResult) {
-            if (mContext instanceof Activity) {
-                Toast.makeText(mContext,
-                        mContext.getString(R.string.toast_export_error, mExportParams.getExportFormat().name()),
-                        Toast.LENGTH_LONG).show();
-            }
-        } else {
+        if (exportResult) {
             if (mContext instanceof Activity)
                 reportSuccess();
 
@@ -194,6 +188,12 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 Log.i(TAG, "Backup and deleting transactions after export");
                 backupAndDeleteTransactions();
                 refreshViews();
+            }
+        } else {
+            if (mContext instanceof Activity) {
+                Toast.makeText(mContext,
+                        mContext.getString(R.string.toast_export_error, mExportParams.getExportFormat().name()),
+                        Toast.LENGTH_LONG).show();
             }
         }
 
