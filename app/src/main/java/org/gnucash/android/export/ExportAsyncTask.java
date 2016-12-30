@@ -193,17 +193,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             if (mExportParams.shouldDeleteTransactionsAfterExport()) {
                 Log.i(TAG, "Backup and deleting transactions after export");
                 backupAndDeleteTransactions();
-
-                //now refresh the respective views
-                if (mContext instanceof AccountsActivity){
-                    AccountsListFragment fragment =
-                            ((AccountsActivity) mContext).getCurrentAccountListFragment();
-                    if (fragment != null)
-                        fragment.refresh();
-                }
-                if (mContext instanceof TransactionsActivity){
-                    ((TransactionsActivity) mContext).refresh();
-                }
+                refreshViews();
             }
         }
 
@@ -536,5 +526,17 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         Toast.makeText(mContext,
                 String.format(mContext.getString(R.string.toast_exported_to), targetLocation),
                 Toast.LENGTH_LONG).show();
+    }
+
+    private void refreshViews() {
+        if (mContext instanceof AccountsActivity){
+            AccountsListFragment fragment =
+                    ((AccountsActivity) mContext).getCurrentAccountListFragment();
+            if (fragment != null)
+                fragment.refresh();
+        }
+        if (mContext instanceof TransactionsActivity){
+            ((TransactionsActivity) mContext).refresh();
+        }
     }
 }
