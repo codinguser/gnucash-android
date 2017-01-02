@@ -254,7 +254,7 @@ public abstract class Exporter {
         return "text/plain";
     }
 
-    public static class ExporterException extends RuntimeException{
+    public static class ExporterException extends Exception {
 
         public ExporterException(ExportParams params){
             super("Failed to generate export with parameters:  " + params.toString());
