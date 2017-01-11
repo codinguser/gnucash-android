@@ -22,7 +22,6 @@ import android.support.annotation.NonNull;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.ui.util.RecurrenceParser;
-import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -32,8 +31,13 @@ import org.joda.time.Weeks;
 import org.joda.time.Years;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Model for recurrences in the database
@@ -55,9 +59,9 @@ public class Recurrence extends BaseModel {
     private Timestamp mPeriodEnd;
 
     /**
-     * Describes which day on which to run the recurrence
+     * Days of week on which to run the recurrence
      */
-    private String mByDay;
+    private List<Integer> mByDays = Collections.emptyList();
 
     public Recurrence(@NonNull PeriodType periodType){
         setPeriodType(periodType);
@@ -131,10 +135,9 @@ public class Recurrence extends BaseModel {
         StringBuilder repeatBuilder = new StringBuilder(mPeriodType.getFrequencyRepeatString());
         Context context = GnuCashApplication.getAppContext();
 
-        String dayOfWeek = new SimpleDateFormat("EEEE", GnuCashApplication.getDefaultLocale())
-                .format(new Date(mPeriodStart.getTime()));
         if (mPeriodType == PeriodType.WEEK) {
-            repeatBuilder.append(" ").append(context.getString(R.string.repeat_on_weekday, dayOfWeek));
+            repeatBuilder.append(" ").
+                    append(context.getString(R.string.repeat_on_weekday, getDaysOfWeekString()));
         }
 
         if (mPeriodEnd != null){
@@ -144,7 +147,26 @@ public class Recurrence extends BaseModel {
         return repeatBuilder.toString();
     }
 
-        /**
+    /**
+     * Returns a string with the days of the week set in the recurrence separated by commas.
+     * @return string with the days of the week set in the recurrence separated by commas.
+     */
+    private @NonNull String getDaysOfWeekString() {
+        // XXX: mByDays should never be empty with PeriodType.WEEK, but we don't enforce it yet
+        if (mByDays.isEmpty())
+            return "";
+        StringBuilder daysOfWeekString = new StringBuilder();
+        Calendar calendar = Calendar.getInstance();
+        DateFormat dayOfWeekFormatter =
+                new SimpleDateFormat("EEEE", GnuCashApplication.getDefaultLocale());
+        for (int day : mByDays) {
+            calendar.set(Calendar.DAY_OF_WEEK, day);
+            daysOfWeekString.append(dayOfWeekFormatter.format(calendar.getTime())).append(", ");
+        }
+        return daysOfWeekString.substring(0, daysOfWeekString.length()-2);
+    }
+
+    /**
          * Creates an RFC 2445 string which describes this recurring event.
          * <p>See http://recurrance.sourceforge.net/</p>
          * <p>The output of this method is not meant for human consumption</p>
@@ -251,19 +273,27 @@ public class Recurrence extends BaseModel {
     }
 
     /**
-     * Sets the string which determines on which day the recurrence will be run
-     * @param byDay Byday string of recurrence rule (RFC 2445)
+     * Return the days of week on which to run the recurrence.
+     *
+     * <p>Days are expressed as defined in {@link java.util.Calendar}.
+     * For example, Calendar.MONDAY</p>
+     *
+     * @return list of days of week on which to run the recurrence.
      */
-    public void setByDay(String byDay){
-        this.mByDay = byDay;
+    public @NonNull List<Integer> getByDays(){
+        return Collections.unmodifiableList(mByDays);
     }
 
     /**
-     * Return the byDay string of recurrence rule (RFC 2445)
-     * @return String with by day specification
+     * Sets the days on which to run the recurrence.
+     *
+     * <p>Days must be expressed as defined in {@link java.util.Calendar}.
+     * For example, Calendar.MONDAY</p>
+     *
+     * @param byDays list of days of week on which to run the recurrence.
      */
-    public String getByDay(){
-        return mByDay;
+    public void setByDays(@NonNull List<Integer> byDays){
+        mByDays = new ArrayList<>(byDays);
     }
 
     /**
