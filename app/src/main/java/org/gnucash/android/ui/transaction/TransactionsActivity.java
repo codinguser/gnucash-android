@@ -143,6 +143,8 @@ public class TransactionsActivity extends BaseDrawerActivity implements
                     mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_transactions));
                 }
             }
+            // Hide the favorite icon of the selected account to avoid clutter
+            ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
             //refresh any fragments in the tab with the new account UID
             refresh();
         }
