@@ -744,8 +744,8 @@ public class TransactionFormFragment extends Fragment implements
             long transferAcctId = mTransferAccountSpinner.getSelectedItemId();
             transferAcctUID = mAccountsDbAdapter.getUID(transferAcctId);
         } else {
-            String baseCurrencyCode = mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID);
-            transferAcctUID = mAccountsDbAdapter.getOrCreateImbalanceAccountUID(Currency.getInstance(baseCurrencyCode));
+            Commodity baseCommodity = mAccountsDbAdapter.getRecord(mAccountUID).getCommodity();
+            transferAcctUID = mAccountsDbAdapter.getOrCreateImbalanceAccountUID(baseCommodity);
         }
         return transferAcctUID;
     }

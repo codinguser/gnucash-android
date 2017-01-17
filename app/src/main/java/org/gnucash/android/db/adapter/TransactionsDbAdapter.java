@@ -105,7 +105,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
         try {
             Split imbalanceSplit = transaction.createAutoBalanceSplit();
             if (imbalanceSplit != null){
-                String imbalanceAccountUID = new AccountsDbAdapter(mDb, this).getOrCreateImbalanceAccountUID(transaction.getCurrency());
+                String imbalanceAccountUID = new AccountsDbAdapter(mDb, this)
+                        .getOrCreateImbalanceAccountUID(transaction.getCommodity());
                 imbalanceSplit.setAccountUID(imbalanceAccountUID);
             }
             super.addRecord(transaction, updateMethod);

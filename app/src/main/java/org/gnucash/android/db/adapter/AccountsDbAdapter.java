@@ -581,12 +581,11 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     /**
      * Retrieves the unique ID of the imbalance account for a particular currency (creates the imbalance account
      * on demand if necessary)
-     * @param currency Currency for the imbalance account
+     * @param commodity Commodity for the imbalance account
      * @return String unique ID of the account
      */
-    public String getOrCreateImbalanceAccountUID(Currency currency){
-        String imbalanceAccountName = getImbalanceAccountName(currency);
-        Commodity commodity = mCommoditiesDbAdapter.getCommodity(currency.getCurrencyCode());
+    public String getOrCreateImbalanceAccountUID(Commodity commodity){
+        String imbalanceAccountName = getImbalanceAccountName(commodity);
         String uid = findAccountUidByFullName(imbalanceAccountName);
         if (uid == null){
             Account account = new Account(imbalanceAccountName, commodity);
@@ -605,7 +604,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      * <p>This method will not create the imbalance account if it doesn't exist</p>
      * @param currency Currency for the imbalance account
      * @return GUID of the account or null if the account doesn't exist yet
-     * @see #getOrCreateImbalanceAccountUID(java.util.Currency)
+     * @see #getOrCreateImbalanceAccountUID(Commodity)
      */
     public String getImbalanceAccountUID(Currency currency){
         String imbalanceAccountName = getImbalanceAccountName(currency);
@@ -619,7 +618,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      *
      * @param commodity Commodity for the imbalance account
      * @return GUID of the account or null if the account doesn't exist yet
-     * @see #getOrCreateImbalanceAccountUID(java.util.Currency)
+     * @see #getOrCreateImbalanceAccountUID(Commodity)
      */
     public String getImbalanceAccountUID(Commodity commodity){
         String imbalanceAccountName = getImbalanceAccountName(commodity);
