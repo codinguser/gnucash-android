@@ -17,22 +17,15 @@
 package org.gnucash.android.ui.settings;
 
 /**
- * Listener interface for cloud storage events.
+ * Listener interface for Google Drive cloud storage events.
  *
  * @author moshe.w
  */
-public interface OnCloudStorageListener {
+public interface OnGoogleDriveListener {
     /**
      * Notification that a folder has been created on Google Drive.
      *
      * @param folderId the unique folder id.
      */
     void onGoogleDriveFolderCreated(String folderId);
-
-    /**
-     * Notification that a folder has been forgotten on Google Drive.
-     *
-     * @param folderId the forgotten unique folder id.
-     */
-    void onGoogleDriveFolderForgot(String folderId);
 }

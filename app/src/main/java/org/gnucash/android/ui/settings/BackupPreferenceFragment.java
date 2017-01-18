@@ -70,7 +70,7 @@ import java.util.List;
 public class BackupPreferenceFragment extends PreferenceFragmentCompat implements
 		Preference.OnPreferenceClickListener,
 		Preference.OnPreferenceChangeListener,
-		OnCloudStorageListener {
+		OnGoogleDriveListener {
 
 	/**
 	 * Collects references to the UI elements and binds click listeners
@@ -276,7 +276,6 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 		if (appFolderId != null){
 			sharedPreferences.edit().remove(getString(R.string.key_google_drive_app_folder_id)).commit(); //commit (not apply) because we need it to be saved *now*
 			mGoogleApiClient.disconnect();
-			onGoogleDriveFolderForgot(appFolderId);
 		} else {
 			mGoogleApiClient.connect();
 		}
@@ -300,8 +299,8 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 		return getGoogleApiClient(context, null);
 	}
 
-	public static GoogleApiClient getGoogleApiClient(final Context context, OnCloudStorageListener listener) {
-		final WeakReference<OnCloudStorageListener> weakListener = new WeakReference<>(listener);
+	public static GoogleApiClient getGoogleApiClient(final Context context, OnGoogleDriveListener listener) {
+		final WeakReference<OnGoogleDriveListener> weakListener = new WeakReference<>(listener);
 		mGoogleApiClient = new GoogleApiClient.Builder(context)
 				.addApi(Drive.API)
 				.addScope(Drive.SCOPE_APPFOLDER)
@@ -328,7 +327,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 									sharedPreferences
 											.edit().putString(context.getString(R.string.key_google_drive_app_folder_id),
 											folderId).commit(); //commit because we need it to be saved *now*
-									OnCloudStorageListener listener = weakListener.get();
+									OnGoogleDriveListener listener = weakListener.get();
 									if (listener != null) {
 										listener.onGoogleDriveFolderCreated(folderId);
 									}
@@ -448,13 +447,6 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 
 	@Override
 	public void onGoogleDriveFolderCreated(String folderId) {
-		if (mGoogleDrivePreference != null) {
-			toggleGoogleDrivePreference(mGoogleDrivePreference);
-		}
-	}
-
-	@Override
-	public void onGoogleDriveFolderForgot(String folderId) {
 		if (mGoogleDrivePreference != null) {
 			toggleGoogleDrivePreference(mGoogleDrivePreference);
 		}
