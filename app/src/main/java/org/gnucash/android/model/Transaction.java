@@ -26,7 +26,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.Date;
 import java.util.List;
 
@@ -342,15 +341,6 @@ public class Transaction extends BaseModel{
      */
     public void setCurrencyCode(String currencyCode) {
         this.mCurrencyCode = currencyCode;
-    }
-
-    /**
-     * Returns the {@link java.util.Currency} used by this transaction
-     * @return Currency of the transaction
-     * @see #getCurrencyCode()
-     */
-    public Currency getCurrency(){
-        return Currency.getInstance(this.mCurrencyCode);
     }
 
     /**
