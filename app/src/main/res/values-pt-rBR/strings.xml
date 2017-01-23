@@ -449,28 +449,28 @@ Neste processo não serão recolhidas informações do utilizador!</string>
   <string name="label_split_count">%1$d divisões</string>
   <string name="label_inside_account_with_name">em %1$s</string>
   <plurals name="book_account_stats">
-    <item quantity="one">%d account</item>
-    <item quantity="other">%d accounts</item>
+    <item quantity="one">%d conta</item>
+    <item quantity="other">%d contas</item>
   </plurals>
   <plurals name="book_transaction_stats">
-    <item quantity="one">%d transaction</item>
-    <item quantity="other">%d transactions</item>
+    <item quantity="one">%d transação</item>
+    <item quantity="other">%d transações</item>
   </plurals>
   <string-array name="report_account_types">
-    <item>EXPENSE</item>
-    <item>INCOME</item>
+    <item>DESPESA</item>
+    <item>RENDIMENTO</item>
   </string-array>
-  <string name="toast_connected_to_google_drive">Connected to Google Drive</string>
-  <string name="toast_unable_to_connect_to_google_drive">Unable to connect to Google Drive</string>
+  <string name="toast_connected_to_google_drive">Conectado ao Google Drive</string>
+  <string name="toast_unable_to_connect_to_google_drive">Impossível conectar ao Google Drive</string>
   <string name="toast_enter_amount_to_split">Please enter an amount to split</string>
-  <string name="label_export_target_external_service">external service</string>
-  <string name="toast_updated_transaction_recurring_schedule">Updated transaction recurring schedule</string>
-  <string name="label_export_transactions_since_date">Since</string>
-  <string name="switch_export_transactions_from_all_time">All time</string>
-  <string name="label_recommend_app">Recommend in Play Store</string>
-  <string name="repeat_until_date">until %1$s</string>
+  <string name="label_export_target_external_service">serviço externo</string>
+  <string name="toast_updated_transaction_recurring_schedule">Agenda recorrente de transação atualizada</string>
+  <string name="label_export_transactions_since_date">Desde</string>
+  <string name="switch_export_transactions_from_all_time">Desde o início</string>
+  <string name="label_recommend_app">Recomendado na Play Store</string>
+  <string name="repeat_until_date">até %1$s</string>
   <string name="repeat_on_weekday">on %1$s</string>
-  <string name="repeat_x_times">for %1$s times</string>
-  <string name="menu_show_compact_view">Compact View</string>
+  <string name="repeat_x_times">por %1$s vezes</string>
+  <string name="menu_show_compact_view">Visualização compacta</string>
   <string name="book_default_name">Book %1$d</string>
 </resources>

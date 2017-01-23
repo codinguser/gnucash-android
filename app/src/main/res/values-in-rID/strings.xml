@@ -16,45 +16,45 @@
  limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="title_create_account">Luo tili</string>
-  <string name="title_edit_account">Muokkaa tiliä</string>
-  <string name="info_details">Tiedot</string>
-  <string name="menu_export">Vie&#8230;</string>
-  <string name="description_add_transaction_icon">Lisää uusi tapahtuma tilille</string>
-  <string name="label_no_accounts">Ei näytettävissä olevia tilejä</string>
-  <string name="label_account_name">Tilin nimi</string>
-  <string name="btn_cancel">Peruuta</string>
-  <string name="btn_save">Tallenna</string>
-  <string name="btn_test">Testaa</string>
-  <string name="label_passcode">Anna tunnuskoodi</string>
-  <string name="toast_wrong_passcode">Virheellinen tunnuskoodi, yritä uudelleen</string>
-  <string name="toast_passcode_set">Tunnuskoodi asetettu</string>
-  <string name="label_confirm_passcode">Vahvista tunnuskoodi</string>
-  <string name="toast_invalid_passcode_confirmation">Virheellinen tunnuskoodin vahvistus. Yritä uudelleen</string>
-  <string name="label_transaction_name">Kuvaus</string>
-  <string name="label_transaction_amount">Summa</string>
-  <string name="title_add_transaction">Uusi tapahtuma</string>
-  <string name="label_no_transactions">Ei näytettäviä tapahtumia</string>
+  <string name="title_create_account">Create Account</string>
+  <string name="title_edit_account">Edit Account</string>
+  <string name="info_details">Info</string>
+  <string name="menu_export">Export&#8230;</string>
+  <string name="description_add_transaction_icon">Add a new transaction to an account</string>
+  <string name="label_no_accounts">No accounts to display</string>
+  <string name="label_account_name">Account name</string>
+  <string name="btn_cancel">Cancel</string>
+  <string name="btn_save">Save</string>
+  <string name="btn_test">Test</string>
+  <string name="label_passcode">Enter Passcode</string>
+  <string name="toast_wrong_passcode">Wrong passcode, please try again</string>
+  <string name="toast_passcode_set">Passcode set</string>
+  <string name="label_confirm_passcode">Please confirm your passcode</string>
+  <string name="toast_invalid_passcode_confirmation">Invalid passcode confirmation. Please try again</string>
+  <string name="label_transaction_name">Description</string>
+  <string name="label_transaction_amount">Amount</string>
+  <string name="title_add_transaction">New transaction</string>
+  <string name="label_no_transactions">No transactions to display</string>
   <string name="label_timeanddate">DATE &amp; TIME</string>
-  <string name="label_account">Tili</string>
-  <string name="label_debit">VELOITUS</string>
-  <string name="label_credit">HYVITYS</string>
-  <string name="title_accounts">Tilit</string>
-  <string name="title_transactions">Tapahtumat</string>
-  <string name="menu_delete">Poista</string>
-  <string name="alert_dialog_ok_delete">Poista</string>
-  <string name="alert_dialog_cancel">Peruuta</string>
-  <string name="toast_account_deleted">Tili poistettu</string>
-  <string name="title_confirm_delete">Vahvista poistaminen</string>
-  <string name="delete_account_confirmation_message">Kaikki tämän tilin tapahtumat tullaan myös poistamaan</string>
-  <string name="title_edit_transaction">Muokkaa tapahtumaa</string>
-  <string name="label_transaction_description">Lisää huomautus</string>
-  <string name="menu_move">SIIRRÄ</string>
-  <string name="title_selected">%1$d valittuna</string>
-  <string name="label_account_balance">Saldo:</string>
+  <string name="label_account">Account</string>
+  <string name="label_debit">DEBIT</string>
+  <string name="label_credit">CREDIT</string>
+  <string name="title_accounts">Accounts</string>
+  <string name="title_transactions">Transactions</string>
+  <string name="menu_delete">Delete</string>
+  <string name="alert_dialog_ok_delete">Delete</string>
+  <string name="alert_dialog_cancel">Cancel</string>
+  <string name="toast_account_deleted">Account deleted</string>
+  <string name="title_confirm_delete">Confirm delete</string>
+  <string name="delete_account_confirmation_message">All transactions in this account will also be deleted</string>
+  <string name="title_edit_transaction">Edit Transaction</string>
+  <string name="label_transaction_description">Add note</string>
+  <string name="menu_move">MOVE</string>
+  <string name="title_selected">%1$d selected</string>
+  <string name="label_account_balance">Balance:</string>
   <string name="label_export_destination">Export To:</string>
-  <string name="title_export_dialog">Vie tapahtumat</string>
-  <string name="option_export_all_transactions">Vie kaikki tapahtumat</string>
+  <string name="title_export_dialog">Export Transactions</string>
+  <string name="option_export_all_transactions">Export all transactions</string>
   <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
   <string name="toast_export_error">Error exporting %1$s file</string>
   <string name="btn_export">Export</string>
@@ -178,7 +178,6 @@
   <string name="label_placeholder_account">Placeholder account</string>
   <string name="label_default_transfer_account">Default Transfer Account</string>
   <plurals name="label_sub_accounts">
-    <item quantity="one">%d sub-account</item>
     <item quantity="other">%d sub-accounts</item>
   </plurals>
   <string-array name="account_type_entry_values">
@@ -315,19 +314,15 @@
   <string name="owncloud_user_ok">OC username/password OK</string>
   <string name="owncloud_dir_ok">Dir name OK</string>
   <plurals name="label_every_x_days">
-    <item quantity="one">Daily</item>
     <item quantity="other">Every %d days</item>
   </plurals>
   <plurals name="label_every_x_weeks">
-    <item quantity="one">Weekly</item>
     <item quantity="other">Every %d weeks</item>
   </plurals>
   <plurals name="label_every_x_months">
-    <item quantity="one">Monthly</item>
     <item quantity="other">Every %d months</item>
   </plurals>
   <plurals name="label_every_x_years">
-    <item quantity="one">Yearly</item>
     <item quantity="other">Every %d years</item>
   </plurals>
   <string name="title_enable_crashlytics">Enable Crash Logging</string>
@@ -454,11 +449,9 @@
   <string name="label_split_count">%1$d splits</string>
   <string name="label_inside_account_with_name">in %1$s</string>
   <plurals name="book_account_stats">
-    <item quantity="one">%d account</item>
     <item quantity="other">%d accounts</item>
   </plurals>
   <plurals name="book_transaction_stats">
-    <item quantity="one">%d transaction</item>
     <item quantity="other">%d transactions</item>
   </plurals>
   <string-array name="report_account_types">

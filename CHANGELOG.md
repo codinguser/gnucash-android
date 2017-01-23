@@ -1,5 +1,17 @@
 Change Log
 ===============================================================================
+Version 2.1.4 *(2017-01-30)*
+----------------------------
+* Fixed: Bugs in execution of some scheduled actions (#604, #609)
+* Fixed: Multi-currency transactions not exported when format is QIF (#571)
+* Fixed: Incorrect date of last export shown in book manager (#615, #617)
+* Fixed: Large exports may be reported as successful even if they didn't complete yet (#616)
+* Fixed: Account color reset when editing an account (#620)
+* Fixed: Export to OwnCloud fails if folder already exists
+* Fixed: User not notified if export to external target fails
+* Improved translations
+
+
 Version 2.1.3 *(2016-10-20)*
 ----------------------------
 * Fixed: Scheduled exports execute too often or not at all in some cases
