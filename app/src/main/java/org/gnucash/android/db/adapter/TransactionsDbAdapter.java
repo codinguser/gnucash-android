@@ -184,12 +184,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
         stmt.bindLong(3, transaction.getTimeMillis());
         stmt.bindLong(4, transaction.isExported() ? 1 : 0);
         stmt.bindString(5, transaction.getCurrencyCode());
-
-        Commodity commodity = transaction.getCommodity();
-        if (commodity == null)
-            commodity = mCommoditiesDbAdapter.getCommodity(transaction.getCurrencyCode());
-
-        stmt.bindString(6, commodity.getUID());
+        stmt.bindString(6, transaction.getCommodity().getUID());
         stmt.bindString(7, TimestampHelper.getUtcStringFromTimestamp(transaction.getCreatedTimestamp()));
 
         if (transaction.getScheduledActionUID() == null)
@@ -414,7 +409,6 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
 		transaction.setExported(c.getInt(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_EXPORTED)) == 1);
 		transaction.setTemplate(c.getInt(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_TEMPLATE)) == 1);
         String currencyCode = c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_CURRENCY));
-        transaction.setCurrencyCode(currencyCode);
         transaction.setCommodity(mCommoditiesDbAdapter.getCommodity(currencyCode));
         transaction.setScheduledActionUID(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_SCHEDX_ACTION_UID)));
         long transactionID = c.getLong(c.getColumnIndexOrThrow(TransactionEntry._ID));

@@ -772,7 +772,6 @@ public class TransactionFormFragment extends Fragment implements
         Transaction transaction = new Transaction(description);
         transaction.setTime(cal.getTimeInMillis());
         transaction.setCommodity(commodity);
-        transaction.setCurrencyCode(currencyCode);
         transaction.setNote(notes);
         transaction.setSplits(splits);
         transaction.setExported(false); //not necessary as exports use timestamps now. Because, legacy
