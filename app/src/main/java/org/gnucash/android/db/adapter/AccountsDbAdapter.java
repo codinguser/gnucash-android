@@ -970,7 +970,9 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
                 null,
                 SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID, //groupby
                 null, //haveing
-                "MAX ( " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " ) DESC", // order
+                AccountEntry.COLUMN_FAVORITE + " DESC, "
+                    + "MAX (" + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + "), "
+                    + AccountEntry.COLUMN_FULL_NAME + " ASC", // order
                 Integer.toString(numberOfRecent) // limit;
         );
     }
