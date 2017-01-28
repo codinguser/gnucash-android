@@ -688,14 +688,14 @@ public class GncXmlHandler extends DefaultHandler {
                 break;
             case GncXmlHelper.TAG_TRANSACTION:
                 mTransaction.setTemplate(mInTemplates);
-                Split imbSplit = mTransaction.createAutoBalanceSplit();
-                if (imbSplit != null) {
-                    mAutoBalanceSplits.add(imbSplit);
-                }
                 if (mInTemplates){
                     if (!mIgnoreTemplateTransaction)
                         mTemplateTransactions.add(mTransaction);
                 } else {
+                    Split imbSplit = mTransaction.createAutoBalanceSplit();
+                    if (imbSplit != null) {
+                        mAutoBalanceSplits.add(imbSplit);
+                    }
                     mTransactionList.add(mTransaction);
                 }
                 if (mRecurrencePeriod > 0) { //if we find an old format recurrence period, parse it
@@ -1051,8 +1051,7 @@ public class GncXmlHandler extends DefaultHandler {
     private void handleEndOfTemplateNumericSlot(String characterString, TransactionType splitType) {
         try {
             // HACK: Check for bug #562. If a value has already been set, ignore the one just read
-            if (mSplit.getValue().equals(
-                    new Money(BigDecimal.ZERO, mSplit.getValue().getCommodity()))) {
+            if (mSplit.getValue().isAmountZero()) {
                 BigDecimal amountBigD = GncXmlHelper.parseSplitAmount(characterString);
                 Money amount = new Money(amountBigD, getCommodityForAccount(mSplit.getAccountUID()));
 
