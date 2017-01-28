@@ -461,7 +461,7 @@ public class TransactionFormFragment extends Fragment implements
             //when autocompleting, only change the amount if the user has not manually changed it already
             mAmountEditText.setValue(mTransaction.getBalance(mAccountUID).asBigDecimal());
         }
-		mCurrencyTextView.setText(mTransaction.getCurrency().getSymbol());
+		mCurrencyTextView.setText(mTransaction.getCommodity().getSymbol());
 		mNotesEditText.setText(mTransaction.getNote());
 		mDateTextView.setText(DATE_FORMATTER.format(mTransaction.getTimeMillis()));
 		mTimeTextView.setText(TIME_FORMATTER.format(mTransaction.getTimeMillis()));
@@ -772,7 +772,6 @@ public class TransactionFormFragment extends Fragment implements
         Transaction transaction = new Transaction(description);
         transaction.setTime(cal.getTimeInMillis());
         transaction.setCommodity(commodity);
-        transaction.setCurrencyCode(currencyCode);
         transaction.setNote(notes);
         transaction.setSplits(splits);
         transaction.setExported(false); //not necessary as exports use timestamps now. Because, legacy

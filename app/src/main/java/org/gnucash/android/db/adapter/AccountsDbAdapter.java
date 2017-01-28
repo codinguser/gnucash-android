@@ -1176,7 +1176,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
 
                 Transaction transaction = new Transaction(GnuCashApplication.getAppContext().getString(R.string.account_name_opening_balances));
                 transaction.setNote(getAccountName(accountUID));
-                transaction.setCurrencyCode(currencyCode);
+                transaction.setCommodity(Commodity.getInstance(currencyCode));
                 TransactionType transactionType = Transaction.getTypeForBalance(getAccountType(accountUID),
                         balance.isNegative());
                 Split split = new Split(balance.abs(), accountUID);
