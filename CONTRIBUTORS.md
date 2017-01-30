@@ -36,5 +36,6 @@ The following (incomplete list of) people (in no particular order) contributed (
 * Felipe Morato <me@fmorato.com>
 * Alceu Rodrigues Neto <alceurneto@gmail.com>
 * Salama AB <aksalj@aksalj.me>
+* Juan Villa <juan64@gmail.com>
 
 Please visit https://crowdin.com/project/gnucash-android for a more complete list of translation contributions

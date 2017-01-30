@@ -6,6 +6,7 @@ Version 2.1.4 *(2017-01-30)*
 * Fixed: Multi-currency transactions not exported when format is QIF (#571)
 * Fixed: Incorrect date of last export shown in book manager (#615, #617)
 * Fixed: Large exports may be reported as successful even if they didn't complete yet (#616)
+* Fixed: Custom date range (in reports) does not select correct ending date (#611)
 * Fixed: Account color reset when editing an account (#620)
 * Fixed: Export to OwnCloud fails if folder already exists
 * Fixed: User not notified if export to external target fails
