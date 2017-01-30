@@ -15,12 +15,13 @@
  */
 package org.gnucash.android.test.unit.service;
 
+import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.NonNull;
 
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
@@ -39,10 +40,12 @@ import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.service.ScheduledActionService;
 import org.gnucash.android.test.unit.testutil.GnucashTestRunner;
 import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
 import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
+import org.gnucash.android.util.TimestampHelper;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Weeks;
@@ -57,6 +60,7 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,6 +83,7 @@ public class ScheduledActionServiceTest {
     private static Account mTransferAccount = new Account("Transfer Account");
 
     private static Transaction mTemplateTransaction;
+    private TransactionsDbAdapter mTransactionsDbAdapter;
 
     public void createAccounts(){
         try {
@@ -117,9 +122,8 @@ public class ScheduledActionServiceTest {
         accountsDbAdapter.addRecord(mBaseAccount);
         accountsDbAdapter.addRecord(mTransferAccount);
 
-        TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
-        transactionsDbAdapter.addRecord(mTemplateTransaction, DatabaseAdapter.UpdateMethod.insert);
-
+        mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
+        mTransactionsDbAdapter.addRecord(mTemplateTransaction, DatabaseAdapter.UpdateMethod.insert);
     }
 
     @Test
@@ -290,9 +294,6 @@ public class ScheduledActionServiceTest {
      * was done on Monday and it's Thursday, two backups have been
      * missed. Doing the two missed backups plus today's wouldn't be
      * useful, so just one should be done.</p>
-     *
-     * <p><i>Note</i>: the execution count will include the missed runs
-     * as computeNextCountBasedScheduledExecutionTime depends on it.</p>
      */
     @Test
     public void scheduledBackups_shouldRunOnlyOnce(){
@@ -302,6 +303,7 @@ public class ScheduledActionServiceTest {
         scheduledBackup.setRecurrence(PeriodType.MONTH, 1);
         scheduledBackup.setExecutionCount(2);
         scheduledBackup.setLastRun(LocalDateTime.now().minusMonths(2).toDate().getTime());
+        long previousLastRun = scheduledBackup.getLastRunTime();
 
         ExportParams backupParams = new ExportParams(ExportFormat.XML);
         backupParams.setExportTarget(ExportParams.ExportTarget.SD_CARD);
@@ -317,13 +319,16 @@ public class ScheduledActionServiceTest {
         // Check there's not a backup for each missed run
         ScheduledActionService.processScheduledActions(actions, mDb);
         assertThat(scheduledBackup.getExecutionCount()).isEqualTo(3);
+        assertThat(scheduledBackup.getLastRunTime()).isGreaterThan(previousLastRun);
         File[] backupFiles = backupFolder.listFiles();
         assertThat(backupFiles).hasSize(1);
         assertThat(backupFiles[0]).exists().hasExtension("gnca");
 
         // Check also across service runs
+        previousLastRun = scheduledBackup.getLastRunTime();
         ScheduledActionService.processScheduledActions(actions, mDb);
         assertThat(scheduledBackup.getExecutionCount()).isEqualTo(3);
+        assertThat(scheduledBackup.getLastRunTime()).isEqualTo(previousLastRun);
         backupFiles = backupFolder.listFiles();
         assertThat(backupFiles).hasSize(1);
         assertThat(backupFiles[0]).exists().hasExtension("gnca");
@@ -340,6 +345,7 @@ public class ScheduledActionServiceTest {
         ScheduledAction scheduledBackup = new ScheduledAction(ScheduledAction.ActionType.BACKUP);
         scheduledBackup.setStartTime(LocalDateTime.now().minusDays(2).toDate().getTime());
         scheduledBackup.setLastRun(scheduledBackup.getStartTime());
+        long previousLastRun = scheduledBackup.getLastRunTime();
         scheduledBackup.setExecutionCount(1);
         scheduledBackup.setRecurrence(PeriodType.WEEK, 1);
 
@@ -357,7 +363,105 @@ public class ScheduledActionServiceTest {
         ScheduledActionService.processScheduledActions(actions, mDb);
 
         assertThat(scheduledBackup.getExecutionCount()).isEqualTo(1);
+        assertThat(scheduledBackup.getLastRunTime()).isEqualTo(previousLastRun);
         assertThat(backupFolder.listFiles()).hasSize(0);
+    }
+
+    /**
+     * Tests that an scheduled backup doesn't include transactions added or modified
+     * previous to the last run.
+     */
+    @Test
+    public void scheduledBackups_shouldNotIncludeTransactionsPreviousToTheLastRun() {
+        ScheduledAction scheduledBackup = new ScheduledAction(ScheduledAction.ActionType.BACKUP);
+        scheduledBackup.setStartTime(LocalDateTime.now().minusDays(15).toDate().getTime());
+        scheduledBackup.setLastRun(LocalDateTime.now().minusDays(8).toDate().getTime());
+        long previousLastRun = scheduledBackup.getLastRunTime();
+        scheduledBackup.setExecutionCount(1);
+        scheduledBackup.setRecurrence(PeriodType.WEEK, 1);
+        ExportParams backupParams = new ExportParams(ExportFormat.QIF);
+        backupParams.setExportTarget(ExportParams.ExportTarget.SD_CARD);
+        backupParams.setExportStartTime(new Timestamp(scheduledBackup.getStartTime()));
+        scheduledBackup.setTag(backupParams.toCsv());
+
+        // Create a transaction with a modified date previous to the last run
+        Transaction transaction = new Transaction("Tandoori express");
+        Split split = new Split(new Money("10", Commodity.DEFAULT_COMMODITY.getCurrencyCode()),
+                                mBaseAccount.getUID());
+        split.setType(TransactionType.DEBIT);
+        transaction.addSplit(split);
+        transaction.addSplit(split.createPair(mTransferAccount.getUID()));
+        mTransactionsDbAdapter.addRecord(transaction);
+        // We set the date directly in the database as the corresponding field
+        // is ignored when the object is stored. It's set through a trigger instead.
+        setTransactionInDbModifiedTimestamp(transaction.getUID(),
+                new Timestamp(LocalDateTime.now().minusDays(9).toDate().getTime()));
+
+        File backupFolder = new File(
+                Exporter.getExportFolderPath(BooksDbAdapter.getInstance().getActiveBookUID()));
+        assertThat(backupFolder).exists();
+        assertThat(backupFolder.listFiles()).isEmpty();
+
+        List<ScheduledAction> actions = new ArrayList<>();
+        actions.add(scheduledBackup);
+        ScheduledActionService.processScheduledActions(actions, mDb);
+
+        assertThat(scheduledBackup.getExecutionCount()).isEqualTo(2);
+        assertThat(scheduledBackup.getLastRunTime()).isGreaterThan(previousLastRun);
+        assertThat(backupFolder.listFiles()).hasSize(0);
+    }
+
+    /**
+     * Sets the transaction modified timestamp directly in the database.
+     *
+     * @param transactionUID UID of the transaction to set the modified timestamp.
+     * @param timestamp new modified timestamp.
+     */
+    private void setTransactionInDbModifiedTimestamp(String transactionUID, Timestamp timestamp) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseSchema.TransactionEntry.COLUMN_MODIFIED_AT,
+                   TimestampHelper.getUtcStringFromTimestamp(timestamp));
+        mTransactionsDbAdapter.updateTransaction(values, "uid = ?",
+                                                 new String[]{transactionUID});
+    }
+
+    /**
+     * Tests that an scheduled backup includes transactions added or modified
+     * after the last run.
+     */
+    @Test
+    public void scheduledBackups_shouldIncludeTransactionsAfterTheLastRun() {
+        ScheduledAction scheduledBackup = new ScheduledAction(ScheduledAction.ActionType.BACKUP);
+        scheduledBackup.setStartTime(LocalDateTime.now().minusDays(15).toDate().getTime());
+        scheduledBackup.setLastRun(LocalDateTime.now().minusDays(8).toDate().getTime());
+        long previousLastRun = scheduledBackup.getLastRunTime();
+        scheduledBackup.setExecutionCount(1);
+        scheduledBackup.setRecurrence(PeriodType.WEEK, 1);
+        ExportParams backupParams = new ExportParams(ExportFormat.QIF);
+        backupParams.setExportTarget(ExportParams.ExportTarget.SD_CARD);
+        backupParams.setExportStartTime(new Timestamp(scheduledBackup.getStartTime()));
+        scheduledBackup.setTag(backupParams.toCsv());
+
+        Transaction transaction = new Transaction("Orient palace");
+        Split split = new Split(new Money("10", Commodity.DEFAULT_COMMODITY.getCurrencyCode()),
+                mBaseAccount.getUID());
+        split.setType(TransactionType.DEBIT);
+        transaction.addSplit(split);
+        transaction.addSplit(split.createPair(mTransferAccount.getUID()));
+        mTransactionsDbAdapter.addRecord(transaction);
+
+        File backupFolder = new File(
+                Exporter.getExportFolderPath(BooksDbAdapter.getInstance().getActiveBookUID()));
+        assertThat(backupFolder).exists();
+        assertThat(backupFolder.listFiles()).isEmpty();
+
+        List<ScheduledAction> actions = new ArrayList<>();
+        actions.add(scheduledBackup);
+        ScheduledActionService.processScheduledActions(actions, mDb);
+
+        assertThat(scheduledBackup.getExecutionCount()).isEqualTo(2);
+        assertThat(scheduledBackup.getLastRunTime()).isGreaterThan(previousLastRun);
+        assertThat(backupFolder.listFiles()).hasSize(1);
     }
 
     @After
