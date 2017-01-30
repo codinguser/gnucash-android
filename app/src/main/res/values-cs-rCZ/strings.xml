@@ -18,7 +18,7 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="title_create_account">Create Account</string>
   <string name="title_edit_account">Edit Account</string>
-  <string name="info_details">Info</string>
+  <string name="info_details">Čestina</string>
   <string name="menu_export">Export&#8230;</string>
   <string name="description_add_transaction_icon">Add a new transaction to an account</string>
   <string name="label_no_accounts">No accounts to display</string>

@@ -52,13 +52,13 @@
   <string name="menu_move">DÉPLACER</string>
   <string name="title_selected">%1$d sélectionné(s)</string>
   <string name="label_account_balance">Solde:</string>
-  <string name="label_export_destination">Export To:</string>
+  <string name="label_export_destination">Exporter vers:</string>
   <string name="title_export_dialog">Exporter les transactions</string>
   <string name="option_export_all_transactions">Exporter toutes les transactions</string>
   <string name="hint_export_choice">Par défaut, seul les nouvelles transactions depuis le dernier export seront exportées. Cochez cette option pour exporter toutes les transactions</string>
   <string name="toast_export_error">Erreur lors de l\'export des données en %1$s</string>
   <string name="btn_export">Exporter</string>
-  <string name="option_delete_after_export">Delete transactions after export</string>
+  <string name="option_delete_after_export">Effacer les transactions apres export</string>
   <string name="hint_delete_after_export">Toutes les transactions exportées seront supprimées aprés l\'export</string>
   <string name="title_settings">Paramètres</string>
   <string-array name="export_destinations">
@@ -66,7 +66,7 @@
     <item>DropBox</item>
     <item>Google Drive</item>
     <item>ownCloud</item>
-    <item>Send to&#8230;</item>
+    <item>Envoyer vers&#8230;</item>
   </string-array>
   <string name="btn_move">Déplacer</string>
   <string name="title_move_transactions">Déplacer %1$d transaction(s)</string>
@@ -82,8 +82,8 @@
   <string name="label_permission_create_accounts">Permettre la création de comptes dans GnuCash pour Android</string>
   <string name="label_permission_group">Vos données GnuCash</string>
   <string name="description_permission_group">Lire et modifier les données GnuCash</string>
-  <string name="label_permission_record_transaction">Record transactions in GnuCash</string>
-  <string name="label_permission_create_account">Create accounts in GnuCash</string>
+  <string name="label_permission_record_transaction">Enregistrer les transactions dans GnuCash</string>
+  <string name="label_permission_create_account">Créer comptes dans GnuCash</string>
   <string name="label_display_account">Afficher le compte</string>
   <string name="btn_create_accounts">Créer les comptes</string>
   <string name="title_default_accounts">Choisisez les comptes à créés</string>
@@ -116,7 +116,7 @@
   </string-array>
   <string name="msg_delete_all_transactions_confirmation">Êtes vous sûre de vouloir supprimer TOUTES les transactions ?</string>
   <string name="msg_delete_transaction_confirmation">Êtes vous sûre de vouloir supprimer cette transaction ?</string>
-  <string name="title_export_preference_category">Export</string>
+  <string name="title_export_preference_category">Exporter</string>
   <string name="title_export_all_transactions">Exporter toutes les transactions</string>
   <string name="title_always_delete_exported_transactions">Supprimer les transactions exportées</string>
   <string name="title_default_export_email">Email d\'export par défaut</string>
@@ -124,7 +124,7 @@
   <string name="label_double_entry_account">Transfert entre comptes</string>
   <string name="summary_use_double_entry">Toutes les transactions seront transférées d\'un compte à l\'autre</string>
   <string name="title_use_double_entry">Activer les doubles entrée</string>
-  <string name="account_balance">Balance</string>
+  <string name="account_balance">Solde</string>
   <string name="toast_no_account_name_entered">Entrer un nom de compte pour créer un compte</string>
   <string name="label_account_currency">Monnaie</string>
   <string name="label_parent_account">Compte parent</string>
@@ -259,7 +259,7 @@
   <string name="menu_order_by_size">Tri par taille</string>
   <string name="menu_toggle_legend">Show legend</string>
   <string name="menu_toggle_labels">Show labels</string>
-  <string name="menu_toggle_percentage_mode">Show percentage</string>
+  <string name="menu_toggle_percentage_mode">Montrer pourcentage</string>
   <string name="menu_toggle_average_lines">Show average lines</string>
   <string name="menu_group_smaller_slices">Groupe par petites tranches</string>
   <string name="label_chart_no_data">Aucune données de graphe disponible</string>
@@ -276,11 +276,11 @@
   <string name="label_tap_to_create_schedule">Appuyez sur pour créer le calendrier</string>
   <string name="title_restore_backup">Restaurer Sauvegarde&#8230;</string>
   <string name="header_backup_and_export_settings">Sauvegarde &amp; export</string>
-  <string name="title_dropbox_sync_preference">Enable DropBox</string>
-  <string name="title_owncloud_sync_preference">Enable ownCloud </string>
+  <string name="title_dropbox_sync_preference">Activer DropBox</string>
+  <string name="title_owncloud_sync_preference">Activer ownCloud </string>
   <string name="title_backup_preference_category">Sauvegarde</string>
-  <string name="summary_dropbox_sync">Enable exporting to DropBox</string>
-  <string name="summary_owncloud_sync">Enable exporting to ownCloud</string>
+  <string name="summary_dropbox_sync">Activer export vers DropBox</string>
+  <string name="summary_owncloud_sync">Activer export vers owncloud</string>
   <string name="title_select_gnucash_xml_file">Selectionner un fichier GnuCash XML</string>
   <string name="title_backup_prefs">Sauvergarde Préférences</string>
   <string name="title_create_backup_pref">Créer Sauvegarde</string>
@@ -289,8 +289,8 @@
   <string name="toast_backup_successful">Sauvegarde réussie</string>
   <string name="toast_backup_failed">Échec de la sauvegarde</string>
   <string name="export_warning_xml">Exporte tous les comptes et les transactions</string>
-  <string name="title_google_drive_sync_pref">Enable Google Drive</string>
-  <string name="summary_google_drive_sync">Enable exporting to Google Drive</string>
+  <string name="title_google_drive_sync_pref">Activer Google Drive</string>
+  <string name="summary_google_drive_sync">Activer export vers Google Drive</string>
   <string name="toast_install_file_manager">Installez un gestionnaire de fichiers pour sélectionner les fichiers</string>
   <string name="title_select_backup_to_restore">Sélectionnez une sauvegarde à restaurer</string>
   <string name="nav_menu_favorites">Favoris</string>
@@ -299,11 +299,11 @@
   <string name="nav_menu_scheduled_transactions">Transactions planifiées</string>
   <string name="nav_menu_export">Export&#8230;</string>
   <string name="nav_menu_settings">Paramètres</string>
-  <string name="username">User Name</string>
-  <string name="password">Password</string>
-  <string name="owncloud_pref">owncloud</string>
+  <string name="username">Nom d\'utilisateur</string>
+  <string name="password">Mot de passe</string>
+  <string name="owncloud_pref">ownCloud</string>
   <string name="owncloud_server">https://</string>
-  <string name="owncloud_server_invalid">OC server not found</string>
+  <string name="owncloud_server_invalid">Serveur OC inaccessible</string>
   <string name="owncloud_user_invalid">OC username/password invalid</string>
   <string name="owncloud_dir_invalid">Invalid chars: \\ &lt; &gt; : \&quot; | * ? </string>
   <string name="owncloud_server_ok">OC server OK</string>

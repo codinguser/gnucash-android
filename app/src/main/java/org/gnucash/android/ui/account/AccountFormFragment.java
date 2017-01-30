@@ -87,7 +87,7 @@ public class AccountFormFragment extends Fragment {
     /**
      * Tag for the color picker dialog fragment
      */
-    public static final String COLOR_PICKER_DIALOG_TAG = "color_picker_dialog";
+    private static final String COLOR_PICKER_DIALOG_TAG = "color_picker_dialog";
 
     /**
 	 * EditText for the name of the account to be created/edited
@@ -176,7 +176,7 @@ public class AccountFormFragment extends Fragment {
     /**
      * Spinner for selecting the default transfer account
      */
-    @BindView(R.id.input_default_transfer_account) Spinner mDefaulTransferAccountSpinner;
+    @BindView(R.id.input_default_transfer_account) Spinner mDefaultTransferAccountSpinner;
 
     /**
      * Account description input text view
@@ -205,13 +205,14 @@ public class AccountFormFragment extends Fragment {
      */
     @BindView(R.id.input_color_picker) ColorSquare mColorSquare;
 
-    private ColorPickerSwatch.OnColorSelectedListener mColorSelectedListener = new ColorPickerSwatch.OnColorSelectedListener() {
-        @Override
-        public void onColorSelected(int color) {
-            mColorSquare.setBackgroundColor(color);
-            mSelectedColor = color;
-        }
-    };
+    private final ColorPickerSwatch.OnColorSelectedListener mColorSelectedListener =
+            new ColorPickerSwatch.OnColorSelectedListener() {
+                @Override
+                public void onColorSelected(int color) {
+                    mColorSquare.setBackgroundColor(color);
+                    mSelectedColor = color;
+                }
+            };
 
 
     /**
@@ -294,11 +295,11 @@ public class AccountFormFragment extends Fragment {
             }
         });
 
-        mDefaulTransferAccountSpinner.setEnabled(false);
+        mDefaultTransferAccountSpinner.setEnabled(false);
         mDefaultTransferAccountCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                mDefaulTransferAccountSpinner.setEnabled(isChecked);
+                mDefaultTransferAccountSpinner.setEnabled(isChecked);
             }
         });
 
@@ -408,6 +409,7 @@ public class AccountFormFragment extends Fragment {
         }
 
         mPlaceholderCheckBox.setChecked(account.isPlaceholderAccount());
+        mSelectedColor = account.getColor();
         mColorSquare.setBackgroundColor(account.getColor());
 
         setAccountTypeSelection(account.getAccountType());
@@ -495,13 +497,13 @@ public class AccountFormFragment extends Fragment {
     private void setDefaultTransferAccountSelection(long defaultTransferAccountId, boolean enableTransferAccount) {
         if (defaultTransferAccountId > 0) {
             mDefaultTransferAccountCheckBox.setChecked(enableTransferAccount);
-            mDefaulTransferAccountSpinner.setEnabled(enableTransferAccount);
+            mDefaultTransferAccountSpinner.setEnabled(enableTransferAccount);
         } else
             return;
 
         for (int pos = 0; pos < mDefaultTransferAccountCursorAdapter.getCount(); pos++) {
             if (mDefaultTransferAccountCursorAdapter.getItemId(pos) == defaultTransferAccountId) {
-                mDefaulTransferAccountSpinner.setSelection(pos);
+                mDefaultTransferAccountSpinner.setSelection(pos);
                 break;
             }
         }
@@ -520,6 +522,7 @@ public class AccountFormFragment extends Fragment {
              int color = colorTypedArray.getColor(i, getResources().getColor(R.color.title_green));
              colorOptions[i] = color;
         }
+        colorTypedArray.recycle();
         return colorOptions;
     }
     /**
@@ -573,13 +576,13 @@ public class AccountFormFragment extends Fragment {
         Cursor defaultTransferAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition,
                 new String[]{AccountType.ROOT.name()});
 
-        if (mDefaulTransferAccountSpinner.getCount() <= 0) {
+        if (mDefaultTransferAccountSpinner.getCount() <= 0) {
             setDefaultTransferAccountInputsVisible(false);
         }
 
         mDefaultTransferAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
                 defaultTransferAccountCursor);
-        mDefaulTransferAccountSpinner.setAdapter(mDefaultTransferAccountCursorAdapter);
+        mDefaultTransferAccountSpinner.setAdapter(mDefaultTransferAccountCursorAdapter);
     }
 
     /**
@@ -712,7 +715,7 @@ public class AccountFormFragment extends Fragment {
 	
 	@Override
 	public void onDestroy() {
-		super.onDestroyView();
+		super.onDestroy();
 		if (mParentAccountCursor != null)
 			mParentAccountCursor.close();
         if (mDefaultTransferAccountCursorAdapter != null) {
@@ -732,7 +735,7 @@ public class AccountFormFragment extends Fragment {
         boolean nameChanged = false;
 		if (mAccount == null){
 			String name = getEnteredName();
-			if (name == null || name.length() == 0){
+			if (name.length() == 0){
                 mTextInputLayout.setErrorEnabled(true);
                 mTextInputLayout.setError(getString(R.string.toast_no_account_name_entered));
 				return;				
@@ -770,8 +773,8 @@ public class AccountFormFragment extends Fragment {
         mAccount.setParentUID(newParentAccountUID);
 
         if (mDefaultTransferAccountCheckBox.isChecked()
-                && mDefaulTransferAccountSpinner.getSelectedItemId() != Spinner.INVALID_ROW_ID){
-            long id = mDefaulTransferAccountSpinner.getSelectedItemId();
+                && mDefaultTransferAccountSpinner.getSelectedItemId() != Spinner.INVALID_ROW_ID){
+            long id = mDefaultTransferAccountSpinner.getSelectedItemId();
             mAccount.setDefaultTransferAccountUID(mAccountsDbAdapter.getUID(id));
         } else {
             //explicitly set in case of removal of default account
@@ -841,7 +844,7 @@ public class AccountFormFragment extends Fragment {
 	 * Retrieves the name of the account which has been entered in the EditText
 	 * @return Name of the account which has been entered in the EditText
 	 */
-	public String getEnteredName(){
+    private String getEnteredName(){
 		return mNameEditText.getText().toString().trim();
 	}
 
