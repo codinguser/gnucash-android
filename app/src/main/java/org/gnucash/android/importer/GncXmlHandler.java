@@ -83,7 +83,7 @@ public class GncXmlHandler extends DefaultHandler {
     /**
      * Tag for logging
      */
-    private static final String LOG_TAG = "GnuCashAccountImporter";
+    private static final String LOG_TAG = "GncXmlHandler";
 
     /*
         ^             anchor for start of string
@@ -979,14 +979,14 @@ public class GncXmlHandler extends DefaultHandler {
         
         long startTime = System.nanoTime();
         mAccountsDbAdapter.beginTransaction();
-        Log.d(getClass().getSimpleName(), "bulk insert starts");
+        Log.d(LOG_TAG, "bulk insert starts");
         try {
             // disable foreign key. The database structure should be ensured by the data inserted.
             // it will make insertion much faster.
             mAccountsDbAdapter.enableForeignKey(false);
-            Log.d(getClass().getSimpleName(), "before clean up db");
+            Log.d(LOG_TAG, "before clean up db");
             mAccountsDbAdapter.deleteAllRecords();
-            Log.d(getClass().getSimpleName(), String.format("deb clean up done %d ns", System.nanoTime()-startTime));
+            Log.d(LOG_TAG, String.format("deb clean up done %d ns", System.nanoTime()-startTime));
             long nAccounts = mAccountsDbAdapter.bulkAddRecords(mAccountList, DatabaseAdapter.UpdateMethod.insert);
             Log.d("Handler:", String.format("%d accounts inserted", nAccounts));
             //We need to add scheduled actions first because there is a foreign key constraint on transactions
@@ -1001,14 +1001,14 @@ public class GncXmlHandler extends DefaultHandler {
             Log.d("Handler:", String.format("%d transactions inserted", nTransactions));
 
             long nPrices = mPricesDbAdapter.bulkAddRecords(mPriceList, DatabaseAdapter.UpdateMethod.insert);
-            Log.d(getClass().getSimpleName(), String.format("%d prices inserted", nPrices));
+            Log.d(LOG_TAG, String.format("%d prices inserted", nPrices));
 
             //// TODO: 01.06.2016 Re-enable import of Budget stuff when the UI is complete
 //            long nBudgets = mBudgetsDbAdapter.bulkAddRecords(mBudgetList, DatabaseAdapter.UpdateMethod.insert);
-//            Log.d(getClass().getSimpleName(), String.format("%d budgets inserted", nBudgets));
+//            Log.d(LOG_TAG, String.format("%d budgets inserted", nBudgets));
 
             long endTime = System.nanoTime();
-            Log.d(getClass().getSimpleName(), String.format("bulk insert time: %d", endTime - startTime));
+            Log.d(LOG_TAG, String.format("bulk insert time: %d", endTime - startTime));
 
             //if all of the import went smoothly, then add the book to the book db
             booksDbAdapter.addRecord(mBook, DatabaseAdapter.UpdateMethod.insert);
