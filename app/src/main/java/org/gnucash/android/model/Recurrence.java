@@ -298,7 +298,7 @@ public class Recurrence extends BaseModel {
 
     /**
      * Computes the number of occurrences of this recurrences between start and end date
-     * <p>If there is no end date, it returns -1</p>
+     * <p>If there is no end date or the PeriodType is unknown, it returns -1</p>
      * @return Number of occurrences, or -1 if there is no end date
      */
     public int getCount(){
