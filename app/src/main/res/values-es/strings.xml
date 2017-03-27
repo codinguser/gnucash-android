@@ -204,7 +204,7 @@
   <!-- Content description for a selected color square. -->
   <string name="label_account_color_and_type">Color y tipo de cuenta</string>
   <string name="label_delete_sub_accounts">Borrar sub-cuentas</string>
-  <string name="title_recent_accounts">Reciente</string>
+  <string name="title_recent_accounts">Recientes</string>
   <string name="title_favorite_accounts">Favoritos</string>
   <string name="title_all_accounts">Todas</string>
   <string name="summary_create_default_accounts">Crea una estructura por defecto de cuentas GnuCash comúnmente usadas</string>

@@ -437,41 +437,41 @@ Este proceso solo recoge información que no permite identificar al usuario</str
   <string name="digit_nine_text">WXYZ</string>
   <string name="digit_zero">0</string>
   <string name="digit_zero_text">+</string>
-  <string name="title_manage_books">Manage Books</string>
-  <string name="menu_manage_books">Manage Books&#8230;</string>
-  <string name="select_chart_to_view_details">Select any part of the chart to view details</string>
-  <string name="title_confirm_delete_book">Confirm delete Book</string>
-  <string name="msg_all_book_data_will_be_deleted">All accounts and transactions in this book will be deleted!</string>
-  <string name="btn_delete_book">Delete Book</string>
-  <string name="label_last_export_time">Last Exported:</string>
-  <string name="menu_title_enable_sync">Enable Sync</string>
-  <string name="menu_title_new_book">New Book</string>
-  <string name="toast_transaction_has_no_splits_and_cannot_open">The selected transaction has no splits and cannot be opened</string>
-  <string name="label_split_count">%1$d splits</string>
-  <string name="label_inside_account_with_name">in %1$s</string>
+  <string name="title_manage_books">Administrar libros</string>
+  <string name="menu_manage_books">Administrar libros&#8230;</string>
+  <string name="select_chart_to_view_details">Seleccione cualquier parte del gráfico para ver los detalles</string>
+  <string name="title_confirm_delete_book">Confirmar borrar libro</string>
+  <string name="msg_all_book_data_will_be_deleted">¡Se eliminarán todas las cuentas y transacciones en este libro!</string>
+  <string name="btn_delete_book">Borrar el libro</string>
+  <string name="label_last_export_time">Última exportación:</string>
+  <string name="menu_title_enable_sync">Habilitar sincronización</string>
+  <string name="menu_title_new_book">Nuevo libro</string>
+  <string name="toast_transaction_has_no_splits_and_cannot_open">La transacción seleccionada tiene ningún desglose y no se puede abrir</string>
+  <string name="label_split_count">%1$d desglose</string>
+  <string name="label_inside_account_with_name">en %1$s</string>
   <plurals name="book_account_stats">
-    <item quantity="one">%d account</item>
-    <item quantity="other">%d accounts</item>
+    <item quantity="one">%d cuenta</item>
+    <item quantity="other">%d cuentas</item>
   </plurals>
   <plurals name="book_transaction_stats">
-    <item quantity="one">%d transaction</item>
-    <item quantity="other">%d transactions</item>
+    <item quantity="one">%d transacción</item>
+    <item quantity="other">%d transacciones</item>
   </plurals>
   <string-array name="report_account_types">
-    <item>EXPENSE</item>
-    <item>INCOME</item>
+    <item>GASTO</item>
+    <item>INGRESO</item>
   </string-array>
-  <string name="toast_connected_to_google_drive">Connected to Google Drive</string>
-  <string name="toast_unable_to_connect_to_google_drive">Unable to connect to Google Drive</string>
-  <string name="toast_enter_amount_to_split">Please enter an amount to split</string>
-  <string name="label_export_target_external_service">external service</string>
-  <string name="toast_updated_transaction_recurring_schedule">Updated transaction recurring schedule</string>
-  <string name="label_export_transactions_since_date">Since</string>
-  <string name="switch_export_transactions_from_all_time">All time</string>
-  <string name="label_recommend_app">Recommend in Play Store</string>
-  <string name="repeat_until_date">until %1$s</string>
-  <string name="repeat_on_weekday">on %1$s</string>
-  <string name="repeat_x_times">for %1$s times</string>
-  <string name="menu_show_compact_view">Compact View</string>
+  <string name="toast_connected_to_google_drive">Conectado a Google Drive</string>
+  <string name="toast_unable_to_connect_to_google_drive">No se puede conectar a Google Drive</string>
+  <string name="toast_enter_amount_to_split">Por favor ingrese una cantidad para dividir</string>
+  <string name="label_export_target_external_service">servicio externo</string>
+  <string name="toast_updated_transaction_recurring_schedule">Calendario de transacciones recurrentes actualizado</string>
+  <string name="label_export_transactions_since_date">Desde</string>
+  <string name="switch_export_transactions_from_all_time">Todos los tiempos</string>
+  <string name="label_recommend_app">Recomendar en Play Store</string>
+  <string name="repeat_until_date">hasta %1$s</string>
+  <string name="repeat_on_weekday">en %1$s</string>
+  <string name="repeat_x_times">%1$s veces</string>
+  <string name="menu_show_compact_view">Vista compacta</string>
   <string name="book_default_name">Libro %1$d</string>
 </resources>

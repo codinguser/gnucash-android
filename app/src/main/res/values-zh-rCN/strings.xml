@@ -17,11 +17,11 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="title_create_account">创建科目</string>
-  <string name="title_edit_account">修改科目</string>
+  <string name="title_edit_account">编辑科目</string>
   <string name="info_details">信息</string>
   <string name="menu_export">导出...</string>
   <string name="description_add_transaction_icon">为科目增加交易</string>
-  <string name="label_no_accounts">没有要显示的科目</string>
+  <string name="label_no_accounts">没有可以显示的科目</string>
   <string name="label_account_name">科目名称</string>
   <string name="btn_cancel">取消</string>
   <string name="btn_save">保存</string>
@@ -33,8 +33,8 @@
   <string name="toast_invalid_passcode_confirmation">密码不一致，请重试</string>
   <string name="label_transaction_name">描述</string>
   <string name="label_transaction_amount">金额</string>
-  <string name="title_add_transaction">新交易</string>
-  <string name="label_no_transactions">没有要显示的交易</string>
+  <string name="title_add_transaction">新建交易</string>
+  <string name="label_no_transactions">没有可以显示的交易</string>
   <string name="label_timeanddate">日期时间</string>
   <string name="label_account">科目</string>
   <string name="label_debit">借方</string>
@@ -46,30 +46,30 @@
   <string name="alert_dialog_cancel">取消</string>
   <string name="toast_account_deleted">科目已删除</string>
   <string name="title_confirm_delete">确认删除</string>
-  <string name="delete_account_confirmation_message">科目中的交易同时会被删除</string>
+  <string name="delete_account_confirmation_message">本科目中的所有交易会同时被删除</string>
   <string name="title_edit_transaction">修改交易</string>
   <string name="label_transaction_description">备注</string>
   <string name="menu_move">移动</string>
-  <string name="title_selected">%1$d 已选中</string>
-  <string name="label_account_balance">合计：</string>
+  <string name="title_selected">已选中 %1$d 项</string>
+  <string name="label_account_balance">科目余额：</string>
   <string name="label_export_destination">导出到：</string>
-  <string name="title_export_dialog">导出交易资料</string>
+  <string name="title_export_dialog">导出交易</string>
   <string name="option_export_all_transactions">导出所有交易</string>
   <string name="hint_export_choice">默认情况下，自上次导出后新增的交易才会被导出。选择此项后所有的交易都会被导出。</string>
   <string name="toast_export_error">导出%1$s发生错误</string>
   <string name="btn_export">导出</string>
   <string name="option_delete_after_export">导出后删除交易</string>
-  <string name="hint_delete_after_export">导出完成后现存所有交易都会被删除</string>
+  <string name="hint_delete_after_export">导出完成后被导出的所有交易都会被删除</string>
   <string name="title_settings">设置</string>
   <string-array name="export_destinations">
     <item>SD卡</item>
-    <item>DropBox</item>
+    <item>Dropbox</item>
     <item>Google 云端硬盘</item>
     <item>ownCloud</item>
     <item>发送到...</item>
   </string-array>
   <string name="btn_move">移动</string>
-  <string name="title_move_transactions">移动 %1$d 交易</string>
+  <string name="title_move_transactions">移动 %1$d 笔交易</string>
   <string name="label_move_destination">目的科目</string>
   <string name="permission_access_sdcard">访问 SD Card</string>
   <string name="toast_incompatible_currency">不能移动交易。\n两个科目的货币设置不一样。</string>
@@ -97,13 +97,13 @@
   <string name="header_passcode_settings">密码</string>
   <string name="title_passcode_preferences">密码设置</string>
   <string name="title_passcode_enabled">已开启密码保护</string>
-  <string name="title_passcode_disabled">没有设置密码</string>
+  <string name="title_passcode_disabled">已关闭密码保护</string>
   <string name="title_change_passcode">修改密码</string>
   <string name="title_about_gnucash">关于GnuCash</string>
   <string name="summary_about_gnucash">Android版财务管理软件</string>
   <string name="title_about">关于</string>
-  <string name="toast_format_exported_to">%1$s文件保存到：\n</string>
-  <string name="title_export_email">GnuCash Android %1$s 的导出文件</string>
+  <string name="toast_format_exported_to">%1$s文件导出到：\n</string>
+  <string name="title_export_email">GnuCash Android %1$s 导出</string>
   <string name="description_export_email">GnuCash 导出的数据 </string>
   <string name="header_transaction_settings">交易</string>
   <string name="title_transaction_preferences">交易设置</string>
@@ -120,11 +120,11 @@
   <string name="title_export_all_transactions">导出所有交易</string>
   <string name="title_always_delete_exported_transactions">删除已导出的交易</string>
   <string name="title_default_export_email">Email设置</string>
-  <string name="summary_default_export_email">默认发送导出的OFX文件到这个email地址，当然在导出过程时你仍然可以临时变更。</string>
-  <string name="label_double_entry_account">过户帐</string>
-  <string name="summary_use_double_entry">所有交易会显示成两行，复式簿记</string>
-  <string name="title_use_double_entry">使用双行模式</string>
-  <string name="account_balance">帐户余额</string>
+  <string name="summary_default_export_email">默认发送导出的文件到这个E-mail地址，当然在导出时仍然可以变更。</string>
+  <string name="label_double_entry_account">交易科目</string>
+  <string name="summary_use_double_entry">所有交易会记录为由一个科目到另一个科目的资金流动</string>
+  <string name="title_use_double_entry">使用复式记账法</string>
+  <string name="account_balance">科目余额</string>
   <string name="toast_no_account_name_entered">需要输入科目名称</string>
   <string name="label_account_currency">货币</string>
   <string name="label_parent_account">上级科目</string>
@@ -133,8 +133,8 @@
   <string name="title_whats_new">新功能</string>
   <string name="whats_new">
 - 支持多个账簿 \n
-- 支持ownCloud\n
-- 紧凑列表视图\n
+- 支持导出至ownCloud\n
+- 紧凑的交易列表视图\n
 - 重新设计的锁屏界面\n
 - 改进计划交易功能\n
 - 多个缺陷修复以及性能提升\n
@@ -144,10 +144,10 @@
   <string name="toast_error_edit_multi_currency_transaction">不支持修改多币种的交易</string>
   <string name="menu_import_accounts">导入GnuCash科目</string>
   <string name="btn_import_accounts">导入科目</string>
-  <string name="toast_error_importing_accounts"> 导入 GnuCash 科目中发生错误。</string>
+  <string name="toast_error_importing_accounts">导入 GnuCash 科目时发生错误。</string>
   <string name="toast_success_importing_accounts">GnuCash 科目资料导入完成。</string>
   <string name="summary_import_accounts">导入从GnuCash桌面版导出的科目设置</string>
-  <string name="title_import_accounts">导入GnuCash科目</string>
+  <string name="title_import_accounts">导入GnuCash XML</string>
   <string name="summary_delete_all_accounts">删除科目资料的同时其下的交易信息也会被删除。
     </string>
   <string name="title_delete_all_accounts">删除所有科目</string>
@@ -155,28 +155,28 @@
   <string name="toast_all_accounts_deleted">所有科目都已删除</string>
   <string name="confirm_delete_all_accounts">确定删除所有科目和交易？ \n这个操作不能撤销！
     </string>
-  <string name="label_account_type">帐户类型</string>
+  <string name="label_account_type">科目类型</string>
   <string name="summary_delete_all_transactions">所有科目的所有的交易信息将被删除！</string>
   <string name="title_delete_all_transactions">删除所有交易</string>
   <string name="toast_all_transactions_deleted">所有交易都已删除</string>
   <string name="title_progress_importing_accounts">导入科目</string>
-  <string name="toast_tap_again_to_confirm_delete">点击再次确认，所有条目都将删除。</string>
+  <string name="toast_tap_again_to_confirm_delete">再次点击确认，所有条目都将删除。</string>
   <string name="section_header_transactions">交易</string>
   <string name="section_header_subaccounts">子科目</string>
   <string name="menu_search_accounts">搜索</string>
   <string name="title_default_export_format">默认的导出格式</string>
-  <string name="summary_default_export_format">导出交易信息时使用的文件格式。</string>
+  <string name="summary_default_export_format">导出交易信息时默认使用的文件格式。</string>
   <string name="menu_export_transactions">导出交易&#8230;</string>
   <string name="label_recurring_transaction">重复</string>
   <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">不平衡的</string>
   <string name="title_progress_exporting_transactions">正在导出交易信息</string>
-  <string name="label_no_recurring_transactions">没有要显示的计划交易</string>
+  <string name="label_no_recurring_transactions">没有可以显示的计划交易</string>
   <string name="toast_recurring_transaction_deleted">计划交易已删除</string>
-  <string name="label_placeholder_account">占位符</string>
+  <string name="label_placeholder_account">占位科目</string>
   <string name="label_default_transfer_account">默认的转账科目</string>
   <plurals name="label_sub_accounts">
-    <item quantity="other">%d 子科目</item>
+    <item quantity="other">%d 个子科目</item>
   </plurals>
   <string-array name="account_type_entry_values">
     <item>现金</item>
@@ -206,17 +206,16 @@
   <string name="label_account_color_and_type">科目颜色和类型</string>
   <string name="label_delete_sub_accounts">删除子科目</string>
   <string name="title_recent_accounts">最近的</string>
-  <string name="title_favorite_accounts">已加星标</string>
+  <string name="title_favorite_accounts">收藏</string>
   <string name="title_all_accounts">所有</string>
   <string name="summary_create_default_accounts">创建通用的科目结构</string>
   <string name="title_create_default_accounts">创建默认科目</string>
-  <string name="msg_confirm_create_default_accounts_setting">将会创建新的账簿附带默认的科目
-现在这个账簿不会受到影响</string>
+  <string name="msg_confirm_create_default_accounts_setting">将会创建带有默认科目的新账簿\n\n现在这个账簿不会受到影响</string>
   <string name="menu_scheduled_transactions">计划的交易</string>
-  <string name="msg_confirm_create_default_accounts_first_run">欢迎使用GnuCash Android！ \n你可以选择：1）创建常用的科目结构，2）导入自定义的科目结构。\或者稍后再决定，两种选择也能在设置中找到。
+  <string name="msg_confirm_create_default_accounts_first_run">欢迎使用GnuCash Android！ \n你可以选择：1）创建常用的科目结构，2）导入自定义的科目结构。\n\n或者您也可以稍后在设置中进行选择。
     </string>
-  <string name="title_scheduled_transactions">计划的交易</string>
-  <string name="title_select_export_destination">选择存储的位置</string>
+  <string name="title_scheduled_transactions">交易</string>
+  <string name="title_select_export_destination">选择导出的目标</string>
   <string name="hint_split_memo">描述</string>
   <string name="label_spend">花费</string>
   <string name="label_receive">收到</string>
@@ -227,9 +226,9 @@
   <string name="label_decrease">减少</string>
   <string name="label_increase">增加</string>
   <string name="label_income">收入</string>
-  <string name="label_rebate">回扣</string>
+  <string name="label_rebate">返现</string>
   <string name="label_expense">费用</string>
-  <string name="label_bill">支付</string>
+  <string name="label_bill">账单</string>
   <string name="label_invoice">发票</string>
   <string name="label_buy">买入</string>
   <string name="label_sell">卖出</string>
@@ -237,7 +236,7 @@
   <string name="toast_no_recent_backup">还没有备份</string>
   <string name="account_name_opening_balances">期初余额</string>
   <string name="account_name_equity">所有者权益</string>
-  <string name="summary_save_opening_balances">当删除所有交易后，还保持曾经的账户余额作为新的期初余额。</string>
+  <string name="summary_save_opening_balances">当删除所有交易后，还保持当前的账户余额作为新的期初余额。    </string>
   <string name="title_save_opening_balances">保存账户的期初余额</string>
   <string name="export_warning_ofx">OFX 格式不支持复式簿记</string>
   <string name="export_warning_qif">每种货币都会生成一个QIF文件</string>

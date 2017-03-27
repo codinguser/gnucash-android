@@ -393,12 +393,12 @@
   <string name="summary_google_plus">Dele ideer, diskutere endringer eller rapportere problemer</string>
   <string name="summary_translate_gnucash">Oversette eller korrekturles på CrowdIn</string>
   <string name="toast_no_compatible_apps_to_receive_export">Ingen kompatible apper til å motta de eksporterte transaksjonene!</string>
-  <string name="menu_move_transaction">Move&#8230;</string>
-  <string name="menu_duplicate_transaction">Duplicate</string>
-  <string name="nav_menu_budgets">Budgets</string>
+  <string name="menu_move_transaction">Flytt&#8230;</string>
+  <string name="menu_duplicate_transaction">Dupliser</string>
+  <string name="nav_menu_budgets">Budsjetter</string>
   <string name="title_cash_flow_report">Kontantstrøm</string>
-  <string name="title_budgets">Budgets</string>
-  <string name="title_use_compact_list">Enable compact view</string>
+  <string name="title_budgets">Budsjetter</string>
+  <string name="title_use_compact_list">Aktiver Kompaktvisning</string>
   <string name="summary_use_compact_list">Enable to always use compact view for transactions list</string>
   <string name="error_invalid_exchange_rate">Ugyldig valutakurs</string>
   <string name="sample_exchange_rate">e.g. 1 %1$s = x.xx %2$s</string>

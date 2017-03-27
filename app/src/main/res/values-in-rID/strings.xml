@@ -16,147 +16,145 @@
  limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="title_create_account">Create Account</string>
-  <string name="title_edit_account">Edit Account</string>
+  <string name="title_create_account">Buat Akun</string>
+  <string name="title_edit_account">Ubah Akun</string>
   <string name="info_details">Info</string>
-  <string name="menu_export">Export&#8230;</string>
-  <string name="description_add_transaction_icon">Add a new transaction to an account</string>
-  <string name="label_no_accounts">No accounts to display</string>
-  <string name="label_account_name">Account name</string>
-  <string name="btn_cancel">Cancel</string>
-  <string name="btn_save">Save</string>
-  <string name="btn_test">Test</string>
-  <string name="label_passcode">Enter Passcode</string>
-  <string name="toast_wrong_passcode">Wrong passcode, please try again</string>
-  <string name="toast_passcode_set">Passcode set</string>
-  <string name="label_confirm_passcode">Please confirm your passcode</string>
-  <string name="toast_invalid_passcode_confirmation">Invalid passcode confirmation. Please try again</string>
-  <string name="label_transaction_name">Description</string>
-  <string name="label_transaction_amount">Amount</string>
-  <string name="title_add_transaction">New transaction</string>
-  <string name="label_no_transactions">No transactions to display</string>
-  <string name="label_timeanddate">DATE &amp; TIME</string>
-  <string name="label_account">Account</string>
+  <string name="menu_export">Ekspor&#8230;</string>
+  <string name="description_add_transaction_icon">Tambah transaksi baru ke akun</string>
+  <string name="label_no_accounts">Tidak ada akun untuk ditampilkan</string>
+  <string name="label_account_name">Nama akun</string>
+  <string name="btn_cancel">Batal</string>
+  <string name="btn_save">Simpan</string>
+  <string name="btn_test">Tes</string>
+  <string name="label_passcode">Masukkan Kode akses</string>
+  <string name="toast_wrong_passcode">Kode akses salah, silakan coba lagi</string>
+  <string name="toast_passcode_set">Kode akses dibuat</string>
+  <string name="label_confirm_passcode">Harap konfirmasi kode akses Anda</string>
+  <string name="toast_invalid_passcode_confirmation">Konfirmasi kode akses tidak valid. Silakan cobalagi</string>
+  <string name="label_transaction_name">Deskripsi</string>
+  <string name="label_transaction_amount">Jumlah</string>
+  <string name="title_add_transaction">Transaksi baru</string>
+  <string name="label_no_transactions">Tidak ada transaksi untuk ditampilkan</string>
+  <string name="label_timeanddate">TANGGAL &amp; WAKTU</string>
+  <string name="label_account">Akun</string>
   <string name="label_debit">DEBIT</string>
-  <string name="label_credit">CREDIT</string>
-  <string name="title_accounts">Accounts</string>
-  <string name="title_transactions">Transactions</string>
-  <string name="menu_delete">Delete</string>
-  <string name="alert_dialog_ok_delete">Delete</string>
-  <string name="alert_dialog_cancel">Cancel</string>
-  <string name="toast_account_deleted">Account deleted</string>
-  <string name="title_confirm_delete">Confirm delete</string>
-  <string name="delete_account_confirmation_message">All transactions in this account will also be deleted</string>
-  <string name="title_edit_transaction">Edit Transaction</string>
-  <string name="label_transaction_description">Add note</string>
-  <string name="menu_move">MOVE</string>
-  <string name="title_selected">%1$d selected</string>
-  <string name="label_account_balance">Balance:</string>
-  <string name="label_export_destination">Export To:</string>
-  <string name="title_export_dialog">Export Transactions</string>
-  <string name="option_export_all_transactions">Export all transactions</string>
-  <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
-  <string name="toast_export_error">Error exporting %1$s file</string>
-  <string name="btn_export">Export</string>
-  <string name="option_delete_after_export">Delete transactions after export</string>
-  <string name="hint_delete_after_export">All exported transactions will be deleted when exporting is completed</string>
-  <string name="title_settings">Settings</string>
+  <string name="label_credit">KREDIT</string>
+  <string name="title_accounts">Akun</string>
+  <string name="title_transactions">Transaksi</string>
+  <string name="menu_delete">Hapus</string>
+  <string name="alert_dialog_ok_delete">Hapus</string>
+  <string name="alert_dialog_cancel">Batal</string>
+  <string name="toast_account_deleted">Akun dihapus</string>
+  <string name="title_confirm_delete">Konfirmasi penghapusan</string>
+  <string name="delete_account_confirmation_message">Semua transaksi dalam akun ini juga akan dihapus</string>
+  <string name="title_edit_transaction">Ubah Transaksi</string>
+  <string name="label_transaction_description">Tambah catatan</string>
+  <string name="menu_move">PINDAHKAN</string>
+  <string name="title_selected">%1$d dipilih</string>
+  <string name="label_account_balance">Saldo:</string>
+  <string name="label_export_destination">Ekspor ke:</string>
+  <string name="title_export_dialog">Ekspor Transaksi</string>
+  <string name="option_export_all_transactions">Ekspor semua transaksi</string>
+  <string name="hint_export_choice">Secara default, hanya transaksi baru sejak ekspor terakhir yang akan diekspor. Beri centang pilihan ini untuk mengekspor semua transaksi</string>
+  <string name="toast_export_error">Kesalahan mengekspor file %1$s</string>
+  <string name="btn_export">Ekspor</string>
+  <string name="option_delete_after_export">Hapus transaksi setelah mengekspor</string>
+  <string name="hint_delete_after_export">Semua transaksi yang diekspor akan dihapus saat proses ekspor selesai</string>
+  <string name="title_settings">Pengaturan</string>
   <string-array name="export_destinations">
     <item>SD Card</item>
-    <item>DropBox</item>
+    <item>Dropbox</item>
     <item>Google Drive</item>
     <item>ownCloud</item>
-    <item>Send to&#8230;</item>
+    <item>Kirim ke&#8230;</item>
   </string-array>
-  <string name="btn_move">Move</string>
-  <string name="title_move_transactions">Move %1$d transaction(s)</string>
-  <string name="label_move_destination">Destination Account</string>
-  <string name="permission_access_sdcard">Access SD Card</string>
-  <string name="toast_incompatible_currency">Cannot move transactions.\nThe destination account uses a different currency from origin account</string>
-  <string name="header_general_settings">General</string>
-  <string name="header_about_gnucash">About</string>
-  <string name="title_choose_currency">Choose default currency</string>
-  <string name="title_default_currency">Default currency</string>
-  <string name="summary_default_currency">Default currency to assign to new accounts</string>
-  <string name="label_permission_record_transactions">Enables recording transactions in GnuCash for Android</string>
-  <string name="label_permission_create_accounts">Enables creation of accounts in GnuCash for Android</string>
-  <string name="label_permission_group">Your GnuCash data</string>
-  <string name="description_permission_group">Read and modify GnuCash data</string>
-  <string name="label_permission_record_transaction">Record transactions in GnuCash</string>
-  <string name="label_permission_create_account">Create accounts in GnuCash</string>
-  <string name="label_display_account">Display account</string>
-  <string name="btn_create_accounts">Create Accounts</string>
-  <string name="title_default_accounts">Select accounts to create</string>
-  <string name="error_no_accounts">No accounts exist in GnuCash.\nCreate an account before adding a widget</string>
+  <string name="btn_move">Pindahkan</string>
+  <string name="title_move_transactions">Memindah transaksi %1$d</string>
+  <string name="label_move_destination">Akun Tujuan</string>
+  <string name="permission_access_sdcard">Akses SD Card</string>
+  <string name="toast_incompatible_currency">Tidak bisa memindah transaksi. \n Akun tujuan menggunakan mata uang yang berbeda dengan akun asal</string>
+  <string name="header_general_settings">Umum</string>
+  <string name="header_about_gnucash">Tentang</string>
+  <string name="title_choose_currency">Pilih mata uang default</string>
+  <string name="title_default_currency">Mata uang default</string>
+  <string name="summary_default_currency">Mata uang default untuk ditetapkan ke akun baru</string>
+  <string name="label_permission_record_transactions">Memungkinkan mencatat transaksi di GnuCash untum Android</string>
+  <string name="label_permission_create_accounts">Memungkinkan membuat akun di GnuCash untuk Android</string>
+  <string name="label_permission_group">Data GnuCash Anda</string>
+  <string name="description_permission_group">Membaca dan memodifikasi data GnuCash</string>
+  <string name="label_permission_record_transaction">Mencatat transaksi di GnuCash</string>
+  <string name="label_permission_create_account">Membuat akun di GnuCash</string>
+  <string name="label_display_account">Tampilan akun</string>
+  <string name="btn_create_accounts">Buat akun</string>
+  <string name="title_default_accounts">Pilih akun untuk dibuat</string>
+  <string name="error_no_accounts">Tidak ada akun di GnuCash.\nBuat sebuah akun sebelum menambahkan sebuah widget</string>
   <string name="title_build_version">Build version</string>
-  <string name="title_license">License</string>
-  <string name="summary_licence_details">Apache License v2.0. Click for details</string>
-  <string name="title_general_prefs">General Preferences</string>
-  <string name="label_widget_configuration">Select Account</string>
-  <string name="toast_no_transactions_to_export">There are no transactions available to export</string>
-  <string name="header_passcode_settings">Passcode</string>
-  <string name="title_passcode_preferences">Passcode Preferences</string>
-  <string name="title_passcode_enabled">Passcode Turned On</string>
-  <string name="title_passcode_disabled">Passcode Turned Off</string>
-  <string name="title_change_passcode">Change Passcode</string>
-  <string name="title_about_gnucash">About GnuCash</string>
-  <string name="summary_about_gnucash">A mobile finance management and expense-tracker designed for Android</string>
-  <string name="title_about">About</string>
-  <string name="toast_format_exported_to">%1$s file exported to:\n</string>
-  <string name="title_export_email">GnuCash Android %1$s export</string>
-  <string name="description_export_email">GnuCash Android Export from </string>
-  <string name="header_transaction_settings">Transactions</string>
-  <string name="title_transaction_preferences">Transaction Preferences</string>
-  <string name="title_account_preferences">Account Preferences</string>
-  <string name="title_default_transaction_type">Default Transaction Type</string>
-  <string name="summary_default_transaction_type">The type of transaction to use by default, CREDIT or DEBIT</string>
+  <string name="title_license">Lisensi</string>
+  <string name="summary_licence_details">Lisensi Apache v2.0. Klik untuk rincian</string>
+  <string name="title_general_prefs">Preferensi umum</string>
+  <string name="label_widget_configuration">Pilih akun</string>
+  <string name="toast_no_transactions_to_export">Tidak ada transaksi yang tersedia untuk diekspor</string>
+  <string name="header_passcode_settings">Kode akses</string>
+  <string name="title_passcode_preferences">Pengaturan Kode Akses</string>
+  <string name="title_passcode_enabled">Kode Akses Diaktifkan</string>
+  <string name="title_passcode_disabled">Kode Akses Dimatikan</string>
+  <string name="title_change_passcode">Ganti Kode Akses</string>
+  <string name="title_about_gnucash">Tentang GnuCash</string>
+  <string name="summary_about_gnucash">Sebuah manajemen finansial mobile dan pelacak pengeluaran yang dibuat untuk Android</string>
+  <string name="title_about">Tentang</string>
+  <string name="toast_format_exported_to">%1$s file diekspor ke:\n</string>
+  <string name="title_export_email">GnuCash Android %1$s ekspor</string>
+  <string name="description_export_email">GnuCash Android Ekspor dari </string>
+  <string name="header_transaction_settings">Transaksi</string>
+  <string name="title_transaction_preferences">Preferensi Transaksi</string>
+  <string name="title_account_preferences">Preferensi Akun</string>
+  <string name="title_default_transaction_type">Tipe Transaksi Default</string>
+  <string name="summary_default_transaction_type">Tipe transaksi untuk digunakan secara default, KREDIT atau DEBET</string>
   <string-array name="transaction_types">
-    <item>CREDIT</item>
+    <item>KREDIT</item>
     <item>DEBIT</item>
   </string-array>
-  <string name="msg_delete_all_transactions_confirmation">Are you sure you want to delete ALL transactions?</string>
-  <string name="msg_delete_transaction_confirmation">Are you sure you want to delete this transaction?</string>
-  <string name="title_export_preference_category">Export</string>
-  <string name="title_export_all_transactions">Export all transactions</string>
-  <string name="title_always_delete_exported_transactions">Delete exported transactions</string>
-  <string name="title_default_export_email">Default export email</string>
-  <string name="summary_default_export_email">The default email address to send exports to. You can still change this when you export.</string>
-  <string name="label_double_entry_account">Transfer Account</string>
-  <string name="summary_use_double_entry">All transactions will be a transfer from one account to another</string>
-  <string name="title_use_double_entry">Activate Double Entry</string>
-  <string name="account_balance">Balance</string>
-  <string name="toast_no_account_name_entered">Enter an account name to create an account</string>
-  <string name="label_account_currency">Currency</string>
-  <string name="label_parent_account">Parent account</string>
-  <string name="title_xml_ofx_header">Use XML OFX header</string>
-  <string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>
-  <string name="title_whats_new">What\'s New</string>
+  <string name="msg_delete_all_transactions_confirmation">Apakah Anda yakin Anda ingin menghapus SEMUA transaksi?</string>
+  <string name="msg_delete_transaction_confirmation">Apakah Anda yakin ingin menghapus transaksi ini?</string>
+  <string name="title_export_preference_category">Ekspor</string>
+  <string name="title_export_all_transactions">Ekspor semua transaksi</string>
+  <string name="title_always_delete_exported_transactions">Hapus transaksi yang diekspor</string>
+  <string name="title_default_export_email">Email ekspor default</string>
+  <string name="summary_default_export_email">Alamat email default untuk mengirim ekspor. Anda tetap dapat mengubahnya saat Anda melakukan ekspor.</string>
+  <string name="label_double_entry_account">Akun Transfer</string>
+  <string name="summary_use_double_entry">Seluruh transaksi akan menjadi sebuah transfer dari satu akun ke yang lainnya</string>
+  <string name="title_use_double_entry">Aktifkan Double Entry</string>
+  <string name="account_balance">Saldo</string>
+  <string name="toast_no_account_name_entered">Tuliskan nama akun untuk membuat sebuah akun</string>
+  <string name="label_account_currency">Mata Uang</string>
+  <string name="label_parent_account">Akun induk</string>
+  <string name="title_xml_ofx_header">Gunakan header XML OFX</string>
+  <string name="summary_xml_ofx_header">Aktifkan opsi ini ketika mengekspor ke aplikasi pihak ketiga selain GnuCash versi desktop</string>
+  <string name="title_whats_new">Yang Terbaru</string>
   <string name="whats_new">
-        - Support for multiple different books \n
-        - Adds ownCloud as destination for exports\n
-        - Compact view for transactions list\n
-        - Re-design of passcode lock screen\n
-        - Improved handling of scheduled transactions\n
-        - Multiple bug fixes and improvements\n
+        - Mendukung lebih dari satu buku yang berbeda \n
+        - Menambahkan ownCloud sebagai tujuan untuk ekspor\n
+        - Tampilan yang terpadu untuk daftar transaksi\n
+        - Desain ulang terkait layar kunci kode akses\n
+        - Penanganan yang ditingkatkan terkait transaksi terjadwal\n
+        - Perbaikan berbagai bug dan beberapa peningkatan\n
 	</string>
-  <string name="label_dismiss">Dismiss</string>
-  <string name="toast_transanction_amount_required">Enter an amount to save the transaction</string>
-  <string name="toast_error_edit_multi_currency_transaction">Multi-currency transactions cannot be modified</string>
-  <string name="menu_import_accounts">Import GnuCash Accounts</string>
-  <string name="btn_import_accounts">Import Accounts</string>
-  <string name="toast_error_importing_accounts">An error occurred while importing the GnuCash accounts</string>
-  <string name="toast_success_importing_accounts">GnuCash Accounts successfully imported</string>
-  <string name="summary_import_accounts">Import account structure exported from GnuCash desktop</string>
-  <string name="title_import_accounts">Import GnuCash XML</string>
-  <string name="summary_delete_all_accounts">Delete all accounts in the database. All transactions will be deleted as
-        well.
+  <string name="label_dismiss">Abaikan</string>
+  <string name="toast_transanction_amount_required">Tuliskan jumlah untuk menyimpan transaksi</string>
+  <string name="toast_error_edit_multi_currency_transaction">Transaksi multi-mata-uang tidak dapat dimodifikasi</string>
+  <string name="menu_import_accounts">Impor Akum GnuCash</string>
+  <string name="btn_import_accounts">Impor Akun</string>
+  <string name="toast_error_importing_accounts">Terjadi error saat mengimpor akun GnuCash</string>
+  <string name="toast_success_importing_accounts">Akun GnuCash berhasil diimpor</string>
+  <string name="summary_import_accounts">Mengimpor struktur akun yang telah diekspor dari GnuCash desktop</string>
+  <string name="title_import_accounts">Impor XML GnuCash</string>
+  <string name="summary_delete_all_accounts">Hapus seluruh akun dalam database. Seluruh transaksi akan dihapus
+        juga.
     </string>
-  <string name="title_delete_all_accounts">Delete all accounts</string>
-  <string name="header_account_settings">Accounts</string>
-  <string name="toast_all_accounts_deleted">All accounts have been successfully deleted</string>
-  <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions?\n\nThis
-        operation cannot be undone!
-    </string>
+  <string name="title_delete_all_accounts">Hapus seluruh akun</string>
+  <string name="header_account_settings">Akun</string>
+  <string name="toast_all_accounts_deleted">Semua akun telah berhasil dihapus</string>
+  <string name="confirm_delete_all_accounts">Apakah Anda yakin Anda ingin menghapus seluruh akun dan transaksi? \n\nOperasi ini tidak dapat dibatalkan!    </string>
   <string name="label_account_type">Account Type</string>
   <string name="summary_delete_all_transactions">All transactions in all accounts will be deleted!</string>
   <string name="title_delete_all_transactions">Delete all transactions</string>
@@ -221,25 +219,25 @@
   <string name="title_scheduled_transactions">Transactions</string>
   <string name="title_select_export_destination">Select destination for export</string>
   <string name="hint_split_memo">Memo</string>
-  <string name="label_spend">Spend</string>
-  <string name="label_receive">Receive</string>
-  <string name="label_withdrawal">Withdrawal</string>
-  <string name="label_deposit">Deposit</string>
-  <string name="label_payment">Payment</string>
-  <string name="label_charge">Charge</string>
-  <string name="label_decrease">Decrease</string>
-  <string name="label_increase">Increase</string>
-  <string name="label_income">Income</string>
+  <string name="label_spend">Mengeluarkan</string>
+  <string name="label_receive">Menerima</string>
+  <string name="label_withdrawal">Penarikan</string>
+  <string name="label_deposit">Setor</string>
+  <string name="label_payment">Pembayaran</string>
+  <string name="label_charge">Biaya</string>
+  <string name="label_decrease">Mengurangi</string>
+  <string name="label_increase">Menambahkan</string>
+  <string name="label_income">Pendapatan</string>
   <string name="label_rebate">Rebate</string>
-  <string name="label_expense">Expense</string>
-  <string name="label_bill">Bill</string>
+  <string name="label_expense">Pengeluaran</string>
+  <string name="label_bill">Tagihan</string>
   <string name="label_invoice">Invoice</string>
-  <string name="label_buy">Buy</string>
-  <string name="label_sell">Sell</string>
-  <string name="label_repeats">Repeats</string>
-  <string name="toast_no_recent_backup">No recent backup found</string>
-  <string name="account_name_opening_balances">Opening Balances</string>
-  <string name="account_name_equity">Equity</string>
+  <string name="label_buy">Beli</string>
+  <string name="label_sell">Jual</string>
+  <string name="label_repeats">Mengulangi</string>
+  <string name="toast_no_recent_backup">Tidak ada cadangan terbaru</string>
+  <string name="account_name_opening_balances">Saldo Awal</string>
+  <string name="account_name_equity">Ekuitas</string>
   <string name="summary_save_opening_balances">Enable to save the current account balance (before deleting transactions) as new opening balance after deleting transactions
     </string>
   <string name="title_save_opening_balances">Save account opening balances</string>

@@ -16,11 +16,11 @@
  limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="title_create_account">Create Account</string>
-  <string name="title_edit_account">Edit Account</string>
+  <string name="title_create_account">Vytvořit účet</string>
+  <string name="title_edit_account">Upravit účet</string>
   <string name="info_details">Čestina</string>
-  <string name="menu_export">Export&#8230;</string>
-  <string name="description_add_transaction_icon">Add a new transaction to an account</string>
+  <string name="menu_export">Exportovat&#8230;</string>
+  <string name="description_add_transaction_icon">Přidat novou transakci na účet</string>
   <string name="label_no_accounts">No accounts to display</string>
   <string name="label_account_name">Account name</string>
   <string name="btn_cancel">Cancel</string>
