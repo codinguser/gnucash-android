@@ -171,6 +171,24 @@ afterEvaluate {
     initCrashlyticsPropertiesIfNeeded()
 }
 
+android.productFlavors.all { flavour ->
+    def applicationId = flavour.applicationId
+    def adb = android.getAdbExe().toString()
+
+    def grantPermissionsTask = tasks.create("grant${flavour.name.capitalize()}Permissions") << {
+        "${adb} shell pm grant ${applicationId} android.permission.WRITE_EXTERNAL_STORAGE".execute()
+        "${adb} shell pm grant ${applicationId} android.permission.SET_ANIMATION_SCALE".execute()
+    }
+    grantPermissionsTask.description = "Grants permissions for Marshmallow"
+
+    tasks.whenTaskAdded { theTask ->
+        def assemblePattern = ~"assemble${flavour.name.capitalize()}DebugAndroidTest"
+        if (assemblePattern.matcher(theTask.name).matches()) {
+            theTask.dependsOn grantPermissionsTask.name
+        }
+    }
+}
+
 
 def androidSupportVersion       = "24.2.1"
 def androidEspressoVersion      = "2.2.2"

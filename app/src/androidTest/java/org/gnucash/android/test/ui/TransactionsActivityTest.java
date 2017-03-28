@@ -254,7 +254,9 @@ public class TransactionsActivityTest {
 		onView(withId(R.id.fab_create_transaction)).perform(click());
 
 		onView(withId(R.id.input_transaction_name)).perform(typeText("Lunch"));
+		Espresso.closeSoftKeyboard();
 		onView(withId(R.id.input_transaction_amount)).perform(typeText("899"));
+		Espresso.closeSoftKeyboard();
 		onView(withId(R.id.input_transaction_type))
 				.check(matches(allOf(isDisplayed(), withText(R.string.label_receive))))
 				.perform(click())
@@ -409,7 +411,7 @@ public class TransactionsActivityTest {
 
 		onView(withId(R.id.input_transaction_name)).perform(typeText("Autobalance"));
 		onView(withId(R.id.input_transaction_amount)).perform(typeText("499"));
-
+		Espresso.closeSoftKeyboard();
 		onView(withId(R.id.btn_split_editor)).perform(click());
 
 		onView(withId(R.id.split_list_layout)).check(matches(allOf(isDisplayed(), hasDescendant(withId(R.id.input_split_amount)))));
