@@ -21,6 +21,7 @@
   <string name="info_details">פרטים</string>
   <string name="menu_export">ייצוא&#8230;</string>
   <string name="description_add_transaction_icon">הוספת העברה כספים לחשבון</string>
+  <string name="description_view_account_icon">View account details</string>
   <string name="label_no_accounts">אין חשבונות לתצוגה</string>
   <string name="label_account_name">שם חשבון</string>
   <string name="btn_cancel">ביטול</string>
@@ -63,7 +64,7 @@
   <string name="title_settings">Settings</string>
   <string-array name="export_destinations">
     <item>SD Card</item>
-    <item>DropBox</item>
+    <item>Dropbox</item>
     <item>Google Drive</item>
     <item>ownCloud</item>
     <item>שלח אל&#8230;</item>
@@ -85,6 +86,7 @@
   <string name="label_permission_record_transaction">שמור העברות בGnuCash</string>
   <string name="label_permission_create_account">צור חשבונות ב GnuCash</string>
   <string name="label_display_account">הצג חשבון</string>
+  <string name="label_hide_account_balance">Hide account balance in widget</string>
   <string name="btn_create_accounts">צור חשבונות</string>
   <string name="title_default_accounts">בחר חשבונות ליצור</string>
   <string name="error_no_accounts">לא קיימים חשבונות ב- GnuCassh.\n צור חשבון לפני הוספת widget</string>
@@ -492,4 +494,5 @@
   <string name="repeat_x_times">for %1$s times</string>
   <string name="menu_show_compact_view">Compact View</string>
   <string name="book_default_name">Book %1$d</string>
+  <string name="last_export_time_never">never</string>
 </resources>

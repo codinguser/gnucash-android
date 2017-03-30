@@ -21,6 +21,7 @@
   <string name="info_details">Informasjon</string>
   <string name="menu_export">Eksport...</string>
   <string name="description_add_transaction_icon">Legge til en ny transaksjon i en konto</string>
+  <string name="description_view_account_icon">View account details</string>
   <string name="label_no_accounts">Ingen kontoer for å vise</string>
   <string name="label_account_name">Kontonavn</string>
   <string name="btn_cancel">Avbryt</string>
@@ -63,7 +64,7 @@
   <string name="title_settings">Innstillinger</string>
   <string-array name="export_destinations">
     <item>SD-kort</item>
-    <item>DropBox</item>
+    <item>Dropbox</item>
     <item>Google Disk</item>
     <item>ownCloud</item>
     <item>Send til&#8230;</item>
@@ -85,6 +86,7 @@
   <string name="label_permission_record_transaction">Registrere transaksjoner i GnuCash</string>
   <string name="label_permission_create_account">Opprette kontoer i GnuCash</string>
   <string name="label_display_account">Vis konto</string>
+  <string name="label_hide_account_balance">Hide account balance in widget</string>
   <string name="btn_create_accounts">Opprett konto</string>
   <string name="title_default_accounts">Velg kontoer å opprette</string>
   <string name="error_no_accounts">Det finnes ingen kontoer i GnuCash.\nOpprett en konto før du legger til en widget</string>
@@ -470,4 +472,5 @@
   <string name="repeat_x_times">for %1$s times</string>
   <string name="menu_show_compact_view">Compact View</string>
   <string name="book_default_name">Book %1$d</string>
+  <string name="last_export_time_never">never</string>
 </resources>

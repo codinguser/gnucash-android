@@ -21,6 +21,7 @@
   <string name="info_details">信息</string>
   <string name="menu_export">导出...</string>
   <string name="description_add_transaction_icon">为科目增加交易</string>
+  <string name="description_view_account_icon">View account details</string>
   <string name="label_no_accounts">没有可以显示的科目</string>
   <string name="label_account_name">科目名称</string>
   <string name="btn_cancel">取消</string>
@@ -85,6 +86,7 @@
   <string name="label_permission_record_transaction">记录交易</string>
   <string name="label_permission_create_account">创建科目</string>
   <string name="label_display_account">显示科目</string>
+  <string name="label_hide_account_balance">Hide account balance in widget</string>
   <string name="btn_create_accounts">创建科目</string>
   <string name="title_default_accounts">选择要创建的科目</string>
   <string name="error_no_accounts">GnuCash里还没有科目信息。\n使用小部件前需要添加科目</string>
@@ -466,4 +468,5 @@
   <string name="repeat_x_times">共%1$s次</string>
   <string name="menu_show_compact_view">紧凑视图</string>
   <string name="book_default_name">账簿 %1$d</string>
+  <string name="last_export_time_never">never</string>
 </resources>

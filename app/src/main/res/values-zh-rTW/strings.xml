@@ -21,6 +21,7 @@
   <string name="info_details">資訊</string>
   <string name="menu_export">匯出OFX</string>
   <string name="description_add_transaction_icon">给科目添加交易</string>
+  <string name="description_view_account_icon">View account details</string>
   <string name="label_no_accounts">没有要显示的科目</string>
   <string name="label_account_name">科目名稱</string>
   <string name="btn_cancel">取消</string>
@@ -63,7 +64,7 @@
   <string name="title_settings">設置</string>
   <string-array name="export_destinations">
     <item>SD 卡</item>
-    <item>DropBox</item>
+    <item>Dropbox</item>
     <item>Google 雲端硬碟</item>
     <item>ownCloud</item>
     <item>發送給...</item>
@@ -85,6 +86,7 @@
   <string name="label_permission_record_transaction">記錄交易</string>
   <string name="label_permission_create_account">建立會計科目</string>
   <string name="label_display_account">顯示科目名字</string>
+  <string name="label_hide_account_balance">Hide account balance in widget</string>
   <string name="btn_create_accounts">创建科目</string>
   <string name="title_default_accounts">選擇要建立的科目</string>
   <string name="error_no_accounts">GnuCash裡還没有會計科目信息。\n使用小部件前需要添加會計科目</string>
@@ -467,4 +469,5 @@ No user-identifiable information will be collected as part of this process!
   <string name="repeat_x_times">共%1$s次</string>
   <string name="menu_show_compact_view">紧凑视图</string>
   <string name="book_default_name">账簿 %1$d</string>
+  <string name="last_export_time_never">never</string>
 </resources>

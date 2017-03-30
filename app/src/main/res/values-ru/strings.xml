@@ -21,6 +21,7 @@
   <string name="info_details">Информация</string>
   <string name="menu_export">Экспорт&#8230;</string>
   <string name="description_add_transaction_icon">Новая проводка</string>
+  <string name="description_view_account_icon">View account details</string>
   <string name="label_no_accounts">Нет счетов</string>
   <string name="label_account_name">Имя счёта</string>
   <string name="btn_cancel">Отмена</string>
@@ -63,7 +64,7 @@
   <string name="title_settings">Настройки</string>
   <string-array name="export_destinations">
     <item>Карта памяти</item>
-    <item>DropBox</item>
+    <item>Dropbox</item>
     <item>Google Диск</item>
     <item>ownCloud</item>
     <item>Отправить&#8230;</item>
@@ -85,6 +86,7 @@
   <string name="label_permission_record_transaction">Запись проводок в GnuCash</string>
   <string name="label_permission_create_account">Создайте учетные записи в GnuCash</string>
   <string name="label_display_account">Показать счёт</string>
+  <string name="label_hide_account_balance">Hide account balance in widget</string>
   <string name="btn_create_accounts">Создать счета</string>
   <string name="title_default_accounts">Выберите счета для создания</string>
   <string name="error_no_accounts">Нет счетов в Gnucash.\nСначала создайте счета, а потом добавляйте виджет.</string>
@@ -482,4 +484,5 @@
   <string name="repeat_x_times">для %1$s раз</string>
   <string name="menu_show_compact_view">Компактный вид</string>
   <string name="book_default_name">Книга %1$d</string>
+  <string name="last_export_time_never">never</string>
 </resources>

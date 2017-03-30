@@ -21,6 +21,7 @@
   <string name="info_details">Detalles</string>
   <string name="menu_export">Exportar&#8230;</string>
   <string name="description_add_transaction_icon">Añadir una nueva transacción a una cuenta</string>
+  <string name="description_view_account_icon">View account details</string>
   <string name="label_no_accounts">No hay cuentas que mostrar</string>
   <string name="label_account_name">Nombre de la cuenta</string>
   <string name="btn_cancel">Cancelar</string>
@@ -63,7 +64,7 @@
   <string name="title_settings">Ajustes</string>
   <string-array name="export_destinations">
     <item>Tarjeta SD</item>
-    <item>DropBox</item>
+    <item>Dropbox</item>
     <item>Google Drive</item>
     <item>ownCloud</item>
     <item>Enviar a&#8230;</item>
@@ -85,6 +86,7 @@
   <string name="label_permission_record_transaction">Registrar transacciones en GnuCash</string>
   <string name="label_permission_create_account">Crear cuentas en GnuCash</string>
   <string name="label_display_account">Mostrar cuentas</string>
+  <string name="label_hide_account_balance">Hide account balance in widget</string>
   <string name="btn_create_accounts">Crear Cuentas</string>
   <string name="title_default_accounts">Seleccionar cuentas a crear</string>
   <string name="error_no_accounts">No hay cuentas en Gnucash.\nCree una cuenta antes de añadir un widget</string>
@@ -474,4 +476,5 @@ Este proceso solo recoge información que no permite identificar al usuario</str
   <string name="repeat_x_times">%1$s veces</string>
   <string name="menu_show_compact_view">Vista compacta</string>
   <string name="book_default_name">Libro %1$d</string>
+  <string name="last_export_time_never">never</string>
 </resources>

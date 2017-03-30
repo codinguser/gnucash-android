@@ -21,6 +21,7 @@
   <string name="info_details">Info</string>
   <string name="menu_export">Ekspor&#8230;</string>
   <string name="description_add_transaction_icon">Tambah transaksi baru ke akun</string>
+  <string name="description_view_account_icon">Lihat rincian akun</string>
   <string name="label_no_accounts">Tidak ada akun untuk ditampilkan</string>
   <string name="label_account_name">Nama akun</string>
   <string name="btn_cancel">Batal</string>
@@ -85,6 +86,7 @@
   <string name="label_permission_record_transaction">Mencatat transaksi di GnuCash</string>
   <string name="label_permission_create_account">Membuat akun di GnuCash</string>
   <string name="label_display_account">Tampilan akun</string>
+  <string name="label_hide_account_balance">Sembunyikan saldo akun dalam widget</string>
   <string name="btn_create_accounts">Buat akun</string>
   <string name="title_default_accounts">Pilih akun untuk dibuat</string>
   <string name="error_no_accounts">Tidak ada akun di GnuCash.\nBuat sebuah akun sebelum menambahkan sebuah widget</string>
@@ -155,18 +157,18 @@
   <string name="header_account_settings">Akun</string>
   <string name="toast_all_accounts_deleted">Semua akun telah berhasil dihapus</string>
   <string name="confirm_delete_all_accounts">Apakah Anda yakin Anda ingin menghapus seluruh akun dan transaksi? \n\nOperasi ini tidak dapat dibatalkan!    </string>
-  <string name="label_account_type">Account Type</string>
-  <string name="summary_delete_all_transactions">All transactions in all accounts will be deleted!</string>
-  <string name="title_delete_all_transactions">Delete all transactions</string>
-  <string name="toast_all_transactions_deleted">All transactions successfully deleted!</string>
-  <string name="title_progress_importing_accounts">Importing accounts</string>
-  <string name="toast_tap_again_to_confirm_delete">Tap again to confirm. ALL entries will be deleted!!</string>
-  <string name="section_header_transactions">Transactions</string>
-  <string name="section_header_subaccounts">Sub-Accounts</string>
-  <string name="menu_search_accounts">Search</string>
-  <string name="title_default_export_format">Default Export Format</string>
-  <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
-  <string name="menu_export_transactions">Export transactions&#8230;</string>
+  <string name="label_account_type">Jenis Akun</string>
+  <string name="summary_delete_all_transactions">Seluruh transaksi di semua akun akan dihapus!</string>
+  <string name="title_delete_all_transactions">Hapus seluruh transaksi</string>
+  <string name="toast_all_transactions_deleted">Seluruh transaksi berhasil dihapus!</string>
+  <string name="title_progress_importing_accounts">Mengimpor akun</string>
+  <string name="toast_tap_again_to_confirm_delete">Tap lagi untuk konfirmasi. SELURUH entri akan dihapus!!</string>
+  <string name="section_header_transactions">Transaksi</string>
+  <string name="section_header_subaccounts">Sub-Akun</string>
+  <string name="menu_search_accounts">Cari</string>
+  <string name="title_default_export_format">Formart Ekspor Default</string>
+  <string name="summary_default_export_format">Format file untuk digunakan secara default ketika mengekspor transaksi</string>
+  <string name="menu_export_transactions">Ekspor transaksi&#8230;</string>
   <string name="label_recurring_transaction">Recurrence</string>
   <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">Imbalance</string>
@@ -469,4 +471,5 @@
   <string name="repeat_x_times">for %1$s times</string>
   <string name="menu_show_compact_view">Compact View</string>
   <string name="book_default_name">Book %1$d</string>
+  <string name="last_export_time_never">never</string>
 </resources>

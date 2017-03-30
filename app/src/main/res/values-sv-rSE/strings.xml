@@ -21,6 +21,7 @@
   <string name="info_details">Information</string>
   <string name="menu_export">Exportera&#8230;</string>
   <string name="description_add_transaction_icon">Lägg till en transaktion till ett konto</string>
+  <string name="description_view_account_icon">View account details</string>
   <string name="label_no_accounts">Det finns inga konton att visa</string>
   <string name="label_account_name">Kontonamn</string>
   <string name="btn_cancel">Avbryt</string>
@@ -85,6 +86,7 @@
   <string name="label_permission_record_transaction">Record transactions in GnuCash</string>
   <string name="label_permission_create_account">Create accounts in GnuCash</string>
   <string name="label_display_account">Display account</string>
+  <string name="label_hide_account_balance">Hide account balance in widget</string>
   <string name="btn_create_accounts">Create Accounts</string>
   <string name="title_default_accounts">Select accounts to create</string>
   <string name="error_no_accounts">No accounts exist in GnuCash.\nCreate an account before adding a widget</string>
@@ -478,4 +480,5 @@
   <string name="repeat_x_times">for %1$s times</string>
   <string name="menu_show_compact_view">Compact View</string>
   <string name="book_default_name">Book %1$d</string>
+  <string name="last_export_time_never">never</string>
 </resources>
