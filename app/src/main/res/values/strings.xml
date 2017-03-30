@@ -64,7 +64,7 @@
     <string name="title_settings">Settings</string>
     <string-array name="export_destinations">
         <item>SD Card</item>
-        <item>DropBox</item>
+        <item>Dropbox</item>
         <item>Google Drive</item>
         <item>ownCloud</item>
         <item>Send to&#8230;</item>
