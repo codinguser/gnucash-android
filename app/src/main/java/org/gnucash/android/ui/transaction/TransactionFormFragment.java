@@ -263,11 +263,11 @@ public class TransactionFormFragment extends Fragment implements
      * Starts the transfer of funds from one currency to another
      */
     private void startTransferFunds() {
-        Currency fromCurrency = Currency.getInstance(mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID));
+        Commodity fromCommodity = Commodity.getInstance((mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID)));
         long id = mTransferAccountSpinner.getSelectedItemId();
-        String targetCurrency = mAccountsDbAdapter.getCurrencyCode(mAccountsDbAdapter.getUID(id));
+        String targetCurrencyCode = mAccountsDbAdapter.getCurrencyCode(mAccountsDbAdapter.getUID(id));
 
-        if (fromCurrency.equals(Currency.getInstance(targetCurrency))
+        if (fromCommodity.equals(Commodity.getInstance(targetCurrencyCode))
                 || !mAmountEditText.isInputModified()
                 || mSplitQuantity != null) //if both accounts have same currency
             return;
@@ -275,10 +275,10 @@ public class TransactionFormFragment extends Fragment implements
         BigDecimal amountBigd = mAmountEditText.getValue();
         if (amountBigd.equals(BigDecimal.ZERO))
             return;
-        Money amount 	= new Money(amountBigd, Commodity.getInstance(fromCurrency.getCurrencyCode())).abs();
+        Money amount 	= new Money(amountBigd, fromCommodity).abs();
 
         TransferFundsDialogFragment fragment
-                = TransferFundsDialogFragment.getInstance(amount, targetCurrency, this);
+                = TransferFundsDialogFragment.getInstance(amount, targetCurrencyCode, this);
         fragment.show(getFragmentManager(), "transfer_funds_editor");
     }
 
@@ -496,8 +496,8 @@ public class TransactionFormFragment extends Fragment implements
         }
 
 		String currencyCode = mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID);
-		Currency accountCurrency = Currency.getInstance(currencyCode);
-		mCurrencyTextView.setText(accountCurrency.getSymbol());
+		Commodity accountCommodity = Commodity.getInstance(currencyCode);
+		mCurrencyTextView.setText(accountCommodity.getSymbol());
 
         Commodity commodity = Commodity.getInstance(currencyCode);
         mAmountEditText.setCommodity(commodity);
@@ -549,10 +549,9 @@ public class TransactionFormFragment extends Fragment implements
 		if (mAccountUID != null){
 			code = mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID);
 		}
-		Currency accountCurrency = Currency.getInstance(code);
-		mCurrencyTextView.setText(accountCurrency.getSymbol());
 
-        Commodity commodity = Commodity.getInstance(code);
+		Commodity commodity = Commodity.getInstance(code);
+        mCurrencyTextView.setText(commodity.getSymbol());
         mAmountEditText.setCommodity(commodity);
 
         if (mUseDoubleEntry){
