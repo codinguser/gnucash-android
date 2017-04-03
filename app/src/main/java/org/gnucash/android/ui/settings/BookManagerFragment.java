@@ -38,6 +38,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -165,6 +166,7 @@ public class BookManagerFragment extends ListFragment implements
             setLastExportedText(view, bookUID);
             setStatisticsText(view, bookUID);
 
+            final String bookName = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_DISPLAY_NAME));
             ImageView optionsMenu = (ImageView) view.findViewById(R.id.options_menu);
             optionsMenu.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -176,6 +178,32 @@ public class BookManagerFragment extends ListFragment implements
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
                             switch (item.getItemId()){
+                                case R.id.ctx_menu_rename_book:
+                                    final EditText nameEditText = new EditText(context);
+                                    nameEditText.setText(bookName);
+
+                                    AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+                                    dialogBuilder.setTitle(R.string.title_rename_book)
+                                        .setView(nameEditText)
+                                        .setPositiveButton(R.string.btn_rename, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                BooksDbAdapter.getInstance()
+                                                        .updateRecord(bookUID,
+                                                                BookEntry.COLUMN_DISPLAY_NAME,
+                                                                nameEditText.getText().toString());
+                                                refresh();
+                                            }
+                                        })
+                                        .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        });
+                                    AlertDialog dialog = dialogBuilder.create();
+                                    dialog.show();
+                                    return true;
                                 case R.id.ctx_menu_sync_book:
                                     //TODO implement sync
                                     return false;

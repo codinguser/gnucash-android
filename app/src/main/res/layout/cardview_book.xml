@@ -43,7 +43,7 @@
                  android:layout_marginLeft="@dimen/dialog_padding"
                  android:layout_marginRight="52dp"/>
 
-        <ImageView android:visibility="gone"
+        <ImageView
             android:id="@+id/options_menu"
             android:layout_width="48dp"
             android:layout_height="48dp"
