@@ -21,6 +21,7 @@
   <string name="info_details">Informasjon</string>
   <string name="menu_export">Eksport...</string>
   <string name="description_add_transaction_icon">Legge til en ny transaksjon i en konto</string>
+  <string name="description_view_account_icon">View account details</string>
   <string name="label_no_accounts">Ingen kontoer for å vise</string>
   <string name="label_account_name">Kontonavn</string>
   <string name="btn_cancel">Avbryt</string>
@@ -63,7 +64,7 @@
   <string name="title_settings">Innstillinger</string>
   <string-array name="export_destinations">
     <item>SD-kort</item>
-    <item>DropBox</item>
+    <item>Dropbox</item>
     <item>Google Disk</item>
     <item>ownCloud</item>
     <item>Send til&#8230;</item>
@@ -85,6 +86,7 @@
   <string name="label_permission_record_transaction">Registrere transaksjoner i GnuCash</string>
   <string name="label_permission_create_account">Opprette kontoer i GnuCash</string>
   <string name="label_display_account">Vis konto</string>
+  <string name="label_hide_account_balance">Hide account balance in widget</string>
   <string name="btn_create_accounts">Opprett konto</string>
   <string name="title_default_accounts">Velg kontoer å opprette</string>
   <string name="error_no_accounts">Det finnes ingen kontoer i GnuCash.\nOpprett en konto før du legger til en widget</string>
@@ -393,12 +395,12 @@
   <string name="summary_google_plus">Dele ideer, diskutere endringer eller rapportere problemer</string>
   <string name="summary_translate_gnucash">Oversette eller korrekturles på CrowdIn</string>
   <string name="toast_no_compatible_apps_to_receive_export">Ingen kompatible apper til å motta de eksporterte transaksjonene!</string>
-  <string name="menu_move_transaction">Move&#8230;</string>
-  <string name="menu_duplicate_transaction">Duplicate</string>
-  <string name="nav_menu_budgets">Budgets</string>
+  <string name="menu_move_transaction">Flytt&#8230;</string>
+  <string name="menu_duplicate_transaction">Dupliser</string>
+  <string name="nav_menu_budgets">Budsjetter</string>
   <string name="title_cash_flow_report">Kontantstrøm</string>
-  <string name="title_budgets">Budgets</string>
-  <string name="title_use_compact_list">Enable compact view</string>
+  <string name="title_budgets">Budsjetter</string>
+  <string name="title_use_compact_list">Aktiver Kompaktvisning</string>
   <string name="summary_use_compact_list">Enable to always use compact view for transactions list</string>
   <string name="error_invalid_exchange_rate">Ugyldig valutakurs</string>
   <string name="sample_exchange_rate">e.g. 1 %1$s = x.xx %2$s</string>
@@ -470,4 +472,5 @@
   <string name="repeat_x_times">for %1$s times</string>
   <string name="menu_show_compact_view">Compact View</string>
   <string name="book_default_name">Book %1$d</string>
+  <string name="last_export_time_never">never</string>
 </resources>

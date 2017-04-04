@@ -21,6 +21,7 @@
   <string name="info_details">Information</string>
   <string name="menu_export">Exportera&#8230;</string>
   <string name="description_add_transaction_icon">Lägg till en transaktion till ett konto</string>
+  <string name="description_view_account_icon">View account details</string>
   <string name="label_no_accounts">Det finns inga konton att visa</string>
   <string name="label_account_name">Kontonamn</string>
   <string name="btn_cancel">Avbryt</string>
@@ -54,27 +55,27 @@
   <string name="label_account_balance">Saldo:</string>
   <string name="label_export_destination">Exportera till:</string>
   <string name="title_export_dialog">Exportera transaktioner</string>
-  <string name="option_export_all_transactions">Export all transactions</string>
-  <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
-  <string name="toast_export_error">Error exporting %1$s file</string>
-  <string name="btn_export">Export</string>
-  <string name="option_delete_after_export">Delete transactions after export</string>
-  <string name="hint_delete_after_export">All exported transactions will be deleted when exporting is completed</string>
-  <string name="title_settings">Settings</string>
+  <string name="option_export_all_transactions">Exportera alla transaktioner</string>
+  <string name="hint_export_choice">Som standard exporteras endast nya transaktioner sedan senaste export. Markera detta alternativ för att exportera alla transaktioner</string>
+  <string name="toast_export_error">Fel uppstod då filen skulle %1$s exporteras</string>
+  <string name="btn_export">Exportera</string>
+  <string name="option_delete_after_export">Radera transaktioner efter export</string>
+  <string name="hint_delete_after_export">Alla exporterade transaktioner raderas när exporten har slutförs</string>
+  <string name="title_settings">Inställningar</string>
   <string-array name="export_destinations">
-    <item>SD Card</item>
-    <item>DropBox</item>
+    <item>SD-kort</item>
+    <item>Dropbox</item>
     <item>Google Drive</item>
     <item>ownCloud</item>
-    <item>Send to&#8230;</item>
+    <item>Skicka till&#8230;</item>
   </string-array>
-  <string name="btn_move">Move</string>
-  <string name="title_move_transactions">Move %1$d transaction(s)</string>
+  <string name="btn_move">Flytta</string>
+  <string name="title_move_transactions">Flytta %1$d transaktion(er)</string>
   <string name="label_move_destination">Destination Account</string>
   <string name="permission_access_sdcard">Access SD Card</string>
   <string name="toast_incompatible_currency">Cannot move transactions.\nThe destination account uses a different currency from origin account</string>
-  <string name="header_general_settings">General</string>
-  <string name="header_about_gnucash">About</string>
+  <string name="header_general_settings">Allmänt</string>
+  <string name="header_about_gnucash">Om</string>
   <string name="title_choose_currency">Choose default currency</string>
   <string name="title_default_currency">Default currency</string>
   <string name="summary_default_currency">Default currency to assign to new accounts</string>
@@ -85,6 +86,7 @@
   <string name="label_permission_record_transaction">Record transactions in GnuCash</string>
   <string name="label_permission_create_account">Create accounts in GnuCash</string>
   <string name="label_display_account">Display account</string>
+  <string name="label_hide_account_balance">Hide account balance in widget</string>
   <string name="btn_create_accounts">Create Accounts</string>
   <string name="title_default_accounts">Select accounts to create</string>
   <string name="error_no_accounts">No accounts exist in GnuCash.\nCreate an account before adding a widget</string>
@@ -478,4 +480,5 @@
   <string name="repeat_x_times">for %1$s times</string>
   <string name="menu_show_compact_view">Compact View</string>
   <string name="book_default_name">Book %1$d</string>
+  <string name="last_export_time_never">never</string>
 </resources>

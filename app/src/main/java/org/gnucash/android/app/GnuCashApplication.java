@@ -72,7 +72,7 @@ public class GnuCashApplication extends MultiDexApplication {
     /**
      * Authority (domain) for the file provider. Also used in the app manifest
      */
-    public static final String FILE_PROVIDER_AUTHORITY = "org.gnucash.android.fileprovider";
+    public static final String FILE_PROVIDER_AUTHORITY = BuildConfig.APPLICATION_ID + ".fileprovider";
 
     /**
      * Lifetime of passcode session
