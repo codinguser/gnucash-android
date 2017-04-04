@@ -165,57 +165,21 @@ public class BookManagerFragment extends ListFragment implements
 
             setLastExportedText(view, bookUID);
             setStatisticsText(view, bookUID);
+            setUpMenu(view, context, cursor, bookUID);
+            setUpDeleteButton(view, context, bookUID);
 
-            final String bookName = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_DISPLAY_NAME));
-            ImageView optionsMenu = (ImageView) view.findViewById(R.id.options_menu);
-            optionsMenu.setOnClickListener(new View.OnClickListener() {
+            view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    PopupMenu popupMenu = new PopupMenu(context, v);
-                    MenuInflater menuInflater = popupMenu.getMenuInflater();
-                    menuInflater.inflate(R.menu.book_context_menu, popupMenu.getMenu());
-                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            switch (item.getItemId()){
-                                case R.id.ctx_menu_rename_book:
-                                    final EditText nameEditText = new EditText(context);
-                                    nameEditText.setText(bookName);
-
-                                    AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-                                    dialogBuilder.setTitle(R.string.title_rename_book)
-                                        .setView(nameEditText)
-                                        .setPositiveButton(R.string.btn_rename, new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                BooksDbAdapter.getInstance()
-                                                        .updateRecord(bookUID,
-                                                                BookEntry.COLUMN_DISPLAY_NAME,
-                                                                nameEditText.getText().toString());
-                                                refresh();
-                                            }
-                                        })
-                                        .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
-                                            }
-                                        });
-                                    AlertDialog dialog = dialogBuilder.create();
-                                    dialog.show();
-                                    return true;
-                                case R.id.ctx_menu_sync_book:
-                                    //TODO implement sync
-                                    return false;
-                                default:
-                                    return true;
-                            }
-                        }
-                    });
-                    popupMenu.show();
+                    //do nothing if the active book is tapped
+                    if (!BooksDbAdapter.getInstance().getActiveBookUID().equals(bookUID)) {
+                        GnuCashApplication.loadBook(bookUID);
+                    }
                 }
             });
+        }
 
+        private void setUpDeleteButton(View view, final Context context, final String bookUID) {
             ImageView deleteBookBtn = (ImageView) view.findViewById(R.id.delete_book);
             String activeBookUID = BooksDbAdapter.getInstance().getActiveBookUID();
             if (activeBookUID.equals(bookUID)) //we cannot delete the active book
@@ -248,16 +212,63 @@ public class BookManagerFragment extends ListFragment implements
                     }
                 });
             }
+        }
 
-            view.setOnClickListener(new View.OnClickListener() {
+        private void setUpMenu(View view, final Context context, Cursor cursor, final String bookUID) {
+            final String bookName = cursor.getString(
+                    cursor.getColumnIndexOrThrow(BookEntry.COLUMN_DISPLAY_NAME));
+            ImageView optionsMenu = (ImageView) view.findViewById(R.id.options_menu);
+            optionsMenu.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //do nothing if the active book is tapped
-                    if (!BooksDbAdapter.getInstance().getActiveBookUID().equals(bookUID)) {
-                        GnuCashApplication.loadBook(bookUID);
-                    }
+                    PopupMenu popupMenu = new PopupMenu(context, v);
+                    MenuInflater menuInflater = popupMenu.getMenuInflater();
+                    menuInflater.inflate(R.menu.book_context_menu, popupMenu.getMenu());
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch (item.getItemId()){
+                                case R.id.ctx_menu_rename_book:
+                                    return handleMenuRenameBook(context, bookName, bookUID);
+                                case R.id.ctx_menu_sync_book:
+                                    //TODO implement sync
+                                    return false;
+                                default:
+                                    return true;
+                            }
+                        }
+                    });
+                    popupMenu.show();
                 }
             });
+        }
+
+        private boolean handleMenuRenameBook(Context context, String bookName, final String bookUID) {
+            final EditText nameEditText = new EditText(context);
+            nameEditText.setText(bookName);
+
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+            dialogBuilder.setTitle(R.string.title_rename_book)
+                .setView(nameEditText)
+                .setPositiveButton(R.string.btn_rename, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        BooksDbAdapter.getInstance()
+                                .updateRecord(bookUID,
+                                        BookEntry.COLUMN_DISPLAY_NAME,
+                                        nameEditText.getText().toString());
+                        refresh();
+                    }
+                })
+                .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+            AlertDialog dialog = dialogBuilder.create();
+            dialog.show();
+            return true;
         }
 
         private void setLastExportedText(View view, String bookUID) {
