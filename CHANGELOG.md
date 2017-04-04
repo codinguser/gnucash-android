@@ -1,6 +1,6 @@
 Change Log
 ===============================================================================
-Version 2.1.5 *(2017-04-01)*
+Version 2.1.5 *(2017-04-04)*
 ----------------------------
 * Fixed: Widget button for placeholder accounts tries to create transactions 
 * Fixed: App crashes when screen orientation changes while viewing reports (#633)
