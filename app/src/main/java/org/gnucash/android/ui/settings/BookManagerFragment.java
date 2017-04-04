@@ -224,7 +224,6 @@ public class BookManagerFragment extends ListFragment implements
                 deleteBookBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //// TODO: extract strings
                         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
                         dialogBuilder.setTitle(getString(R.string.title_confirm_delete_book))
                                 .setIcon(R.drawable.ic_close_black_24dp)
