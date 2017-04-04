@@ -21,6 +21,7 @@
   <string name="info_details">Informazioni</string>
   <string name="menu_export">Esporta&#8230;</string>
   <string name="description_add_transaction_icon">Aggiungi una nuova transazione al conto</string>
+  <string name="description_view_account_icon">Visualizza i dettagli dell\'account</string>
   <string name="label_no_accounts">Nessun conto da visualizzare</string>
   <string name="label_account_name">Nome conto</string>
   <string name="btn_cancel">Annulla</string>
@@ -85,6 +86,7 @@
   <string name="label_permission_record_transaction">Registra le transazioni in GnuCash</string>
   <string name="label_permission_create_account">Crea conti in GnuCash</string>
   <string name="label_display_account">Visualizza conto</string>
+  <string name="label_hide_account_balance">Nascondi il saldo del conto nel widget</string>
   <string name="btn_create_accounts">Crea conti</string>
   <string name="title_default_accounts">Selezione dei conti da creare</string>
   <string name="error_no_accounts">Non esiste alcun conto in GnuCash.\nCreare un conto prima di aggiungere il widget</string>
@@ -475,4 +477,5 @@
   <string name="repeat_x_times">per %1$s volte</string>
   <string name="menu_show_compact_view">Visualizzazione compatta</string>
   <string name="book_default_name">Libro %1$d</string>
+  <string name="last_export_time_never">mai</string>
 </resources>

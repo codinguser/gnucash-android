@@ -28,10 +28,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.RemoteViews;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -54,8 +57,9 @@ import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.util.Locale;
+import java.util.prefs.Preferences;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -67,11 +71,13 @@ public class WidgetConfigurationActivity extends Activity {
 	private AccountsDbAdapter mAccountsDbAdapter;
     private int mAppWidgetId;
 	
-	@Bind(R.id.input_accounts_spinner) Spinner mAccountsSpinner;
-	@Bind(R.id.input_books_spinner) Spinner mBooksSpinner;
+	@BindView(R.id.input_accounts_spinner) Spinner mAccountsSpinner;
+	@BindView(R.id.input_books_spinner) Spinner mBooksSpinner;
+	@BindView(R.id.input_hide_account_balance) CheckBox mHideAccountBalance;
+	@BindView(R.id.btn_save) Button mOkButton;
+	@BindView(R.id.btn_cancel) Button mCancelButton;
 
-	@Bind(R.id.btn_save) Button mOkButton;
-	@Bind(R.id.btn_cancel) Button mCancelButton;
+
 	private SimpleCursorAdapter mAccountsCursorAdapter;
 
 
@@ -116,7 +122,11 @@ public class WidgetConfigurationActivity extends Activity {
 		//without this line, the app crashes when a user tries to select an account
 		mAccountsCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mAccountsSpinner.setAdapter(mAccountsCursorAdapter);
-		
+
+		boolean passcodeEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+				.getBoolean(UxArgument.ENABLED_PASSCODE, false);
+		mHideAccountBalance.setChecked(passcodeEnabled);
+
 		bindListeners();
 	}
 
@@ -157,21 +167,14 @@ public class WidgetConfigurationActivity extends Activity {
 				if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID){
 					finish();
 					return;
-				}					
-				
-				long accountId = mAccountsSpinner.getSelectedItemId();
-                String accountUID = mAccountsDbAdapter.getUID(accountId);
+				}
 
-				long bookId = mBooksSpinner.getSelectedItemId();
-				String bookUID = BooksDbAdapter.getInstance().getUID(bookId);
-
-				SharedPreferences prefs = PreferenceActivity.getBookSharedPreferences(bookUID);
-				//PreferenceManager.getDefaultSharedPreferences(WidgetConfigurationActivity.this);
-				Editor editor = prefs.edit();
-				editor.putString(UxArgument.SELECTED_ACCOUNT_UID + mAppWidgetId, accountUID);
-				editor.apply();
+				String bookUID = BooksDbAdapter.getInstance().getUID(mBooksSpinner.getSelectedItemId());
+				String accountUID = mAccountsDbAdapter.getUID(mAccountsSpinner.getSelectedItemId());
+				boolean hideAccountBalance = mHideAccountBalance.isChecked();
 				
-				updateWidget(WidgetConfigurationActivity.this, mAppWidgetId, accountUID, bookUID);
+				configureWidget(WidgetConfigurationActivity.this, mAppWidgetId, bookUID, accountUID, hideAccountBalance);
+				updateWidget(WidgetConfigurationActivity.this, mAppWidgetId);
 						
 				Intent resultValue = new Intent();
 				resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
@@ -190,16 +193,74 @@ public class WidgetConfigurationActivity extends Activity {
 	}
 
 	/**
+	 * Configure a given widget with the given parameters.
+	 * @param context The current context
+	 * @param appWidgetId ID of the widget to configure
+	 * @param bookUID UID of the book for this widget
+	 * @param accountUID UID of the account for this widget
+	 * @param hideAccountBalance <code>true</code> if the account balance should be hidden,
+	 *                           <code>false</code> otherwise
+     */
+	public static void configureWidget(final Context context, int appWidgetId, String bookUID, String accountUID, boolean hideAccountBalance) {
+		context.getSharedPreferences("widget:" + appWidgetId, MODE_PRIVATE).edit()
+				.putString(UxArgument.BOOK_UID, bookUID)
+				.putString(UxArgument.SELECTED_ACCOUNT_UID, accountUID)
+				.putBoolean(UxArgument.HIDE_ACCOUNT_BALANCE_IN_WIDGET, hideAccountBalance)
+				.apply();
+	}
+
+	/**
+	 * Remove the configuration for a widget. Primarily this should be called when a widget is
+	 * destroyed.
+	 * @param context The current context
+	 * @param appWidgetId ID of the widget whose configuration should be removed
+     */
+	public static void removeWidgetConfiguration(final Context context, int appWidgetId) {
+		context.getSharedPreferences("widget:" + appWidgetId, MODE_PRIVATE).edit()
+				.clear()
+				.apply();
+	}
+
+	/**
+	 * Load obsolete preferences for a widget, if they exist, and save them using the new widget
+	 * configuration format.
+	 * @param context The current context
+	 * @param appWidgetId ID of the widget whose configuration to load/save
+     */
+	private static void loadOldPreferences(Context context, int appWidgetId) {
+		SharedPreferences preferences = PreferenceActivity.getActiveBookSharedPreferences();
+		String accountUID = preferences.getString(UxArgument.SELECTED_ACCOUNT_UID + appWidgetId, null);
+		if (accountUID != null) {
+			String bookUID = BooksDbAdapter.getInstance().getActiveBookUID();
+			boolean hideAccountBalance = preferences.getBoolean(UxArgument.HIDE_ACCOUNT_BALANCE_IN_WIDGET + appWidgetId, false);
+			configureWidget(context, appWidgetId, bookUID, accountUID, hideAccountBalance);
+			preferences.edit()
+					.remove(UxArgument.SELECTED_ACCOUNT_UID + appWidgetId)
+					.remove(UxArgument.HIDE_ACCOUNT_BALANCE_IN_WIDGET + appWidgetId)
+					.apply();
+		}
+	}
+
+	/**
 	 * Updates the widget with id <code>appWidgetId</code> with information from the 
 	 * account with record ID <code>accountId</code>
      * If the account has been deleted, then a notice is posted in the widget
 	 * @param appWidgetId ID of the widget to be updated
-     * @param accountUID GUID of the account tied to the widget
-	 * @param bookUID GUID of the book with the relevant account
 	 */
-	public static void updateWidget(final Context context, int appWidgetId, String accountUID, String bookUID) {
+	public static void updateWidget(final Context context, int appWidgetId) {
 		Log.i("WidgetConfiguration", "Updating widget: " + appWidgetId);
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+
+		loadOldPreferences(context, appWidgetId);
+
+		SharedPreferences preferences = context.getSharedPreferences("widget:" + appWidgetId, MODE_PRIVATE);
+		String bookUID = preferences.getString(UxArgument.BOOK_UID, null);
+		String accountUID = preferences.getString(UxArgument.SELECTED_ACCOUNT_UID, null);
+		boolean hideAccountBalance = preferences.getBoolean(UxArgument.HIDE_ACCOUNT_BALANCE_IN_WIDGET, false);
+
+		if (bookUID == null || accountUID == null) {
+			return;
+		}
 
 		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(BookDbHelper.getDatabase(bookUID));
 
@@ -231,10 +292,14 @@ public class WidgetConfigurationActivity extends Activity {
 
 		Money accountBalance = accountsDbAdapter.getAccountBalance(accountUID, -1, System.currentTimeMillis());
 
-		views.setTextViewText(R.id.transactions_summary,
-				accountBalance.formattedString(Locale.getDefault()));
-		int color = accountBalance.isNegative() ? R.color.debit_red : R.color.credit_green;
-		views.setTextColor(R.id.transactions_summary, context.getResources().getColor(color));
+		if (hideAccountBalance) {
+			views.setViewVisibility(R.id.transactions_summary, View.GONE);
+		} else {
+			views.setTextViewText(R.id.transactions_summary,
+					accountBalance.formattedString(Locale.getDefault()));
+			int color = accountBalance.isNegative() ? R.color.debit_red : R.color.credit_green;
+			views.setTextColor(R.id.transactions_summary, context.getResources().getColor(color));
+		}
 
 
 		Intent accountViewIntent = new Intent(context, TransactionsActivity.class);
@@ -246,19 +311,25 @@ public class WidgetConfigurationActivity extends Activity {
 				.getActivity(context, appWidgetId, accountViewIntent, 0);
 		views.setOnClickPendingIntent(R.id.widget_layout, accountPendingIntent);
 		
-		Intent newTransactionIntent = new Intent(context, FormActivity.class);
-		newTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-		newTransactionIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		newTransactionIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION.name());
-		newTransactionIntent.putExtra(UxArgument.BOOK_UID, bookUID);
-		newTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
-		PendingIntent pendingIntent = PendingIntent
-				.getActivity(context, appWidgetId, newTransactionIntent, 0);	            
-		views.setOnClickPendingIntent(R.id.btn_new_transaction, pendingIntent);
+		if (accountsDbAdapter.isPlaceholderAccount(accountUID)) {
+			views.setOnClickPendingIntent(R.id.btn_view_account, accountPendingIntent);
+			views.setViewVisibility(R.id.btn_new_transaction, View.GONE);
+		} else {
+			Intent newTransactionIntent = new Intent(context, FormActivity.class);
+			newTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
+			newTransactionIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			newTransactionIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION.name());
+			newTransactionIntent.putExtra(UxArgument.BOOK_UID, bookUID);
+			newTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
+			PendingIntent pendingIntent = PendingIntent
+					.getActivity(context, appWidgetId, newTransactionIntent, 0);
+			views.setOnClickPendingIntent(R.id.btn_new_transaction, pendingIntent);
+			views.setViewVisibility(R.id.btn_view_account, View.GONE);
+		}
 		
 		appWidgetManager.updateAppWidget(appWidgetId, views);
 	}
-	
+
 	/**
 	 * Updates all widgets belonging to the application
 	 * @param context Application context
@@ -272,19 +343,10 @@ public class WidgetConfigurationActivity extends Activity {
 		//update widgets asynchronously so as not to block method which called the update
 		//inside the computation of the account balance
 		new Thread(new Runnable() {
-			SharedPreferences defaultSharedPrefs = PreferenceActivity.getActiveBookSharedPreferences();
-			//PreferenceManager.getDefaultSharedPreferences(context);
-
 			@Override
 			public void run() {
 				for (final int widgetId : appWidgetIds) {
-					final String accountUID = defaultSharedPrefs
-							.getString(UxArgument.SELECTED_ACCOUNT_UID + widgetId, null);
-
-					if (accountUID == null)
-						continue;
-
-					updateWidget(context, widgetId, accountUID, BooksDbAdapter.getInstance().getActiveBookUID());
+					updateWidget(context, widgetId);
 				}
 			}
 		}).start();

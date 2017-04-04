@@ -72,7 +72,7 @@ import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.TaskDelegate;
 import org.gnucash.android.ui.wizard.FirstRunWizardActivity;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 /**
  * Manages actions related to accounts, displaying, exporting and creating new accounts
@@ -137,9 +137,9 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
     /**
      * ViewPager which manages the different tabs
      */
-    @Bind(R.id.pager) ViewPager mViewPager;
-    @Bind(R.id.fab_create_account) FloatingActionButton mFloatingActionButton;
-    @Bind(R.id.coordinatorLayout) CoordinatorLayout mCoordinatorLayout;
+    @BindView(R.id.pager) ViewPager mViewPager;
+    @BindView(R.id.fab_create_account) FloatingActionButton mFloatingActionButton;
+    @BindView(R.id.coordinatorLayout) CoordinatorLayout mCoordinatorLayout;
 
     /**
      * Configuration for rating the app
@@ -385,9 +385,10 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
             //default to using double entry and save the preference explicitly
             prefs.edit().putBoolean(getString(R.string.key_use_double_entry), true).apply();
             finish();
-        } else {
-            getSDWritePermission();
+            return;
         }
+
+        getSDWritePermission();
 
         if (hasNewFeatures()){
             showWhatsNewDialog(this);

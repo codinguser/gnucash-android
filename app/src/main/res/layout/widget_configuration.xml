@@ -50,5 +50,13 @@
 		android:layout_height="wrap_content"
 		android:minHeight="?android:attr/listPreferredItemHeight" />
 
+	<CheckBox
+		android:id="@+id/input_hide_account_balance"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="8dp"
+		android:text="@string/label_hide_account_balance"
+		android:checked="true"/>
+
     <include layout="@layout/default_buttons"/>
 </LinearLayout>

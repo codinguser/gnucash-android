@@ -78,8 +78,8 @@ public class RecurrenceParser {
         }
 
         int interval = eventRecurrence.interval == 0 ? 1 : eventRecurrence.interval; //bug from betterpickers library sometimes returns 0 as the interval
-        periodType.setMultiplier(interval);
         Recurrence recurrence = new Recurrence(periodType);
+        recurrence.setMultiplier(interval);
         parseEndTime(eventRecurrence, recurrence);
         recurrence.setByDays(parseByDay(eventRecurrence.byday));
         if (eventRecurrence.startDate != null)

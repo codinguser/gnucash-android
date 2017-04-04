@@ -30,14 +30,14 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.dropbox.sync.android.DbxAccountManager;
-import com.dropbox.sync.android.DbxFile;
-import com.dropbox.sync.android.DbxFileSystem;
-import com.dropbox.sync.android.DbxPath;
+import com.dropbox.core.v2.DbxClientV2;
+import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.Metadata;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveApi;
@@ -144,7 +144,6 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         mExporter = getExporter();
 
         try {
-            // FIXME: detect if there aren't transactions to export and inform the user
             mExportedFiles = mExporter.generateExport();
         } catch (final Exception e) {
             Log.e(TAG, "Error exporting: " + e.getMessage());
@@ -164,12 +163,16 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             return false;
         }
 
+        if (mExportedFiles.isEmpty())
+            return false;
+
         try {
             moveToTarget();
         } catch (Exporter.ExporterException e) {
             Crashlytics.log(Log.ERROR, TAG, "Error sending exported files to target: " + e.getMessage());
             return false;
         }
+
         return true;
     }
 
@@ -190,12 +193,23 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             }
         } else {
             if (mContext instanceof Activity) {
-                Toast.makeText(mContext,
-                        mContext.getString(R.string.toast_export_error, mExportParams.getExportFormat().name()),
-                        Toast.LENGTH_LONG).show();
+                dismissProgressDialog();
+                if (mExportedFiles.isEmpty()) {
+                    Toast.makeText(mContext,
+                            R.string.toast_no_transactions_to_export,
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(mContext,
+                            mContext.getString(R.string.toast_export_error, mExportParams.getExportFormat().name()),
+                            Toast.LENGTH_LONG).show();
+                }
             }
         }
 
+        dismissProgressDialog();
+    }
+
+    private void dismissProgressDialog() {
         if (mContext instanceof Activity) {
             if (mProgressDialog != null && mProgressDialog.isShowing())
                 mProgressDialog.dismiss();
@@ -203,6 +217,10 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         }
     }
 
+    /**
+     * Returns an exporter corresponding to the user settings.
+     * @return Object of one of {@link QifExporter}, {@link OfxExporter} or {@link GncXmlExporter}
+     */
     private Exporter getExporter() {
         switch (mExportParams.getExportFormat()) {
             case QIF:
@@ -217,11 +235,14 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         }
     }
 
+    /**
+     * Moves the generated export files to the target specified by the user
+     * @throws Exporter.ExporterException if the move fails
+     */
     private void moveToTarget() throws Exporter.ExporterException {
         switch (mExportParams.getExportTarget()) {
             case SHARING:
-                List<String> sdCardExportedFiles = moveExportToSDCard();
-                shareFiles(sdCardExportedFiles);
+                shareFiles(mExportedFiles);
                 break;
 
             case DROPBOX:
@@ -299,26 +320,32 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         Log.i(TAG, "Created file with id: " + driveFileResult.getDriveFile().getDriveId());
     }
 
-    private void moveExportToDropbox() throws Exporter.ExporterException {
-        Log.i(TAG, "Copying exported file to DropBox");
-        String dropboxAppKey = mContext.getString(R.string.dropbox_app_key, BackupPreferenceFragment.DROPBOX_APP_KEY);
-        String dropboxAppSecret = mContext.getString(R.string.dropbox_app_secret, BackupPreferenceFragment.DROPBOX_APP_SECRET);
-        DbxAccountManager mDbxAcctMgr = DbxAccountManager.getInstance(mContext.getApplicationContext(),
-                dropboxAppKey, dropboxAppSecret);
-        DbxFile dbExportFile = null;
-        try {
-            DbxFileSystem dbxFileSystem = DbxFileSystem.forAccount(mDbxAcctMgr.getLinkedAccount());
-            for (String exportedFilePath : mExportedFiles) {
-                File exportedFile = new File(exportedFilePath);
-                dbExportFile = dbxFileSystem.create(new DbxPath(exportedFile.getName()));
-                dbExportFile.writeFromExistingFile(exportedFile, false);
-                exportedFile.delete();
-            }
-        } catch (IOException e) {
-            throw new Exporter.ExporterException(mExportParams);
-        } finally {
-            if (dbExportFile != null) {
-                dbExportFile.close();
+    /**
+     * Move the exported files (in the cache directory) to Dropbox
+     */
+    private void moveExportToDropbox() {
+        Log.i(TAG, "Uploading exported files to DropBox");
+
+        DbxClientV2 dbxClient = DropboxHelper.getClient();
+
+        for (String exportedFilePath : mExportedFiles) {
+            File exportedFile = new File(exportedFilePath);
+            FileInputStream inputStream = null;
+            try {
+                inputStream = new FileInputStream(exportedFile);
+                List<Metadata> entries = dbxClient.files().listFolder("").getEntries();
+
+                FileMetadata metadata = dbxClient.files()
+                        .uploadBuilder("/" + exportedFile.getName())
+                        .uploadAndFinish(inputStream);
+                Log.i(TAG, "Successfully uploaded file " + metadata.getName() + " to DropBox");
+                inputStream.close();
+                exportedFile.delete(); //delete file to prevent cache accumulation
+            } catch (IOException e) {
+                Crashlytics.logException(e);
+                Log.e(TAG, e.getMessage());
+            } catch (com.dropbox.core.DbxException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -426,8 +453,8 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         shareIntent.setType("text/xml");
 
         ArrayList<Uri> exportFiles = convertFilePathsToUris(paths);
-//        shareIntent.putExtra(Intent.EXTRA_STREAM, exportFiles);
         shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, exportFiles);
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, mContext.getString(R.string.title_export_email,
                 mExportParams.getExportFormat().name()));
@@ -467,9 +494,8 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
         for (String path : paths) {
             File file = new File(path);
-            file.setReadable(true, false);
-            exportFiles.add(Uri.fromFile(file));
-//            exportFiles.add(Uri.parse("file://" + file));
+            Uri contentUri = FileProvider.getUriForFile(GnuCashApplication.getAppContext(), GnuCashApplication.FILE_PROVIDER_AUTHORITY, file);
+            exportFiles.add(contentUri);
         }
         return exportFiles;
     }

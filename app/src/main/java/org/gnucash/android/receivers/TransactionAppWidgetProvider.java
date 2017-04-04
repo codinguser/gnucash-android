@@ -18,11 +18,10 @@ package org.gnucash.android.receivers;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.preference.PreferenceManager;
 
 import org.gnucash.android.db.adapter.BooksDbAdapter;
-import org.gnucash.android.model.Book;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 import org.gnucash.android.ui.settings.PreferenceActivity;
@@ -40,20 +39,9 @@ public class TransactionAppWidgetProvider extends AppWidgetProvider {
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 			int[] appWidgetIds) {
 		super.onUpdate(context, appWidgetManager, appWidgetIds);
-		final int N = appWidgetIds.length;
-
-        // Perform this loop procedure for each App Widget that belongs to this provider
-        for (int i=0; i<N; i++) {
-            int appWidgetId = appWidgetIds[i];
-
-            String accountUID = PreferenceActivity.getActiveBookSharedPreferences()
-                    .getString(UxArgument.SELECTED_ACCOUNT_UID + appWidgetId, null);
-            if (accountUID == null)
-            	return;
-            
-            WidgetConfigurationActivity.updateWidget(context, appWidgetId, accountUID,
-					BooksDbAdapter.getInstance().getActiveBookUID());
-        }
+		for (int appWidgetId : appWidgetIds) {
+			WidgetConfigurationActivity.updateWidget(context, appWidgetId);
+		}
 	}
 
     @Override
@@ -64,12 +52,9 @@ public class TransactionAppWidgetProvider extends AppWidgetProvider {
 
     @Override
 	public void onDeleted(Context context, int[] appWidgetIds) {
-		super.onDeleted(context, appWidgetIds);		
-		Editor editor = PreferenceActivity.getActiveBookSharedPreferences().edit();
-		
+		super.onDeleted(context, appWidgetIds);
 		for (int appWidgetId : appWidgetIds) {
-			editor.remove(UxArgument.SELECTED_ACCOUNT_UID + appWidgetId);
+			WidgetConfigurationActivity.removeWidgetConfiguration(context, appWidgetId);
 		}
-		editor.apply();
 	}
 }

@@ -51,7 +51,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 /**
  * Fragment for line chart reports
@@ -80,7 +80,7 @@ public class CashFlowLineChartFragment extends BaseReportFragment {
     private long mLatestTransactionTimestamp;
     private boolean mChartDataPresent = true;
 
-    @Bind(R.id.line_chart) LineChart mChart;
+    @BindView(R.id.line_chart) LineChart mChart;
 
     @Override
     public int getLayoutResource() {

@@ -38,7 +38,6 @@ import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
-import org.gnucash.android.model.Book;
 
 import java.io.File;
 import java.text.ParseException;
@@ -254,7 +253,7 @@ public abstract class Exporter {
         return "text/plain";
     }
 
-    public static class ExporterException extends Exception {
+    public static class ExporterException extends RuntimeException{
 
         public ExporterException(ExportParams params){
             super("Failed to generate export with parameters:  " + params.toString());

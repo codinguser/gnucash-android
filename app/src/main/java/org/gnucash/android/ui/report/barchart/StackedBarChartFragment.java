@@ -52,7 +52,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 import static org.gnucash.android.ui.report.ReportsActivity.COLORS;
 
@@ -73,7 +73,7 @@ public class StackedBarChartFragment extends BaseReportFragment {
 
     private AccountsDbAdapter mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
-    @Bind(R.id.bar_chart) BarChart mChart;
+    @BindView(R.id.bar_chart) BarChart mChart;
 
     private boolean mUseAccountColor = true;
     private boolean mTotalPercentageMode = true;

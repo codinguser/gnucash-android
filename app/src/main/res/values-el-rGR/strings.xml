@@ -21,6 +21,7 @@
   <string name="info_details">Πληροφορίες</string>
   <string name="menu_export">Εξαγωγή OFX</string>
   <string name="description_add_transaction_icon">Προσθήκη μιας νέας συναλλαγής σε ένα λογαριασμό</string>
+  <string name="description_view_account_icon">View account details</string>
   <string name="label_no_accounts">Δεν υπάρχουν λογαριασμοί για εμφάνιση</string>
   <string name="label_account_name">Όνομα λογαριασμού</string>
   <string name="btn_cancel">Ακύρωση</string>
@@ -63,7 +64,7 @@
   <string name="title_settings">Ρυθμίσεις</string>
   <string-array name="export_destinations">
     <item>Κάρτα SD</item>
-    <item>DropBox</item>
+    <item>Dropbox</item>
     <item>Google Drive</item>
     <item>ownCloud</item>
     <item>Send to&#8230;</item>
@@ -85,6 +86,7 @@
   <string name="label_permission_record_transaction">Καταγραφή συναλλαγών στο GnuCash</string>
   <string name="label_permission_create_account">Δημιουργία λογαριασμών στο GnuCash</string>
   <string name="label_display_account">Εμφάνιση λογαριασμού</string>
+  <string name="label_hide_account_balance">Hide account balance in widget</string>
   <string name="btn_create_accounts">Δημιουργία Λογαριασμών</string>
   <string name="title_default_accounts">Επιλογή λογαριασμών για δημιουργία</string>
   <string name="error_no_accounts">Δεν υπάρχουν λογαριασμοί στο
@@ -489,4 +491,5 @@ No user-identifiable information will be collected as part of this process!
   <string name="repeat_x_times">for %1$s times</string>
   <string name="menu_show_compact_view">Compact View</string>
   <string name="book_default_name">Book %1$d</string>
+  <string name="last_export_time_never">never</string>
 </resources>

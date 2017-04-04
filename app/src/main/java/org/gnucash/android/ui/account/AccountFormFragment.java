@@ -74,7 +74,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -92,15 +92,15 @@ public class AccountFormFragment extends Fragment {
     /**
 	 * EditText for the name of the account to be created/edited
 	 */
-	@Bind(R.id.input_account_name) EditText mNameEditText;
+	@BindView(R.id.input_account_name) EditText mNameEditText;
 
-    @Bind(R.id.name_text_input_layout) TextInputLayout mTextInputLayout;
+    @BindView(R.id.name_text_input_layout) TextInputLayout mTextInputLayout;
 
 	/**
 	 * Spinner for selecting the currency of the account
 	 * Currencies listed are those specified by ISO 4217
 	 */
-	@Bind(R.id.input_currency_spinner) Spinner mCurrencySpinner;
+	@BindView(R.id.input_currency_spinner) Spinner mCurrencySpinner;
 	
 	/**
 	 * Accounts database adapter
@@ -154,39 +154,39 @@ public class AccountFormFragment extends Fragment {
     /**
      * Spinner for parent account list
      */
-	@Bind(R.id.input_parent_account) Spinner mParentAccountSpinner;
+	@BindView(R.id.input_parent_account) Spinner mParentAccountSpinner;
 
     /**
      * Checkbox which activates the parent account spinner when selected
      * Leaving this unchecked means it is a top-level root account
      */
-	@Bind(R.id.checkbox_parent_account) CheckBox mParentCheckBox;
+	@BindView(R.id.checkbox_parent_account) CheckBox mParentCheckBox;
 
     /**
      * Spinner for the account type
      * @see org.gnucash.android.model.AccountType
      */
-    @Bind(R.id.input_account_type_spinner) Spinner mAccountTypeSpinner;
+    @BindView(R.id.input_account_type_spinner) Spinner mAccountTypeSpinner;
 
     /**
      * Checkbox for activating the default transfer account spinner
      */
-    @Bind(R.id.checkbox_default_transfer_account) CheckBox mDefaultTransferAccountCheckBox;
+    @BindView(R.id.checkbox_default_transfer_account) CheckBox mDefaultTransferAccountCheckBox;
 
     /**
      * Spinner for selecting the default transfer account
      */
-    @Bind(R.id.input_default_transfer_account) Spinner mDefaultTransferAccountSpinner;
+    @BindView(R.id.input_default_transfer_account) Spinner mDefaultTransferAccountSpinner;
 
     /**
      * Account description input text view
      */
-    @Bind(R.id.input_account_description) EditText mDescriptionEditText;
+    @BindView(R.id.input_account_description) EditText mDescriptionEditText;
 
     /**
      * Checkbox indicating if account is a placeholder account
      */
-    @Bind(R.id.checkbox_placeholder_account) CheckBox mPlaceholderCheckBox;
+    @BindView(R.id.checkbox_placeholder_account) CheckBox mPlaceholderCheckBox;
 
     /**
      * Cursor adapter which binds to the spinner for default transfer account
@@ -203,7 +203,7 @@ public class AccountFormFragment extends Fragment {
     /**
      * Trigger for color picker dialog
      */
-    @Bind(R.id.input_color_picker) ColorSquare mColorSquare;
+    @BindView(R.id.input_color_picker) ColorSquare mColorSquare;
 
     private final ColorPickerSwatch.OnColorSelectedListener mColorSelectedListener =
             new ColorPickerSwatch.OnColorSelectedListener() {
@@ -715,7 +715,7 @@ public class AccountFormFragment extends Fragment {
 	
 	@Override
 	public void onDestroy() {
-		super.onDestroyView();
+		super.onDestroy();
 		if (mParentAccountCursor != null)
 			mParentAccountCursor.close();
         if (mDefaultTransferAccountCursorAdapter != null) {

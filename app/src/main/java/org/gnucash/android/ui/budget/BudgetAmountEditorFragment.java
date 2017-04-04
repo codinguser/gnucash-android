@@ -52,7 +52,7 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -65,8 +65,8 @@ public class BudgetAmountEditorFragment extends Fragment {
     private List<View> mBudgetAmountViews = new ArrayList<>();
     private AccountsDbAdapter mAccountsDbAdapter;
 
-    @Bind(R.id.budget_amount_layout)    LinearLayout mBudgetAmountTableLayout;
-    @Bind(R.id.calculator_keyboard)     KeyboardView mKeyboardView;
+    @BindView(R.id.budget_amount_layout)    LinearLayout mBudgetAmountTableLayout;
+    @BindView(R.id.calculator_keyboard)     KeyboardView mKeyboardView;
 
     public static BudgetAmountEditorFragment newInstance(Bundle args){
         BudgetAmountEditorFragment fragment = new BudgetAmountEditorFragment();
@@ -204,7 +204,7 @@ public class BudgetAmountEditorFragment extends Fragment {
         if (mAccountCursor != null) {
             mAccountCursor.close();
         }
-        mAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions, null);
+        mAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(conditions, null);
 
         mAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), mAccountCursor);
     }
@@ -232,10 +232,10 @@ public class BudgetAmountEditorFragment extends Fragment {
      * View holder for budget amounts
      */
     class BudgetAmountViewHolder{
-        @Bind(R.id.currency_symbol)     TextView currencySymbolTextView;
-        @Bind(R.id.input_budget_amount) CalculatorEditText amountEditText;
-        @Bind(R.id.btn_remove_item)     ImageView removeItemBtn;
-        @Bind(R.id.input_budget_account_spinner) Spinner budgetAccountSpinner;
+        @BindView(R.id.currency_symbol)     TextView currencySymbolTextView;
+        @BindView(R.id.input_budget_amount) CalculatorEditText amountEditText;
+        @BindView(R.id.btn_remove_item)     ImageView removeItemBtn;
+        @BindView(R.id.input_budget_account_spinner) Spinner budgetAccountSpinner;
         View itemView;
 
         public BudgetAmountViewHolder(View view){

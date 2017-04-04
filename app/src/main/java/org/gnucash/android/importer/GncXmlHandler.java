@@ -438,8 +438,8 @@ public class GncXmlHandler extends DefaultHandler {
                 break;
             case GncXmlHelper.TAG_COMMODITY_ID:
                 String currencyCode = mISO4217Currency ? characterString : NO_CURRENCY_CODE;
+                Commodity commodity = mCommoditiesDbAdapter.getCommodity(currencyCode);
                 if (mAccount != null) {
-                    Commodity commodity = mCommoditiesDbAdapter.getCommodity(currencyCode);
                     if (commodity != null) {
                         mAccount.setCommodity(commodity);
                     } else {
@@ -453,7 +453,7 @@ public class GncXmlHandler extends DefaultHandler {
                     }
                 }
                 if (mTransaction != null) {
-                    mTransaction.setCurrencyCode(currencyCode);
+                    mTransaction.setCommodity(commodity);
                 }
                 if (mPrice != null) {
                     if (mPriceCommodity) {
@@ -675,7 +675,7 @@ public class GncXmlHandler extends DefaultHandler {
                     //the split amount uses the account currency
                     mSplit.setQuantity(new Money(mQuantity, getCommodityForAccount(characterString)));
                     //the split value uses the transaction currency
-                    mSplit.setValue(new Money(mValue, mCommoditiesDbAdapter.getCommodity(mTransaction.getCurrency().getCurrencyCode())));
+                    mSplit.setValue(new Money(mValue, mTransaction.getCommodity()));
                     mSplit.setAccountUID(characterString);
                 } else {
                     if (!mIgnoreTemplateTransaction)
@@ -737,8 +737,8 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_RX_PERIOD_TYPE:
                 try {
                     PeriodType periodType = PeriodType.valueOf(characterString.toUpperCase());
-                    periodType.setMultiplier(mRecurrenceMultiplier);
                     mRecurrence.setPeriodType(periodType);
+                    mRecurrence.setMultiplier(mRecurrenceMultiplier);
                 } catch (IllegalArgumentException ex){ //the period type constant is not supported
                     String msg = "Unsupported period constant: " + characterString;
                     Log.e(LOG_TAG, msg);
@@ -1050,11 +1050,16 @@ public class GncXmlHandler extends DefaultHandler {
      */
     private void handleEndOfTemplateNumericSlot(String characterString, TransactionType splitType) {
         try {
-            BigDecimal amountBigD = GncXmlHelper.parseSplitAmount(characterString);
-            Money amount = new Money(amountBigD, getCommodityForAccount(mSplit.getAccountUID()));
-            mSplit.setValue(amount.abs());
-            mSplit.setType(splitType);
-            mIgnoreTemplateTransaction = false; //we have successfully parsed an amount
+            // HACK: Check for bug #562. If a value has already been set, ignore the one just read
+            if (mSplit.getValue().equals(
+                    new Money(BigDecimal.ZERO, mSplit.getValue().getCommodity()))) {
+                BigDecimal amountBigD = GncXmlHelper.parseSplitAmount(characterString);
+                Money amount = new Money(amountBigD, getCommodityForAccount(mSplit.getAccountUID()));
+
+                mSplit.setValue(amount.abs());
+                mSplit.setType(splitType);
+                mIgnoreTemplateTransaction = false; //we have successfully parsed an amount
+            }
         } catch (NumberFormatException | ParseException e) {
             String msg = "Error parsing template credit split amount " + characterString;
             Log.e(LOG_TAG, msg + "\n" + e.getMessage());

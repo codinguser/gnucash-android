@@ -51,6 +51,7 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.BudgetAmount;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.Refreshable;
@@ -60,9 +61,8 @@ import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Currency;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -79,8 +79,8 @@ public class BudgetListFragment extends Fragment implements Refreshable,
 
     private BudgetsDbAdapter mBudgetsDbAdapter;
 
-    @Bind(R.id.budget_recycler_view) EmptyRecyclerView mRecyclerView;
-    @Bind(R.id.empty_view) Button mProposeBudgets;
+    @BindView(R.id.budget_recycler_view) EmptyRecyclerView mRecyclerView;
+    @BindView(R.id.empty_view) Button mProposeBudgets;
 
     @Nullable
     @Override
@@ -231,13 +231,13 @@ public class BudgetListFragment extends Fragment implements Refreshable,
             }
 
             Money budgetTotal = budget.getAmountSum();
-            Currency currency = budgetTotal.getCurrency();
-            String usedAmount = currency.getSymbol() + spentAmountValue+ " of "
+            Commodity commodity = budgetTotal.getCommodity();
+            String usedAmount = commodity.getSymbol() + spentAmountValue + " of "
                     + budgetTotal.formattedString();
             holder.budgetAmount.setText(usedAmount);
 
             double budgetProgress = spentAmountValue.divide(budgetTotal.asBigDecimal(),
-                    currency.getDefaultFractionDigits(), RoundingMode.HALF_EVEN)
+                    commodity.getSmallestFractionDigits(), RoundingMode.HALF_EVEN)
                     .doubleValue();
             holder.budgetIndicator.setProgress((int) (budgetProgress * 100));
 
@@ -260,12 +260,12 @@ public class BudgetListFragment extends Fragment implements Refreshable,
         }
 
         class BudgetViewHolder extends RecyclerView.ViewHolder implements PopupMenu.OnMenuItemClickListener{
-            @Bind(R.id.primary_text)        TextView budgetName;
-            @Bind(R.id.secondary_text)      TextView accountName;
-            @Bind(R.id.budget_amount)       TextView budgetAmount;
-            @Bind(R.id.options_menu)        ImageView optionsMenu;
-            @Bind(R.id.budget_indicator)    ProgressBar budgetIndicator;
-            @Bind(R.id.budget_recurrence)   TextView budgetRecurrence;
+            @BindView(R.id.primary_text)        TextView budgetName;
+            @BindView(R.id.secondary_text)      TextView accountName;
+            @BindView(R.id.budget_amount)       TextView budgetAmount;
+            @BindView(R.id.options_menu)        ImageView optionsMenu;
+            @BindView(R.id.budget_indicator)    ProgressBar budgetIndicator;
+            @BindView(R.id.budget_recurrence)   TextView budgetRecurrence;
             long budgetId;
 
             public BudgetViewHolder(View itemView) {

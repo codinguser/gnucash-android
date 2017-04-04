@@ -36,10 +36,9 @@ import android.view.View;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
-import org.gnucash.android.model.Book;
 import org.gnucash.android.ui.passcode.PasscodeLockActivity;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -50,7 +49,7 @@ public class PreferenceActivity extends PasscodeLockActivity implements
 
     public static final String ACTION_MANAGE_BOOKS = "org.gnucash.android.intent.action.MANAGE_BOOKS";
 
-    @Bind(R.id.slidingpane_layout) SlidingPaneLayout mSlidingPaneLayout;
+    @BindView(R.id.slidingpane_layout) SlidingPaneLayout mSlidingPaneLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

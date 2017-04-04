@@ -56,6 +56,18 @@ public class RecurrenceTest {
         recurrence.setPeriodEnd(new Timestamp(end.getMillis()));
 
         assertThat(recurrence.getCount()).isEqualTo(10);
+
+        //test case where last appointment is just a little before end time, but not a complete period since last
+        DateTime startTime = new DateTime(2016, 6, 6, 9, 0);
+        DateTime endTime = new DateTime(2016, 8, 29, 10, 0);
+        PeriodType biWeekly = PeriodType.WEEK;
+        recurrence = new Recurrence(biWeekly);
+        recurrence.setMultiplier(2);
+        recurrence.setPeriodStart(new Timestamp(startTime.getMillis()));
+        recurrence.setPeriodEnd(new Timestamp(endTime.getMillis()));
+
+        assertThat(recurrence.getCount()).isEqualTo(7);
+
     }
 
     /**

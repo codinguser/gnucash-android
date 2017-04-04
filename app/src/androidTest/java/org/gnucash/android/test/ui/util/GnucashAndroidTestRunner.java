@@ -19,6 +19,7 @@ package org.gnucash.android.test.ui.util;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.multidex.MultiDex;
 import android.support.test.runner.AndroidJUnitRunner;
 import android.util.Log;
 

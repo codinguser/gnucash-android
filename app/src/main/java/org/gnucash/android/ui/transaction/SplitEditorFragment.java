@@ -69,7 +69,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -79,9 +79,9 @@ import butterknife.ButterKnife;
  */
 public class SplitEditorFragment extends Fragment {
 
-    @Bind(R.id.split_list_layout)   LinearLayout mSplitsLinearLayout;
-    @Bind(R.id.calculator_keyboard) KeyboardView mKeyboardView;
-    @Bind(R.id.imbalance_textview)  TextView mImbalanceTextView;
+    @BindView(R.id.split_list_layout)   LinearLayout mSplitsLinearLayout;
+    @BindView(R.id.calculator_keyboard) KeyboardView mKeyboardView;
+    @BindView(R.id.imbalance_textview)  TextView mImbalanceTextView;
 
     private AccountsDbAdapter mAccountsDbAdapter;
     private Cursor mCursor;
@@ -228,13 +228,13 @@ public class SplitEditorFragment extends Fragment {
      * Holds a split item view and binds the items in it
      */
     class SplitViewHolder implements OnTransferFundsListener{
-        @Bind(R.id.input_split_memo)        EditText splitMemoEditText;
-        @Bind(R.id.input_split_amount)      CalculatorEditText splitAmountEditText;
-        @Bind(R.id.btn_remove_split)        ImageView removeSplitButton;
-        @Bind(R.id.input_accounts_spinner)  Spinner accountsSpinner;
-        @Bind(R.id.split_currency_symbol)   TextView splitCurrencyTextView;
-        @Bind(R.id.split_uid)               TextView splitUidTextView;
-        @Bind(R.id.btn_split_type)          TransactionTypeSwitch splitTypeSwitch;
+        @BindView(R.id.input_split_memo)        EditText splitMemoEditText;
+        @BindView(R.id.input_split_amount)      CalculatorEditText splitAmountEditText;
+        @BindView(R.id.btn_remove_split)        ImageView removeSplitButton;
+        @BindView(R.id.input_accounts_spinner)  Spinner accountsSpinner;
+        @BindView(R.id.split_currency_symbol)   TextView splitCurrencyTextView;
+        @BindView(R.id.split_uid)               TextView splitUidTextView;
+        @BindView(R.id.btn_split_type)          TransactionTypeSwitch splitTypeSwitch;
 
         View splitView;
         Money quantity;
@@ -274,7 +274,7 @@ public class SplitEditorFragment extends Fragment {
             if (split != null) {
                 splitAmountEditText.setCommodity(split.getValue().getCommodity());
                 splitAmountEditText.setValue(split.getFormattedValue().asBigDecimal());
-                splitCurrencyTextView.setText(split.getValue().getCurrency().getSymbol());
+                splitCurrencyTextView.setText(split.getValue().getCommodity().getSymbol());
                 splitMemoEditText.setText(split.getMemo());
                 splitUidTextView.setText(split.getUID());
                 String splitAccountUID = split.getAccountUID();

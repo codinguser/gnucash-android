@@ -114,7 +114,7 @@ public final class Money implements Comparable<Money>{
 	/**
 	 * Overloaded constructor.
 	 * Accepts strings as arguments and parses them to create the Money object
-	 * @param amount Numrical value of the Money
+	 * @param amount Numerical value of the Money
 	 * @param currencyCode Currency code as specified by ISO 4217
 	 */
 	public Money(String amount, String currencyCode){
@@ -154,14 +154,6 @@ public final class Money implements Comparable<Money>{
 		Commodity commodity = Commodity.getInstance(currencyCode);
         return new Money(BigDecimal.ZERO, commodity);
     }
-
-	/**
-	 * Returns the currency of the money object
-	 * @return {@link Currency} of the money value
-	 */
-	public Currency getCurrency() {
-		return Currency.getInstance(mCommodity.getCurrencyCode());
-	}
 
 	/**
 	 * Returns the commodity used by the Money
@@ -277,15 +269,13 @@ public final class Money implements Comparable<Money>{
     public String formattedString(Locale locale){
 
 		NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(locale);
-		Currency currency = Currency.getInstance(mCommodity.getCurrencyCode());
 
 		String symbol;
+		//if we want to show US Dollars for locales which also use Dollars, for example, Canada
 		if (mCommodity.equals(Commodity.USD) && !locale.equals(Locale.US)) {
 			symbol = "US$";
-		} else if (mCommodity.equals(Commodity.EUR)) {
-			symbol = currency.getSymbol(Locale.GERMANY); //euro currency is pretty unique around the world
 		} else {
-			symbol = currency.getSymbol(Locale.US); // US locale has the best symbol formatting table.
+			symbol = mCommodity.getSymbol();
 		}
 		DecimalFormatSymbols decimalFormatSymbols = ((DecimalFormat)currencyFormat).getDecimalFormatSymbols();
 		decimalFormatSymbols.setCurrencySymbol(symbol);

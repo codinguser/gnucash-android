@@ -45,12 +45,11 @@ import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.ui.util.dialog.DateRangePickerDialogFragment;
 import org.joda.time.LocalDate;
 
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 /**
  * Activity for displaying report fragments (which must implement {@link BaseReportFragment})
@@ -76,9 +75,9 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
     };
     private static final String STATE_REPORT_TYPE = "STATE_REPORT_TYPE";
 
-    @Bind(R.id.time_range_spinner) Spinner mTimeRangeSpinner;
-    @Bind(R.id.report_account_type_spinner) Spinner mAccountTypeSpinner;
-    @Bind(R.id.toolbar_spinner) Spinner mReportTypeSpinner;
+    @BindView(R.id.time_range_spinner) Spinner mTimeRangeSpinner;
+    @BindView(R.id.report_account_type_spinner) Spinner mAccountTypeSpinner;
+    @BindView(R.id.toolbar_spinner) Spinner mReportTypeSpinner;
 
     private TransactionsDbAdapter mTransactionsDbAdapter;
     private AccountType mAccountType = AccountType.EXPENSE;

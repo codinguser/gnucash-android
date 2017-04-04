@@ -50,7 +50,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 
 import static com.github.mikephil.charting.components.Legend.LegendPosition;
@@ -63,15 +63,15 @@ public class ReportsOverviewFragment extends BaseReportFragment {
 
     public static final int LEGEND_TEXT_SIZE = 14;
 
-    @Bind(R.id.btn_pie_chart) Button mPieChartButton;
-    @Bind(R.id.btn_bar_chart) Button mBarChartButton;
-    @Bind(R.id.btn_line_chart) Button mLineChartButton;
-    @Bind(R.id.btn_balance_sheet) Button mBalanceSheetButton;
+    @BindView(R.id.btn_pie_chart) Button mPieChartButton;
+    @BindView(R.id.btn_bar_chart) Button mBarChartButton;
+    @BindView(R.id.btn_line_chart) Button mLineChartButton;
+    @BindView(R.id.btn_balance_sheet) Button mBalanceSheetButton;
 
-    @Bind(R.id.pie_chart) PieChart mChart;
-    @Bind(R.id.total_assets) TextView mTotalAssets;
-    @Bind(R.id.total_liabilities) TextView mTotalLiabilities;
-    @Bind(R.id.net_worth) TextView mNetWorth;
+    @BindView(R.id.pie_chart) PieChart mChart;
+    @BindView(R.id.total_assets) TextView mTotalAssets;
+    @BindView(R.id.total_liabilities) TextView mTotalLiabilities;
+    @BindView(R.id.net_worth) TextView mNetWorth;
 
     private AccountsDbAdapter mAccountsDbAdapter;
     private Money mAssetsBalance;

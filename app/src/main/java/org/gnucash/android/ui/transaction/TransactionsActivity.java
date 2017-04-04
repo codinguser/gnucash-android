@@ -66,7 +66,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 /**
  * Activity for displaying, creating and editing transactions
@@ -111,11 +111,11 @@ public class TransactionsActivity extends BaseDrawerActivity implements
      */
     private Cursor mAccountsCursor = null;
 
-    @Bind(R.id.pager)            ViewPager mViewPager;
-    @Bind(R.id.toolbar_spinner)  Spinner mToolbarSpinner;
-    @Bind(R.id.tab_layout)       TabLayout mTabLayout;
-    @Bind(R.id.transactions_sum) TextView mSumTextView;
-    @Bind(R.id.fab_create_transaction) FloatingActionButton mCreateFloatingButton;
+    @BindView(R.id.pager)            ViewPager mViewPager;
+    @BindView(R.id.toolbar_spinner)  Spinner mToolbarSpinner;
+    @BindView(R.id.tab_layout)       TabLayout mTabLayout;
+    @BindView(R.id.transactions_sum) TextView mSumTextView;
+    @BindView(R.id.fab_create_transaction) FloatingActionButton mCreateFloatingButton;
 
     private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<>();
 
@@ -143,6 +143,8 @@ public class TransactionsActivity extends BaseDrawerActivity implements
                     mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_transactions));
                 }
             }
+            // Hide the favorite icon of the selected account to avoid clutter
+            ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
             //refresh any fragments in the tab with the new account UID
             refresh();
         }

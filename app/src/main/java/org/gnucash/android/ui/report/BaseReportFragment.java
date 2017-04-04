@@ -46,7 +46,7 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.Months;
 import org.joda.time.Years;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -103,7 +103,7 @@ public abstract class BaseReportFragment extends Fragment implements
 
     protected ReportsActivity mReportsActivity;
 
-    @Nullable @Bind(R.id.selected_chart_slice) protected TextView mSelectedValueTextView;
+    @Nullable @BindView(R.id.selected_chart_slice) protected TextView mSelectedValueTextView;
 
     private AsyncTask<Void, Void, Void> mReportGenerator;
 

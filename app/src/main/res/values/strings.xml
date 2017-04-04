@@ -21,6 +21,7 @@
     <string name="info_details">Info</string>
     <string name="menu_export">Export…</string>
     <string name="description_add_transaction_icon">Add a new transaction to an account</string>
+    <string name="description_view_account_icon">View account details</string>
     <string name="label_no_accounts">No accounts to display</string>
     <string name="label_account_name">Account name</string>
     <string name="btn_cancel">Cancel</string>
@@ -63,7 +64,7 @@
     <string name="title_settings">Settings</string>
     <string-array name="export_destinations">
         <item>SD Card</item>
-        <item>DropBox</item>
+        <item>Dropbox</item>
         <item>Google Drive</item>
         <item>ownCloud</item>
         <item>Send to&#8230;</item>
@@ -85,6 +86,7 @@
     <string name="label_permission_record_transaction">Record transactions in GnuCash</string>
     <string name="label_permission_create_account">Create accounts in GnuCash</string>
     <string name="label_display_account">Display account</string>
+    <string name="label_hide_account_balance">Hide account balance in widget</string>
     <string name="btn_create_accounts">Create Accounts</string>
     <string name="title_default_accounts">Select accounts to create</string>
 	<string name="error_no_accounts">No accounts exist in GnuCash.\nCreate an account before adding a widget</string>

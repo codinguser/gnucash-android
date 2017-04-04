@@ -198,7 +198,8 @@ public class ScheduledActionServiceTest {
 
         scheduledAction.setActionUID(mActionUID);
 
-        scheduledAction.setRecurrence(PeriodType.WEEK, 2);
+        int multiplier = 2;
+        scheduledAction.setRecurrence(PeriodType.WEEK, multiplier);
         ScheduledActionDbAdapter.getInstance().addRecord(scheduledAction, DatabaseAdapter.UpdateMethod.insert);
 
         TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();

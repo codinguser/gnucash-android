@@ -17,6 +17,7 @@
 package org.gnucash.android.model;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 
 import org.gnucash.android.R;
@@ -62,6 +63,8 @@ public class Recurrence extends BaseModel {
      * Days of week on which to run the recurrence
      */
     private List<Integer> mByDays = Collections.emptyList();
+
+    private int mMultiplier = 1; //multiplier for the period type
 
     public Recurrence(@NonNull PeriodType periodType){
         setPeriodType(periodType);
@@ -124,7 +127,7 @@ public class Recurrence extends BaseModel {
                 baseMillis = RecurrenceParser.YEAR_MILLIS;
                 break;
         }
-        return mPeriodType.getMultiplier() * baseMillis;
+        return mMultiplier * baseMillis;
     }
 
     /**
@@ -132,12 +135,14 @@ public class Recurrence extends BaseModel {
      * @return String description of repeat schedule
      */
     public String getRepeatString(){
-        StringBuilder repeatBuilder = new StringBuilder(mPeriodType.getFrequencyRepeatString());
+        StringBuilder repeatBuilder = new StringBuilder(getFrequencyRepeatString());
         Context context = GnuCashApplication.getAppContext();
 
+        String dayOfWeek = new SimpleDateFormat("EEEE", GnuCashApplication.getDefaultLocale())
+                .format(new Date(mPeriodStart.getTime()));
         if (mPeriodType == PeriodType.WEEK) {
             repeatBuilder.append(" ").
-                    append(context.getString(R.string.repeat_on_weekday, getDaysOfWeekString()));
+                    append(context.getString(R.string.repeat_on_weekday, dayOfWeek));
         }
 
         if (mPeriodEnd != null){
@@ -148,30 +153,11 @@ public class Recurrence extends BaseModel {
     }
 
     /**
-     * Returns a string with the days of the week set in the recurrence separated by commas.
-     * @return string with the days of the week set in the recurrence separated by commas.
+     * Creates an RFC 2445 string which describes this recurring event.
+     * <p>See http://recurrance.sourceforge.net/</p>
+     * <p>The output of this method is not meant for human consumption</p>
+     * @return String describing event
      */
-    private @NonNull String getDaysOfWeekString() {
-        // XXX: mByDays should never be empty with PeriodType.WEEK, but we don't enforce it yet
-        if (mByDays.isEmpty())
-            return "";
-        StringBuilder daysOfWeekString = new StringBuilder();
-        Calendar calendar = Calendar.getInstance();
-        DateFormat dayOfWeekFormatter =
-                new SimpleDateFormat("EEEE", GnuCashApplication.getDefaultLocale());
-        for (int day : mByDays) {
-            calendar.set(Calendar.DAY_OF_WEEK, day);
-            daysOfWeekString.append(dayOfWeekFormatter.format(calendar.getTime())).append(", ");
-        }
-        return daysOfWeekString.substring(0, daysOfWeekString.length()-2);
-    }
-
-    /**
-         * Creates an RFC 2445 string which describes this recurring event.
-         * <p>See http://recurrance.sourceforge.net/</p>
-         * <p>The output of this method is not meant for human consumption</p>
-         * @return String describing event
-         */
     public String getRuleString(){
         String separator = ";";
 
@@ -189,7 +175,7 @@ public class Recurrence extends BaseModel {
 
 
         ruleBuilder.append("FREQ=").append(mPeriodType.getFrequencyDescription()).append(separator);
-        ruleBuilder.append("INTERVAL=").append(mPeriodType.getMultiplier()).append(separator);
+        ruleBuilder.append("INTERVAL=").append(mMultiplier).append(separator);
         if (getCount() > 0)
             ruleBuilder.append("COUNT=").append(getCount()).append(separator);
         ruleBuilder.append(mPeriodType.getByParts(mPeriodStart.getTime())).append(separator);
@@ -203,7 +189,7 @@ public class Recurrence extends BaseModel {
      */
     public int getDaysLeftInCurrentPeriod(){
         LocalDate startDate = new LocalDate(System.currentTimeMillis());
-        int interval = mPeriodType.getMultiplier() - 1;
+        int interval = mMultiplier - 1;
         LocalDate endDate = null;
         switch (mPeriodType){
             case DAY:
@@ -232,7 +218,7 @@ public class Recurrence extends BaseModel {
     public int getNumberOfPeriods(int numberOfPeriods) {
         LocalDate startDate = new LocalDate(mPeriodStart.getTime());
         LocalDate endDate;
-        int interval = mPeriodType.getMultiplier();
+        int interval = mMultiplier;
         //// TODO: 15.08.2016 Why do we add the number of periods. maybe rename method or param
         switch (mPeriodType){
 
@@ -298,14 +284,14 @@ public class Recurrence extends BaseModel {
 
     /**
      * Computes the number of occurrences of this recurrences between start and end date
-     * <p>If there is no end date, it returns -1</p>
+     * <p>If there is no end date or the PeriodType is unknown, it returns -1</p>
      * @return Number of occurrences, or -1 if there is no end date
      */
     public int getCount(){
         if (mPeriodEnd == null)
             return -1;
 
-        int multiple = mPeriodType.getMultiplier();
+        int multiple = mMultiplier;
         ReadablePeriod jodaPeriod;
         switch (mPeriodType){
             case DAY:
@@ -334,7 +320,7 @@ public class Recurrence extends BaseModel {
 /*
         //this solution does not use looping, but is not very accurate
 
-        int multiplier = mPeriodType.getMultiplier();
+        int multiplier = mMultiplier;
         LocalDateTime startDate = new LocalDateTime(mPeriodStart.getTime());
         LocalDateTime endDate = new LocalDateTime(mPeriodEnd.getTime());
         switch (mPeriodType){
@@ -359,7 +345,7 @@ public class Recurrence extends BaseModel {
     public void setPeriodEnd(int numberOfOccurences){
         LocalDateTime localDate = new LocalDateTime(mPeriodStart.getTime());
         LocalDateTime endDate;
-        int occurrenceDuration = numberOfOccurences * mPeriodType.getMultiplier();
+        int occurrenceDuration = numberOfOccurences * mMultiplier;
         switch (mPeriodType){
             case DAY:
                 endDate = localDate.plusDays(occurrenceDuration);
@@ -392,5 +378,85 @@ public class Recurrence extends BaseModel {
      */
     public void setPeriodEnd(Timestamp endTimestamp){
         mPeriodEnd = endTimestamp;
+    }
+
+    /**
+     * Returns the multiplier for the period type. The default multiplier is 1.
+     * e.g. bi-weekly actions have period type {@link PeriodType#WEEK} and multiplier 2.
+     *
+     * @return  Multiplier for the period type
+     */
+    public int getMultiplier(){
+        return mMultiplier;
+    }
+
+    /**
+     * Sets the multiplier for the period type.
+     * e.g. bi-weekly actions have period type {@link PeriodType#WEEK} and multiplier 2.
+     *
+     * @param multiplier Multiplier for the period type
+     */
+    public void setMultiplier(int multiplier){
+        mMultiplier = multiplier;
+    }
+
+    /**
+     * Returns a localized string describing the period type's frequency.
+     *
+     * @return String describing the period type
+     */
+    private String getFrequencyRepeatString(){
+        Resources res = GnuCashApplication.getAppContext().getResources();
+        //todo: take multiplier into account here
+        switch (mPeriodType) {
+            case DAY:
+                return res.getQuantityString(R.plurals.label_every_x_days, mMultiplier, mMultiplier);
+            case WEEK:
+                return res.getQuantityString(R.plurals.label_every_x_weeks, mMultiplier, mMultiplier);
+            case MONTH:
+                return res.getQuantityString(R.plurals.label_every_x_months, mMultiplier, mMultiplier);
+            case YEAR:
+                return res.getQuantityString(R.plurals.label_every_x_years, mMultiplier, mMultiplier);
+            default:
+                return "";
+        }
+    }
+
+    /**
+     * Returns a new {@link Recurrence} with the {@link PeriodType} specified in the old format.
+     *
+     * @param period Period in milliseconds since Epoch (old format to define a period)
+     * @return Recurrence with the specified period.
+     */
+    public static Recurrence fromLegacyPeriod(long period) {
+        int result = (int) (period/RecurrenceParser.YEAR_MILLIS);
+        if (result > 0) {
+            Recurrence recurrence = new Recurrence(PeriodType.YEAR);
+            recurrence.setMultiplier(result);
+            return recurrence;
+        }
+
+        result = (int) (period/RecurrenceParser.MONTH_MILLIS);
+        if (result > 0) {
+            Recurrence recurrence = new Recurrence(PeriodType.MONTH);
+            recurrence.setMultiplier(result);
+            return recurrence;
+        }
+
+        result = (int) (period/RecurrenceParser.WEEK_MILLIS);
+        if (result > 0) {
+            Recurrence recurrence = new Recurrence(PeriodType.WEEK);
+            recurrence.setMultiplier(result);
+            return recurrence;
+        }
+
+        result = (int) (period/RecurrenceParser.DAY_MILLIS);
+        if (result > 0) {
+            Recurrence recurrence = new Recurrence(PeriodType.DAY);
+            recurrence.setMultiplier(result);
+            return recurrence;
+        }
+
+        return new Recurrence(PeriodType.DAY);
     }
 }
