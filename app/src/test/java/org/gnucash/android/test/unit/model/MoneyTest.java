@@ -172,7 +172,7 @@ public class MoneyTest{
 	public void validateImmutability(){
 		assertEquals(mHashcode, mMoneyInEur.hashCode());
 		assertEquals(amountString, mMoneyInEur.toPlainString());
-		assertEquals(CURRENCY_CODE, mMoneyInEur.getCurrency().getCurrencyCode());
+		assertEquals(CURRENCY_CODE, mMoneyInEur.getCommodity().getCurrencyCode());
 	}
 	
 }

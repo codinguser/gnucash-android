@@ -21,6 +21,7 @@
     <string name="info_details">Info</string>
     <string name="menu_export">Export…</string>
     <string name="description_add_transaction_icon">Add a new transaction to an account</string>
+    <string name="description_view_account_icon">View account details</string>
     <string name="label_no_accounts">No accounts to display</string>
     <string name="label_account_name">Account name</string>
     <string name="btn_cancel">Cancel</string>
@@ -63,7 +64,7 @@
     <string name="title_settings">Settings</string>
     <string-array name="export_destinations">
         <item>SD Card</item>
-        <item>DropBox</item>
+        <item>Dropbox</item>
         <item>Google Drive</item>
         <item>ownCloud</item>
         <item>Send to&#8230;</item>
@@ -487,4 +488,5 @@
     <string name="repeat_x_times">for %1$s times</string>
     <string name="menu_show_compact_view">Compact View</string>
     <string name="book_default_name">Book %1$d</string>
+    <string name="last_export_time_never">never</string>
 </resources>

@@ -228,7 +228,8 @@ public class FirstRunWizardActivity extends AppCompatActivity implements
             finish();
         } else if (mAccountOptions.equals(getString(R.string.wizard_option_import_my_accounts))){
             AccountsActivity.startXmlFileChooser(this);
-        } else {
+        } else { //user prefers to handle account creation themselves
+            AccountsActivity.start(this);
             finish();
         }
     }

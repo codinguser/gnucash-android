@@ -21,6 +21,7 @@
   <string name="info_details">Інформація</string>
   <string name="menu_export">Експортувати OFX</string>
   <string name="description_add_transaction_icon">Додати до рахунку нову транзакцію</string>
+  <string name="description_view_account_icon">View account details</string>
   <string name="label_no_accounts">Немає рахунків</string>
   <string name="label_account_name">Ім\'я рахунку</string>
   <string name="btn_cancel">Скасувати</string>
@@ -63,7 +64,7 @@
   <string name="title_settings">Налаштування</string>
   <string-array name="export_destinations">
     <item>Карта пам\'яті</item>
-    <item>DropBox</item>
+    <item>Dropbox</item>
     <item>Google Drive</item>
     <item>ownCloud</item>
     <item>Send to&#8230;</item>
@@ -85,6 +86,7 @@
   <string name="label_permission_record_transaction">Запис операції в GnuCash</string>
   <string name="label_permission_create_account">Створення рахунків в GnuCash</string>
   <string name="label_display_account">Показати рахунок</string>
+  <string name="label_hide_account_balance">Hide account balance in widget</string>
   <string name="btn_create_accounts">Створити рахунки</string>
   <string name="title_default_accounts">Оберіть рахунки для створення</string>
   <string name="error_no_accounts">Немає рахунків в Gnucash.\nСтворіть рахунки перед додаваням віджета.</string>
@@ -481,4 +483,5 @@
   <string name="repeat_x_times">for %1$s times</string>
   <string name="menu_show_compact_view">Compact View</string>
   <string name="book_default_name">Book %1$d</string>
+  <string name="last_export_time_never">never</string>
 </resources>

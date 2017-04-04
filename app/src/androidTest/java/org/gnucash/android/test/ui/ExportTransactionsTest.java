@@ -61,7 +61,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
 import java.io.File;
-import java.util.Currency;
 import java.util.List;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -133,7 +132,8 @@ public class ExportTransactionsTest extends
         Split split = new Split(new Money("8.99", currencyCode), account.getUID());
 		split.setMemo("Hawaii is the best!");
 		transaction.addSplit(split);
-		transaction.addSplit(split.createPair(mAccountsDbAdapter.getOrCreateImbalanceAccountUID(Currency.getInstance(currencyCode))));
+		transaction.addSplit(split.createPair(
+				mAccountsDbAdapter.getOrCreateImbalanceAccountUID(Commodity.DEFAULT_COMMODITY)));
 		account.addTransaction(transaction);
 
 		mAccountsDbAdapter.addRecord(account, DatabaseAdapter.UpdateMethod.insert);

@@ -16,45 +16,46 @@
  limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="title_create_account">Create Account</string>
-  <string name="title_edit_account">Edit Account</string>
-  <string name="info_details">Info</string>
-  <string name="menu_export">Export&#8230;</string>
-  <string name="description_add_transaction_icon">Add a new transaction to an account</string>
-  <string name="label_no_accounts">No accounts to display</string>
-  <string name="label_account_name">Account name</string>
-  <string name="btn_cancel">Cancel</string>
-  <string name="btn_save">Save</string>
-  <string name="btn_test">Test</string>
-  <string name="label_passcode">Enter Passcode</string>
-  <string name="toast_wrong_passcode">Wrong passcode, please try again</string>
-  <string name="toast_passcode_set">Passcode set</string>
-  <string name="label_confirm_passcode">Please confirm your passcode</string>
-  <string name="toast_invalid_passcode_confirmation">Invalid passcode confirmation. Please try again</string>
-  <string name="label_transaction_name">Description</string>
-  <string name="label_transaction_amount">Amount</string>
-  <string name="title_add_transaction">New transaction</string>
-  <string name="label_no_transactions">No transactions to display</string>
+  <string name="title_create_account">Luo tili</string>
+  <string name="title_edit_account">Muokkaa tiliä</string>
+  <string name="info_details">Tiedot</string>
+  <string name="menu_export">Vie&#8230;</string>
+  <string name="description_add_transaction_icon">Lisää uusi tapahtuma tilille</string>
+  <string name="description_view_account_icon">View account details</string>
+  <string name="label_no_accounts">Ei näytettävissä olevia tilejä</string>
+  <string name="label_account_name">Tilin nimi</string>
+  <string name="btn_cancel">Peruuta</string>
+  <string name="btn_save">Tallenna</string>
+  <string name="btn_test">Testaa</string>
+  <string name="label_passcode">Anna tunnuskoodi</string>
+  <string name="toast_wrong_passcode">Virheellinen tunnuskoodi, yritä uudelleen</string>
+  <string name="toast_passcode_set">Tunnuskoodi asetettu</string>
+  <string name="label_confirm_passcode">Vahvista tunnuskoodi</string>
+  <string name="toast_invalid_passcode_confirmation">Virheellinen tunnuskoodin vahvistus. Yritä uudelleen</string>
+  <string name="label_transaction_name">Kuvaus</string>
+  <string name="label_transaction_amount">Summa</string>
+  <string name="title_add_transaction">Uusi tapahtuma</string>
+  <string name="label_no_transactions">Ei näytettäviä tapahtumia</string>
   <string name="label_timeanddate">DATE &amp; TIME</string>
-  <string name="label_account">Account</string>
-  <string name="label_debit">DEBIT</string>
-  <string name="label_credit">CREDIT</string>
-  <string name="title_accounts">Accounts</string>
-  <string name="title_transactions">Transactions</string>
-  <string name="menu_delete">Delete</string>
-  <string name="alert_dialog_ok_delete">Delete</string>
-  <string name="alert_dialog_cancel">Cancel</string>
-  <string name="toast_account_deleted">Account deleted</string>
-  <string name="title_confirm_delete">Confirm delete</string>
-  <string name="delete_account_confirmation_message">All transactions in this account will also be deleted</string>
-  <string name="title_edit_transaction">Edit Transaction</string>
-  <string name="label_transaction_description">Add note</string>
-  <string name="menu_move">MOVE</string>
-  <string name="title_selected">%1$d selected</string>
-  <string name="label_account_balance">Balance:</string>
+  <string name="label_account">Tili</string>
+  <string name="label_debit">VELOITUS</string>
+  <string name="label_credit">HYVITYS</string>
+  <string name="title_accounts">Tilit</string>
+  <string name="title_transactions">Tapahtumat</string>
+  <string name="menu_delete">Poista</string>
+  <string name="alert_dialog_ok_delete">Poista</string>
+  <string name="alert_dialog_cancel">Peruuta</string>
+  <string name="toast_account_deleted">Tili poistettu</string>
+  <string name="title_confirm_delete">Vahvista poistaminen</string>
+  <string name="delete_account_confirmation_message">Kaikki tämän tilin tapahtumat tullaan myös poistamaan</string>
+  <string name="title_edit_transaction">Muokkaa tapahtumaa</string>
+  <string name="label_transaction_description">Lisää huomautus</string>
+  <string name="menu_move">SIIRRÄ</string>
+  <string name="title_selected">%1$d valittuna</string>
+  <string name="label_account_balance">Saldo:</string>
   <string name="label_export_destination">Export To:</string>
-  <string name="title_export_dialog">Export Transactions</string>
-  <string name="option_export_all_transactions">Export all transactions</string>
+  <string name="title_export_dialog">Vie tapahtumat</string>
+  <string name="option_export_all_transactions">Vie kaikki tapahtumat</string>
   <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
   <string name="toast_export_error">Error exporting %1$s file</string>
   <string name="btn_export">Export</string>
@@ -63,7 +64,7 @@
   <string name="title_settings">Settings</string>
   <string-array name="export_destinations">
     <item>SD Card</item>
-    <item>DropBox</item>
+    <item>Dropbox</item>
     <item>Google Drive</item>
     <item>ownCloud</item>
     <item>Send to&#8230;</item>
@@ -85,6 +86,7 @@
   <string name="label_permission_record_transaction">Record transactions in GnuCash</string>
   <string name="label_permission_create_account">Create accounts in GnuCash</string>
   <string name="label_display_account">Display account</string>
+  <string name="label_hide_account_balance">Hide account balance in widget</string>
   <string name="btn_create_accounts">Create Accounts</string>
   <string name="title_default_accounts">Select accounts to create</string>
   <string name="error_no_accounts">No accounts exist in GnuCash.\nCreate an account before adding a widget</string>
@@ -478,4 +480,5 @@
   <string name="repeat_x_times">for %1$s times</string>
   <string name="menu_show_compact_view">Compact View</string>
   <string name="book_default_name">Book %1$d</string>
+  <string name="last_export_time_never">never</string>
 </resources>

@@ -1474,4 +1474,38 @@ public class MigrationHelper {
 
         return oldVersion;
     }
+
+    /**
+     * Upgrades the database to version 14.
+     * <p>This migration makes the following changes to the database:
+     * <ul>
+     *     <li>Fixes accounts referencing a default transfer account that no longer
+     *         exists (see #654)</li>
+     * </ul>
+     * </p>
+     * @param db SQLite database to be upgraded
+     * @return New database version, 14 if migration succeeds, 13 otherwise
+     */
+    static int upgradeDbToVersion14(SQLiteDatabase db) {
+        Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 14");
+        int oldVersion = 13;
+
+        db.beginTransaction();
+        try {
+            ContentValues contentValues = new ContentValues();
+            contentValues.putNull(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID);
+            db.update(
+                    AccountEntry.TABLE_NAME,
+                    contentValues,
+                    AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID
+                            + " NOT IN (SELECT " + AccountEntry.COLUMN_UID
+                            + "             FROM " + AccountEntry.TABLE_NAME + ")",
+                    null);
+            db.setTransactionSuccessful();
+            oldVersion = 14;
+        } finally {
+            db.endTransaction();
+        }
+        return oldVersion;
+    }
 }

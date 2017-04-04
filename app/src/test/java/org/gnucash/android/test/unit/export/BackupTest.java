@@ -62,7 +62,7 @@ public class BackupTest {
     }
 
     @Test
-    public void shouldCreateBackupFileName(){
+    public void shouldCreateBackupFileName() throws Exporter.ExporterException {
         Exporter exporter = new GncXmlExporter(new ExportParams(ExportFormat.XML));
         List<String> xmlFiles = exporter.generateExport();
 

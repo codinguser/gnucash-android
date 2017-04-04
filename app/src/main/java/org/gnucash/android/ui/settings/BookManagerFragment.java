@@ -55,6 +55,8 @@ import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.util.PreferencesHelper;
 
+import java.sql.Timestamp;
+
 /**
  * Fragment for managing the books in the database
  */
@@ -160,25 +162,8 @@ public class BookManagerFragment extends ListFragment implements
 
             final String bookUID = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_UID));
 
-            TextView lastSyncText = (TextView) view.findViewById(R.id.last_sync_time);
-            lastSyncText.setText(PreferencesHelper.getLastExportTime(bookUID).toString());
-
-            TextView labelLastSync = (TextView) view.findViewById(R.id.label_last_sync);
-            labelLastSync.setText(R.string.label_last_export_time);
-
-            //retrieve some book statistics
-            DatabaseHelper dbHelper = new DatabaseHelper(GnuCashApplication.getAppContext(), bookUID);
-            SQLiteDatabase db = dbHelper.getReadableDatabase();
-            TransactionsDbAdapter trnAdapter = new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
-            int transactionCount = (int) trnAdapter.getRecordsCount();
-            String transactionStats = getResources().getQuantityString(R.plurals.book_transaction_stats, transactionCount, transactionCount);
-
-            AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(db, trnAdapter);
-            int accountsCount = (int) accountsDbAdapter.getRecordsCount();
-            String accountStats = getResources().getQuantityString(R.plurals.book_account_stats, accountsCount, accountsCount);
-            String stats = accountStats + ", " + transactionStats;
-            TextView statsText = (TextView) view.findViewById(R.id.secondary_text);
-            statsText.setText(stats);
+            setLastExportedText(view, bookUID);
+            setStatisticsText(view, bookUID);
 
             ImageView optionsMenu = (ImageView) view.findViewById(R.id.options_menu);
             optionsMenu.setOnClickListener(new View.OnClickListener() {
@@ -246,6 +231,33 @@ public class BookManagerFragment extends ListFragment implements
                     }
                 }
             });
+        }
+
+        private void setLastExportedText(View view, String bookUID) {
+            TextView labelLastSync = (TextView) view.findViewById(R.id.label_last_sync);
+            labelLastSync.setText(R.string.label_last_export_time);
+
+            Timestamp lastSyncTime = PreferencesHelper.getLastExportTime(bookUID);
+            TextView lastSyncText = (TextView) view.findViewById(R.id.last_sync_time);
+            if (lastSyncTime.equals(new Timestamp(0)))
+                lastSyncText.setText(R.string.last_export_time_never);
+            else
+                lastSyncText.setText(lastSyncTime.toString());
+        }
+
+        private void setStatisticsText(View view, String bookUID) {
+            DatabaseHelper dbHelper = new DatabaseHelper(GnuCashApplication.getAppContext(), bookUID);
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            TransactionsDbAdapter trnAdapter = new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
+            int transactionCount = (int) trnAdapter.getRecordsCount();
+            String transactionStats = getResources().getQuantityString(R.plurals.book_transaction_stats, transactionCount, transactionCount);
+
+            AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(db, trnAdapter);
+            int accountsCount = (int) accountsDbAdapter.getRecordsCount();
+            String accountStats = getResources().getQuantityString(R.plurals.book_account_stats, accountsCount, accountsCount);
+            String stats = accountStats + ", " + transactionStats;
+            TextView statsText = (TextView) view.findViewById(R.id.secondary_text);
+            statsText.setText(stats);
         }
     }
 

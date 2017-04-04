@@ -21,6 +21,7 @@
   <string name="info_details">정보</string>
   <string name="menu_export">내보내기...</string>
   <string name="description_add_transaction_icon">계정에 새 거래 추가</string>
+  <string name="description_view_account_icon">View account details</string>
   <string name="label_no_accounts">계정 없음</string>
   <string name="label_account_name">계정 이름</string>
   <string name="btn_cancel">취소</string>
@@ -63,7 +64,7 @@
   <string name="title_settings">설정</string>
   <string-array name="export_destinations">
     <item>SD 카드</item>
-    <item>DropBox</item>
+    <item>Dropbox</item>
     <item>Google Drive</item>
     <item>ownCloud</item>
     <item>보낼 곳 지정...</item>
@@ -85,6 +86,7 @@
   <string name="label_permission_record_transaction">GnuCash에서 거래를 기록</string>
   <string name="label_permission_create_account">GnuCash에서 계정 만들기</string>
   <string name="label_display_account">계정 표시</string>
+  <string name="label_hide_account_balance">Hide account balance in widget</string>
   <string name="btn_create_accounts">계정 만들기</string>
   <string name="title_default_accounts">만들 계정을 선택합니다</string>
   <string name="error_no_accounts">GnuCash에 계정이 없습니다.\n위젯을 만들기 전에 계정을 생성하십시오</string>
@@ -465,4 +467,5 @@
   <string name="repeat_x_times">for %1$s times</string>
   <string name="menu_show_compact_view">Compact View</string>
   <string name="book_default_name">Book %1$d</string>
+  <string name="last_export_time_never">never</string>
 </resources>

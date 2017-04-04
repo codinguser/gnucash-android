@@ -21,6 +21,7 @@
   <string name="info_details">Info</string>
   <string name="menu_export">Eksportuj&#8230;</string>
   <string name="description_add_transaction_icon">Dodaj nową transakcję do konta</string>
+  <string name="description_view_account_icon">View account details</string>
   <string name="label_no_accounts">Brak kont do wyświetlenia</string>
   <string name="label_account_name">Nazwa konta</string>
   <string name="btn_cancel">Anuluj</string>
@@ -63,7 +64,7 @@
   <string name="title_settings">Ustawienia</string>
   <string-array name="export_destinations">
     <item>Karta SD</item>
-    <item>DropBox</item>
+    <item>Dropbox</item>
     <item>Dysk Google</item>
     <item>ownCloud</item>
     <item>Send to&#8230;</item>
@@ -86,6 +87,7 @@ Konto docelowe używa innej waluty niż konto wyjściowe</string>
   <string name="label_permission_record_transaction">Rejestrować transakcje w GnuCash</string>
   <string name="label_permission_create_account">Tworzyć konta w GnuCash</string>
   <string name="label_display_account">Wyświetl konto</string>
+  <string name="label_hide_account_balance">Hide account balance in widget</string>
   <string name="btn_create_accounts">Utwórz konta</string>
   <string name="title_default_accounts">Wybierz konta do utworzenia</string>
   <string name="error_no_accounts">Brak kont w GnuCash.\nUtwórz konto zanim dodasz widżet</string>
@@ -479,4 +481,5 @@ Konto docelowe używa innej waluty niż konto wyjściowe</string>
   <string name="repeat_x_times">for %1$s times</string>
   <string name="menu_show_compact_view">Compact View</string>
   <string name="book_default_name">Book %1$d</string>
+  <string name="last_export_time_never">never</string>
 </resources>

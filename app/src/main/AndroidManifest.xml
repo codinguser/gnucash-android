@@ -107,9 +107,8 @@
             android:theme="@style/Theme.GnucashTheme" />
         <activity android:name=".ui.settings.PreferenceActivity"
             android:theme="@style/Theme.GnucashTheme" />
-        <activity android:name="com.dropbox.sync.android.DbxAuthActivity" />
         <activity
-            android:name="com.dropbox.client2.android.AuthActivity"
+            android:name="com.dropbox.core.android.AuthActivity"
             android:launchMode="singleTask"
             android:configChanges="orientation|keyboard">
             <intent-filter>
@@ -120,11 +119,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <service
-            android:name="com.dropbox.sync.android.DbxSyncService"
-            android:enabled="true"
-            android:exported="false"
-            android:label="Dropbox Sync" />
         <service android:name=".service.ScheduledActionService"
             android:exported="false"
             android:label="GnuCash Android Scheduler Execution Service"/>
@@ -161,6 +155,14 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
+        <provider
+            android:authorities="${applicationId}.fileprovider"
+            android:name="android.support.v4.content.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
+                       android:resource="@xml/filepaths" />
+        </provider>
     </application>
 
 </manifest>

@@ -438,8 +438,8 @@ public class GncXmlHandler extends DefaultHandler {
                 break;
             case GncXmlHelper.TAG_COMMODITY_ID:
                 String currencyCode = mISO4217Currency ? characterString : NO_CURRENCY_CODE;
+                Commodity commodity = mCommoditiesDbAdapter.getCommodity(currencyCode);
                 if (mAccount != null) {
-                    Commodity commodity = mCommoditiesDbAdapter.getCommodity(currencyCode);
                     if (commodity != null) {
                         mAccount.setCommodity(commodity);
                     } else {
@@ -453,7 +453,7 @@ public class GncXmlHandler extends DefaultHandler {
                     }
                 }
                 if (mTransaction != null) {
-                    mTransaction.setCurrencyCode(currencyCode);
+                    mTransaction.setCommodity(commodity);
                 }
                 if (mPrice != null) {
                     if (mPriceCommodity) {
@@ -675,7 +675,7 @@ public class GncXmlHandler extends DefaultHandler {
                     //the split amount uses the account currency
                     mSplit.setQuantity(new Money(mQuantity, getCommodityForAccount(characterString)));
                     //the split value uses the transaction currency
-                    mSplit.setValue(new Money(mValue, mCommoditiesDbAdapter.getCommodity(mTransaction.getCurrency().getCurrencyCode())));
+                    mSplit.setValue(new Money(mValue, mTransaction.getCommodity()));
                     mSplit.setAccountUID(characterString);
                 } else {
                     if (!mIgnoreTemplateTransaction)

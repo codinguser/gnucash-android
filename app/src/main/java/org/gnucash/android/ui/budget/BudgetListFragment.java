@@ -51,6 +51,7 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.BudgetAmount;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.Refreshable;
@@ -60,7 +61,6 @@ import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Currency;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -231,13 +231,13 @@ public class BudgetListFragment extends Fragment implements Refreshable,
             }
 
             Money budgetTotal = budget.getAmountSum();
-            Currency currency = budgetTotal.getCurrency();
-            String usedAmount = currency.getSymbol() + spentAmountValue+ " of "
+            Commodity commodity = budgetTotal.getCommodity();
+            String usedAmount = commodity.getSymbol() + spentAmountValue + " of "
                     + budgetTotal.formattedString();
             holder.budgetAmount.setText(usedAmount);
 
             double budgetProgress = spentAmountValue.divide(budgetTotal.asBigDecimal(),
-                    currency.getDefaultFractionDigits(), RoundingMode.HALF_EVEN)
+                    commodity.getSmallestFractionDigits(), RoundingMode.HALF_EVEN)
                     .doubleValue();
             holder.budgetIndicator.setProgress((int) (budgetProgress * 100));
 
