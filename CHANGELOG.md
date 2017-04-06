@@ -1,5 +1,8 @@
 Change Log
 ===============================================================================
+Version 2.2.0 *(2017-05-xx)*
+----------------------------
+
 Version 2.1.5 *(2017-04-04)*
 ----------------------------
 * Fixed: Widget button for placeholder accounts tries to create transactions 
