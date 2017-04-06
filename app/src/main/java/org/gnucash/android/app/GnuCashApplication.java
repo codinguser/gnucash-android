@@ -33,7 +33,6 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
-import com.facebook.stetho.Stetho;
 import com.uservoice.uservoicesdk.Config;
 import com.uservoice.uservoicesdk.UserVoice;
 
@@ -135,8 +134,7 @@ public class GnuCashApplication extends MultiDexApplication {
         initializeDatabaseAdapters();
         setDefaultCurrencyCode(getDefaultCurrencyCode());
 
-        if (BuildConfig.DEBUG && !isRoboUnitTest())
-            setUpRemoteDebuggingFromChrome();
+        StethoUtils.install(this);
     }
 
     /**
@@ -250,14 +248,6 @@ public class GnuCashApplication extends MultiDexApplication {
      */
     public static boolean isCrashlyticsEnabled(){
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.key_enable_crashlytics), false);
-    }
-
-    /**
-     * Returns {@code true} if the app is being run by robolectric
-     * @return {@code true} if in unit testing, {@code false} otherwise
-     */
-    public static boolean isRoboUnitTest(){
-        return "robolectric".equals(Build.FINGERPRINT);
     }
 
     /**
@@ -388,18 +378,4 @@ public class GnuCashApplication extends MultiDexApplication {
         UserVoice.init(config, this);
     }
 
-    /**
-     * Sets up Stetho to enable remote debugging from Chrome developer tools.
-     *
-     * <p>Among other things, allows access to the database and preferences.
-     * See http://facebook.github.io/stetho/#features</p>
-     */
-    private void setUpRemoteDebuggingFromChrome() {
-        Stetho.Initializer initializer =
-                Stetho.newInitializerBuilder(this)
-                        .enableWebKitInspector(
-                                Stetho.defaultInspectorModulesProvider(this))
-                        .build();
-        Stetho.initialize(initializer);
-    }
 }
