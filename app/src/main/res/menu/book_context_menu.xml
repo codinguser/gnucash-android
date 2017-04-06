@@ -30,4 +30,9 @@
           android:title="@string/menu_title_enable_sync"
           app:showAsAction="ifRoom"
           android:orderInCategory="2" />
+
+    <item android:id="@+id/ctx_menu_delete_book"
+        android:title="@string/menu_delete"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="3" />
 </menu>

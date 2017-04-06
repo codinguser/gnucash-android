@@ -52,30 +52,12 @@
             android:layout_height="48dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:paddingTop="20dp"
-            android:layout_marginBottom="4dp"
+            android:paddingBottom="4dp"
             android:paddingLeft="24dp"
-            android:paddingStart="24dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_more_vert_black_24dp"
-            tools:ignore="ContentDescription" />
-
-        <ImageView
-            android:id="@+id/delete_book"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:paddingTop="6dp"
-            android:paddingRight="6dp"
-            android:paddingEnd="6dp"
-            android:paddingLeft="22dp"
-            android:paddingStart="22dp"
-            android:paddingBottom="22dp"
-            android:src="@drawable/ic_clear_black_24dp"
             tools:ignore="ContentDescription" />
 
         <TextView
