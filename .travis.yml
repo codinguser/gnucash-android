@@ -52,7 +52,7 @@ before_script:
   - adb shell input keyevent 82 &
 
 script:
-  - ./gradlew clean build uninstallPD installPD grantPP spoonPD -PdisablePreDex #cDDAT -PdisablePreDex --continue --stacktrace
+  - ./gradlew clean uninstallPD installPD grantPP spoonPD -PdisablePreDex #cDDAT -PdisablePreDex --continue --stacktrace
 
 after_script: #show logs
   - cat /home/travis/build/codinguser/gnucash-android/app/build/reports/androidTests/connected/flavors/DEVELOPMENT/*

@@ -52,8 +52,8 @@ public class DisableAnimationsRule implements TestRule {
     }
 
     private void setAnimationScaleFactors(float scaleFactor) throws Exception {
-        float[] scaleFactors = (float[]) mGetAnimationScalesMethod.invoke(mWindowManagerObject);
-        Arrays.fill(scaleFactors, scaleFactor);
-        mSetAnimationScalesMethod.invoke(mWindowManagerObject, scaleFactors);
+//        float[] scaleFactors = (float[]) mGetAnimationScalesMethod.invoke(mWindowManagerObject);
+//        Arrays.fill(scaleFactors, scaleFactor);
+//        mSetAnimationScalesMethod.invoke(mWindowManagerObject, scaleFactors);
     }
 }
