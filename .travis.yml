@@ -1,7 +1,13 @@
 language: android
 jdk: oraclejdk8
 sudo: false
-env: TARGET="android-21" NAME="android-21"
+#env: TARGET="android-23" NAME="android-23"
+env:
+  global:
+    - ANDROID_API_LEVEL=24
+    - EMULATOR_API_LEVEL=22
+    - ANDROID_BUILD_TOOLS_VERSION=25.0.0
+    - ANDROID_ABI=armeabi-v7a
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -19,39 +25,41 @@ android:
     - platform-tools
     - tools
     - tools #not a typo. Needed for SDK update
-    - build-tools-24.0.3
+    - build-tools-$ANDROID_BUILD_TOOLS_VERSION
 
     # The SDK version used to compile your project
-    - android-24
+    - android-$ANDROID_API_LEVEL
+    - android-$EMULATOR_API_LEVEL
 
     # Additional components
     - extra-android-support
     - extra-google-google_play_services
     - extra-google-m2repository
     - extra-android-m2repository
-    - addon-google_apis-google-24
+    - addon-google_apis-google-$ANDROID_API_LEVEL
+    - addon-google_apis-google-$EMULATOR_API_LEVEL
 
     # Specify at least one system image, if you need to run emulator(s) during your tests
-    - sys-img-armeabi-v7a-android-21
+    - sys-img-armeabi-v7a-android-$EMULATOR_API_LEVEL
 
 
 # Emulator Management: Create, Start and Wait
 before_script:
-  - chmod +x ./avd-test.sh
-  - ./avd-test.sh
-  #- mkdir sdcard
-  #- mksdcard -l gnucash-sdcard 64M sdcard/gnucash-sdcard.img
-  #- echo no | android create avd --force -n test -t android-23 --abi armeabi-v7a
-  #- emulator -avd test -no-skin -no-audio -no-boot-anim -no-window -sdcard sdcard/gnucash-sdcard.img &
-  #- android-wait-for-emulator
-  #- adb shell input keyevent 82 &
+  #- chmod +x ./avd-test.sh
+  #- ./avd-test.sh
+  - mkdir sdcard
+  - mksdcard -l gnucash-sdcard 64M sdcard/gnucash-sdcard.img
+  - echo no | android create avd --force -n test -t "android-"$EMULATOR_API_LEVEL --abi $ANDROID_ABI
+  - emulator -avd test -no-skin -no-audio -no-boot-anim -no-window -sdcard sdcard/gnucash-sdcard.img &
+  - android-wait-for-emulator
+  - adb shell input keyevent 82 &
 
 script:
-  - ./gradlew build spoon #cDDAT -PdisablePreDex --continue --stacktrace
+  - travis_wait 45 ./gradlew clean uninstallPD installPD grantPP spoonPD -PdisablePreDex #cDDAT -PdisablePreDex --continue --stacktrace
 
 after_script: #show logs
   - cat /home/travis/build/codinguser/gnucash-android/app/build/reports/androidTests/connected/flavors/DEVELOPMENT/*
-  - cat /home/travis/build/codinguser/gnucash-android/app/build/spoon/development/debug/index.html
+  - cat /home/travis/build/codinguser/gnucash-android/app/build/spoon/production/debug/index.html
   #- cat /home/travis/build/codinguser/gnucash-android/app/build/reports/androidTests/connected/flavors/PRODUCTION/*
 
   #- cat ${TRAVIS_BUILD_DIR}/app/build/outputs/androidTest-results/connected/flavors/production/* # show logs
