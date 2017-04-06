@@ -4,7 +4,8 @@ sudo: false
 #env: TARGET="android-23" NAME="android-23"
 env:
   global:
-    - ANDROID_API_LEVEL=22
+    - ANDROID_API_LEVEL=24
+    - EMULATOR_API_LEVEL=22
     - ANDROID_BUILD_TOOLS_VERSION=25.0.0
     - ANDROID_ABI=armeabi-v7a
 
@@ -28,6 +29,7 @@ android:
 
     # The SDK version used to compile your project
     - android-$ANDROID_API_LEVEL
+    - android-$EMULATOR_API_LEVEL
 
     # Additional components
     - extra-android-support
@@ -35,9 +37,10 @@ android:
     - extra-google-m2repository
     - extra-android-m2repository
     - addon-google_apis-google-$ANDROID_API_LEVEL
+    - addon-google_apis-google-$EMULATOR_API_LEVEL
 
     # Specify at least one system image, if you need to run emulator(s) during your tests
-    - sys-img-armeabi-v7a-android-$ANDROID_API_LEVEL
+    - sys-img-armeabi-v7a-android-$EMULATOR_API_LEVEL
 
 
 # Emulator Management: Create, Start and Wait
@@ -46,7 +49,7 @@ before_script:
   #- ./avd-test.sh
   - mkdir sdcard
   - mksdcard -l gnucash-sdcard 64M sdcard/gnucash-sdcard.img
-  - echo no | android create avd --force -n test -t "android-"$ANDROID_API_LEVEL --abi $ANDROID_ABI
+  - echo no | android create avd --force -n test -t "android-"$EMULATOR_API_LEVEL --abi $ANDROID_ABI
   - emulator -avd test -no-skin -no-audio -no-boot-anim -no-window -sdcard sdcard/gnucash-sdcard.img &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
