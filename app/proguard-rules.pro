@@ -13,3 +13,4 @@
 
 -keep class org.gnucash.android.** {*;}
 -keep class com.dropbox.** {*;}
+-keep class android.support.v7.widget.SearchView { *; }

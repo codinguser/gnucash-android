@@ -1,5 +1,37 @@
 Change Log
 ===============================================================================
+Version 2.2.0 *(2017-05-xx)*
+----------------------------
+
+Version 2.1.5 *(2017-04-04)*
+----------------------------
+* Fixed: Widget button for placeholder accounts tries to create transactions 
+* Fixed: App crashes when screen orientation changes while viewing reports (#633)
+* Fixed: OFX exporter creates file even when there are no transactions to export
+* Fixed: Constant app crashes after creating accounts with BYN currency (#663)
+* Fixed: Choosing manual account creation during setup closes wizard but doesn't open accounts view (#644)
+* Improved: Upgrade to Dropbox API v2 (v1 will be deprecated soon) (#552)
+* Improved: Use FileProvider for sharing files with other applications (#568)
+* Improved: Tell user when there are no transactions to export 
+* Improved: Added option to hide account balance in widget (#600)
+* Improved: List transfer accounts starting with favorites first (#622)
+* Improved: Management of preferences for widgets and support for multibook widgets
+* Improved: Updated translations and added generic default account files for broad locales (e.g. de, fr, pt)
+
+
+Version 2.1.4 *(2017-01-30)*
+----------------------------
+* Fixed: Bugs in execution of some scheduled actions (#604, #609)
+* Fixed: Multi-currency transactions not exported when format is QIF (#571)
+* Fixed: Incorrect date of last export shown in book manager (#615, #617)
+* Fixed: Large exports may be reported as successful even if they didn't complete yet (#616)
+* Fixed: Custom date range (in reports) does not select correct ending date (#611)
+* Fixed: Account color reset when editing an account (#620)
+* Fixed: Export to OwnCloud fails if folder already exists
+* Fixed: User not notified if export to external target fails
+* Improved translations
+
+
 Version 2.1.3 *(2016-10-20)*
 ----------------------------
 * Fixed: Scheduled exports execute too often or not at all in some cases

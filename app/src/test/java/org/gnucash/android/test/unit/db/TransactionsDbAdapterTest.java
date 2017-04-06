@@ -142,7 +142,7 @@ public class TransactionsDbAdapterTest {
 
 		savedBalance = transaction.getBalance(bravoAccount.getUID());
 		assertThat(savedBalance.getNumerator()).isEqualTo(secondSplitAmount.negate().getNumerator());
-		assertThat(savedBalance.getCurrency()).isEqualTo(secondSplitAmount.getCurrency());
+		assertThat(savedBalance.getCommodity()).isEqualTo(secondSplitAmount.getCommodity());
 	}
 
 	@After

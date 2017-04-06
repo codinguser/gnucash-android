@@ -21,6 +21,7 @@
   <string name="info_details">Informação</string>
   <string name="menu_export">Exportar</string>
   <string name="description_add_transaction_icon">Adicionar nova transação a uma conta</string>
+  <string name="description_view_account_icon">View account details</string>
   <string name="label_no_accounts">Sem contas para mostrar</string>
   <string name="label_account_name">Nome da Conta</string>
   <string name="btn_cancel">Cancelar</string>
@@ -63,7 +64,7 @@
   <string name="title_settings">Configurações</string>
   <string-array name="export_destinations">
     <item>Cartão SD</item>
-    <item>DropBox</item>
+    <item>Dropbox</item>
     <item>Google Drive</item>
     <item>ownCloud</item>
     <item>Enviar para&#8230;</item>
@@ -85,6 +86,7 @@
   <string name="label_permission_record_transaction">Gravar transações no GnuCash</string>
   <string name="label_permission_create_account">Criar contas no GnuCash</string>
   <string name="label_display_account">Mostrar conta</string>
+  <string name="label_hide_account_balance">Hide account balance in widget</string>
   <string name="btn_create_accounts">Criar Contas</string>
   <string name="title_default_accounts">Escolha as contas a criar</string>
   <string name="error_no_accounts">Não existem contas no GnuCash.\nCrie uma conta antes de adicionar um widget</string>
@@ -132,13 +134,12 @@
   <string name="summary_xml_ofx_header">Active esta opção quando fizer exportações para outras aplicações que não seja o GnuCash para Desktop</string>
   <string name="title_whats_new">O que há de novo</string>
   <string name="whats_new">
-        - Support for multiple different books \n
-        - Adds ownCloud as destination for exports\n
-        - Compact view for transactions list\n
-        - Re-design of passcode lock screen\n
-        - Improved handling of scheduled transactions\n
-        - Multiple bug fixes and improvements\n
-	</string>
+- Suporte para vários livres diferentes\n
+- Adiciona o ownCloud como destino das exportações\n
+- Vista compacta da lista das transações\n
+- Redesenhado o ecrã de bloqueio de password\n
+- Melhorado o tratamento de transações agendadas\n
+ - Várias correcções de erros e melhoramentos\n</string>
   <string name="label_dismiss">Descartar</string>
   <string name="toast_transanction_amount_required">Introduza um valor para gravar a transação</string>
   <string name="toast_error_edit_multi_currency_transaction">As transações multi-moeda não podem ser alteradas</string>
@@ -209,7 +210,7 @@
   <string name="title_all_accounts">Todas</string>
   <string name="summary_create_default_accounts">Cria uma estrutura de contas GnuCash padrão</string>
   <string name="title_create_default_accounts">Cria contas padrão</string>
-  <string name="msg_confirm_create_default_accounts_setting">A new book will be opened with the default accounts\n\nYour current accounts and transactions will not be modified!</string>
+  <string name="msg_confirm_create_default_accounts_setting">Irá ser aberto um novo livro com as contas por defeito\n\nAs suas contas e transações não irão ser modificadas!</string>
   <string name="menu_scheduled_transactions">Transações agendadas</string>
   <string name="msg_confirm_create_default_accounts_first_run">Bem vindo ao GnuCash Android! \nPode criar um hierarquia de contas, ou importar a sua estrutura de contas do GnuCash. \n\n Ambas as opções estão disponíves bas Opções da aplicação, para que possa decidir mais tarde.
     </string>
@@ -417,7 +418,7 @@ Neste processo não serão recolhidas informações do utilizador!</string>
   <!-- Passcode lock -->
   <string name="digit_one">1</string>
   <!-- In the English locale, digit 1 has no text on it. This is simply empty space. If your locale has text on digit 1, then translate-->
-  <string name="digit_one_text">​</string>
+  <string name="digit_one_text"> </string>
   <string name="digit_two">2</string>
   <string name="digit_two_text">ABC</string>
   <string name="digit_three">3</string>
@@ -437,40 +438,41 @@ Neste processo não serão recolhidas informações do utilizador!</string>
   <string name="digit_zero">0</string>
   <string name="digit_zero_text">+</string>
   <string name="title_manage_books">Gerenciar livros</string>
-  <string name="menu_manage_books">Manage Books&#8230;</string>
+  <string name="menu_manage_books">Gerir Livros&#8230;</string>
   <string name="select_chart_to_view_details">Selecione qualquer parte do gráfico para ver os detalhes</string>
-  <string name="title_confirm_delete_book">Confirm delete Book</string>
+  <string name="title_confirm_delete_book">Confirme o apagar do Livro</string>
   <string name="msg_all_book_data_will_be_deleted">Todas as contas e transações neste livro serão excluídas!</string>
   <string name="btn_delete_book">Apagar livro</string>
   <string name="label_last_export_time">Última exportação:</string>
   <string name="menu_title_enable_sync">Ativar a Sincronização</string>
-  <string name="menu_title_new_book">New Book</string>
+  <string name="menu_title_new_book">Novo Livro</string>
   <string name="toast_transaction_has_no_splits_and_cannot_open">A transação selecionada não tem divisões e não pode ser aberta</string>
   <string name="label_split_count">%1$d divisões</string>
   <string name="label_inside_account_with_name">em %1$s</string>
   <plurals name="book_account_stats">
-    <item quantity="one">%d account</item>
-    <item quantity="other">%d accounts</item>
+    <item quantity="one">%d conta</item>
+    <item quantity="other">%d contas</item>
   </plurals>
   <plurals name="book_transaction_stats">
-    <item quantity="one">%d transaction</item>
-    <item quantity="other">%d transactions</item>
+    <item quantity="one">%d transação</item>
+    <item quantity="other">%d transações</item>
   </plurals>
   <string-array name="report_account_types">
-    <item>EXPENSE</item>
-    <item>INCOME</item>
+    <item>DESPESA</item>
+    <item>RENDIMENTO</item>
   </string-array>
-  <string name="toast_connected_to_google_drive">Connected to Google Drive</string>
-  <string name="toast_unable_to_connect_to_google_drive">Unable to connect to Google Drive</string>
-  <string name="toast_enter_amount_to_split">Please enter an amount to split</string>
-  <string name="label_export_target_external_service">external service</string>
-  <string name="toast_updated_transaction_recurring_schedule">Updated transaction recurring schedule</string>
-  <string name="label_export_transactions_since_date">Since</string>
-  <string name="switch_export_transactions_from_all_time">All time</string>
-  <string name="label_recommend_app">Recommend in Play Store</string>
-  <string name="repeat_until_date">until %1$s</string>
-  <string name="repeat_on_weekday">on %1$s</string>
-  <string name="repeat_x_times">for %1$s times</string>
-  <string name="menu_show_compact_view">Compact View</string>
-  <string name="book_default_name">Book %1$d</string>
+  <string name="toast_connected_to_google_drive">Conectado ao Google Drive</string>
+  <string name="toast_unable_to_connect_to_google_drive">Impossível conectar ao Google Drive</string>
+  <string name="toast_enter_amount_to_split">Por favor introduza um montante a dividir</string>
+  <string name="label_export_target_external_service">serviço externo</string>
+  <string name="toast_updated_transaction_recurring_schedule">Agenda recorrente de transação atualizada</string>
+  <string name="label_export_transactions_since_date">Desde</string>
+  <string name="switch_export_transactions_from_all_time">Desde o início</string>
+  <string name="label_recommend_app">Recomendado na Play Store</string>
+  <string name="repeat_until_date">até %1$s</string>
+  <string name="repeat_on_weekday">na %1$s</string>
+  <string name="repeat_x_times">por %1$s vezes</string>
+  <string name="menu_show_compact_view">Visualização compacta</string>
+  <string name="book_default_name">Livro %1$d</string>
+  <string name="last_export_time_never">never</string>
 </resources>

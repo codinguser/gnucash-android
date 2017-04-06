@@ -38,6 +38,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -54,6 +55,8 @@ import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.util.PreferencesHelper;
+
+import java.sql.Timestamp;
 
 /**
  * Fragment for managing the books in the database
@@ -160,49 +163,23 @@ public class BookManagerFragment extends ListFragment implements
 
             final String bookUID = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_UID));
 
-            TextView lastSyncText = (TextView) view.findViewById(R.id.last_sync_time);
-            lastSyncText.setText(PreferencesHelper.getLastExportTime(bookUID).toString());
+            setLastExportedText(view, bookUID);
+            setStatisticsText(view, bookUID);
+            setUpMenu(view, context, cursor, bookUID);
+            setUpDeleteButton(view, context, bookUID);
 
-            TextView labelLastSync = (TextView) view.findViewById(R.id.label_last_sync);
-            labelLastSync.setText(R.string.label_last_export_time);
-
-            //retrieve some book statistics
-            DatabaseHelper dbHelper = new DatabaseHelper(GnuCashApplication.getAppContext(), bookUID);
-            SQLiteDatabase db = dbHelper.getReadableDatabase();
-            TransactionsDbAdapter trnAdapter = new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
-            int transactionCount = (int) trnAdapter.getRecordsCount();
-            String transactionStats = getResources().getQuantityString(R.plurals.book_transaction_stats, transactionCount, transactionCount);
-
-            AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(db, trnAdapter);
-            int accountsCount = (int) accountsDbAdapter.getRecordsCount();
-            String accountStats = getResources().getQuantityString(R.plurals.book_account_stats, accountsCount, accountsCount);
-            String stats = accountStats + ", " + transactionStats;
-            TextView statsText = (TextView) view.findViewById(R.id.secondary_text);
-            statsText.setText(stats);
-
-            ImageView optionsMenu = (ImageView) view.findViewById(R.id.options_menu);
-            optionsMenu.setOnClickListener(new View.OnClickListener() {
+            view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    PopupMenu popupMenu = new PopupMenu(context, v);
-                    MenuInflater menuInflater = popupMenu.getMenuInflater();
-                    menuInflater.inflate(R.menu.book_context_menu, popupMenu.getMenu());
-                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            switch (item.getItemId()){
-                                case R.id.ctx_menu_sync_book:
-                                    //TODO implement sync
-                                    return false;
-                                default:
-                                    return true;
-                            }
-                        }
-                    });
-                    popupMenu.show();
+                    //do nothing if the active book is tapped
+                    if (!BooksDbAdapter.getInstance().getActiveBookUID().equals(bookUID)) {
+                        GnuCashApplication.loadBook(bookUID);
+                    }
                 }
             });
+        }
 
+        private void setUpDeleteButton(View view, final Context context, final String bookUID) {
             ImageView deleteBookBtn = (ImageView) view.findViewById(R.id.delete_book);
             String activeBookUID = BooksDbAdapter.getInstance().getActiveBookUID();
             if (activeBookUID.equals(bookUID)) //we cannot delete the active book
@@ -211,7 +188,6 @@ public class BookManagerFragment extends ListFragment implements
                 deleteBookBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //// TODO: extract strings
                         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
                         dialogBuilder.setTitle(getString(R.string.title_confirm_delete_book))
                                 .setIcon(R.drawable.ic_close_black_24dp)
@@ -236,16 +212,90 @@ public class BookManagerFragment extends ListFragment implements
                     }
                 });
             }
+        }
 
-            view.setOnClickListener(new View.OnClickListener() {
+        private void setUpMenu(View view, final Context context, Cursor cursor, final String bookUID) {
+            final String bookName = cursor.getString(
+                    cursor.getColumnIndexOrThrow(BookEntry.COLUMN_DISPLAY_NAME));
+            ImageView optionsMenu = (ImageView) view.findViewById(R.id.options_menu);
+            optionsMenu.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //do nothing if the active book is tapped
-                    if (!BooksDbAdapter.getInstance().getActiveBookUID().equals(bookUID)) {
-                        GnuCashApplication.loadBook(bookUID);
-                    }
+                    PopupMenu popupMenu = new PopupMenu(context, v);
+                    MenuInflater menuInflater = popupMenu.getMenuInflater();
+                    menuInflater.inflate(R.menu.book_context_menu, popupMenu.getMenu());
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch (item.getItemId()){
+                                case R.id.ctx_menu_rename_book:
+                                    return handleMenuRenameBook(context, bookName, bookUID);
+                                case R.id.ctx_menu_sync_book:
+                                    //TODO implement sync
+                                    return false;
+                                default:
+                                    return true;
+                            }
+                        }
+                    });
+                    popupMenu.show();
                 }
             });
+        }
+
+        private boolean handleMenuRenameBook(Context context, String bookName, final String bookUID) {
+            final EditText nameEditText = new EditText(context);
+            nameEditText.setText(bookName);
+
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+            dialogBuilder.setTitle(R.string.title_rename_book)
+                .setView(nameEditText)
+                .setPositiveButton(R.string.btn_rename, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        BooksDbAdapter.getInstance()
+                                .updateRecord(bookUID,
+                                        BookEntry.COLUMN_DISPLAY_NAME,
+                                        nameEditText.getText().toString());
+                        refresh();
+                    }
+                })
+                .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+            AlertDialog dialog = dialogBuilder.create();
+            dialog.show();
+            return true;
+        }
+
+        private void setLastExportedText(View view, String bookUID) {
+            TextView labelLastSync = (TextView) view.findViewById(R.id.label_last_sync);
+            labelLastSync.setText(R.string.label_last_export_time);
+
+            Timestamp lastSyncTime = PreferencesHelper.getLastExportTime(bookUID);
+            TextView lastSyncText = (TextView) view.findViewById(R.id.last_sync_time);
+            if (lastSyncTime.equals(new Timestamp(0)))
+                lastSyncText.setText(R.string.last_export_time_never);
+            else
+                lastSyncText.setText(lastSyncTime.toString());
+        }
+
+        private void setStatisticsText(View view, String bookUID) {
+            DatabaseHelper dbHelper = new DatabaseHelper(GnuCashApplication.getAppContext(), bookUID);
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            TransactionsDbAdapter trnAdapter = new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
+            int transactionCount = (int) trnAdapter.getRecordsCount();
+            String transactionStats = getResources().getQuantityString(R.plurals.book_transaction_stats, transactionCount, transactionCount);
+
+            AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(db, trnAdapter);
+            int accountsCount = (int) accountsDbAdapter.getRecordsCount();
+            String accountStats = getResources().getQuantityString(R.plurals.book_account_stats, accountsCount, accountsCount);
+            String stats = accountStats + ", " + transactionStats;
+            TextView statsText = (TextView) view.findViewById(R.id.secondary_text);
+            statsText.setText(stats);
         }
     }
 

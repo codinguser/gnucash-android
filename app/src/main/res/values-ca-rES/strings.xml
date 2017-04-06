@@ -21,6 +21,7 @@
   <string name="info_details">Informació</string>
   <string name="menu_export">Exporta&#8230;</string>
   <string name="description_add_transaction_icon">Afegeix un assentament nou al compte</string>
+  <string name="description_view_account_icon">View account details</string>
   <string name="label_no_accounts">No hi ha comptes per mostrar</string>
   <string name="label_account_name">Nom del compte</string>
   <string name="btn_cancel">Cancel·la</string>
@@ -63,7 +64,7 @@
   <string name="title_settings">Preferències</string>
   <string-array name="export_destinations">
     <item>Targeta SD</item>
-    <item>DropBox</item>
+    <item>Dropbox</item>
     <item>Google Drive</item>
     <item>ownCloud</item>
     <item>Envia a&#8230;</item>
@@ -85,6 +86,7 @@
   <string name="label_permission_record_transaction">Registrar transaccions en GnuCash</string>
   <string name="label_permission_create_account">Crear comptes en GnuCash</string>
   <string name="label_display_account">Display account</string>
+  <string name="label_hide_account_balance">Hide account balance in widget</string>
   <string name="btn_create_accounts">Crea els comptes</string>
   <string name="title_default_accounts">Seleccioneu els comptes a crear</string>
   <string name="error_no_accounts">No hi ha comptes en GnuCash.\nCreeu un compte abans d\'afegir un giny</string>
@@ -476,4 +478,5 @@
   <string name="repeat_x_times">for %1$s times</string>
   <string name="menu_show_compact_view">Compact View</string>
   <string name="book_default_name">Book %1$d</string>
+  <string name="last_export_time_never">never</string>
 </resources>

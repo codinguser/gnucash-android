@@ -274,7 +274,7 @@ public class SplitEditorFragment extends Fragment {
             if (split != null) {
                 splitAmountEditText.setCommodity(split.getValue().getCommodity());
                 splitAmountEditText.setValue(split.getFormattedValue().asBigDecimal());
-                splitCurrencyTextView.setText(split.getValue().getCurrency().getSymbol());
+                splitCurrencyTextView.setText(split.getValue().getCommodity().getSymbol());
                 splitMemoEditText.setText(split.getMemo());
                 splitUidTextView.setText(split.getUID());
                 String splitAccountUID = split.getAccountUID();

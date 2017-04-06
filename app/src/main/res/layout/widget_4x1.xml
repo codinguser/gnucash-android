@@ -54,5 +54,14 @@
 	        android:src="@drawable/content_new_holo_light"
 	        android:background="@drawable/appwidget_bg_clickable"
 	        android:contentDescription="@string/description_add_transaction_icon"/>
+
+	   <ImageButton android:id="@+id/btn_view_account"
+		   android:layout_width="48dp"
+		   android:layout_height="wrap_content"
+		   android:layout_marginRight="@dimen/edge_padding"
+		   android:layout_marginLeft="@dimen/edge_padding"
+		   android:src="@drawable/action_about_holo_light"
+		   android:background="@drawable/appwidget_bg_clickable"
+		   android:contentDescription="@string/description_view_account_icon"/>
 	</LinearLayout>        
 </FrameLayout>

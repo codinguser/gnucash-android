@@ -204,7 +204,7 @@ public class BudgetAmountEditorFragment extends Fragment {
         if (mAccountCursor != null) {
             mAccountCursor.close();
         }
-        mAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions, null);
+        mAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(conditions, null);
 
         mAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), mAccountCursor);
     }

@@ -21,6 +21,7 @@
   <string name="info_details">Info</string>
   <string name="menu_export">OFX exporteren</string>
   <string name="description_add_transaction_icon">Nieuwe boeking op een rekening</string>
+  <string name="description_view_account_icon">View account details</string>
   <string name="label_no_accounts">Geen rekeningen beschikbaar</string>
   <string name="label_account_name">Rekeningnaam</string>
   <string name="btn_cancel">Annuleren</string>
@@ -85,6 +86,7 @@
   <string name="label_permission_record_transaction">Boekingen opslaan in GnuCash</string>
   <string name="label_permission_create_account">Rekeningen aanmaken in GnuCash</string>
   <string name="label_display_account">Rekening tonen</string>
+  <string name="label_hide_account_balance">Hide account balance in widget</string>
   <string name="btn_create_accounts">Rekeningen aanmaken</string>
   <string name="title_default_accounts">Standaard rekeningen selecteren</string>
   <string name="error_no_accounts">Geen rekeningen beschikbaar.\nU moet een rekening aanmaken alvorens een widget toe te voegen</string>
@@ -479,4 +481,5 @@ No user-identifiable information will be collected as part of this process!
   <string name="repeat_x_times">for %1$s times</string>
   <string name="menu_show_compact_view">Compact View</string>
   <string name="book_default_name">Book %1$d</string>
+  <string name="last_export_time_never">never</string>
 </resources>

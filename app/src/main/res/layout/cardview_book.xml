@@ -38,21 +38,26 @@
                  android:layout_height="wrap_content"
                  android:layout_width="match_parent"
                  android:layout_toRightOf="@id/account_color_strip"
+                 android:layout_toEndOf="@id/account_color_strip"
                  android:layout_marginTop="6dp"
                  android:layout_marginBottom="@dimen/dialog_padding"
                  android:layout_marginLeft="@dimen/dialog_padding"
-                 android:layout_marginRight="52dp"/>
+                 android:layout_marginStart="@dimen/dialog_padding"
+                 android:layout_marginRight="52dp"
+                 android:layout_marginEnd="52dp" />
 
-        <ImageView android:visibility="gone"
+        <ImageView
             android:id="@+id/options_menu"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:paddingTop="20dp"
             android:layout_marginBottom="4dp"
             android:paddingLeft="24dp"
+            android:paddingStart="24dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_more_vert_black_24dp"
             tools:ignore="ContentDescription" />
@@ -62,10 +67,13 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:paddingTop="6dp"
             android:paddingRight="6dp"
+            android:paddingEnd="6dp"
             android:paddingLeft="22dp"
+            android:paddingStart="22dp"
             android:paddingBottom="22dp"
             android:src="@drawable/ic_clear_black_24dp"
             tools:ignore="ContentDescription" />
@@ -74,27 +82,30 @@
             android:id="@+id/label_last_sync"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:singleLine="true"
             android:layout_below="@id/list_item_2_lines"
             android:layout_alignLeft="@id/list_item_2_lines"
+            android:layout_alignStart="@id/list_item_2_lines"
             android:layout_marginBottom="4dp"
             android:gravity="left|bottom|start"
             android:textSize="14sp"
             android:textColor="@android:color/darker_gray"
-            tools:text="Last export:"/>
+            tools:text="Last export:"
+            android:maxLines="1" />
 
         <TextView
             android:id="@+id/last_sync_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:singleLine="true"
             android:layout_below="@id/list_item_2_lines"
             android:layout_toRightOf="@id/label_last_sync"
+            android:layout_toEndOf="@id/label_last_sync"
             android:layout_marginBottom="4dp"
             android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:gravity="left|bottom|start"
             android:textSize="14sp"
             android:textColor="@android:color/darker_gray"
-            tools:text="Sat, 04 July"/>
+            tools:text="Sat, 04 July"
+            android:maxLines="1" />
     </RelativeLayout>
 </android.support.v7.widget.CardView>

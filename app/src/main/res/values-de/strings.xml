@@ -21,6 +21,7 @@
   <string name="info_details">Info</string>
   <string name="menu_export">OFX-Datei exportieren</string>
   <string name="description_add_transaction_icon">Neue Buchung in ein Konto</string>
+  <string name="description_view_account_icon">View account details</string>
   <string name="label_no_accounts">Keine Konten vorhanden</string>
   <string name="label_account_name">Kontoname</string>
   <string name="btn_cancel">Abbrechen</string>
@@ -63,7 +64,7 @@
   <string name="title_settings">Einstellungen</string>
   <string-array name="export_destinations">
     <item>SD-Kartenspeicher</item>
-    <item>DropBox</item>
+    <item>Dropbox</item>
     <item>Google Drive</item>
     <item>ownCloud</item>
     <item>Senden an&#8230;</item>
@@ -85,6 +86,7 @@
   <string name="label_permission_record_transaction">Buchungen speichern in GnuCash</string>
   <string name="label_permission_create_account">Konten in GnuCash erstellen</string>
   <string name="label_display_account">Konto anzeigen</string>
+  <string name="label_hide_account_balance">Hide account balance in widget</string>
   <string name="btn_create_accounts">Konten erstellen</string>
   <string name="title_default_accounts">Zu erstellende Konten auswählen</string>
   <string name="error_no_accounts">Keine Konten vorhanden.\nErstellen Sie ein Konto um Widgets hinzuzufügen</string>
@@ -475,4 +477,5 @@ No user-identifiable information will be collected as part of this process!</str
   <string name="repeat_x_times">%1$s mal</string>
   <string name="menu_show_compact_view">Kompakte Ansicht</string>
   <string name="book_default_name">Buch %1$d</string>
+  <string name="last_export_time_never">never</string>
 </resources>

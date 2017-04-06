@@ -218,8 +218,8 @@ public class BudgetDetailFragment extends Fragment implements Refreshable {
             double budgetProgress = 0;
             if (projectedAmount.asDouble() != 0){
                 budgetProgress = spentAmount.asBigDecimal().divide(projectedAmount.asBigDecimal(),
-                        spentAmount.getCurrency().getDefaultFractionDigits(), RoundingMode.HALF_EVEN)
-                        .doubleValue();
+                        spentAmount.getCommodity().getSmallestFractionDigits(),
+                        RoundingMode.HALF_EVEN).doubleValue();
             }
 
             holder.budgetIndicator.setProgress((int) (budgetProgress * 100));

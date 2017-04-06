@@ -392,8 +392,9 @@ public class Split extends BaseModel implements Parcelable{
     public String toCsv(){
         String sep = ";";
         //TODO: add reconciled state and date
-        String splitString = getUID() + sep + mValue.getNumerator() + sep + mValue.getDenominator() + sep + mValue.getCurrency().getCurrencyCode() + sep
-                + mQuantity.getNumerator() + sep + mQuantity.getDenominator() + sep + mQuantity.getCurrency().getCurrencyCode()
+        String splitString = getUID() + sep + mValue.getNumerator() + sep + mValue.getDenominator()
+                + sep + mValue.getCommodity().getCurrencyCode() + sep + mQuantity.getNumerator()
+                + sep + mQuantity.getDenominator() + sep + mQuantity.getCommodity().getCurrencyCode()
                 + sep + mTransactionUID + sep + mAccountUID + sep + mSplitType.name();
         if (mMemo != null){
             splitString = splitString + sep + mMemo;

@@ -99,7 +99,7 @@ public class TransferFundsDialogFragment extends DialogFragment {
         ButterKnife.bind(this, view);
 
         TransactionsActivity.displayBalance(mStartAmountLabel, mOriginAmount);
-        String fromCurrencyCode = mOriginAmount.getCurrency().getCurrencyCode();
+        String fromCurrencyCode = mOriginAmount.getCommodity().getCurrencyCode();
         mFromCurrencyLabel.setText(fromCurrencyCode);
         mToCurrencyLabel.setText(mTargetCurrencyCode);
         mConvertedAmountCurrencyLabel.setText(mTargetCurrencyCode);
@@ -198,7 +198,7 @@ public class TransferFundsDialogFragment extends DialogFragment {
         Price price = null;
 
         CommoditiesDbAdapter commoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
-        String originCommodityUID = commoditiesDbAdapter.getCommodityUID(mOriginAmount.getCurrency().getCurrencyCode());
+        String originCommodityUID = mOriginAmount.getCommodity().getUID();
         String targetCommodityUID = commoditiesDbAdapter.getCommodityUID(mTargetCurrencyCode);
 
         if (mExchangeRateRadioButton.isChecked()) {
