@@ -1263,25 +1263,27 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     }
 
     /**
-     * Returns the list of currencies in use in the database.
-     * <p>This is not the same as the list of all available commodities</p>
-     * @return List of currencies in use
+     * Returns the list of commodities in use in the database.
+     *
+     * <p>This is not the same as the list of all available commodities.</p>
+     *
+     * @return List of commodities in use
      */
-    public List<Currency> getCurrenciesInUse(){
+    public List<Commodity> getCommoditiesInUse() {
         Cursor cursor = mDb.query(true, AccountEntry.TABLE_NAME, new String[]{AccountEntry.COLUMN_CURRENCY},
                 null, null, null, null, null, null);
-        List<Currency> currencyList = new ArrayList<>();
+        List<Commodity> commodityList = new ArrayList<>();
         try {
             while (cursor.moveToNext()) {
-                String currencyCode = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_CURRENCY));
-                currencyList.add(Currency.getInstance(currencyCode));
+                String currencyCode =
+                    cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_CURRENCY));
+                commodityList.add(mCommoditiesDbAdapter.getCommodity(currencyCode));
             }
         } finally {
             cursor.close();
         }
-        return currencyList;
+        return commodityList;
     }
-
     /**
 	 * Deletes all accounts, transactions (and their splits) from the database.
      * Basically empties all 3 tables, so use with care ;)
