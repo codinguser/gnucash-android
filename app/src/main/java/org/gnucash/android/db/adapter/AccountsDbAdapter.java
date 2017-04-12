@@ -600,18 +600,6 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     }
 
     /**
-     * Returns the GUID of the imbalance account for the currency
-     * <p>This method will not create the imbalance account if it doesn't exist</p>
-     * @param currency Currency for the imbalance account
-     * @return GUID of the account or null if the account doesn't exist yet
-     * @see #getOrCreateImbalanceAccountUID(Commodity)
-     */
-    public String getImbalanceAccountUID(Currency currency){
-        String imbalanceAccountName = getImbalanceAccountName(currency);
-        return findAccountUidByFullName(imbalanceAccountName);
-    }
-
-    /**
      * Returns the GUID of the imbalance account for the commodity
      *
      * <p>This method will not create the imbalance account if it doesn't exist</p>
