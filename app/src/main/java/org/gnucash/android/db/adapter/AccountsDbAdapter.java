@@ -43,7 +43,6 @@ import org.gnucash.android.util.TimestampHelper;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -1182,15 +1181,6 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
 
     public static String getImbalanceAccountPrefix() {
          return GnuCashApplication.getAppContext().getString(R.string.imbalance_account_name) + "-";
-    }
-
-    /**
-     * Returns the imbalance account where to store transactions which are not double entry
-     * @param currency Currency of the transaction
-     * @return Imbalance account name
-     */
-    public static String getImbalanceAccountName(Currency currency){
-        return getImbalanceAccountPrefix() + currency.getCurrencyCode();
     }
 
     /**
