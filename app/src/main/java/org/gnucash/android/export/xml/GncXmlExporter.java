@@ -617,15 +617,15 @@ public class GncXmlExporter extends Exporter{
         xmlSerializer.endTag(null, tag);
     }
 
-    private void exportCommodities(XmlSerializer xmlSerializer, List<Currency> currencies) throws IOException {
-        for (Currency currency : currencies) {
+    private void exportCommodities(XmlSerializer xmlSerializer, List<Commodity> commodities) throws IOException {
+        for (Commodity commodity : commodities) {
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
             xmlSerializer.text("ISO4217");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_ID);
-            xmlSerializer.text(currency.getCurrencyCode());
+            xmlSerializer.text(commodity.getCurrencyCode());
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_ID);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY);
         }
@@ -836,15 +836,15 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.text(BaseModel.generateUID());
             xmlSerializer.endTag(null, GncXmlHelper.TAG_BOOK_ID);
             //commodity count
-            List<Currency> currencies = mAccountsDbAdapter.getCurrenciesInUse();
-            for (int i = 0; i < currencies.size(); i++) {
-                if (currencies.get(i).getCurrencyCode().equals("XXX")) {
-                    currencies.remove(i);
+            List<Commodity> commodities = mAccountsDbAdapter.getCommoditiesInUse();
+            for (int i = 0; i < commodities.size(); i++) {
+                if (commodities.get(i).getCurrencyCode().equals("XXX")) {
+                    commodities.remove(i);
                 }
             }
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COUNT_DATA);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_CD_TYPE, "commodity");
-            xmlSerializer.text(currencies.size() + "");
+            xmlSerializer.text(commodities.size() + "");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COUNT_DATA);
             //account count
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COUNT_DATA);
@@ -865,7 +865,7 @@ public class GncXmlExporter extends Exporter{
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_COUNT_DATA);
             }
             // export the commodities used in the DB
-            exportCommodities(xmlSerializer, currencies);
+            exportCommodities(xmlSerializer, commodities);
             // prices
             if (priceCount > 0) {
                 exportPrices(xmlSerializer);
