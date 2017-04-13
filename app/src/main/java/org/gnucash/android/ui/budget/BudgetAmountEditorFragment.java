@@ -49,7 +49,6 @@ import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 
 import butterknife.BindView;
@@ -250,8 +249,8 @@ public class BudgetAmountEditorFragment extends Fragment {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     String currencyCode = mAccountsDbAdapter.getCurrencyCode(mAccountsDbAdapter.getUID(id));
-                    Currency currency = Currency.getInstance(currencyCode);
-                    currencySymbolTextView.setText(currency.getSymbol());
+                    Commodity commodity = Commodity.getInstance(currencyCode);
+                    currencySymbolTextView.setText(commodity.getSymbol());
                 }
 
                 @Override
