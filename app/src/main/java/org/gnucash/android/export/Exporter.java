@@ -61,8 +61,15 @@ public abstract class Exporter {
 
     /**
      * Application folder on external storage
+     * @deprecated Use {@link #BASE_FOLDER_PATH} instead
      */
-    public static final String BASE_FOLDER_PATH = Environment.getExternalStorageDirectory() + "/" + BuildConfig.APPLICATION_ID;
+    @Deprecated
+    public static final String LEGACY_BASE_FOLDER_PATH = Environment.getExternalStorageDirectory() + "/" + BuildConfig.APPLICATION_ID;
+
+    /**
+     * Application folder on external storage
+     */
+    public static final String BASE_FOLDER_PATH = GnuCashApplication.getAppContext().getExternalFilesDir(null).getAbsolutePath();
 
     /**
      * Export options
