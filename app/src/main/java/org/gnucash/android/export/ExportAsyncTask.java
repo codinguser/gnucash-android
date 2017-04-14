@@ -402,13 +402,19 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             String mimeType = mExporter.getExportMimeType();
 
             RemoteOperationResult result = new UploadRemoteFileOperation(
-                    exportedFilePath, remotePath, mimeType).execute(mClient);
-
+                    exportedFilePath, remotePath, mimeType,
+                    getFileLastModifiedTimestamp(exportedFilePath))
+                    .execute(mClient);
             if (!result.isSuccess())
                 throw new Exporter.ExporterException(mExportParams, result.getLogMessage());
 
             new File(exportedFilePath).delete();
         }
+    }
+
+    private static String getFileLastModifiedTimestamp(String path) {
+        Long timeStampLong = new File(path).lastModified() / 1000;
+        return timeStampLong.toString();
     }
 
     /**

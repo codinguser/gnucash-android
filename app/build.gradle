@@ -209,7 +209,7 @@ repositories{
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile(name:'owncloud_library', ext:'aar')
+    compile 'com.github.nextcloud:android-library:1.0.31'
     compile('com.android.support:support-v4:'       + androidSupportVersion,
             'com.android.support:appcompat-v7:'     + androidSupportVersion,
             'com.android.support:design:'           + androidSupportVersion,
