@@ -271,18 +271,16 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         final GoogleApiClient googleApiClient = BackupPreferenceFragment.getGoogleApiClient(GnuCashApplication.getAppContext());
         googleApiClient.blockingConnect();
 
-        DriveApi.DriveContentsResult driveContentsResult =
-                Drive.DriveApi.newDriveContents(googleApiClient).await(1, TimeUnit.MINUTES);
-        if (!driveContentsResult.getStatus().isSuccess()) {
-            throw new Exporter.ExporterException(mExportParams,
-                    "Error while trying to create new file contents");
-        }
-        final DriveContents driveContents = driveContentsResult.getDriveContents();
-        DriveFolder.DriveFileResult driveFileResult = null;
         try {
-            // write content to DriveContents
-            OutputStream outputStream = driveContents.getOutputStream();
             for (String exportedFilePath : mExportedFiles) {
+                DriveApi.DriveContentsResult driveContentsResult =
+                        Drive.DriveApi.newDriveContents(googleApiClient).await(1, TimeUnit.MINUTES);
+                if (!driveContentsResult.getStatus().isSuccess()) {
+                    throw new Exporter.ExporterException(mExportParams,
+                                                "Error while trying to create new file contents");
+                }
+                final DriveContents driveContents = driveContentsResult.getDriveContents();
+                OutputStream outputStream = driveContents.getOutputStream();
                 File exportedFile = new File(exportedFilePath);
                 FileInputStream fileInputStream = new FileInputStream(exportedFile);
                 byte[] buffer = new byte[1024];
@@ -304,20 +302,17 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 String folderId = sharedPreferences.getString(mContext.getString(R.string.key_google_drive_app_folder_id), "");
                 DriveFolder folder = Drive.DriveApi.getFolder(googleApiClient, DriveId.decodeFromString(folderId));
                 // create a file on root folder
-                driveFileResult = folder.createFile(googleApiClient, changeSet, driveContents)
+                DriveFolder.DriveFileResult driveFileResult =
+                        folder.createFile(googleApiClient, changeSet, driveContents)
                                                 .await(1, TimeUnit.MINUTES);
+                if (!driveFileResult.getStatus().isSuccess())
+                    throw new Exporter.ExporterException(mExportParams, "Error creating file in Google Drive");
+
+                Log.i(TAG, "Created file with id: " + driveFileResult.getDriveFile().getDriveId());
             }
         } catch (IOException e) {
             throw new Exporter.ExporterException(mExportParams, e);
         }
-
-        if (driveFileResult == null)
-            throw new Exporter.ExporterException(mExportParams, "No result received");
-
-        if (!driveFileResult.getStatus().isSuccess())
-            throw new Exporter.ExporterException(mExportParams, "Error creating file in Google Drive");
-
-        Log.i(TAG, "Created file with id: " + driveFileResult.getDriveFile().getDriveId());
     }
 
     /**
