@@ -102,7 +102,7 @@
   <string name="title_passcode_disabled">Kode Akses Dimatikan</string>
   <string name="title_change_passcode">Ganti Kode Akses</string>
   <string name="title_about_gnucash">Tentang GnuCash</string>
-  <string name="summary_about_gnucash">Sebuah manajemen finansial mobile dan pelacak pengeluaran yang dibuat untuk Android</string>
+  <string name="summary_about_gnucash">Sebuah manajemen finansial mobile dan pelacak pengeluaran yang didesain untuk Android</string>
   <string name="title_about">Tentang</string>
   <string name="toast_format_exported_to">%1$s file diekspor ke:\n</string>
   <string name="title_export_email">GnuCash Android %1$s ekspor</string>
@@ -169,32 +169,32 @@
   <string name="title_default_export_format">Formart Ekspor Default</string>
   <string name="summary_default_export_format">Format file untuk digunakan secara default ketika mengekspor transaksi</string>
   <string name="menu_export_transactions">Ekspor transaksi&#8230;</string>
-  <string name="label_recurring_transaction">Recurrence</string>
+  <string name="label_recurring_transaction">Perulangan</string>
   <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
-  <string name="imbalance_account_name">Imbalance</string>
-  <string name="title_progress_exporting_transactions">Exporting transactions</string>
-  <string name="label_no_recurring_transactions">No recurring transactions to display.</string>
-  <string name="toast_recurring_transaction_deleted">Successfully deleted recurring transaction</string>
+  <string name="imbalance_account_name">Tak Seimbang</string>
+  <string name="title_progress_exporting_transactions">Mengekspor transaksi</string>
+  <string name="label_no_recurring_transactions">Tidak ada transaksi berulang untuk ditampilkan.</string>
+  <string name="toast_recurring_transaction_deleted">Berhasil menghapus transaksi berulang</string>
   <string name="label_placeholder_account">Placeholder account</string>
-  <string name="label_default_transfer_account">Default Transfer Account</string>
+  <string name="label_default_transfer_account">Akun Transfer Default</string>
   <plurals name="label_sub_accounts">
-    <item quantity="other">%d sub-accounts</item>
+    <item quantity="other">%d sub-akun</item>
   </plurals>
   <string-array name="account_type_entry_values">
-    <item>CASH</item>
+    <item>TUNAI</item>
     <item>BANK</item>
-    <item>CREDIT CARD</item>
-    <item>ASSET</item>
-    <item>LIABILITY</item>
-    <item>INCOME</item>
-    <item>EXPENSE</item>
-    <item>PAYABLE</item>
-    <item>RECEIVABLE</item>
-    <item>EQUITY</item>
-    <item>CURRENCY</item>
-    <item>STOCK</item>
-    <item>MUTUAL FUND</item>
-    <item>TRADING</item>
+    <item>KARTU KREDIT</item>
+    <item>ASET</item>
+    <item>LIABILITAS</item>
+    <item>PENDAPATAN</item>
+    <item>PENGELUARAN</item>
+    <item>UTANG</item>
+    <item>PIUTANG</item>
+    <item>EKUITAS</item>
+    <item>MATA UANG</item>
+    <item>SAHAM</item>
+    <item>REKSA DANA</item>
+    <item>PERDAGANGAN</item>
   </string-array>
   <string-array name="export_formats">
     <item>QIF</item>
@@ -202,24 +202,24 @@
     <item>XML</item>
   </string-array>
   <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
-  <string name="color_picker_default_title">Select a Color</string>
+  <string name="color_picker_default_title">Pilih Warna</string>
   <!-- Content description for a color square. -->
   <!-- Content description for a selected color square. -->
-  <string name="label_account_color_and_type">Account Color &amp; Type</string>
-  <string name="label_delete_sub_accounts">Delete sub-accounts</string>
-  <string name="title_recent_accounts">Recent</string>
-  <string name="title_favorite_accounts">Favorites</string>
-  <string name="title_all_accounts">All</string>
-  <string name="summary_create_default_accounts">Creates default GnuCash commonly-used account structure</string>
-  <string name="title_create_default_accounts">Create default accounts</string>
+  <string name="label_account_color_and_type">Warna &amp; Jenis Akun</string>
+  <string name="label_delete_sub_accounts">Hapus sub-akun</string>
+  <string name="title_recent_accounts">Terbaru</string>
+  <string name="title_favorite_accounts">Favorit</string>
+  <string name="title_all_accounts">Semua</string>
+  <string name="summary_create_default_accounts">Buat struktur akun yang paling sering digunakan di GnuCash secara default</string>
+  <string name="title_create_default_accounts">Buat akun default</string>
   <string name="msg_confirm_create_default_accounts_setting">A new book will be opened with the default accounts\n\nYour current accounts and transactions will not be modified!</string>
-  <string name="menu_scheduled_transactions">Scheduled Transactions</string>
-  <string name="msg_confirm_create_default_accounts_first_run">Welcome to GnuCash Android! \nYou can either create
-        a hierarchy of commonly-used accounts, or import your own GnuCash account structure. \n\nBoth options are also
-        available in app Settings so you can decide later.
+  <string name="menu_scheduled_transactions">Transaksi Terjadwal</string>
+  <string name="msg_confirm_create_default_accounts_first_run">Selamat datang di GnuCash Android! \nAnda dapat mwmbuat
+        hierarki akun yang sering banyak digunakan, atau impor struktur akun GnuCash Anda. \n\nKedua pilihan tersebut juga
+        tersedia di bagian pengaturan aplikasi sehingga Anda dapat memutuskannya nanti.
     </string>
-  <string name="title_scheduled_transactions">Transactions</string>
-  <string name="title_select_export_destination">Select destination for export</string>
+  <string name="title_scheduled_transactions">Transaksi</string>
+  <string name="title_select_export_destination">Pilih tujuan untuk ekspor</string>
   <string name="hint_split_memo">Memo</string>
   <string name="label_spend">Mengeluarkan</string>
   <string name="label_receive">Menerima</string>
@@ -230,7 +230,7 @@
   <string name="label_decrease">Mengurangi</string>
   <string name="label_increase">Menambahkan</string>
   <string name="label_income">Pendapatan</string>
-  <string name="label_rebate">Rebate</string>
+  <string name="label_rebate">Rabat</string>
   <string name="label_expense">Pengeluaran</string>
   <string name="label_bill">Tagihan</string>
   <string name="label_invoice">Invoice</string>
@@ -240,102 +240,101 @@
   <string name="toast_no_recent_backup">Tidak ada cadangan terbaru</string>
   <string name="account_name_opening_balances">Saldo Awal</string>
   <string name="account_name_equity">Ekuitas</string>
-  <string name="summary_save_opening_balances">Enable to save the current account balance (before deleting transactions) as new opening balance after deleting transactions
-    </string>
-  <string name="title_save_opening_balances">Save account opening balances</string>
-  <string name="export_warning_ofx">OFX does not support double-entry transactions</string>
-  <string name="export_warning_qif">Generates separate QIF files per currency</string>
+  <string name="summary_save_opening_balances">Aktifkan untuk menyimpan saldo akun (sebelum menghapus transaksi) sebagai saldo pembukaan setelah menghapus traksaksi    </string>
+  <string name="title_save_opening_balances">Simpan saldo pembukaan akun</string>
+  <string name="export_warning_ofx">OFX tidak mendukung transaksi double-entry</string>
+  <string name="export_warning_qif">Menghasilkan file QIF terpisah per mata uang</string>
   <string name="title_transaction_splits">Transaction splits</string>
-  <string name="label_imbalance">Imbalance:</string>
+  <string name="label_imbalance">Tidak seimbang:</string>
   <string name="btn_add_split">Add split</string>
-  <string name="menu_title_favorite">Favorite</string>
+  <string name="menu_title_favorite">Favorit</string>
   <string name="drawer_open">Navigation drawer opened</string>
   <string name="drawer_close">Navigation drawer closed</string>
-  <string name="title_reports">Reports</string>
-  <string name="title_pie_chart">Pie Chart</string>
-  <string name="title_line_chart">Line Chart</string>
-  <string name="title_bar_chart">Bar Chart</string>
-  <string name="title_report_prefs">Report Preferences</string>
-  <string name="label_report_currency">Select currency</string>
-  <string name="title_use_account_color">Account color in reports</string>
-  <string name="summary_use_account_color">Use account color in the bar/pie chart</string>
-  <string name="header_report_settings">Reports</string>
-  <string name="menu_order_by_size">Order by size</string>
-  <string name="menu_toggle_legend">Show legend</string>
-  <string name="menu_toggle_labels">Show labels</string>
-  <string name="menu_toggle_percentage_mode">Show percentage</string>
-  <string name="menu_toggle_average_lines">Show average lines</string>
+  <string name="title_reports">Laporan</string>
+  <string name="title_pie_chart">Bagan Pai</string>
+  <string name="title_line_chart">Bagan Garis</string>
+  <string name="title_bar_chart">Bagan Batang</string>
+  <string name="title_report_prefs">Pengaturan Laporan</string>
+  <string name="label_report_currency">Pilih mata uang</string>
+  <string name="title_use_account_color">Warna akun dalam laporan</string>
+  <string name="summary_use_account_color">Gunakan warna akun di bagan batang/pai</string>
+  <string name="header_report_settings">Laporan</string>
+  <string name="menu_order_by_size">Urut berdasarkan ukuran</string>
+  <string name="menu_toggle_legend">Tampilkan legenda</string>
+  <string name="menu_toggle_labels">Tampilkan label</string>
+  <string name="menu_toggle_percentage_mode">Tampilkan persentase</string>
+  <string name="menu_toggle_average_lines">Tampilkan garis rata-rata</string>
   <string name="menu_group_smaller_slices">Group Smaller Slices</string>
-  <string name="label_chart_no_data">No chart data available</string>
-  <string name="label_chart_overall">Overall</string>
+  <string name="label_chart_no_data">Tidak ada data bagan tersedia</string>
+  <string name="label_chart_overall">Keseluruhan</string>
   <string name="label_chart_total">Total</string>
-  <string name="label_other_slice">Other</string>
-  <string name="toast_chart_percentage_mode_total">The percentage of selected value calculated from the total amount</string>
-  <string name="toast_chart_percentage_mode_current_bar">The percentage of selected value calculated from the current stacked bar amount</string>
-  <string name="label_save_template">Save as template</string>
-  <string name="label_delete_account_transactions_description">This account contains transactions. \nWhat would you like to do with these transactions</string>
-  <string name="label_delete_account_subaccounts_description">This account contains sub-accounts. \nWhat would you like to do with these sub-accounts</string>
-  <string name="label_delete_transactions">Delete transactions</string>
-  <string name="toast_disable_double_entry_to_save_transaction">Create and specify a transfer account OR disable double-entry in settings to save the transaction</string>
-  <string name="label_tap_to_create_schedule">Tap to create schedule</string>
-  <string name="title_restore_backup">Restore Backup&#8230;</string>
-  <string name="header_backup_and_export_settings">Backup &amp; export</string>
-  <string name="title_dropbox_sync_preference">Enable DropBox</string>
-  <string name="title_owncloud_sync_preference">Enable ownCloud </string>
-  <string name="title_backup_preference_category">Backup</string>
-  <string name="summary_dropbox_sync">Enable exporting to DropBox</string>
-  <string name="summary_owncloud_sync">Enable exporting to ownCloud</string>
-  <string name="title_select_gnucash_xml_file">Select GnuCash XML file</string>
-  <string name="title_backup_prefs">Backup Preferences</string>
-  <string name="title_create_backup_pref">Create Backup</string>
-  <string name="summary_create_backup_pref">By default backups are saved to the SDCARD</string>
-  <string name="summary_restore_backup_pref">Select a specific backup to restore</string>
-  <string name="toast_backup_successful">Backup successful</string>
-  <string name="toast_backup_failed">Backup failed</string>
-  <string name="export_warning_xml">Exports all accounts and transactions</string>
-  <string name="title_google_drive_sync_pref">Enable Google Drive</string>
-  <string name="summary_google_drive_sync">Enable exporting to Google Drive</string>
-  <string name="toast_install_file_manager">Install a file manager to select files</string>
-  <string name="title_select_backup_to_restore">Select backup to restore</string>
-  <string name="nav_menu_favorites">Favorites</string>
-  <string name="nav_menu_open">Open&#8230;</string>
-  <string name="nav_menu_reports">Reports</string>
-  <string name="nav_menu_scheduled_transactions">Scheduled Transactions</string>
-  <string name="nav_menu_export">Export&#8230;</string>
-  <string name="nav_menu_settings">Settings</string>
-  <string name="username">User Name</string>
-  <string name="password">Password</string>
+  <string name="label_other_slice">Lainnya</string>
+  <string name="toast_chart_percentage_mode_total">Persentase nilai yang dipilih dihitung dari jumlah total</string>
+  <string name="toast_chart_percentage_mode_current_bar">Persentase dari nilai yang dipilih dihitung dari jumlah batang yang ditumpuk saat ini</string>
+  <string name="label_save_template">Simpan sebagai templat</string>
+  <string name="label_delete_account_transactions_description">Akun ini berisi transaksi. \nApa yang ingin Anda lakukan dengan transaksi tersebut</string>
+  <string name="label_delete_account_subaccounts_description">Akun ini berisi sub-akun. \nApa yang ingin Anda lakukan dengan sub-akun tersebut</string>
+  <string name="label_delete_transactions">Hapus transaksi</string>
+  <string name="toast_disable_double_entry_to_save_transaction">Membuat dan menetapkan sebuah akun transfer ATAU nonaktifkan double-entry pada pengaturan untuk menyimpan transaksi</string>
+  <string name="label_tap_to_create_schedule">Ketuk untuk membuat jadwal</string>
+  <string name="title_restore_backup">Mengembalikan Cadangan&#8230;</string>
+  <string name="header_backup_and_export_settings">Cadangan &amp; ekspor</string>
+  <string name="title_dropbox_sync_preference">Aktifkan DropBox</string>
+  <string name="title_owncloud_sync_preference">Aktifkan ownCloud </string>
+  <string name="title_backup_preference_category">Cadangan</string>
+  <string name="summary_dropbox_sync">Aktifkan mengekspor ke DropBox</string>
+  <string name="summary_owncloud_sync">Aktifkan mengekspor ke ownCloud</string>
+  <string name="title_select_gnucash_xml_file">Pilih file XML GnuCash</string>
+  <string name="title_backup_prefs">Pengaturan Cadangan</string>
+  <string name="title_create_backup_pref">Membuat Cadangan</string>
+  <string name="summary_create_backup_pref">Secara default backup disimpan ke SDCARD</string>
+  <string name="summary_restore_backup_pref">Pilih cadangan untuk dipulihkan</string>
+  <string name="toast_backup_successful">Pencadangan berhasil</string>
+  <string name="toast_backup_failed">Pencadangan gagal</string>
+  <string name="export_warning_xml">Ekspor seluruh akun dan transaksi</string>
+  <string name="title_google_drive_sync_pref">Aktifkan Google Drive</string>
+  <string name="summary_google_drive_sync">Aktifkan ekspor ke Google Drive</string>
+  <string name="toast_install_file_manager">Install sebuah file manager untuk memilih file</string>
+  <string name="title_select_backup_to_restore">Pilih backup untuk di-restore</string>
+  <string name="nav_menu_favorites">Favorit</string>
+  <string name="nav_menu_open">Buka&#8230;</string>
+  <string name="nav_menu_reports">Laporan</string>
+  <string name="nav_menu_scheduled_transactions">Transaksi Terjadwal</string>
+  <string name="nav_menu_export">Ekspor&#8230;</string>
+  <string name="nav_menu_settings">Pengaturan</string>
+  <string name="username">Nama Pengguna</string>
+  <string name="password">Kata Sandi</string>
   <string name="owncloud_pref">owncloud</string>
   <string name="owncloud_server">https://</string>
-  <string name="owncloud_server_invalid">OC server not found</string>
+  <string name="owncloud_server_invalid">Server OC tidak ditemukan</string>
   <string name="owncloud_user_invalid">OC username/password invalid</string>
-  <string name="owncloud_dir_invalid">Invalid chars: \\ &lt; &gt; : \&quot; | * ? </string>
-  <string name="owncloud_server_ok">OC server OK</string>
+  <string name="owncloud_dir_invalid">Karakter tidak valid: \\ &lt; &gt; : \&quot; | * ? </string>
+  <string name="owncloud_server_ok">Server OC OK</string>
   <string name="owncloud_user_ok">OC username/password OK</string>
-  <string name="owncloud_dir_ok">Dir name OK</string>
+  <string name="owncloud_dir_ok">Nama Dir OK</string>
   <plurals name="label_every_x_days">
-    <item quantity="other">Every %d days</item>
+    <item quantity="other">Setiap %d hari</item>
   </plurals>
   <plurals name="label_every_x_weeks">
-    <item quantity="other">Every %d weeks</item>
+    <item quantity="other">Setiap %d minggu</item>
   </plurals>
   <plurals name="label_every_x_months">
-    <item quantity="other">Every %d months</item>
+    <item quantity="other">Setiap %d bulan</item>
   </plurals>
   <plurals name="label_every_x_years">
-    <item quantity="other">Every %d years</item>
+    <item quantity="other">Setiap %d tahun</item>
   </plurals>
-  <string name="title_enable_crashlytics">Enable Crash Logging</string>
-  <string name="msg_enable_crashlytics">Automatically send information about app malfunction to the developers.</string>
+  <string name="title_enable_crashlytics">Aktifkan Pencatatan Kerusakan</string>
+  <string name="msg_enable_crashlytics">Mengirim informasi secara otomatis tentang malfungsi aplikasi ke pengembang.</string>
   <string name="label_export_format"> Format</string>
-  <string name="toast_backup_folder_not_found">Backup folder cannot be found. Make sure the SD Card is mounted!</string>
-  <string name="label_old_passcode">Enter your old passcode</string>
-  <string name="label_new_passcode">Enter your new passcode</string>
-  <string name="nav_menu_scheduled_backups">Scheduled Exports</string>
-  <string name="title_scheduled_exports">Exports</string>
-  <string name="label_no_scheduled_exports_to_display">No scheduled exports to display</string>
-  <string name="title_create_export_schedule">Create export schedule</string>
-  <string name="toast_exported_to">Exported to: %1$s</string>
+  <string name="toast_backup_folder_not_found">Folder backup tidak dapat ditemukan. Pastikan SD Card di-mount!</string>
+  <string name="label_old_passcode">Masukkan kode akses lama Anda</string>
+  <string name="label_new_passcode">Masukkan kode akses baru Anda</string>
+  <string name="nav_menu_scheduled_backups">Ekspor Terjadwal</string>
+  <string name="title_scheduled_exports">Ekspor</string>
+  <string name="label_no_scheduled_exports_to_display">Tidak ada ekspor terjadwal untuk ditampilkan</string>
+  <string name="title_create_export_schedule">Membuat jadwal ekspor</string>
+  <string name="toast_exported_to">Telah diekspor ke: %1$s</string>
   <string name="toast_legend_too_long">The legend is too long</string>
   <string name="hint_account_description">Account description</string>
   <string name="label_no_recent_accounts">No recent accounts</string>

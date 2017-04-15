@@ -21,7 +21,7 @@
   <string name="info_details">Information</string>
   <string name="menu_export">Exportera&#8230;</string>
   <string name="description_add_transaction_icon">Lägg till en transaktion till ett konto</string>
-  <string name="description_view_account_icon">View account details</string>
+  <string name="description_view_account_icon">Visa kontodetaljer</string>
   <string name="label_no_accounts">Det finns inga konton att visa</string>
   <string name="label_account_name">Kontonamn</string>
   <string name="btn_cancel">Avbryt</string>

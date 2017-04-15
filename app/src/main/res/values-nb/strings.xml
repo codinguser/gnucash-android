@@ -21,7 +21,7 @@
   <string name="info_details">Informasjon</string>
   <string name="menu_export">Eksport...</string>
   <string name="description_add_transaction_icon">Legge til en ny transaksjon i en konto</string>
-  <string name="description_view_account_icon">View account details</string>
+  <string name="description_view_account_icon">Vis kontoinformasjon</string>
   <string name="label_no_accounts">Ingen kontoer for å vise</string>
   <string name="label_account_name">Kontonavn</string>
   <string name="btn_cancel">Avbryt</string>
@@ -86,7 +86,7 @@
   <string name="label_permission_record_transaction">Registrere transaksjoner i GnuCash</string>
   <string name="label_permission_create_account">Opprette kontoer i GnuCash</string>
   <string name="label_display_account">Vis konto</string>
-  <string name="label_hide_account_balance">Hide account balance in widget</string>
+  <string name="label_hide_account_balance">Skjul saldo i widget</string>
   <string name="btn_create_accounts">Opprett konto</string>
   <string name="title_default_accounts">Velg kontoer å opprette</string>
   <string name="error_no_accounts">Det finnes ingen kontoer i GnuCash.\nOpprett en konto før du legger til en widget</string>
@@ -305,9 +305,9 @@
   <string name="owncloud_server_invalid">Finner ikke OC-server</string>
   <string name="owncloud_user_invalid">OC brukernavn/passord ugyldig</string>
   <string name="owncloud_dir_invalid">Ugyldige tegn: \\ &lt; &gt;: \ \"| * ? </string>
-  <string name="owncloud_server_ok">OC server OK</string>
-  <string name="owncloud_user_ok">OC username/password OK</string>
-  <string name="owncloud_dir_ok">Dir name OK</string>
+  <string name="owncloud_server_ok">OC serveren OK</string>
+  <string name="owncloud_user_ok">OC brukernavn/passord OK</string>
+  <string name="owncloud_dir_ok">Mappenavn OK</string>
   <plurals name="label_every_x_days">
     <item quantity="one">Daglig</item>
     <item quantity="other">Hver %d dag</item>
@@ -401,7 +401,7 @@
   <string name="title_cash_flow_report">Kontantstrøm</string>
   <string name="title_budgets">Budsjetter</string>
   <string name="title_use_compact_list">Aktiver Kompaktvisning</string>
-  <string name="summary_use_compact_list">Enable to always use compact view for transactions list</string>
+  <string name="summary_use_compact_list">Aktiver Kompaktvisning for Transaksjonsliste</string>
   <string name="error_invalid_exchange_rate">Ugyldig valutakurs</string>
   <string name="sample_exchange_rate">e.g. 1 %1$s = x.xx %2$s</string>
   <string name="error_invalid_amount">Ugyldig beløp</string>
@@ -437,13 +437,13 @@
   <string name="digit_zero_text">+</string>
   <string name="title_manage_books">Manage Books</string>
   <string name="menu_manage_books">Manage Books&#8230;</string>
-  <string name="select_chart_to_view_details">Select any part of the chart to view details</string>
-  <string name="title_confirm_delete_book">Confirm delete Book</string>
-  <string name="msg_all_book_data_will_be_deleted">All accounts and transactions in this book will be deleted!</string>
-  <string name="btn_delete_book">Delete Book</string>
-  <string name="label_last_export_time">Last Exported:</string>
-  <string name="menu_title_enable_sync">Enable Sync</string>
-  <string name="menu_title_new_book">New Book</string>
+  <string name="select_chart_to_view_details">Merk en del av diagrammet for detaljer</string>
+  <string name="title_confirm_delete_book">Bekreft sletting</string>
+  <string name="msg_all_book_data_will_be_deleted">Alle kontoer og transaksjoner i denne boken vil bli slettet!</string>
+  <string name="btn_delete_book">Slett bok</string>
+  <string name="label_last_export_time">Sist eksportert:</string>
+  <string name="menu_title_enable_sync">Aktiver synkronisering</string>
+  <string name="menu_title_new_book">Ny Bok</string>
   <string name="toast_transaction_has_no_splits_and_cannot_open">The selected transaction has no splits and cannot be opened</string>
   <string name="label_split_count">%1$d splits</string>
   <string name="label_inside_account_with_name">in %1$s</string>
