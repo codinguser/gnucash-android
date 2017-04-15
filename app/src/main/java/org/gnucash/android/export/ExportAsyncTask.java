@@ -271,6 +271,9 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         final GoogleApiClient googleApiClient = BackupPreferenceFragment.getGoogleApiClient(GnuCashApplication.getAppContext());
         googleApiClient.blockingConnect();
 
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String folderId = sharedPreferences.getString(mContext.getString(R.string.key_google_drive_app_folder_id), "");
+        DriveFolder folder = DriveId.decodeFromString(folderId).asDriveFolder();
         try {
             for (String exportedFilePath : mExportedFiles) {
                 DriveApi.DriveContentsResult driveContentsResult =
@@ -297,10 +300,6 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                         .setTitle(exportedFile.getName())
                         .setMimeType(mExporter.getExportMimeType())
                         .build();
-
-                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-                String folderId = sharedPreferences.getString(mContext.getString(R.string.key_google_drive_app_folder_id), "");
-                DriveFolder folder = DriveId.decodeFromString(folderId).asDriveFolder();
                 // create a file on root folder
                 DriveFolder.DriveFileResult driveFileResult =
                         folder.createFile(googleApiClient, changeSet, driveContents)
