@@ -21,7 +21,7 @@
   <string name="info_details">情報</string>
   <string name="menu_export">エクスポート&#8230;</string>
   <string name="description_add_transaction_icon">新規の取引を入力</string>
-  <string name="description_view_account_icon">View account details</string>
+  <string name="description_view_account_icon">勘定の詳細を表示</string>
   <string name="label_no_accounts">表示する勘定科目がありません</string>
   <string name="label_account_name">勘定科目名</string>
   <string name="btn_cancel">キャンセル</string>
@@ -86,7 +86,7 @@
   <string name="label_permission_record_transaction">GnuCashで取引を記録する</string>
   <string name="label_permission_create_account">GnuCashで費目を新規登録する</string>
   <string name="label_display_account">勘定科目を表示</string>
-  <string name="label_hide_account_balance">Hide account balance in widget</string>
+  <string name="label_hide_account_balance">勘定残高を非表示</string>
   <string name="btn_create_accounts">勘定科目を作成</string>
   <string name="title_default_accounts">作成する勘定科目を選択</string>
   <string name="error_no_accounts">GnuCashに勘定科目が存在しません。\nウィジェットを追加する前に勘定科目を作成してください</string>
@@ -466,5 +466,5 @@
   <string name="repeat_x_times">%1$s 回</string>
   <string name="menu_show_compact_view">コンパクト表示</string>
   <string name="book_default_name">帳簿 %1$d</string>
-  <string name="last_export_time_never">never</string>
+  <string name="last_export_time_never">しない</string>
 </resources>

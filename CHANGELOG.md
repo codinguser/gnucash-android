@@ -3,6 +3,12 @@ Change Log
 Version 2.2.0 *(2017-05-xx)*
 ----------------------------
 
+Version 2.1.6 *(2017-04-15)*
+----------------------------
+* Fixed #664: Rotating device in transaction view causes crash
+* Improved #670: Migrate backup/export files to new location (which does not require permisions from KitKat)
+* Improved #669: Update translations
+
 Version 2.1.5 *(2017-04-04)*
 ----------------------------
 * Fixed: Widget button for placeholder accounts tries to create transactions 
