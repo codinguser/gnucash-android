@@ -300,7 +300,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
                 String folderId = sharedPreferences.getString(mContext.getString(R.string.key_google_drive_app_folder_id), "");
-                DriveFolder folder = Drive.DriveApi.getFolder(googleApiClient, DriveId.decodeFromString(folderId));
+                DriveFolder folder = DriveId.decodeFromString(folderId).asDriveFolder();
                 // create a file on root folder
                 DriveFolder.DriveFileResult driveFileResult =
                         folder.createFile(googleApiClient, changeSet, driveContents)
