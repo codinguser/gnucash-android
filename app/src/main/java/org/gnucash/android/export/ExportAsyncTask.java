@@ -459,9 +459,8 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             shareIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{defaultEmail});
 
         SimpleDateFormat formatter = (SimpleDateFormat) SimpleDateFormat.getDateTimeInstance();
-        ArrayList<CharSequence> extraText = new ArrayList<>();
-        extraText.add(mContext.getString(R.string.description_export_email)
-                + " " + formatter.format(new Date(System.currentTimeMillis())));
+        String extraText = mContext.getString(R.string.description_export_email)
+                           + " " + formatter.format(new Date(System.currentTimeMillis()));
         shareIntent.putExtra(Intent.EXTRA_TEXT, extraText);
 
         if (mContext instanceof Activity) {
