@@ -2,7 +2,13 @@ Change Log
 ===============================================================================
 Version 2.2.0 *(2017-05-xx)*
 ----------------------------
+* Feature #656: Added Bitcoin (BTC) currency support
+* Feature #634: Added support for renaming books
+* Fixed #672: Crash when exporting multi-currency transactions to Google Drive
+* Fixed #654: Crash when editing account if its default transfer account no longer exists
 * Fixed #625: Hourly backups were being executed on a monthly basis
+* Fixed #607: Widgets stop functioning after switching books
+* Improved #635: Improved support for BYN currency 
 
 Version 2.1.6 *(2017-04-15)*
 ----------------------------
