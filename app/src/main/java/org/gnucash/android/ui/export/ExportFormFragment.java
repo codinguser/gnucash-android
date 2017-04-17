@@ -232,8 +232,6 @@ public class ExportFormFragment extends Fragment implements
 		assert supportActionBar != null;
 		supportActionBar.setTitle(R.string.title_export_dialog);
 		setHasOptionsMenu(true);
-
-		getSDWritePermission();
 	}
 
 	@Override
@@ -251,19 +249,6 @@ public class ExportFormFragment extends Fragment implements
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         prefs.edit().putBoolean(UxArgument.SKIP_PASSCODE_SCREEN, true).apply();
     }
-
-	/**
-	 * Get permission for WRITING SD card for Android Marshmallow and above
-	 */
-	private void getSDWritePermission(){
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			if (getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-					!= PackageManager.PERMISSION_GRANTED) {
-				getActivity().requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-						Manifest.permission.READ_EXTERNAL_STORAGE}, AccountsActivity.REQUEST_PERMISSION_WRITE_SD_CARD);
-			}
-		}
-	}
 
 	/**
 	 * Starts the export of transactions with the specified parameters

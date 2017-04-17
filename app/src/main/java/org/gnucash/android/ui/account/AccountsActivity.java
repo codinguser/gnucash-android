@@ -127,7 +127,6 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
      * Key for putting argument for tab into bundle arguments
      */
     public static final String EXTRA_TAB_INDEX = "org.gnucash.android.extra.TAB_INDEX";
-    public static final int REQUEST_PERMISSION_WRITE_SD_CARD = 0xAB;
 
     /**
      * Map containing fragments for the different tabs
@@ -300,50 +299,6 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
         }
     }
 
-    /**
-     * Get permission for WRITING SD card
-     */
-    @TargetApi(23)
-    private void getSDWritePermission(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-//                if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
-                    Snackbar.make(mCoordinatorLayout,
-                            "GnuCash requires permission to access the SD card for backup and restore",
-                            Snackbar.LENGTH_INDEFINITE).setAction("GRANT",
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                            Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_WRITE_SD_CARD);
-                                }
-                            })
-                            .setActionTextColor(getResources().getColor(R.color.theme_accent))
-                            .show();
-//                }
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode){
-            case REQUEST_PERMISSION_WRITE_SD_CARD:{
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    //TODO: permission was granted, yay! do the
-                    // calendar task you need to do.
-
-                } else {
-
-                    // TODO: permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-            } return;
-        }
-    }
-
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -387,8 +342,6 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
             finish();
             return;
         }
-
-        getSDWritePermission();
 
         if (hasNewFeatures()){
             showWhatsNewDialog(this);

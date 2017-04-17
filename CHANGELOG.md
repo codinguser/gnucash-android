@@ -9,6 +9,7 @@ Version 2.2.0 *(2017-05-xx)*
 * Fixed #625: Hourly backups were being executed on a monthly basis
 * Fixed #607: Widgets stop functioning after switching books
 * Improved #635: Improved support for BYN currency 
+* Improved #661: Removed need for WRITE_EXTERNAL_STORAGE permission for Android 4.4 (KitKat) and above
 
 Version 2.1.6 *(2017-04-15)*
 ----------------------------
