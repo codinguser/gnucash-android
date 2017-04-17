@@ -26,7 +26,7 @@ import java.util.Locale;
  * @see org.gnucash.android.model.ScheduledAction
 */
 public enum PeriodType {
-    DAY, WEEK, MONTH, YEAR; // TODO: 22.10.2015 add support for hourly
+    HOUR, DAY, WEEK, MONTH, YEAR;
 
 
     /**
@@ -36,6 +36,8 @@ public enum PeriodType {
      */
     public String getFrequencyDescription() {
         switch (this) {
+            case HOUR:
+                return "HOURLY";
             case DAY:
                 return "DAILY";
             case WEEK:
@@ -57,17 +59,10 @@ public enum PeriodType {
      */
     public String getByParts(long startTime){
         String partString = "";
-        switch (this){
-            case DAY:
-                break;
-            case WEEK:
-                String dayOfWeek = new SimpleDateFormat("E", Locale.US).format(new Date(startTime));
-                //our parser only supports two-letter day names
-                partString = "BYDAY=" + dayOfWeek.substring(0, dayOfWeek.length()-1).toUpperCase();
-            case MONTH:
-                break;
-            case YEAR:
-                break;
+        if (this == WEEK){
+            String dayOfWeek = new SimpleDateFormat("E", Locale.US).format(new Date(startTime));
+            //our parser only supports two-letter day names
+            partString = "BYDAY=" + dayOfWeek.substring(0, dayOfWeek.length()-1).toUpperCase();
         }
         return partString;
     }

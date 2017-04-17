@@ -152,6 +152,9 @@ public class ScheduledAction extends BaseModel{
 
         int factor = (mExecutionCount-1) * multiplier;
         switch (mRecurrence.getPeriodType()){
+            case HOUR:
+                startTime = startTime.plusHours(factor);
+                break;
             case DAY:
                 startTime = startTime.plusDays(factor);
                 break;
@@ -214,6 +217,9 @@ public class ScheduledAction extends BaseModel{
         int multiplier = mRecurrence.getMultiplier();
         LocalDateTime nextScheduledExecution = LocalDateTime.fromDateFields(new Date(startTime));
         switch (mRecurrence.getPeriodType()) {
+            case HOUR:
+                nextScheduledExecution = nextScheduledExecution.plusHours(multiplier);
+                break;
             case DAY:
                 nextScheduledExecution = nextScheduledExecution.plusDays(multiplier);
                 break;
