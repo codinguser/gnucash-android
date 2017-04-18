@@ -6,7 +6,7 @@ apply plugin: 'android-apt'
 
 def versionMajor = 2
 def versionMinor = 1
-def versionPatch = 6
+def versionPatch = 7
 def versionBuild = 0
 
 def buildTime() {

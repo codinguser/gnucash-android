@@ -1,5 +1,10 @@
 Change Log
 ===============================================================================
+Version 2.1.7 *(2017-04-18)*
+----------------------------
+* Properly handle crashes during migration of backup/export files to new location
+* Update README and CONTRIBUTORS
+
 Version 2.1.6 *(2017-04-15)*
 ----------------------------
 * Fixed #664: Rotating device in transaction view causes crash
