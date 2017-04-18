@@ -7,6 +7,10 @@
 GnuCash Android is a companion expense-tracker application for GnuCash (desktop) designed for Android.
 It allows you to record transactions on-the-go and later import the data into GnuCash for the desktop.
 
+Accounts            |  Transactions          |  Reports
+:-------------------------:|:-------------------------:|:-------------------------:
+![Accounts List](docs/images/v2.0.0_home.png)  |  ![Transactions List](docs/images/v2.0.0_transactions_list.png) |  ![Reports](docs/images/v2.0.0_reports.png)
+
 The application supports Android 2.3.3 Gingerbread (API level 10) and above.
 
 Features include:
@@ -66,7 +70,7 @@ The app is configured to allow you to install a development and production versi
 
 ### With Android Studio
 The easiest way to build is to install [Android Studio](https://developer.android.com/sdk/index.html) v2.+
-with [Gradle](https://www.gradle.org/) v2.10
+with [Gradle](https://www.gradle.org/) v3.4.1
 Once installed, then you can import the project into Android Studio:
 
 1. Open `File`
@@ -89,7 +93,7 @@ Please visit [CrowdIn](https://crowdin.com/project/gnucash-android) in order to 
 
 * You could as well contribute code, fixing bugs, new features or automated tests. Pull requests are always welcome.
 Take a look at the [bug tracker](https://github.com/codinguser/gnucash-android/issues?state=open)
-for ideas where to start.
+for ideas where to start. Also take a look at the [contribution guidlines](https://github.com/codinguser/gnucash-android/blob/master/.github/CONTRIBUTING.md)
 
 For development, it is recommended to use the Android Studio for development which is available for free.
 Import the project into the IDE using the build.gradle file. The IDE will resolve dependencies automatically.

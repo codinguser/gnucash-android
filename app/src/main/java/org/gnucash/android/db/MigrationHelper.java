@@ -1488,10 +1488,25 @@ public class MigrationHelper {
      * @param srcDir Source directory which should already exist
      * @param dstDir Destination directory which should already exist
      * @see #moveFile(File, File)
+     * @throws IOException if the {@code srcDir} does not exist or {@code dstDir} could not be created
+     * @throws IllegalArgumentException if {@code srcDir} is not a directory
      */
-    private static void moveDirectory(File srcDir, File dstDir){
-        if (!srcDir.exists() || !srcDir.isDirectory() || !dstDir.isDirectory() || !dstDir.exists()){
-            throw new IllegalArgumentException("Source is not a directory, use MigrationHelper.moveFile(...)");
+    private static void moveDirectory(File srcDir, File dstDir) throws IOException {
+        if (!srcDir.isDirectory()){
+            throw new IllegalArgumentException("Source is not a directory: " + srcDir.getPath());
+        }
+
+        if (!srcDir.exists()){
+            String msg = String.format(Locale.US, "Source directory %s does not exist", srcDir.getPath());
+            Log.e(LOG_TAG, msg);
+            throw new IOException(msg);
+        }
+
+        if (!dstDir.exists() || !dstDir.isDirectory()){
+            Log.w(LOG_TAG, "Target directory does not exist. Attempting to create..." + dstDir.getPath());
+            if (!dstDir.mkdirs()){
+                throw new IOException(String.format("Target directory %s does not exist and could not be created", dstDir.getPath()));
+            }
         }
 
         for (File src : srcDir.listFiles()){
@@ -1521,7 +1536,7 @@ public class MigrationHelper {
      *     It moves the backup files to a new backup location which does not require SD CARD write permission
      * </p>
      * @param db SQLite database to be upgraded
-     * @return
+     * @return New database version
      */
     public static int upgradeDbToVersion14(SQLiteDatabase db){
         Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 14");
@@ -1534,17 +1549,20 @@ public class MigrationHelper {
             public void run() {
                 File srcDir = new File(Exporter.LEGACY_BASE_FOLDER_PATH);
                 File dstDir = new File(Exporter.BASE_FOLDER_PATH);
-                moveDirectory(srcDir, dstDir);
-                File readmeFile = new File(Exporter.LEGACY_BASE_FOLDER_PATH, "README.txt");
-                FileWriter writer = null;
                 try {
+                    moveDirectory(srcDir, dstDir);
+                    File readmeFile = new File(Exporter.LEGACY_BASE_FOLDER_PATH, "README.txt");
+                    FileWriter writer = null;
                     writer = new FileWriter(readmeFile);
                     writer.write("Backup files have been moved to " + dstDir.getPath() +
                             "\nYou can now delete this folder");
                     writer.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Log.e(LOG_TAG, "Error creating README file");
+                } catch (IOException | IllegalArgumentException ex) {
+                    ex.printStackTrace();
+                    String msg = String.format("Error moving files from %s to %s", srcDir.getPath(), dstDir.getPath());
+                    Log.e(LOG_TAG, msg);
+                    Crashlytics.log(msg);
+                    Crashlytics.logException(ex);
                 }
 
             }

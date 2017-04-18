@@ -11,6 +11,11 @@ Version 2.2.0 *(2017-05-xx)*
 * Improved #635: Improved support for BYN currency 
 * Improved #661: Removed need for WRITE_EXTERNAL_STORAGE permission for Android 4.4 (KitKat) and above
 
+Version 2.1.7 *(2017-04-18)*
+----------------------------
+* Properly handle crashes during migration of backup/export files to new location
+* Update README and CONTRIBUTORS
+
 Version 2.1.6 *(2017-04-15)*
 ----------------------------
 * Fixed #664: Rotating device in transaction view causes crash
