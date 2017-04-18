@@ -317,8 +317,7 @@ public class ExportFormFragment extends Fragment implements
 					case 2:
 						recurrenceOptionsView.setVisibility(View.VISIBLE);
 						mExportTarget = ExportParams.ExportTarget.GOOGLE_DRIVE;
-						BackupPreferenceFragment.mGoogleApiClient = BackupPreferenceFragment.getGoogleApiClient(getActivity());
-						BackupPreferenceFragment.mGoogleApiClient.connect();
+						BackupPreferenceFragment.getGoogleApiClient(getActivity()).connect();
 						break;
 					case 3:
 						recurrenceOptionsView.setVisibility(View.VISIBLE);
@@ -474,7 +473,7 @@ public class ExportFormFragment extends Fragment implements
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == BackupPreferenceFragment.REQUEST_RESOLVE_CONNECTION && resultCode == Activity.RESULT_OK) {
-			BackupPreferenceFragment.mGoogleApiClient.connect();
+			BackupPreferenceFragment.connectToGoogle();
 		}
 	}
 
