@@ -178,7 +178,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 			createIntent.setType("application/zip");
 			createIntent.addCategory(Intent.CATEGORY_OPENABLE);
 			String bookName = BooksDbAdapter.getInstance().getActiveBookDisplayName();
-			createIntent.putExtra(Intent.EXTRA_TITLE, Exporter.sanitizeFilename(bookName)+ "_" + "gnucash_android_backup.gnca");
+			createIntent.putExtra(Intent.EXTRA_TITLE, Exporter.sanitizeFilename(bookName)+ "_" + getString(R.string.label_backup_filename));
 			startActivityForResult(createIntent, REQUEST_BACKUP_FILE);
 		}
 
@@ -370,11 +370,34 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 	private void restoreBackup() {
 		Log.i("Settings", "Opening GnuCash XML backups for restore");
 		String bookUID = BooksDbAdapter.getInstance().getActiveBookUID();
+
+		final String defaultBackupFile = BookUtils.getBookBackupFileUri(bookUID);
+		if (defaultBackupFile != null){
+			android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity())
+					.setTitle(R.string.title_confirm_restore_backup)
+					.setMessage(R.string.msg_confirm_restore_backup_into_new_book)
+					.setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					})
+					.setPositiveButton(R.string.btn_restore, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialogInterface, int i) {
+							new ImportAsyncTask(getActivity()).execute(Uri.parse(defaultBackupFile));
+						}
+					});
+			builder.create().show();
+			return; //stop here if the default backup file exists
+		}
+
+		//If no default location was set, look in the internal SD card location
 		File[] backupFiles = new File(Exporter.getBackupFolderPath(bookUID)).listFiles();
 		if (backupFiles == null || backupFiles.length == 0){
 			android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity())
-					.setTitle("No backups found")
-					.setMessage("There are no existing backup files to restore from")
+					.setTitle(R.string.title_no_backups_found)
+					.setMessage(R.string.msg_no_backups_to_restore_from)
 					.setNegativeButton(R.string.label_dismiss, new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
