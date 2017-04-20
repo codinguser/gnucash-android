@@ -113,6 +113,8 @@ public class ExportFormFragment extends Fragment implements
      */
     @BindView(R.id.export_warning) TextView mExportWarningTextView;
 
+	@BindView(R.id.target_uri) TextView mTargetUriTextView;
+
 	/**
 	 * Recurrence text view
 	 */
@@ -324,9 +326,13 @@ public class ExportFormFragment extends Fragment implements
 					case 0:
 						mExportTarget = ExportParams.ExportTarget.URI;
 						recurrenceOptionsView.setVisibility(View.VISIBLE);
-						selectExportFile();
+						if (mExportUri != null)
+							mTargetUriTextView.setText(mExportUri.toString());
+						else
+							selectExportFile();
 						break;
-					case 1:
+					case 1: //DROPBOX
+						mTargetUriTextView.setText("Export to /Apps/GnuCash folder on Dropbox");
 						recurrenceOptionsView.setVisibility(View.VISIBLE);
 						mExportTarget = ExportParams.ExportTarget.DROPBOX;
 						String dropboxAppKey = getString(R.string.dropbox_app_key, BackupPreferenceFragment.DROPBOX_APP_KEY);
@@ -337,6 +343,7 @@ public class ExportFormFragment extends Fragment implements
 						}
 						break;
 					case 2:
+						mTargetUriTextView.setText("");
 						recurrenceOptionsView.setVisibility(View.VISIBLE);
 						mExportTarget = ExportParams.ExportTarget.OWNCLOUD;
 						if(!(PreferenceManager.getDefaultSharedPreferences(getActivity())
@@ -518,6 +525,7 @@ public class ExportFormFragment extends Fragment implements
 							& (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 					getActivity().getContentResolver().takePersistableUriPermission(mExportUri, takeFlags);
 
+					mTargetUriTextView.setText(mExportUri.toString());
 					if (mExportStarted)
 						startExport();
 

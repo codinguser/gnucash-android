@@ -32,7 +32,8 @@
         <LinearLayout android:orientation="horizontal"
             android:gravity="center_vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+                      android:layout_marginBottom="-8dp">
             <TextView
                 android:text="@string/label_export_destination"
                 android:layout_marginLeft="8dp"
@@ -46,6 +47,13 @@
                 android:layout_height="?android:attr/listPreferredItemHeight"
                 android:layout_width="match_parent" />
         </LinearLayout>
+        <TextView android:id="@+id/target_uri"
+                  tools:text="/path/to/export/file"
+                  android:textColor="@color/title_green"
+                  android:layout_marginBottom="@dimen/dialog_padding"
+                  android:layout_marginLeft="100dp"
+                  style="@style/TextAppearance.Hint" />
+
         <LinearLayout android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

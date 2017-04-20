@@ -63,7 +63,7 @@
     <string name="hint_delete_after_export">All exported transactions will be deleted when exporting is completed</string>
     <string name="title_settings">Settings</string>
     <string-array name="export_destinations">
-        <item>Select File</item>
+        <item>Save As&#8230;</item>
         <item>Dropbox</item>
         <item>ownCloud</item>
         <item>Send to&#8230;</item>
@@ -97,8 +97,7 @@
 	<string name="toast_no_transactions_to_export">There are no transactions available to export</string>
     <string name="header_passcode_settings">Passcode</string>
     <string name="title_passcode_preferences">Passcode Preferences</string>
-    <string name="title_passcode_enabled">Passcode Turned On</string>
-    <string name="title_passcode_disabled">Passcode Turned Off</string>
+    <string name="title_enable_passcode">Enable passcode</string>
     <string name="title_change_passcode">Change Passcode</string>
 	<string name="title_about_gnucash">About GnuCash</string>
 	<string name="summary_about_gnucash">A mobile finance management and expense-tracker designed for Android</string>

@@ -291,6 +291,10 @@ public class BookManagerFragment extends ListFragment implements
             String stats = accountStats + ", " + transactionStats;
             TextView statsText = (TextView) view.findViewById(R.id.secondary_text);
             statsText.setText(stats);
+
+            if (bookUID.equals(BooksDbAdapter.getInstance().getActiveBookUID())){
+                ((TextView)view.findViewById(R.id.primary_text)).setTextColor(getResources().getColor(R.color.theme_primary));
+            }
         }
     }
 

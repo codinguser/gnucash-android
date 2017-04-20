@@ -37,6 +37,8 @@
     <uses-permission android:label="@string/label_permission_create_accounts"
                      android:name="org.gnucash.android.permission.CREATE_ACCOUNT" />
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+                     android:maxSdkVersion="18" />
     <uses-permission android:name="android.permission.VIBRATE"
                      android:label="Allow device to vibrate with notifications" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />

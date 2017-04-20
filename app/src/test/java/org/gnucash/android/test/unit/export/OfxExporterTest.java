@@ -15,25 +15,39 @@
  */
 package org.gnucash.android.test.unit.export;
 
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.BookDbHelper;
 import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
+import org.gnucash.android.db.adapter.SplitsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
+import org.gnucash.android.export.Exporter;
 import org.gnucash.android.export.ofx.OfxExporter;
+import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Book;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Split;
+import org.gnucash.android.model.Transaction;
 import org.gnucash.android.test.unit.testutil.GnucashTestRunner;
 import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
 import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
 import org.gnucash.android.util.TimestampHelper;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
+
+import java.io.File;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -69,5 +83,33 @@ public class OfxExporterTest {
         exportParameters.setDeleteTransactionsAfterExport(false);
         OfxExporter exporter = new OfxExporter(exportParameters, mDb);
         assertThat(exporter.generateExport()).isEmpty();
+    }
+
+    /**
+     * Test that OFX files are generated
+     */
+    //FIXME: test failing with NPE
+    public void testGenerateOFXExport(){
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(mDb);
+
+        Account account = new Account("Basic Account");
+        Transaction transaction = new Transaction("One transaction");
+        transaction.addSplit(new Split(Money.createZeroInstance("EUR"),account.getUID()));
+        account.addTransaction(transaction);
+
+        accountsDbAdapter.addRecord(account);
+
+        ExportParams exportParameters = new ExportParams(ExportFormat.OFX);
+        exportParameters.setExportStartTime(TimestampHelper.getTimestampFromEpochZero());
+        exportParameters.setExportTarget(ExportParams.ExportTarget.SD_CARD);
+        exportParameters.setDeleteTransactionsAfterExport(false);
+
+        OfxExporter ofxExporter = new OfxExporter(exportParameters, mDb);
+        List<String> exportedFiles = ofxExporter.generateExport();
+
+        assertThat(exportedFiles).hasSize(1);
+        File file = new File(exportedFiles.get(0));
+        assertThat(file).exists().hasExtension("ofx");
+        assertThat(file.length()).isGreaterThan(0L);
     }
 }

@@ -167,6 +167,7 @@ afterEvaluate {
     spoon {
         debug = true
         grantAllPermissions = true
+        codeCoverage = true
     }
     initCrashlyticsPropertiesIfNeeded()
 }
