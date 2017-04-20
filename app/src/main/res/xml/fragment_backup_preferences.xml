@@ -17,9 +17,9 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
     <PreferenceCategory android:title="@string/title_backup_preference_category">
-        <Preference android:title="Select backup file"
+        <Preference android:title="@string/title_select_backup_file"
                     android:key="@string/key_backup_location"
-                    android:summary="Select a location for automatic backups" />
+                    android:summary="@string/summary_select_backup_file" />
         <Preference android:title="@string/title_create_backup_pref"
             android:key="@string/key_create_backup"
             android:summary="@string/summary_create_backup_pref" />
@@ -31,12 +31,6 @@
             android:checked="false"
             android:key="@string/key_dropbox_sync"
             android:icon="@drawable/ic_dropbox_android" />
-
-        <CheckBoxPreference android:title="@string/title_google_drive_sync_pref"
-            android:summary="@string/summary_google_drive_sync"
-            android:checked="false"
-            android:key="@string/key_google_drive_sync"
-            android:icon="@drawable/ic_google_drive" />
 
         <CheckBoxPreference android:title="@string/title_owncloud_sync_preference"
             android:summary="@string/summary_owncloud_sync"

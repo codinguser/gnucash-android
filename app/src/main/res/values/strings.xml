@@ -63,9 +63,8 @@
     <string name="hint_delete_after_export">All exported transactions will be deleted when exporting is completed</string>
     <string name="title_settings">Settings</string>
     <string-array name="export_destinations">
-        <item>SD Card</item>
+        <item>Select File</item>
         <item>Dropbox</item>
-        <item>Google Drive</item>
         <item>ownCloud</item>
         <item>Send to&#8230;</item>
     </string-array>
@@ -293,8 +292,8 @@
     <string name="title_select_gnucash_xml_file">Select GnuCash XML file</string>
     <string name="title_backup_prefs">Backup Preferences</string>
     <string name="title_create_backup_pref">Create Backup</string>
-    <string name="summary_create_backup_pref">By default backups are saved to the SDCARD</string>
-    <string name="summary_restore_backup_pref">Select a specific backup to restore</string>
+    <string name="summary_create_backup_pref">Create a backup of the active book</string>
+    <string name="summary_restore_backup_pref">Restore most recent backup of active book</string>
     <string name="toast_backup_successful">Backup successful</string>
     <string name="toast_backup_failed">Backup failed</string>
     <string name="export_warning_xml">Exports all accounts and transactions</string>
@@ -496,4 +495,6 @@
     <string name="title_rename_book">Rename Book</string>
     <string name="btn_rename">Rename</string>
     <string name="menu_rename">Rename</string>
+    <string name="title_select_backup_file">Select backup file</string>
+    <string name="summary_select_backup_file">Select a file for automatic backups</string>
 </resources>

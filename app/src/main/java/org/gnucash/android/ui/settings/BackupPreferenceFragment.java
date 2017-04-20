@@ -160,10 +160,6 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 		pref.setOnPreferenceClickListener(this);
 		toggleDropboxPreference(pref);
 
-		pref = findPreference(getString(R.string.key_google_drive_sync));
-		pref.setOnPreferenceClickListener(this);
-		toggleGoogleDrivePreference(pref);
-
 		pref = findPreference(getString(R.string.key_owncloud_sync));
 		pref.setOnPreferenceClickListener(this);
 		toggleOwnCloudPreference(pref);
@@ -179,20 +175,16 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 
 		if (key.equals(getString(R.string.key_backup_location))){
 			Intent createIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-			createIntent.setType("application/xml");
+			createIntent.setType("application/zip");
 			createIntent.addCategory(Intent.CATEGORY_OPENABLE);
-			createIntent.putExtra(Intent.EXTRA_TITLE, "gnucash_android_backup.gnca");
+			String bookName = BooksDbAdapter.getInstance().getActiveBookDisplayName();
+			createIntent.putExtra(Intent.EXTRA_TITLE, Exporter.sanitizeFilename(bookName)+ "_" + "gnucash_android_backup.gnca");
 			startActivityForResult(createIntent, REQUEST_BACKUP_FILE);
 		}
 
 		if (key.equals(getString(R.string.key_dropbox_sync))){
 			toggleDropboxSync();
 			toggleDropboxPreference(preference);
-		}
-
-		if (key.equals(getString(R.string.key_google_drive_sync))){
-			toggleGoogleDriveSync();
-			toggleGoogleDrivePreference(preference);
 		}
 
 		if (key.equals(getString(R.string.key_owncloud_sync))){

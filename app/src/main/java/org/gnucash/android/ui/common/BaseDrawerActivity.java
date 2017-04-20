@@ -237,7 +237,9 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
                     //use the storage access framework
                     Intent openDocument = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                     openDocument.addCategory(Intent.CATEGORY_OPENABLE);
-                    openDocument.setType("*/*");
+                    openDocument.setType("text/*|application/*");
+                    String[] mimeTypes = {"text/*", "application/*"};
+                    openDocument.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
                     startActivityForResult(openDocument, REQUEST_OPEN_DOCUMENT);
 
                 } else {
