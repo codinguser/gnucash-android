@@ -51,6 +51,7 @@ import org.gnucash.android.export.Exporter;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.ui.settings.dialog.OwnCloudDialogFragment;
+import org.gnucash.android.util.BookUtils;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -74,6 +75,11 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 	 */
 	private static final int REQUEST_LINK_TO_DBX = 0x11;
 	public static final int REQUEST_RESOLVE_CONNECTION = 0x12;
+
+	/**
+	 * Request code for the backup file where to save backups
+	 */
+	private static final int REQUEST_BACKUP_FILE = 0x13;
 
 	/**
 	 * Testing app key for DropBox API
@@ -143,6 +149,13 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 		pref = findPreference(getString(R.string.key_create_backup));
 		pref.setOnPreferenceClickListener(this);
 
+		pref = findPreference(getString(R.string.key_backup_location));
+		pref.setOnPreferenceClickListener(this);
+		String defaultBackupLocation = BookUtils.getBookBackupFileUri(BooksDbAdapter.getInstance().getActiveBookUID());
+		if (defaultBackupLocation != null){
+			pref.setSummary(Uri.parse(defaultBackupLocation).getAuthority());
+		}
+
 		pref = findPreference(getString(R.string.key_dropbox_sync));
 		pref.setOnPreferenceClickListener(this);
 		toggleDropboxPreference(pref);
@@ -164,6 +177,13 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 			restoreBackup();
 		}
 
+		if (key.equals(getString(R.string.key_backup_location))){
+			Intent createIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+			createIntent.setType("application/xml");
+			createIntent.addCategory(Intent.CATEGORY_OPENABLE);
+			createIntent.putExtra(Intent.EXTRA_TITLE, "gnucash_android_backup.gnca");
+			startActivityForResult(createIntent, REQUEST_BACKUP_FILE);
+		}
 
 		if (key.equals(getString(R.string.key_dropbox_sync))){
 			toggleDropboxSync();
@@ -426,6 +446,27 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 					if (pref == null) //if we are in a preference header fragment, this may return null
 						break;
 					toggleDropboxPreference(pref);
+				}
+				break;
+
+			case REQUEST_BACKUP_FILE:
+				if (resultCode == Activity.RESULT_OK){
+					Uri backupFileUri = null;
+					if (data != null){
+						backupFileUri = data.getData();
+					}
+
+					final int takeFlags = data.getFlags()
+							& (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+					getActivity().getContentResolver().takePersistableUriPermission(backupFileUri, takeFlags);
+
+					PreferenceActivity.getActiveBookSharedPreferences()
+							.edit()
+							.putString(BookUtils.KEY_BACKUP_FILE, backupFileUri.toString())
+							.apply();
+
+					Preference pref = findPreference(getString(R.string.key_backup_location));
+					pref.setSummary(backupFileUri.getAuthority());
 				}
 				break;
 		}

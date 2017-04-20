@@ -19,10 +19,12 @@ package org.gnucash.android.export.xml;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
@@ -43,6 +45,7 @@ import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.TransactionType;
+import org.gnucash.android.util.BookUtils;
 import org.gnucash.android.util.TimestampHelper;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlSerializer;
@@ -50,13 +53,13 @@ import org.xmlpull.v1.XmlSerializer;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Currency;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -910,10 +913,26 @@ public class GncXmlExporter extends Exporter{
      * @return {@code true} if backup was successful, {@code false} otherwise
      */
     public static boolean createBackup(){
+        return createBackup(BooksDbAdapter.getInstance().getActiveBookUID());
+    }
+
+    /**
+     * Create a backup of the book in the default backup location
+     * @param bookUID Unique ID of the book
+     * @return {@code true} if backup was successful, {@code false} otherwise
+     */
+    public static boolean createBackup(String bookUID){
+        OutputStream outputStream;
         try {
-            String bookUID = BooksDbAdapter.getInstance().getActiveBookUID();
-            FileOutputStream fileOutputStream = new FileOutputStream(getBackupFilePath(bookUID));
-            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+            String backupFile = BookUtils.getBookBackupFileUri(bookUID);
+            if (backupFile != null){
+                outputStream = GnuCashApplication.getAppContext().getContentResolver().openOutputStream(Uri.parse(backupFile));
+            } else { //no Uri set by user, use default location on SD card
+                backupFile = getBackupFilePath(bookUID);
+                outputStream = new FileOutputStream(backupFile);
+            }
+
+            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
             GZIPOutputStream gzipOutputStream = new GZIPOutputStream(bufferedOutputStream);
             OutputStreamWriter writer = new OutputStreamWriter(gzipOutputStream);
 

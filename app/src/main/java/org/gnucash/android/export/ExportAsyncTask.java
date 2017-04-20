@@ -261,11 +261,42 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 moveExportToSDCard();
                 break;
 
+            case URI:
+                moveExportToUri();
+                break;
+
             default:
                 throw new Exporter.ExporterException(mExportParams, "Invalid target");
         }
     }
 
+    /**
+     * Move the exported files to a specified URI.
+     * This URI could be a Storage Access Framework file
+     * @throws Exporter.ExporterException
+     */
+    private void moveExportToUri() throws Exporter.ExporterException {
+        Uri exportUri = Uri.parse(mExportParams.getExportLocation());
+        if (exportUri == null){
+            Log.w(TAG, "No URI found for export destination");
+            return;
+        }
+
+        //we only support exporting to a single file
+        String exportedFile = mExportedFiles.get(0);
+        try {
+            moveFile(exportedFile, mContext.getContentResolver().openOutputStream(exportUri));
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e(TAG, "Error moving export file to: " + exportUri);
+            Crashlytics.logException(e);
+        }
+    }
+
+    /**
+     * Move the exported files to a GnuCash folder on Google Drive
+     * @throws Exporter.ExporterException
+     */
     private void moveExportToGoogleDrive() throws Exporter.ExporterException {
         Log.i(TAG, "Moving exported file to Google Drive");
         final GoogleApiClient googleApiClient = BackupPreferenceFragment.getGoogleApiClient(GnuCashApplication.getAppContext());
@@ -512,6 +543,28 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             outChannel.close();
         }
         srcFile.delete();
+    }
+
+    /**
+     * Move file from a location on disk to an outputstream.
+     * The outputstream could be for a URI in the Storage Access Framework
+     * @param src Input file (usually newly exported file)
+     * @param outputStream Output stream to write to
+     * @throws IOException if error occurred while moving the file
+     */
+    public void moveFile(@NonNull String src, @NonNull OutputStream outputStream) throws IOException {
+        byte[] buffer = new byte[1024];
+        int read;
+        try (FileInputStream inputStream = new FileInputStream(src)) {
+            while ((read = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, read);
+            }
+        } finally {
+            outputStream.flush();
+            outputStream.close();
+        }
+        Log.i(TAG, "Deleting temp export file: " + src);
+        new File(src).delete();
     }
 
     private void reportSuccess() {

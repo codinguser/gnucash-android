@@ -16,6 +16,8 @@
 
 package org.gnucash.android.export;
 
+import android.net.Uri;
+
 import org.gnucash.android.ui.export.ExportFormFragment;
 import org.gnucash.android.util.TimestampHelper;
 
@@ -35,7 +37,7 @@ public class ExportParams {
      * Options for the destination of the exported transctions file.
      * It could be stored on the {@link #SD_CARD} or exported through another program via {@link #SHARING}
      */
-    public enum ExportTarget {SD_CARD, SHARING, DROPBOX, GOOGLE_DRIVE, OWNCLOUD }
+    public enum ExportTarget {SD_CARD, SHARING, DROPBOX, GOOGLE_DRIVE, OWNCLOUD, URI}
 
     /**
      * Format to use for the exported transactions
@@ -58,6 +60,12 @@ public class ExportParams {
      * Destination for the exported transactions
      */
     private ExportTarget mExportTarget      = ExportTarget.SHARING;
+
+    /**
+     * Location to save the file name being exported.
+     * This is typically a Uri and used for {@link ExportTarget#URI} target
+     */
+    private String mExportLocation;
 
     /**
      * Creates a new set of paramters and specifies the export format
@@ -132,10 +140,28 @@ public class ExportParams {
         this.mExportTarget = mExportTarget;
     }
 
+    /**
+     * Return the location where the file should be exported to.
+     * When used with {@link ExportTarget#URI}, the returned value will be a URI which can be parsed
+     * with {@link Uri#parse(String)}
+     * @return String representing export file destination.
+     */
+    public String getExportLocation(){
+        return mExportLocation;
+    }
+
+    /**
+     * Set the location where to export the file
+     * @param exportLocation Destination of the export
+     */
+    public void setExportLocation(String exportLocation){
+        mExportLocation = exportLocation;
+    }
+
     @Override
     public String toString() {
         return "Export all transactions created since " + TimestampHelper.getUtcStringFromTimestamp(mExportStartTime) + " UTC"
-                + " as "+ mExportFormat.name() + " to " + mExportTarget.name();
+                + " as "+ mExportFormat.name() + " to " + mExportTarget.name() + (mExportLocation != null ? " (" + mExportLocation +")" : "");
     }
 
     /**
@@ -146,9 +172,11 @@ public class ExportParams {
     public String toCsv(){
         String separator = ";";
 
-        return mExportFormat.name() + separator + mExportTarget.name() + separator
+        return mExportFormat.name() + separator
+                + mExportTarget.name() + separator
                 + TimestampHelper.getUtcStringFromTimestamp(mExportStartTime) + separator
-                + Boolean.toString(mDeleteTransactionsAfterExport);
+                + Boolean.toString(mDeleteTransactionsAfterExport) + separator
+                + (mExportLocation != null ? mExportLocation : "");
     }
 
     /**
@@ -162,7 +190,9 @@ public class ExportParams {
         params.setExportTarget(ExportTarget.valueOf(tokens[1]));
         params.setExportStartTime(TimestampHelper.getTimestampFromUtcString(tokens[2]));
         params.setDeleteTransactionsAfterExport(Boolean.parseBoolean(tokens[3]));
-
+        if (tokens.length == 5){
+            params.setExportLocation(tokens[4]);
+        }
         return params;
     }
 }

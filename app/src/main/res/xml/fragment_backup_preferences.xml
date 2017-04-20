@@ -17,6 +17,9 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
     <PreferenceCategory android:title="@string/title_backup_preference_category">
+        <Preference android:title="Select backup file"
+                    android:key="@string/key_backup_location"
+                    android:summary="Select a location for automatic backups" />
         <Preference android:title="@string/title_create_backup_pref"
             android:key="@string/key_create_backup"
             android:summary="@string/summary_create_backup_pref" />
