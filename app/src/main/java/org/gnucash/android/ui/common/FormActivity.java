@@ -38,6 +38,7 @@ import org.gnucash.android.ui.passcode.PasscodeLockActivity;
 import org.gnucash.android.ui.transaction.SplitEditorFragment;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.util.widget.CalculatorKeyboard;
+import org.gnucash.android.util.BookUtils;
 
 /**
  * Activity for displaying forms in the application.
@@ -61,7 +62,7 @@ public class FormActivity extends PasscodeLockActivity {
         //if a parameter was passed to open an account within a specific book, then switch
         String bookUID = getIntent().getStringExtra(UxArgument.BOOK_UID);
         if (bookUID != null && !bookUID.equals(BooksDbAdapter.getInstance().getActiveBookUID())){
-            GnuCashApplication.activateBook(bookUID);
+            BookUtils.activateBook(bookUID);
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

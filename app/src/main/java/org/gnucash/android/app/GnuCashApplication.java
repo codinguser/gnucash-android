@@ -53,7 +53,6 @@ import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.service.ScheduledActionService;
-import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.settings.PreferenceActivity;
 
 import java.util.Currency;
@@ -141,7 +140,7 @@ public class GnuCashApplication extends MultiDexApplication {
      * Initialize database adapter singletons for use in the application
      * This method should be called every time a new book is opened
      */
-    private static void initializeDatabaseAdapters() {
+    public static void initializeDatabaseAdapters() {
         if (mDbHelper != null){ //close if open
             mDbHelper.getReadableDatabase().close();
         }
@@ -206,24 +205,6 @@ public class GnuCashApplication extends MultiDexApplication {
 
     public static BooksDbAdapter getBooksDbAdapter(){
         return mBooksDbAdapter;
-    }
-
-    /**
-     * Loads the book with GUID {@code bookUID} and opens the AccountsActivity
-     * @param bookUID GUID of the book to be loaded
-     */
-    public static void loadBook(@NonNull String bookUID){
-        activateBook(bookUID);
-        AccountsActivity.start(getAppContext());
-    }
-
-    /**
-     * Activates the book with unique identifer {@code bookUID}, and refreshes the database adapters
-     * @param bookUID GUID of the book to be activated
-     */
-    public static void activateBook(@NonNull String bookUID){
-        mBooksDbAdapter.setActive(bookUID);
-        initializeDatabaseAdapters();
     }
 
     /**

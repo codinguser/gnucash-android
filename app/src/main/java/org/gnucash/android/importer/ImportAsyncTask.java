@@ -31,10 +31,10 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.ui.util.TaskDelegate;
+import org.gnucash.android.util.BookUtils;
 
 import java.io.InputStream;
 
@@ -138,7 +138,7 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
         Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
 
         if (mImportedBookUID != null)
-            GnuCashApplication.loadBook(mImportedBookUID);
+            BookUtils.loadBook(mImportedBookUID);
 
         if (mDelegate != null)
             mDelegate.onTaskComplete();

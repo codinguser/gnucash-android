@@ -54,6 +54,7 @@ import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.common.Refreshable;
+import org.gnucash.android.util.BookUtils;
 import org.gnucash.android.util.PreferencesHelper;
 
 import java.sql.Timestamp;
@@ -172,7 +173,7 @@ public class BookManagerFragment extends ListFragment implements
                 public void onClick(View v) {
                     //do nothing if the active book is tapped
                     if (!BooksDbAdapter.getInstance().getActiveBookUID().equals(bookUID)) {
-                        GnuCashApplication.loadBook(bookUID);
+                        BookUtils.loadBook(bookUID);
                     }
                 }
             });

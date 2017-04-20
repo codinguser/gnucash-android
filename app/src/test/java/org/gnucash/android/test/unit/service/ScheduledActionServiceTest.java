@@ -45,6 +45,7 @@ import org.gnucash.android.service.ScheduledActionService;
 import org.gnucash.android.test.unit.testutil.GnucashTestRunner;
 import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
 import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
+import org.gnucash.android.util.BookUtils;
 import org.gnucash.android.util.TimestampHelper;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
@@ -88,7 +89,7 @@ public class ScheduledActionServiceTest {
     public void createAccounts(){
         try {
             String bookUID = GncXmlImporter.parse(GnuCashApplication.getAppContext().getResources().openRawResource(R.raw.default_accounts));
-            GnuCashApplication.loadBook(bookUID);
+            BookUtils.loadBook(bookUID);
             //initAdapters(bookUID);
         } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();

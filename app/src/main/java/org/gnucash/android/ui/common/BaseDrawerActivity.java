@@ -49,6 +49,7 @@ import org.gnucash.android.ui.passcode.PasscodeLockActivity;
 import org.gnucash.android.ui.report.ReportsActivity;
 import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
+import org.gnucash.android.util.BookUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -104,7 +105,7 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
         //if a parameter was passed to open an account within a specific book, then switch
         String bookUID = getIntent().getStringExtra(UxArgument.BOOK_UID);
         if (bookUID != null && !bookUID.equals(BooksDbAdapter.getInstance().getActiveBookUID())){
-            GnuCashApplication.activateBook(bookUID);
+            BookUtils.activateBook(bookUID);
         }
 
         ButterKnife.bind(this);
@@ -324,7 +325,7 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
         BooksDbAdapter booksDbAdapter = BooksDbAdapter.getInstance();
         String bookUID = booksDbAdapter.getUID(id);
         if (!bookUID.equals(booksDbAdapter.getActiveBookUID())){
-            GnuCashApplication.loadBook(bookUID);
+            BookUtils.loadBook(bookUID);
             finish();
         }
         AccountsActivity.start(GnuCashApplication.getAppContext());
