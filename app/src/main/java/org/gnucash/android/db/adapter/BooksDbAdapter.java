@@ -31,6 +31,9 @@ import org.gnucash.android.model.Book;
 import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.util.TimestampHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Database adapter for creating/modifying book entries
  */
@@ -161,6 +164,17 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
         }
     }
 
+    public @NonNull List<String> getAllBookUIDs(){
+        List<String> bookUIDs = new ArrayList<>();
+        try (Cursor cursor = mDb.query(true, mTableName, new String[]{BookEntry.COLUMN_UID},
+                null, null, null, null, null, null)) {
+            while (cursor.moveToNext()) {
+                bookUIDs.add(cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_UID)));
+            }
+        }
+
+        return bookUIDs;
+    }
 
     /**
      * Return the name of the currently active book.

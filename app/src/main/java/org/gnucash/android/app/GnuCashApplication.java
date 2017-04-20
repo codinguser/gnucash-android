@@ -40,7 +40,6 @@ import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.db.BookDbHelper;
 import org.gnucash.android.db.DatabaseHelper;
-import org.gnucash.android.db.MigrationHelper;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.BudgetAmountsDbAdapter;
@@ -357,7 +356,7 @@ public class GnuCashApplication extends MultiDexApplication {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 SystemClock.elapsedRealtime() + AlarmManager.INTERVAL_FIFTEEN_MINUTES,
-                AlarmManager.INTERVAL_HALF_DAY, pendingIntent);
+                AlarmManager.INTERVAL_HOUR, pendingIntent);
 
         context.startService(alarmIntent); //run the service the first time
     }

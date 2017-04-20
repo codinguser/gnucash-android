@@ -22,7 +22,6 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.LayoutRes;
@@ -233,16 +232,13 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
     protected void onDrawerMenuItemClicked(int itemId) {
         switch (itemId){
             case R.id.nav_item_open: { //Open... files
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-                    //use the storage access framework
-                    Intent openDocument = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                    openDocument.addCategory(Intent.CATEGORY_OPENABLE);
-                    openDocument.setType("*/*");
-                    startActivityForResult(openDocument, REQUEST_OPEN_DOCUMENT);
-
-                } else {
-                    AccountsActivity.startXmlFileChooser(this);
-                }
+                //use the storage access framework
+                Intent openDocument = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                openDocument.addCategory(Intent.CATEGORY_OPENABLE);
+                openDocument.setType("text/*|application/*");
+                String[] mimeTypes = {"text/*", "application/*"};
+                openDocument.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+                startActivityForResult(openDocument, REQUEST_OPEN_DOCUMENT);
             }
             break;
 
