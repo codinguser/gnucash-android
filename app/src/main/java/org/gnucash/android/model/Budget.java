@@ -204,6 +204,7 @@ public class Budget extends BaseModel {
         LocalDateTime localDate = new LocalDateTime();
         int interval = mRecurrence.getPeriodType().getMultiplier();
         switch (mRecurrence.getPeriodType()){
+            //TODO:HOUR
             case DAY:
                 localDate = localDate.millisOfDay().withMinimumValue().plusDays(interval);
                 break;
@@ -228,6 +229,7 @@ public class Budget extends BaseModel {
         LocalDateTime localDate = new LocalDateTime();
         int interval = mRecurrence.getPeriodType().getMultiplier();
         switch (mRecurrence.getPeriodType()){
+            //TODO:HOUR
             case DAY:
                 localDate = localDate.millisOfDay().withMaximumValue().plusDays(interval);
                 break;
@@ -248,6 +250,7 @@ public class Budget extends BaseModel {
         LocalDateTime localDate = new LocalDateTime(mRecurrence.getPeriodStart().getTime());
         int interval = mRecurrence.getPeriodType().getMultiplier() * periodNum;
         switch (mRecurrence.getPeriodType()){
+            //TODO:HOUR
             case DAY:
                 localDate = localDate.millisOfDay().withMinimumValue().plusDays(interval);
                 break;
@@ -273,6 +276,7 @@ public class Budget extends BaseModel {
         LocalDateTime localDate = new LocalDateTime();
         int interval = mRecurrence.getPeriodType().getMultiplier() * periodNum;
         switch (mRecurrence.getPeriodType()){
+            //TODO:HOUR
             case DAY:
                 localDate = localDate.millisOfDay().withMaximumValue().plusDays(interval);
                 break;

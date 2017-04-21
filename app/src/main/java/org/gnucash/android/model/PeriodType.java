@@ -32,7 +32,7 @@ import java.util.Locale;
  * @see org.gnucash.android.model.ScheduledAction
 */
 public enum PeriodType {
-    DAY, WEEK, MONTH, YEAR; // TODO: 22.10.2015 add support for hourly
+    HOUR, DAY, WEEK, MONTH, YEAR;
 
     int mMultiplier = 1; //multiplier for the period type
 
@@ -43,7 +43,7 @@ public enum PeriodType {
      */
     public static PeriodType parse(long period){
         PeriodType periodType = DAY;
-        int result = (int) (period/ RecurrenceParser.YEAR_MILLIS);
+        int result = (int) (period/RecurrenceParser.YEAR_MILLIS);
         if (result > 0) {
             periodType = YEAR;
             periodType.setMultiplier(result);
@@ -67,6 +67,13 @@ public enum PeriodType {
         result = (int) (period/RecurrenceParser.DAY_MILLIS);
         if (result > 0) {
             periodType = DAY;
+            periodType.setMultiplier(result);
+            return periodType;
+        }
+
+        result = (int) (period/RecurrenceParser.HOUR_MILLIS);
+        if (result > 0) {
+            periodType = HOUR;
             periodType.setMultiplier(result);
             return periodType;
         }
@@ -99,6 +106,8 @@ public enum PeriodType {
      */
     public String getFrequencyDescription() {
         switch (this) {
+            case HOUR:
+                return "HOURLY";
             case DAY:
                 return "DAILY";
             case WEEK:
@@ -120,6 +129,8 @@ public enum PeriodType {
         Resources res = GnuCashApplication.getAppContext().getResources();
         //todo: take multiplier into account here
         switch (this) {
+            case HOUR:
+                return res.getQuantityString(R.plurals.label_every_x_hours, mMultiplier, mMultiplier);
             case DAY:
                 return res.getQuantityString(R.plurals.label_every_x_days, mMultiplier, mMultiplier);
             case WEEK:
@@ -142,6 +153,8 @@ public enum PeriodType {
     public String getByParts(long startTime){
         String partString = "";
         switch (this){
+            case HOUR:
+                break;
             case DAY:
                 break;
             case WEEK:

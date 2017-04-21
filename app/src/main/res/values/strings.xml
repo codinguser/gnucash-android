@@ -316,6 +316,10 @@
     <string name="owncloud_server_ok">OC server OK</string>
     <string name="owncloud_user_ok">OC username/password OK</string>
     <string name="owncloud_dir_ok">Dir name OK</string>
+    <plurals name="label_every_x_hours">
+        <item quantity="one">Hourly</item>
+        <item quantity="other">Every %d hours</item>
+    </plurals>
     <plurals name="label_every_x_days">
         <item quantity="one">Daily</item>
         <item quantity="other">Every %d days</item>

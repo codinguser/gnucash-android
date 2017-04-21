@@ -22,6 +22,7 @@ import android.support.annotation.NonNull;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.ui.util.RecurrenceParser;
+import org.joda.time.Hours;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -111,6 +112,9 @@ public class Recurrence extends BaseModel {
     public long getPeriod(){
         long baseMillis = 0;
         switch (mPeriodType){
+            case HOUR:
+                baseMillis = RecurrenceParser.HOUR_MILLIS;
+                break;
             case DAY:
                 baseMillis = RecurrenceParser.DAY_MILLIS;
                 break;
@@ -206,6 +210,7 @@ public class Recurrence extends BaseModel {
         int interval = mPeriodType.getMultiplier() - 1;
         LocalDate endDate = null;
         switch (mPeriodType){
+            //TODO:HOUR
             case DAY:
                 endDate = new LocalDate(System.currentTimeMillis()).plusDays(interval);
                 break;
@@ -235,7 +240,7 @@ public class Recurrence extends BaseModel {
         int interval = mPeriodType.getMultiplier();
         //// TODO: 15.08.2016 Why do we add the number of periods. maybe rename method or param
         switch (mPeriodType){
-
+            // TODO:HOUR
             case DAY:
                 return 1;
             case WEEK:
@@ -257,17 +262,18 @@ public class Recurrence extends BaseModel {
      * @return String of current period
      */
     public String getTextOfCurrentPeriod(int periodNum){
-        LocalDate startDate = new LocalDate(mPeriodStart.getTime());
+        LocalDateTime startDateTime = new LocalDateTime(mPeriodStart.getTime());
         switch (mPeriodType){
-
+            case HOUR:
+                return startDateTime.hourOfDay().getAsText();
             case DAY:
-                return startDate.dayOfWeek().getAsText();
+                return startDateTime.dayOfWeek().getAsText();
             case WEEK:
-                return startDate.weekOfWeekyear().getAsText();
+                return startDateTime.weekOfWeekyear().getAsText();
             case MONTH:
-                return startDate.monthOfYear().getAsText();
+                return startDateTime.monthOfYear().getAsText();
             case YEAR:
-                return startDate.year().getAsText();
+                return startDateTime.year().getAsText();
         }
         return "Period " + periodNum;
     }
@@ -308,6 +314,9 @@ public class Recurrence extends BaseModel {
         int multiple = mPeriodType.getMultiplier();
         ReadablePeriod jodaPeriod;
         switch (mPeriodType){
+            case HOUR:
+                jodaPeriod = Hours.hours(multiple);
+                break;
             case DAY:
                 jodaPeriod = Days.days(multiple);
                 break;
@@ -338,6 +347,8 @@ public class Recurrence extends BaseModel {
         LocalDateTime startDate = new LocalDateTime(mPeriodStart.getTime());
         LocalDateTime endDate = new LocalDateTime(mPeriodEnd.getTime());
         switch (mPeriodType){
+            case HOUR:
+                return Hours.hoursBetween(startDate, endDate).dividedBy(multiplier).getHours();
             case DAY:
                 return Days.daysBetween(startDate, endDate).dividedBy(multiplier).getDays();
             case WEEK:
@@ -361,6 +372,9 @@ public class Recurrence extends BaseModel {
         LocalDateTime endDate;
         int occurrenceDuration = numberOfOccurences * mPeriodType.getMultiplier();
         switch (mPeriodType){
+            case HOUR:
+                endDate = localDate.plusHours(occurrenceDuration);
+                break;
             case DAY:
                 endDate = localDate.plusDays(occurrenceDuration);
                 break;
