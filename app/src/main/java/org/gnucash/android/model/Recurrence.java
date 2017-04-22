@@ -344,19 +344,19 @@ public class Recurrence extends BaseModel {
         //this solution does not use looping, but is not very accurate
 
         int multiplier = mPeriodType.getMultiplier();
-        LocalDateTime startDate = new LocalDateTime(mPeriodStart.getTime());
-        LocalDateTime endDate = new LocalDateTime(mPeriodEnd.getTime());
+        LocalDateTime startDateTime = new LocalDateTime(mPeriodStart.getTime());
+        LocalDateTime endDateTime = new LocalDateTime(mPeriodEnd.getTime());
         switch (mPeriodType){
             case HOUR:
-                return Hours.hoursBetween(startDate, endDate).dividedBy(multiplier).getHours();
+                return Hours.hoursBetween(startDateTime, endDateTime).dividedBy(multiplier).getHours();
             case DAY:
-                return Days.daysBetween(startDate, endDate).dividedBy(multiplier).getDays();
+                return Days.daysBetween(startDateTime, endDateTime).dividedBy(multiplier).getDays();
             case WEEK:
-                return Weeks.weeksBetween(startDate, endDate).dividedBy(multiplier).getWeeks();
+                return Weeks.weeksBetween(startDateTime, endDateTime).dividedBy(multiplier).getWeeks();
             case MONTH:
-                return Months.monthsBetween(startDate, endDate).dividedBy(multiplier).getMonths();
+                return Months.monthsBetween(startDateTime, endDateTime).dividedBy(multiplier).getMonths();
             case YEAR:
-                return Years.yearsBetween(startDate, endDate).dividedBy(multiplier).getYears();
+                return Years.yearsBetween(startDateTime, endDateTime).dividedBy(multiplier).getYears();
             default:
                 return -1;
         }
@@ -368,28 +368,28 @@ public class Recurrence extends BaseModel {
      * @param numberOfOccurences Number of occurences from the start time
      */
     public void setPeriodEnd(int numberOfOccurences){
-        LocalDateTime localDate = new LocalDateTime(mPeriodStart.getTime());
-        LocalDateTime endDate;
+        LocalDateTime localDateTime = new LocalDateTime(mPeriodStart.getTime());
+        LocalDateTime endDateTime;
         int occurrenceDuration = numberOfOccurences * mPeriodType.getMultiplier();
         switch (mPeriodType){
             case HOUR:
-                endDate = localDate.plusHours(occurrenceDuration);
+                endDateTime = localDateTime.plusHours(occurrenceDuration);
                 break;
             case DAY:
-                endDate = localDate.plusDays(occurrenceDuration);
+                endDateTime = localDateTime.plusDays(occurrenceDuration);
                 break;
             case WEEK:
-                endDate = localDate.plusWeeks(occurrenceDuration);
+                endDateTime = localDateTime.plusWeeks(occurrenceDuration);
                 break;
             default:
             case MONTH:
-                endDate = localDate.plusMonths(occurrenceDuration);
+                endDateTime = localDateTime.plusMonths(occurrenceDuration);
                 break;
             case YEAR:
-                endDate = localDate.plusYears(occurrenceDuration);
+                endDateTime = localDateTime.plusYears(occurrenceDuration);
                 break;
         }
-        mPeriodEnd = new Timestamp(endDate.toDateTime().getMillis());
+        mPeriodEnd = new Timestamp(endDateTime.toDateTime().getMillis());
     }
 
     /**
