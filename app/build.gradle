@@ -85,6 +85,7 @@ android {
         }
         debug {
             debuggable true
+            minifyEnabled false
 //            testCoverageEnabled true
             signingConfig signingConfigs.debug
         }

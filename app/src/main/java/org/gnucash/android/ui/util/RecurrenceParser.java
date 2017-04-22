@@ -38,10 +38,12 @@ import java.util.List;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class RecurrenceParser {
+    //these are time millisecond constants which are used for scheduled actions.
+    //they may not be calendar accurate, but they serve the purpose for scheduling approximate time for background service execution
     public static final long SECOND_MILLIS  = 1000;
     public static final long MINUTE_MILLIS  = 60 * SECOND_MILLIS;
     public static final long HOUR_MILLIS    = 60 * MINUTE_MILLIS;
-    public static final long DAY_MILLIS     = 24 * 60 * MINUTE_MILLIS;
+    public static final long DAY_MILLIS     = 24 * HOUR_MILLIS;
     public static final long WEEK_MILLIS    = 7 * DAY_MILLIS;
     public static final long MONTH_MILLIS   = 30 * DAY_MILLIS;
     public static final long YEAR_MILLIS    = 12 * MONTH_MILLIS;

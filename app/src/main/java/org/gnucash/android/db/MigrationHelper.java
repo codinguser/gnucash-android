@@ -1468,6 +1468,18 @@ public class MigrationHelper {
                 .putBoolean(keyUseCompactView, useCompactTrnView)
                 .apply();
 
+        rescheduleServiceAlarm();
+
+
+        return oldVersion;
+    }
+
+    /**
+     * Cancel the existing alarm for the scheduled service and restarts/reschedules the service
+     */
+    private static void rescheduleServiceAlarm() {
+        Context context = GnuCashApplication.getAppContext();
+
         //cancel the existing pending intent so that the alarm can be rescheduled
         Intent alarmIntent = new Intent(context, ScheduledActionService.class);
         PendingIntent pendingIntent = PendingIntent.getService(context, 0, alarmIntent, PendingIntent.FLAG_NO_CREATE);
@@ -1477,9 +1489,7 @@ public class MigrationHelper {
             pendingIntent.cancel();
         }
 
-        GnuCashApplication.startScheduledActionExecutionService(GnuCashApplication.getAppContext());
-
-        return oldVersion;
+        GnuCashApplication.startScheduledActionExecutionService(context);
     }
 
     /**
@@ -1508,6 +1518,9 @@ public class MigrationHelper {
                 throw new IOException(String.format("Target directory %s does not exist and could not be created", dstDir.getPath()));
             }
         }
+
+        if (srcDir.listFiles() == null) //nothing to see here, move along
+            return;
 
         for (File src : srcDir.listFiles()){
             if (src.isDirectory()){
@@ -1583,7 +1596,7 @@ public class MigrationHelper {
      * @return New database version, 14 if migration succeeds, 13 otherwise
      */
     static int upgradeDbToVersion15(SQLiteDatabase db) {
-        Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 14");
+        Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 15");
         int dbVersion = 14;
 
         db.beginTransaction();
@@ -1602,6 +1615,9 @@ public class MigrationHelper {
         } finally {
             db.endTransaction();
         }
+
+        //the default interval has been changed from daily to hourly with this release. So reschedule alarm
+        rescheduleServiceAlarm();
         return dbVersion;
     }
 }

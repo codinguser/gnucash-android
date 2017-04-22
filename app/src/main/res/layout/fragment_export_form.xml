@@ -42,7 +42,7 @@
                 android:gravity="center_vertical"
                 style="@style/TextAppearance.EditTransaction_Small" />
 
-            <Spinner android:id="@+id/spinner_export_destination"
+            <org.gnucash.android.ui.util.widget.ReselectSpinner android:id="@+id/spinner_export_destination"
                 android:layout_marginLeft="15dp"
                 android:layout_height="?android:attr/listPreferredItemHeight"
                 android:layout_width="match_parent" />

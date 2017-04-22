@@ -37,7 +37,18 @@ public class ExportParams {
      * Options for the destination of the exported transctions file.
      * It could be stored on the {@link #SD_CARD} or exported through another program via {@link #SHARING}
      */
-    public enum ExportTarget {SD_CARD, SHARING, DROPBOX, GOOGLE_DRIVE, OWNCLOUD, URI}
+    public enum ExportTarget {SD_CARD("SD Card"), SHARING("External Service"),
+        DROPBOX("Dropbox"), GOOGLE_DRIVE("Google Drive"), OWNCLOUD("ownCloud"),
+        URI("Sync Service");
+        private String mDescription;
+        ExportTarget(String description){
+            mDescription = description;
+        }
+
+        public String getDescription(){
+            return mDescription;
+        }
+    }
 
     /**
      * Format to use for the exported transactions

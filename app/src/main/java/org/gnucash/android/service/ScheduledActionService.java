@@ -181,13 +181,15 @@ public class ScheduledActionService extends IntentService {
         ExportParams params = ExportParams.parseCsv(scheduledAction.getTag());
         // HACK: the tag isn't updated with the new date, so set the correct by hand
         params.setExportStartTime(new Timestamp(scheduledAction.getLastRunTime()));
+        Boolean result = false;
         try {
             //wait for async task to finish before we proceed (we are holding a wake lock)
-            new ExportAsyncTask(GnuCashApplication.getAppContext(), db).execute(params).get();
+            result = new ExportAsyncTask(GnuCashApplication.getAppContext(), db).execute(params).get();
         } catch (InterruptedException | ExecutionException e) {
             Crashlytics.logException(e);
             Log.e(LOG_TAG, e.getMessage());
         }
+        Log.i(LOG_TAG, "Backup/export did not occur. There might have beeen no new transactions to export or it might have crashed");
         return 1;
     }
 

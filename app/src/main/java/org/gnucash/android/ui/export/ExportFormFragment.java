@@ -138,6 +138,7 @@ public class ExportFormFragment extends Fragment implements
 	@BindView(R.id.radio_qif_format) RadioButton mQifRadioButton;
 	@BindView(R.id.radio_xml_format) RadioButton mXmlRadioButton;
 
+	@BindView(R.id.recurrence_options) View mRecurrenceOptionsView;
 	/**
 	 * Event recurrence options
 	 */
@@ -321,19 +322,19 @@ public class ExportFormFragment extends Fragment implements
 		mDestinationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				View recurrenceOptionsView = getView().findViewById(R.id.recurrence_options);
+				if (view == null) //the item selection is fired twice by the Android framework. Ignore the first one
+					return;
 				switch (position) {
 					case 0:
 						mExportTarget = ExportParams.ExportTarget.URI;
-						recurrenceOptionsView.setVisibility(View.VISIBLE);
+						mRecurrenceOptionsView.setVisibility(View.VISIBLE);
 						if (mExportUri != null)
-							mTargetUriTextView.setText(mExportUri.toString());
-						else
-							selectExportFile();
+							setExportUriText(mExportUri.toString());
+						selectExportFile();
 						break;
 					case 1: //DROPBOX
-						mTargetUriTextView.setText("Export to /Apps/GnuCash folder on Dropbox");
-						recurrenceOptionsView.setVisibility(View.VISIBLE);
+						setExportUriText(getString(R.string.label_dropbox_export_destination));
+						mRecurrenceOptionsView.setVisibility(View.VISIBLE);
 						mExportTarget = ExportParams.ExportTarget.DROPBOX;
 						String dropboxAppKey = getString(R.string.dropbox_app_key, BackupPreferenceFragment.DROPBOX_APP_KEY);
 						String dropboxAppSecret = getString(R.string.dropbox_app_secret, BackupPreferenceFragment.DROPBOX_APP_SECRET);
@@ -343,8 +344,8 @@ public class ExportFormFragment extends Fragment implements
 						}
 						break;
 					case 2:
-						mTargetUriTextView.setText("");
-						recurrenceOptionsView.setVisibility(View.VISIBLE);
+						setExportUriText(null);
+						mRecurrenceOptionsView.setVisibility(View.VISIBLE);
 						mExportTarget = ExportParams.ExportTarget.OWNCLOUD;
 						if(!(PreferenceManager.getDefaultSharedPreferences(getActivity())
 								.getBoolean(getString(R.string.key_owncloud_sync), false))) {
@@ -353,8 +354,9 @@ public class ExportFormFragment extends Fragment implements
 						}
 						break;
 					case 3:
+						setExportUriText(getString(R.string.label_select_destination_after_export));
 						mExportTarget = ExportParams.ExportTarget.SHARING;
-						recurrenceOptionsView.setVisibility(View.GONE);
+						mRecurrenceOptionsView.setVisibility(View.GONE);
 						break;
 
 					default:
@@ -476,6 +478,20 @@ public class ExportFormFragment extends Fragment implements
 			mXmlRadioButton.setVisibility(View.GONE);
 		}
 
+	}
+
+	/**
+	 * Display the file path of the file where the export will be saved
+	 * @param filepath Path to export file. If {@code null}, the view will be hidden and nothing displayed
+	 */
+	private void setExportUriText(String filepath){
+		if (filepath == null){
+			mTargetUriTextView.setVisibility(View.GONE);
+			mTargetUriTextView.setText("");
+		} else {
+			mTargetUriTextView.setText(filepath);
+			mTargetUriTextView.setVisibility(View.VISIBLE);
+		}
 	}
 
 	/**

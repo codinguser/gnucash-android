@@ -45,6 +45,7 @@
             android:ellipsize="end"
             android:text="@string/label_transaction_name"
             style="@style/ListItemText"
+            android:textSize="15sp"
             />
 
         <TextView
