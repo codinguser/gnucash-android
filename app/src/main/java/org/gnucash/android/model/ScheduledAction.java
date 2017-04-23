@@ -24,6 +24,7 @@ import org.joda.time.LocalDateTime;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -224,7 +225,7 @@ public class ScheduledAction extends BaseModel{
                 nextScheduledExecution = nextScheduledExecution.plusDays(multiplier);
                 break;
             case WEEK:
-                nextScheduledExecution = nextScheduledExecution.plusWeeks(multiplier);
+                nextScheduledExecution = computeNextWeeklyExecutionStartingAt(nextScheduledExecution);
                 break;
             case MONTH:
                 nextScheduledExecution = nextScheduledExecution.plusMonths(multiplier);
@@ -234,6 +235,43 @@ public class ScheduledAction extends BaseModel{
                 break;
         }
         return nextScheduledExecution.toDate().getTime();
+    }
+
+    /**
+     * Computes the next time that this weekly scheduled action is supposed to be
+     * executed starting at startTime.
+     *
+     * @param startTime LocalDateTime to use as start to compute the next schedule.
+     *
+     * @return Next run time as a LocalDateTime
+     */
+    @NonNull
+    private LocalDateTime computeNextWeeklyExecutionStartingAt(LocalDateTime startTime) {
+        // Look into the week of startTime for another scheduled weekday
+        for (int weekDay : mRecurrence.getByDays() ) {
+            int jodaWeekDay = convertCalendarWeekdayToJoda(weekDay);
+            LocalDateTime candidateNextDueTime = startTime.withDayOfWeek(jodaWeekDay);
+            if (candidateNextDueTime.isAfter(startTime))
+                return candidateNextDueTime;
+        }
+
+        // Return the first scheduled weekday from the next due week
+        int firstScheduledWeekday = convertCalendarWeekdayToJoda(mRecurrence.getByDays().get(0));
+        return startTime.plusWeeks(mRecurrence.getMultiplier())
+                        .withDayOfWeek(firstScheduledWeekday);
+    }
+
+    /**
+     * Converts a java.util.Calendar weekday constant to the
+     * org.joda.time.DateTimeConstants equivalent.
+     *
+     * @param calendarWeekday weekday constant from java.util.Calendar
+     * @return weekday constant equivalent from org.joda.time.DateTimeConstants
+     */
+    private int convertCalendarWeekdayToJoda(int calendarWeekday) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DAY_OF_WEEK, calendarWeekday);
+        return LocalDateTime.fromCalendarFields(cal).getDayOfWeek();
     }
 
     /**
