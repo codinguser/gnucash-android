@@ -195,7 +195,7 @@ public class BookManagerFragment extends ListFragment implements
                         public boolean onMenuItemClick(MenuItem item) {
                             switch (item.getItemId()) {
                                 case R.id.ctx_menu_rename_book:
-                                    return handleMenuRenameBook(context, bookName, bookUID);
+                                    return handleMenuRenameBook(bookName, bookUID);
                                 case R.id.ctx_menu_sync_book:
                                     //TODO implement sync
                                     return false;
@@ -238,20 +238,24 @@ public class BookManagerFragment extends ListFragment implements
             });
         }
 
-        private boolean handleMenuRenameBook(Context context, String bookName, final String bookUID) {
-            final EditText nameEditText = new EditText(context);
-            nameEditText.setText(bookName);
-
+        /**
+         * Opens a dialog for renaming a book
+         * @param bookName Current name of the book
+         * @param bookUID GUID of the book
+         * @return {@code true}
+         */
+        private boolean handleMenuRenameBook(String bookName, final String bookUID) {
             AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
             dialogBuilder.setTitle(R.string.title_rename_book)
-                .setView(nameEditText)
+                .setView(R.layout.dialog_rename_book)
                 .setPositiveButton(R.string.btn_rename, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        EditText bookTitle = (EditText) ((AlertDialog)dialog).findViewById(R.id.input_book_title);
                         BooksDbAdapter.getInstance()
                                 .updateRecord(bookUID,
                                         BookEntry.COLUMN_DISPLAY_NAME,
-                                        nameEditText.getText().toString());
+                                        bookTitle.getText().toString().trim());
                         refresh();
                     }
                 })
@@ -263,6 +267,7 @@ public class BookManagerFragment extends ListFragment implements
                 });
             AlertDialog dialog = dialogBuilder.create();
             dialog.show();
+            ((TextView)dialog.findViewById(R.id.input_book_title)).setText(bookName);
             return true;
         }
 
