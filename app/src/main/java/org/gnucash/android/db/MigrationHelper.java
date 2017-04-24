@@ -1616,6 +1616,14 @@ public class MigrationHelper {
             db.endTransaction();
         }
 
+        //remove previously saved export destination index because the number of destinations has changed
+        //an invalid value would lead to crash on start
+        Context context = GnuCashApplication.getAppContext();
+        android.preference.PreferenceManager.getDefaultSharedPreferences(context)
+                .edit()
+                .remove(context.getString(R.string.key_last_export_destination))
+                .apply();
+
         //the default interval has been changed from daily to hourly with this release. So reschedule alarm
         rescheduleServiceAlarm();
         return dbVersion;
