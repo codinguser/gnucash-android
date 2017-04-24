@@ -18,7 +18,7 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="title_create_account">Crea conto</string>
   <string name="title_edit_account">Modifica conto</string>
-    <string name="description_add_transaction_icon">Aggiungi una nuova transazione al conto</string>
+  <string name="description_add_transaction_icon">Aggiungi una nuova transazione al conto</string>
   <string name="description_view_account_icon">Visualizza i dettagli dell\'account</string>
   <string name="label_no_accounts">Nessun conto da visualizzare</string>
   <string name="label_account_name">Nome conto</string>
@@ -34,7 +34,7 @@
   <string name="label_transaction_amount">Importo</string>
   <string name="title_add_transaction">Nuova transazione</string>
   <string name="label_no_transactions">Nessuna transazione da visualizzare</string>
-    <string name="label_debit">DEBITO</string>
+  <string name="label_debit">DEBITO</string>
   <string name="label_credit">CREDITO</string>
   <string name="title_accounts">Conti</string>
   <string name="title_transactions">Transazioni</string>
@@ -43,29 +43,28 @@
   <string name="alert_dialog_cancel">Annulla</string>
   <string name="toast_account_deleted">Conto eliminato</string>
   <string name="title_confirm_delete">Conferma eliminazione</string>
-    <string name="title_edit_transaction">Modifica transazione</string>
+  <string name="title_edit_transaction">Modifica transazione</string>
   <string name="label_transaction_description">Aggiungi nota</string>
-    <string name="title_selected">%1$d selezionate</string>
+  <string name="title_selected">%1$d selezionate</string>
   <string name="label_account_balance">Bilancio:</string>
   <string name="label_export_destination">Esporta su:</string>
   <string name="title_export_dialog">Esporta transazioni</string>
-    <string name="hint_export_choice">Per impostazione predefinita, verranno esportate solo le transazioni dall\'ultima esportazione. Selezionare questa opzione per esportare tutte le transazioni</string>
+  <string name="hint_export_choice">Per impostazione predefinita, verranno esportate solo le transazioni dall\'ultima esportazione. Selezionare questa opzione per esportare tutte le transazioni</string>
   <string name="toast_export_error">Errore nell\'esportazione del file %1$s</string>
   <string name="btn_export">Esporta</string>
   <string name="option_delete_after_export">Elimina le transazioni dopo l\'esportazione</string>
   <string name="hint_delete_after_export">Tutte le transazioni esportate verranno eliminate al termine dell\'esportazione</string>
   <string name="title_settings">Impostazioni</string>
   <string-array name="export_destinations">
-    <item>Scheda SD</item>
+    <item>Save As&#8230;</item>
     <item>Dropbox</item>
-    <item>Google Drive</item>
     <item>ownCloud</item>
-    <item>Invia a&#8230;</item>
+    <item>Send to&#8230;</item>
   </string-array>
   <string name="btn_move">Sposta</string>
   <string name="title_move_transactions">Sposta %1$d transazioni</string>
   <string name="label_move_destination">Conto di destinazione</string>
-    <string name="toast_incompatible_currency">Impossibile spostare le transazioni.\nIl conto di destinazione ha una valuta diversa dal conto di origine</string>
+  <string name="toast_incompatible_currency">Impossibile spostare le transazioni.\nIl conto di destinazione ha una valuta diversa dal conto di origine</string>
   <string name="header_general_settings">Generali</string>
   <string name="header_about_gnucash">Informazioni</string>
   <string name="title_choose_currency">Scegli valuta predefinita</string>
@@ -80,16 +79,17 @@
   <string name="label_display_account">Visualizza conto</string>
   <string name="label_hide_account_balance">Nascondi il saldo del conto nel widget</string>
   <string name="btn_create_accounts">Crea conti</string>
-    <string name="error_no_accounts">Non esiste alcun conto in GnuCash.\nCreare un conto prima di aggiungere il widget</string>
-    <string name="title_license">Licenza</string>
+  <string name="error_no_accounts">Non esiste alcun conto in GnuCash.\nCreare un conto prima di aggiungere il widget</string>
+  <string name="title_license">Licenza</string>
   <string name="summary_licence_details">Apache License v2.0. Fare clic per i dettagli</string>
   <string name="title_general_prefs">Preferenze generali</string>
   <string name="label_widget_configuration">Seleziona conto</string>
   <string name="toast_no_transactions_to_export">Non sono disponibili transazioni da esportare</string>
-    <string name="title_passcode_preferences">Preferenze codice di accesso</string>
-    <string name="title_change_passcode">Cambia codice di accesso</string>
+  <string name="title_passcode_preferences">Preferenze codice di accesso</string>
+  <string name="title_enable_passcode">Enable passcode</string>
+  <string name="title_change_passcode">Cambia codice di accesso</string>
   <string name="title_about_gnucash">Informazioni su GnuCash</string>
-    <string name="title_export_email">Esportazione %1$s di GnuCash per Android</string>
+  <string name="title_export_email">Esportazione %1$s di GnuCash per Android</string>
   <string name="description_export_email">Esportazione di GnuCash per Android da </string>
   <string name="header_transaction_settings">Transazioni</string>
   <string name="title_transaction_preferences">Preferenze transazione</string>
@@ -107,7 +107,7 @@
   <string name="title_always_delete_exported_transactions">Elimina le transazioni esportate</string>
   <string name="title_default_export_email">Email predefinita di esportazione</string>
   <string name="summary_default_export_email">L\'indirizzo email predefinito a cui inviare i file esportati. È comunque possibile modificare l\'indirizzo quando si esporta.</string>
-    <string name="summary_use_double_entry">Tutte le transazioni consisteranno in un trasferimento di denaro da un conto a un altro</string>
+  <string name="summary_use_double_entry">Tutte le transazioni consisteranno in un trasferimento di denaro da un conto a un altro</string>
   <string name="title_use_double_entry">Abilita partita doppia</string>
   <string name="account_balance">Saldo</string>
   <string name="toast_no_account_name_entered">Inserire un nome per creare il conto</string>
@@ -126,7 +126,7 @@
 	</string>
   <string name="label_dismiss">Chiudi</string>
   <string name="toast_transanction_amount_required">Inserire un importo per salvare la transazione</string>
-    <string name="toast_error_importing_accounts">Si è verificato un errore nell\'importare i conti di GnuCash</string>
+  <string name="toast_error_importing_accounts">Si è verificato un errore nell\'importare i conti di GnuCash</string>
   <string name="toast_success_importing_accounts">I conti di GnuCash sono stati importati correttamente</string>
   <string name="summary_import_accounts">Importa una struttura dei conti esportata da GnuCash per desktop</string>
   <string name="title_import_accounts">Importa XML di GnuCash</string>
@@ -136,16 +136,16 @@
   <string name="header_account_settings">Conti</string>
   <string name="toast_all_accounts_deleted">Tutti i conti sono stati eliminati con successo</string>
   <string name="confirm_delete_all_accounts">Eliminare davvero tutti i conti e le transazioni?\n\nQuesta operazione non può essere annullata!</string>
-    <string name="summary_delete_all_transactions">Verranno eliminate tutte le transazioni in tutti i conti!</string>
+  <string name="summary_delete_all_transactions">Verranno eliminate tutte le transazioni in tutti i conti!</string>
   <string name="title_delete_all_transactions">Elimina tutte le transazioni</string>
   <string name="toast_all_transactions_deleted">Tutte le transazioni sono state eliminate con successo!</string>
   <string name="title_progress_importing_accounts">Importazione dei conti</string>
-    <string name="section_header_transactions">Transazioni</string>
+  <string name="section_header_transactions">Transazioni</string>
   <string name="section_header_subaccounts">Sotto-conti</string>
   <string name="menu_search_accounts">Cerca</string>
   <string name="title_default_export_format">Formato predefinito di esportazione</string>
   <string name="summary_default_export_format">Formato di file predefinito da utilizzare per l\'esportazione delle transazioni</string>
-    <string name="label_recurring_transaction">Ripetizione</string>
+  <string name="label_recurring_transaction">Ripetizione</string>
   <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">Sbilancio</string>
   <string name="title_progress_exporting_transactions">Esportazione transazioni in corso</string>
@@ -190,7 +190,7 @@
   <string name="summary_create_default_accounts">Crea la struttura predefinita di GnuCash dei conti comunemente utilizzati</string>
   <string name="title_create_default_accounts">Crea conti predefiniti</string>
   <string name="msg_confirm_create_default_accounts_setting">Verrà aperto un nuovo libro con i conti predefiniti.\n\nI conti e le transazioni correnti non verranno modificate!</string>
-    <string name="title_scheduled_transactions">Transazioni</string>
+  <string name="title_scheduled_transactions">Transazioni</string>
   <string name="title_select_export_destination">Seleziona la destinazione per l\'esportazione</string>
   <string name="hint_split_memo">Promemoria</string>
   <string name="label_spend">Spendere</string>
@@ -208,14 +208,14 @@
   <string name="label_invoice">Fattura</string>
   <string name="label_buy">Compra</string>
   <string name="label_sell">Vendi</string>
-    <string name="account_name_opening_balances">Bilanci d\'apertura</string>
+  <string name="account_name_opening_balances">Bilanci d\'apertura</string>
   <string name="account_name_equity">Capitali</string>
   <string name="summary_save_opening_balances">Attiva l\'opzione per salvare il bilancio corrente di un conto (prima di eliminare le transazioni) come nuovo bilancio di apertura dopo l\'eliminazione delle transazioni
     </string>
   <string name="title_save_opening_balances">Salva bilanci di apertura dei conti</string>
   <string name="export_warning_ofx">OFX non supporta le transazioni a partita doppia</string>
   <string name="export_warning_qif">Genera file QIF separati per ogni valuta</string>
-    <string name="label_imbalance">Sbilancio:</string>
+  <string name="label_imbalance">Sbilancio:</string>
   <string name="btn_add_split">Aggiungi suddivisione</string>
   <string name="menu_title_favorite">Preferito</string>
   <string name="drawer_open">Menu laterale aperto</string>
@@ -225,16 +225,16 @@
   <string name="title_line_chart">Grafico a linee</string>
   <string name="title_bar_chart">Grafico a barre</string>
   <string name="title_report_prefs">Preferenze resoconto</string>
-    <string name="title_use_account_color">Colore del conto nei resoconti</string>
+  <string name="title_use_account_color">Colore del conto nei resoconti</string>
   <string name="summary_use_account_color">Usa il colore del conto nei grafici a barre e nei grafici a torta</string>
-    <string name="menu_order_by_size">Ordina per dimensione</string>
+  <string name="menu_order_by_size">Ordina per dimensione</string>
   <string name="menu_toggle_legend">Mostra legenda</string>
   <string name="menu_toggle_labels">Mostra etichette</string>
   <string name="menu_toggle_percentage_mode">Mostra percentuale</string>
   <string name="menu_toggle_average_lines">Mostra linee della media</string>
   <string name="menu_group_smaller_slices">Raggruppa fette più piccole</string>
   <string name="label_chart_no_data">Dati del grafico non disponibili</string>
-    <string name="label_chart_total">Totale</string>
+  <string name="label_chart_total">Totale</string>
   <string name="label_other_slice">Altro</string>
   <string name="toast_chart_percentage_mode_total">La percentuale del valore selezionato, calcolata a partire dall\'importo totale</string>
   <string name="toast_chart_percentage_mode_current_bar">La percentuale del valore selezionato, calcolata a partire dall\'importo della barra corrente</string>
@@ -251,19 +251,19 @@
   <string name="title_backup_preference_category">Backup</string>
   <string name="summary_dropbox_sync">Attiva l\'esportazione su DropBox</string>
   <string name="summary_owncloud_sync">Attiva l\'esportazione su ownCloud</string>
-    <string name="title_backup_prefs">Preferenze di backup</string>
+  <string name="title_backup_prefs">Preferenze di backup</string>
   <string name="title_create_backup_pref">Crea backup</string>
-  <string name="summary_create_backup_pref">Per impostazione predefinita, i backup vengono salvati nella scheda SD</string>
-  <string name="summary_restore_backup_pref">Selezionare un backup specifico da ripristinare</string>
+  <string name="summary_create_backup_pref">Create a backup of the active book</string>
+  <string name="summary_restore_backup_pref">Restore most recent backup of active book</string>
   <string name="toast_backup_successful">Backup riuscito</string>
   <string name="toast_backup_failed">Backup non riuscito</string>
   <string name="export_warning_xml">Esporta tutti i conti e tutte le transazioni</string>
-    <string name="toast_install_file_manager">Installa un file manager per selezionare i file</string>
+  <string name="toast_install_file_manager">Installa un file manager per selezionare i file</string>
   <string name="title_select_backup_to_restore">Seleziona il backup da ripristinare</string>
   <string name="nav_menu_favorites">Preferiti</string>
   <string name="nav_menu_open">Apri&#8230;</string>
   <string name="nav_menu_reports">Resoconti</string>
-    <string name="nav_menu_export">Esporta&#8230;</string>
+  <string name="nav_menu_export">Esporta&#8230;</string>
   <string name="nav_menu_settings">Impostazioni</string>
   <string name="username">Nome utente</string>
   <string name="password">Password</string>
@@ -275,6 +275,10 @@
   <string name="owncloud_server_ok">Server OC OK</string>
   <string name="owncloud_user_ok">Nome utente/password OC OK</string>
   <string name="owncloud_dir_ok">Nome directory OK</string>
+  <plurals name="label_every_x_hours">
+    <item quantity="one">Hourly</item>
+    <item quantity="other">Every %d hours</item>
+  </plurals>
   <plurals name="label_every_x_days">
     <item quantity="one">Ogni giorno</item>
     <item quantity="other">Ogni %d giorni</item>
@@ -294,9 +298,9 @@
   <string name="title_enable_crashlytics">Attiva la registrazione dei crash</string>
   <string name="msg_enable_crashlytics">Invia automaticamente delle informazioni sul malfunzionamento dell\'app agli sviluppatori.</string>
   <string name="label_export_format"> Formato</string>
-    <string name="label_old_passcode">Inserisci il vecchio codice di accesso</string>
+  <string name="label_old_passcode">Inserisci il vecchio codice di accesso</string>
   <string name="label_new_passcode">Inserisci il nuovo codice di accesso</string>
-    <string name="title_scheduled_exports">Esportazioni</string>
+  <string name="title_scheduled_exports">Esportazioni</string>
   <string name="label_no_scheduled_exports_to_display">Nessuna esportazione pianificata da visualizzare</string>
   <string name="title_create_export_schedule">Crea una esportazione pianificata</string>
   <string name="toast_exported_to">Esportato su: %1$s</string>
@@ -306,7 +310,7 @@
   <string name="label_no_favorite_accounts">Nessun conto preferito</string>
   <string name="nav_menu_scheduled_actions">Azioni pianificate</string>
   <string name="label_scheduled_action_ended">"Terminata, ultima esecuzione il %1$s"</string>
-    <string name="btn_wizard_next">Avanti</string>
+  <string name="btn_wizard_next">Avanti</string>
   <string name="btn_wizard_finish">Fatto</string>
   <string name="wizard_title_default_currency">Valuta predefinita</string>
   <string name="wizard_title_account_setup">Impostazione conti</string>
@@ -326,7 +330,7 @@
   <string name="toast_error_check_split_amounts">Controlla che tutte le suddivisioni abbiano degli importi validi prima di salvare!</string>
   <string name="label_error_invalid_expression">Espressione non valida!</string>
   <string name="toast_scheduled_recurring_transaction">Transazioni ricorrenti pianificate</string>
-    <string name="title_transfer_funds">Trasferisci fondi</string>
+  <string name="title_transfer_funds">Trasferisci fondi</string>
   <string name="nav_menu_help"><![CDATA[Aiuto & Feedback]]></string>
   <string name="label_select_pie_slice_to_see_details">Seleziona una fetta per vedere i dettagli</string>
   <string name="label_report_period">Periodo:</string>
@@ -344,7 +348,7 @@
   <string name="label_assets">Attività</string>
   <string name="label_liabilities">Passività</string>
   <string name="label_equity">Capitali</string>
-    <string name="label_move_to">Sposta in:</string>
+  <string name="label_move_to">Sposta in:</string>
   <string name="menu_group_by">Raggruppa per</string>
   <string name="menu_group_by_month">Mese</string>
   <string name="menu_group_by_quarter">Trimestre</string>
@@ -358,7 +362,7 @@
   <string name="toast_no_compatible_apps_to_receive_export">Nessuna app compatibile con la ricezione delle transazioni esportate!</string>
   <string name="menu_move_transaction">Sposta&#8230;</string>
   <string name="menu_duplicate_transaction">Duplica</string>
-    <string name="title_cash_flow_report">Flusso di liquidi</string>
+  <string name="title_cash_flow_report">Flusso di liquidi</string>
   <string name="title_budgets">Bilanci</string>
   <string name="title_use_compact_list">Attiva visualizzazione compatta</string>
   <string name="summary_use_compact_list">Attiva per visualizzare sempre la lista delle transazioni in forma compatta</string>
@@ -429,8 +433,22 @@
   <string name="label_recommend_app">Consigliala sul Play Store</string>
   <string name="repeat_until_date">fino al %1$s</string>
   <string name="repeat_on_weekday">il %1$s</string>
-  <string name="repeat_x_times">per %1$s volte</string>
+  <string name="repeat_x_times">for %1$d times</string>
   <string name="menu_show_compact_view">Visualizzazione compatta</string>
   <string name="book_default_name">Libro %1$d</string>
   <string name="last_export_time_never">mai</string>
+  <string name="title_rename_book">Rename Book</string>
+  <string name="btn_rename">Rename</string>
+  <string name="menu_rename">Rename</string>
+  <string name="title_select_backup_file">Select backup file</string>
+  <string name="summary_select_backup_file">Select a file for automatic backups</string>
+  <string name="title_confirm_restore_backup">Confirm restore from backup</string>
+  <string name="msg_confirm_restore_backup_into_new_book">A new book will be opened with the contents of this backup. Do you wish to proceed?</string>
+  <string name="btn_restore">Restore</string>
+  <string name="title_no_backups_found">No backups found</string>
+  <string name="msg_no_backups_to_restore_from">There are no existing backup files to restore from</string>
+  <!-- This is the filename for default backups. So use only simple characters and no spaces. Do not change the extension -->
+  <string name="label_backup_filename">gnucash_android_backup.gnca</string>
+  <string name="label_select_destination_after_export">Select the destination after export is complete</string>
+  <string name="label_dropbox_export_destination">Export to \'/Apps/GnuCash Android/\' folder on Dropbox</string>
 </resources>

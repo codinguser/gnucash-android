@@ -18,7 +18,7 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="title_create_account">Crea un compte</string>
   <string name="title_edit_account">Edita el compte</string>
-    <string name="description_add_transaction_icon">Afegeix un assentament nou al compte</string>
+  <string name="description_add_transaction_icon">Afegeix un assentament nou al compte</string>
   <string name="description_view_account_icon">View account details</string>
   <string name="label_no_accounts">No hi ha comptes per mostrar</string>
   <string name="label_account_name">Nom del compte</string>
@@ -34,7 +34,7 @@
   <string name="label_transaction_amount">Import</string>
   <string name="title_add_transaction">Transacció Nova</string>
   <string name="label_no_transactions">No hi ha cap transacció per mostrar</string>
-    <string name="label_debit">DÈBIT</string>
+  <string name="label_debit">DÈBIT</string>
   <string name="label_credit">CRÈDIT</string>
   <string name="title_accounts">Comptes</string>
   <string name="title_transactions">Assentaments</string>
@@ -43,29 +43,28 @@
   <string name="alert_dialog_cancel">Cancel·la</string>
   <string name="toast_account_deleted">S\'ha eliminat el compte</string>
   <string name="title_confirm_delete">Confirma la supressió</string>
-    <string name="title_edit_transaction">Edita l\'assentament</string>
+  <string name="title_edit_transaction">Edita l\'assentament</string>
   <string name="label_transaction_description">Afegiu una nota</string>
-    <string name="title_selected">%1$d seleccionats</string>
+  <string name="title_selected">%1$d seleccionats</string>
   <string name="label_account_balance">Saldo:</string>
   <string name="label_export_destination">Exporta a:</string>
   <string name="title_export_dialog">Exporta els assentaments</string>
-    <string name="hint_export_choice">Per defecte, només s\'exportaran les transaccions noves des de l\'última exportació. Marqueu aquesta opció per exportar totes les transaccions</string>
+  <string name="hint_export_choice">Per defecte, només s\'exportaran les transaccions noves des de l\'última exportació. Marqueu aquesta opció per exportar totes les transaccions</string>
   <string name="toast_export_error">S\'ha produït un error en exportar el fitxer %1$s</string>
   <string name="btn_export">Exporta</string>
   <string name="option_delete_after_export">Suprimeix les transaccions després d\'exportar</string>
   <string name="hint_delete_after_export">S\'eliminaran totes les transaccions exportades en finalitzar l\'exportació</string>
   <string name="title_settings">Preferències</string>
   <string-array name="export_destinations">
-    <item>Targeta SD</item>
+    <item>Save As&#8230;</item>
     <item>Dropbox</item>
-    <item>Google Drive</item>
     <item>ownCloud</item>
-    <item>Envia a&#8230;</item>
+    <item>Send to&#8230;</item>
   </string-array>
   <string name="btn_move">Mou</string>
   <string name="title_move_transactions">Mou %1$d transaccions</string>
   <string name="label_move_destination">Compte destí</string>
-    <string name="toast_incompatible_currency">No s\'han pogut moure les transaccions.\nEl compte desti utilitza una moneda diferent del compte origen</string>
+  <string name="toast_incompatible_currency">No s\'han pogut moure les transaccions.\nEl compte desti utilitza una moneda diferent del compte origen</string>
   <string name="header_general_settings">General</string>
   <string name="header_about_gnucash">Quant a</string>
   <string name="title_choose_currency">Trieu la moneda per defecte</string>
@@ -80,16 +79,17 @@
   <string name="label_display_account">Display account</string>
   <string name="label_hide_account_balance">Hide account balance in widget</string>
   <string name="btn_create_accounts">Crea els comptes</string>
-    <string name="error_no_accounts">No hi ha comptes en GnuCash.\nCreeu un compte abans d\'afegir un giny</string>
-    <string name="title_license">Llicència</string>
+  <string name="error_no_accounts">No hi ha comptes en GnuCash.\nCreeu un compte abans d\'afegir un giny</string>
+  <string name="title_license">Llicència</string>
   <string name="summary_licence_details">Llicència Apache 2.0. Feu clic per a més detalls</string>
   <string name="title_general_prefs">Preferències generals</string>
   <string name="label_widget_configuration">Seleccioneu un compte</string>
   <string name="toast_no_transactions_to_export">No hi ha cap transacció per exportar</string>
-    <string name="title_passcode_preferences">PreferèncIes de contrasenya</string>
-    <string name="title_change_passcode">Canvia la contrasenya</string>
+  <string name="title_passcode_preferences">PreferèncIes de contrasenya</string>
+  <string name="title_enable_passcode">Enable passcode</string>
+  <string name="title_change_passcode">Canvia la contrasenya</string>
   <string name="title_about_gnucash">Quant a GnuCash</string>
-    <string name="title_export_email">GnuCash Android %1$s export</string>
+  <string name="title_export_email">GnuCash Android %1$s export</string>
   <string name="description_export_email">Exportació de GnuCash Android de </string>
   <string name="header_transaction_settings">Assentaments</string>
   <string name="title_transaction_preferences">Preferències d\'assentaments</string>
@@ -107,7 +107,7 @@
   <string name="title_always_delete_exported_transactions">Suprimeix els assentaments exportats</string>
   <string name="title_default_export_email">Adreça electrònica d\'exportació per defecte</string>
   <string name="summary_default_export_email">L\'adreça electrònica per defecte on enviar les exportacions. La podeu canviar quan exporteu.</string>
-    <string name="summary_use_double_entry">Totes les transaccions seran una transferència d\'un compte a un altre</string>
+  <string name="summary_use_double_entry">Totes les transaccions seran una transferència d\'un compte a un altre</string>
   <string name="title_use_double_entry">Activar la doble entrada</string>
   <string name="account_balance">Balanç</string>
   <string name="toast_no_account_name_entered">Introduïu un nom de compte per crear el compte</string>
@@ -126,7 +126,7 @@
 	</string>
   <string name="label_dismiss">Dismiss</string>
   <string name="toast_transanction_amount_required">Introduïu una quantitat per desar l\'assentament</string>
-    <string name="toast_error_importing_accounts">S\'ha produït un error en importar els comptes de GnuCash</string>
+  <string name="toast_error_importing_accounts">S\'ha produït un error en importar els comptes de GnuCash</string>
   <string name="toast_success_importing_accounts">S\'han importat els comptes de GnuCash correctament</string>
   <string name="summary_import_accounts">Importa l\'estructura de comptes exportada des de GnuCash per escriptori</string>
   <string name="title_import_accounts">Importa XML de GnuCash</string>
@@ -137,16 +137,16 @@
   <string name="header_account_settings">Comptes</string>
   <string name="toast_all_accounts_deleted">S\'han suprimit tots els comptes</string>
   <string name="confirm_delete_all_accounts">Esteu segur que voleu suprimir tots els comptes i transaccions?\n\nAquesta operació no es pot desfer!    </string>
-    <string name="summary_delete_all_transactions">Es suprimiran totes les transaccions de tots els comptes!</string>
+  <string name="summary_delete_all_transactions">Es suprimiran totes les transaccions de tots els comptes!</string>
   <string name="title_delete_all_transactions">Suprimeix tots els assentaments</string>
   <string name="toast_all_transactions_deleted">S\'han suprimit totes les transaccions!</string>
   <string name="title_progress_importing_accounts">S\'estan important els comptes</string>
-    <string name="section_header_transactions">Assentaments</string>
+  <string name="section_header_transactions">Assentaments</string>
   <string name="section_header_subaccounts">Subcomptes</string>
   <string name="menu_search_accounts">Cerca</string>
   <string name="title_default_export_format">Format d\'exportació per defecte</string>
   <string name="summary_default_export_format">Format de fitxer a utilitzar per defecte en exportar transaccions</string>
-    <string name="label_recurring_transaction">Periodicitat</string>
+  <string name="label_recurring_transaction">Periodicitat</string>
   <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">Desequilibri</string>
   <string name="title_progress_exporting_transactions">S\'estan exportant les transaccions</string>
@@ -191,7 +191,7 @@
   <string name="summary_create_default_accounts">Crea l\'estructura de comptes per defecte de GnuCash d\'ús més comú</string>
   <string name="title_create_default_accounts">Crea els comptes per defecte</string>
   <string name="msg_confirm_create_default_accounts_setting">A new book will be opened with the default accounts\n\nYour current accounts and transactions will not be modified!</string>
-    <string name="title_scheduled_transactions">Assentaments</string>
+  <string name="title_scheduled_transactions">Assentaments</string>
   <string name="title_select_export_destination">Seleccioneu un destí per l\'exportació</string>
   <string name="hint_split_memo">Memo</string>
   <string name="label_spend">Gastar</string>
@@ -209,14 +209,14 @@
   <string name="label_invoice">Factura</string>
   <string name="label_buy">Buy</string>
   <string name="label_sell">Sell</string>
-    <string name="account_name_opening_balances">Opening Balances</string>
+  <string name="account_name_opening_balances">Opening Balances</string>
   <string name="account_name_equity">Equity</string>
   <string name="summary_save_opening_balances">Enable to save the current account balance (before deleting transactions) as new opening balance after deleting transactions
     </string>
   <string name="title_save_opening_balances">Save account opening balances</string>
   <string name="export_warning_ofx">OFX no soporta transaccions de doble entrada</string>
   <string name="export_warning_qif">Genera fitxers QIF separats per moneda</string>
-    <string name="label_imbalance">Desequilibri:</string>
+  <string name="label_imbalance">Desequilibri:</string>
   <string name="btn_add_split">Afegeix desglós</string>
   <string name="menu_title_favorite">Preferit</string>
   <string name="drawer_open">Navigation drawer opened</string>
@@ -226,16 +226,16 @@
   <string name="title_line_chart">Line Chart</string>
   <string name="title_bar_chart">Bar Chart</string>
   <string name="title_report_prefs">Preferències d\'informes</string>
-    <string name="title_use_account_color">Account color in reports</string>
+  <string name="title_use_account_color">Account color in reports</string>
   <string name="summary_use_account_color">Use account color in the bar/pie chart</string>
-    <string name="menu_order_by_size">Ordena per mida</string>
+  <string name="menu_order_by_size">Ordena per mida</string>
   <string name="menu_toggle_legend">Mostra la llegenda</string>
   <string name="menu_toggle_labels">Mostra les etiquetes</string>
   <string name="menu_toggle_percentage_mode">Mostra el percentatge</string>
   <string name="menu_toggle_average_lines">Show average lines</string>
   <string name="menu_group_smaller_slices">Group Smaller Slices</string>
   <string name="label_chart_no_data">No chart data available</string>
-    <string name="label_chart_total">Total</string>
+  <string name="label_chart_total">Total</string>
   <string name="label_other_slice">Other</string>
   <string name="toast_chart_percentage_mode_total">The percentage of selected value calculated from the total amount</string>
   <string name="toast_chart_percentage_mode_current_bar">The percentage of selected value calculated from the current stacked bar amount</string>
@@ -252,19 +252,19 @@
   <string name="title_backup_preference_category">Còpia de seguretat</string>
   <string name="summary_dropbox_sync">Habilita l\'exportació a DropBox</string>
   <string name="summary_owncloud_sync">Habilita l\'exportació a ownCloud</string>
-    <string name="title_backup_prefs">Preferències de còpia de seguretat</string>
+  <string name="title_backup_prefs">Preferències de còpia de seguretat</string>
   <string name="title_create_backup_pref">Fer una còpia de seguretat</string>
-  <string name="summary_create_backup_pref">Per defecte les còpies de seguretat es desen a la tarjeta SD</string>
-  <string name="summary_restore_backup_pref">Seleccioneu una còpia de seguretat per restaurar</string>
+  <string name="summary_create_backup_pref">Create a backup of the active book</string>
+  <string name="summary_restore_backup_pref">Restore most recent backup of active book</string>
   <string name="toast_backup_successful">La còpia de seguretat s\'ha fet correctament</string>
   <string name="toast_backup_failed">S\'ha produït un error en fer la còpia de seguretat</string>
   <string name="export_warning_xml">Exporta tots els comptes i transaccions</string>
-    <string name="toast_install_file_manager">Instal•leu un gestor de fitxers per seleccionar fitxers</string>
+  <string name="toast_install_file_manager">Instal•leu un gestor de fitxers per seleccionar fitxers</string>
   <string name="title_select_backup_to_restore">Seleccioneu una còpia de seguretat per restaurar</string>
   <string name="nav_menu_favorites">Preferits</string>
   <string name="nav_menu_open">Obre&#8230;</string>
   <string name="nav_menu_reports">Informes</string>
-    <string name="nav_menu_export">Exporta&#8230;</string>
+  <string name="nav_menu_export">Exporta&#8230;</string>
   <string name="nav_menu_settings">Preferències</string>
   <string name="username">Nom d\'usuari</string>
   <string name="password">Contrasenya</string>
@@ -276,6 +276,10 @@
   <string name="owncloud_server_ok">Servidor d\'OC correcte</string>
   <string name="owncloud_user_ok">Nom d\'usuari/contrasenya d\'OC correcte</string>
   <string name="owncloud_dir_ok">Nom de carpeta correcte</string>
+  <plurals name="label_every_x_hours">
+    <item quantity="one">Hourly</item>
+    <item quantity="other">Every %d hours</item>
+  </plurals>
   <plurals name="label_every_x_days">
     <item quantity="one">Diàriament</item>
     <item quantity="other">Cada %d dies</item>
@@ -295,9 +299,9 @@
   <string name="title_enable_crashlytics">Enable Crash Logging</string>
   <string name="msg_enable_crashlytics">Automatically send information about app malfunction to the developers.</string>
   <string name="label_export_format"> Format</string>
-    <string name="label_old_passcode">Introduiu la contrasenya antiga</string>
+  <string name="label_old_passcode">Introduiu la contrasenya antiga</string>
   <string name="label_new_passcode">Introduiu la contrasenya nova</string>
-    <string name="title_scheduled_exports">Exportacions</string>
+  <string name="title_scheduled_exports">Exportacions</string>
   <string name="label_no_scheduled_exports_to_display">No hi ha cap transacció planificada per mostrar</string>
   <string name="title_create_export_schedule">Crea una exportació periòdica</string>
   <string name="toast_exported_to">S\'ha exportat a: %1$s</string>
@@ -307,7 +311,7 @@
   <string name="label_no_favorite_accounts">No hi ha comptes preferits</string>
   <string name="nav_menu_scheduled_actions">Accions periòdiques</string>
   <string name="label_scheduled_action_ended">"Ended, last executed on %1$s"</string>
-    <string name="btn_wizard_next">Següent</string>
+  <string name="btn_wizard_next">Següent</string>
   <string name="btn_wizard_finish">Fet</string>
   <string name="wizard_title_default_currency">Moneda per defecte</string>
   <string name="wizard_title_account_setup">Account Setup</string>
@@ -327,7 +331,7 @@
   <string name="toast_error_check_split_amounts">Check that all splits have valid amounts before saving!</string>
   <string name="label_error_invalid_expression">Expressió invàlida!</string>
   <string name="toast_scheduled_recurring_transaction">S\'ha planificat la transacció recurrent</string>
-    <string name="title_transfer_funds">Transfer Funds</string>
+  <string name="title_transfer_funds">Transfer Funds</string>
   <string name="nav_menu_help"><![CDATA[Help & Feedback]]></string>
   <string name="label_select_pie_slice_to_see_details">Select a slice to see details</string>
   <string name="label_report_period">Període:</string>
@@ -345,7 +349,7 @@
   <string name="label_assets">Actiu</string>
   <string name="label_liabilities">Passiu</string>
   <string name="label_equity">Equity</string>
-    <string name="label_move_to">Mou a:</string>
+  <string name="label_move_to">Mou a:</string>
   <string name="menu_group_by">Agrupa per</string>
   <string name="menu_group_by_month">Mes</string>
   <string name="menu_group_by_quarter">Quarter</string>
@@ -359,7 +363,7 @@
   <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
   <string name="menu_move_transaction">Move&#8230;</string>
   <string name="menu_duplicate_transaction">Duplicate</string>
-    <string name="title_cash_flow_report">Cash Flow</string>
+  <string name="title_cash_flow_report">Cash Flow</string>
   <string name="title_budgets">Budgets</string>
   <string name="title_use_compact_list">Enable compact view</string>
   <string name="summary_use_compact_list">Enable to always use compact view for transactions list</string>
@@ -430,8 +434,22 @@
   <string name="label_recommend_app">Recommend in Play Store</string>
   <string name="repeat_until_date">until %1$s</string>
   <string name="repeat_on_weekday">on %1$s</string>
-  <string name="repeat_x_times">for %1$s times</string>
+  <string name="repeat_x_times">for %1$d times</string>
   <string name="menu_show_compact_view">Compact View</string>
   <string name="book_default_name">Book %1$d</string>
   <string name="last_export_time_never">never</string>
+  <string name="title_rename_book">Rename Book</string>
+  <string name="btn_rename">Rename</string>
+  <string name="menu_rename">Rename</string>
+  <string name="title_select_backup_file">Select backup file</string>
+  <string name="summary_select_backup_file">Select a file for automatic backups</string>
+  <string name="title_confirm_restore_backup">Confirm restore from backup</string>
+  <string name="msg_confirm_restore_backup_into_new_book">A new book will be opened with the contents of this backup. Do you wish to proceed?</string>
+  <string name="btn_restore">Restore</string>
+  <string name="title_no_backups_found">No backups found</string>
+  <string name="msg_no_backups_to_restore_from">There are no existing backup files to restore from</string>
+  <!-- This is the filename for default backups. So use only simple characters and no spaces. Do not change the extension -->
+  <string name="label_backup_filename">gnucash_android_backup.gnca</string>
+  <string name="label_select_destination_after_export">Select the destination after export is complete</string>
+  <string name="label_dropbox_export_destination">Export to \'/Apps/GnuCash Android/\' folder on Dropbox</string>
 </resources>

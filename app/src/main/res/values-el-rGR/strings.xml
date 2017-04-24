@@ -18,7 +18,7 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="title_create_account">Δημιουργία Λογαριασμού</string>
   <string name="title_edit_account">Επεξεργασία Λογαριασμού</string>
-    <string name="description_add_transaction_icon">Προσθήκη μιας νέας συναλλαγής σε ένα λογαριασμό</string>
+  <string name="description_add_transaction_icon">Προσθήκη μιας νέας συναλλαγής σε ένα λογαριασμό</string>
   <string name="description_view_account_icon">View account details</string>
   <string name="label_no_accounts">Δεν υπάρχουν λογαριασμοί για εμφάνιση</string>
   <string name="label_account_name">Όνομα λογαριασμού</string>
@@ -34,7 +34,7 @@
   <string name="label_transaction_amount">Ποσό</string>
   <string name="title_add_transaction">Νέα συναλλαγή</string>
   <string name="label_no_transactions">Δεν υπάρχουν συναλλαγές για εμφάνιση</string>
-    <string name="label_debit">ΧΡΕΩΣΗ</string>
+  <string name="label_debit">ΧΡΕΩΣΗ</string>
   <string name="label_credit">ΠΙΣΤΩΣΗ</string>
   <string name="title_accounts">Λογαριασμοί</string>
   <string name="title_transactions">Συναλλαγές</string>
@@ -43,29 +43,28 @@
   <string name="alert_dialog_cancel">Ακύρωση</string>
   <string name="toast_account_deleted">Ο λογαριασμός διαγράφηκε</string>
   <string name="title_confirm_delete">Επιβεβαίωση διαγραφής</string>
-    <string name="title_edit_transaction">Επεξεργασία Συναλλαγής</string>
+  <string name="title_edit_transaction">Επεξεργασία Συναλλαγής</string>
   <string name="label_transaction_description">Σημείωση</string>
-    <string name="title_selected">%1$d επιλέχθηκε</string>
+  <string name="title_selected">%1$d επιλέχθηκε</string>
   <string name="label_account_balance">Υπόλοιπο:</string>
   <string name="label_export_destination">Εξαγωγή σε:</string>
   <string name="title_export_dialog">Export transactions</string>
-    <string name="hint_export_choice">Προεπιλεγμένα, μόνο οι νέες συναλλαγές από τη τελευταία εξαγωγή θα εξαχθούν. Ενεργοποίησε αυτή την επιλογή για την εξαγωγή όλων των συναλλαγών</string>
+  <string name="hint_export_choice">Προεπιλεγμένα, μόνο οι νέες συναλλαγές από τη τελευταία εξαγωγή θα εξαχθούν. Ενεργοποίησε αυτή την επιλογή για την εξαγωγή όλων των συναλλαγών</string>
   <string name="toast_export_error">Σφάλμα εξαγωγής δεδομένων %1$s</string>
   <string name="btn_export">Εξαγωγή</string>
   <string name="option_delete_after_export">Διαγραφή συναλλαγών μετά την εξαγωγή</string>
   <string name="hint_delete_after_export">Όλες οι συναλλαγές που εξάγονται, θα διαγραφούν με την ολοκλήρωση της εξαγωγής</string>
   <string name="title_settings">Ρυθμίσεις</string>
   <string-array name="export_destinations">
-    <item>Κάρτα SD</item>
+    <item>Save As&#8230;</item>
     <item>Dropbox</item>
-    <item>Google Drive</item>
     <item>ownCloud</item>
     <item>Send to&#8230;</item>
   </string-array>
   <string name="btn_move">Μετακίνηση</string>
   <string name="title_move_transactions">Μετακίνησε %1$d συναλλαγή(ες)</string>
   <string name="label_move_destination">Λογιαριασμός Προορισμού</string>
-    <string name="toast_incompatible_currency">Αδυναμία μετακίνησης	συναλλαγών.\nΟ λογαριασμός προορισμού χρησιμοποιεί διαφορετικό νόμισμα από το λογαριασμό προέλευσης</string>
+  <string name="toast_incompatible_currency">Αδυναμία μετακίνησης	συναλλαγών.\nΟ λογαριασμός προορισμού χρησιμοποιεί διαφορετικό νόμισμα από το λογαριασμό προέλευσης</string>
   <string name="header_general_settings">Γενικές</string>
   <string name="header_about_gnucash">Πληροφορίες</string>
   <string name="title_choose_currency">Προεπιλογή νομίσματος</string>
@@ -80,17 +79,18 @@
   <string name="label_display_account">Εμφάνιση λογαριασμού</string>
   <string name="label_hide_account_balance">Hide account balance in widget</string>
   <string name="btn_create_accounts">Δημιουργία Λογαριασμών</string>
-    <string name="error_no_accounts">Δεν υπάρχουν λογαριασμοί στο
+  <string name="error_no_accounts">Δεν υπάρχουν λογαριασμοί στο
 	GnuCash.\nΔημιουργήστε ενα λογαριασμό πριν προσθέσετε ένα γραφικό στοιχείο</string>
-    <string name="title_license">Άδεια χρήσης</string>
+  <string name="title_license">Άδεια χρήσης</string>
   <string name="summary_licence_details">Άδεια χρήσης Apache v2.0. Επιλέξτε για λεπτομέρειες</string>
   <string name="title_general_prefs">Γενικά</string>
   <string name="label_widget_configuration">Επιλογή Λογαριασμού</string>
   <string name="toast_no_transactions_to_export">Δεν υπάρχουν διαθέσιμες συναλλαγές για εξαγωγή</string>
-    <string name="title_passcode_preferences">Προτιμήσεις Κωδικού</string>
-    <string name="title_change_passcode">Αλλαγή Κωδικού</string>
+  <string name="title_passcode_preferences">Προτιμήσεις Κωδικού</string>
+  <string name="title_enable_passcode">Enable passcode</string>
+  <string name="title_change_passcode">Αλλαγή Κωδικού</string>
   <string name="title_about_gnucash">Πληροφορίες για GnuCash</string>
-    <string name="title_export_email">Εξαγωγή GnuCash Android %1$s</string>
+  <string name="title_export_email">Εξαγωγή GnuCash Android %1$s</string>
   <string name="description_export_email">Εξαγωγή GnuCash Android προς </string>
   <string name="header_transaction_settings">Κινήσεις</string>
   <string name="title_transaction_preferences">Προτιμήσεις Κινήσεων</string>
@@ -108,7 +108,7 @@
   <string name="title_always_delete_exported_transactions">Διαγραφή εξηγμένων κινήσεων</string>
   <string name="title_default_export_email">Προεπιλεγμένο email εξαγωγής</string>
   <string name="summary_default_export_email">Η προεπιλεγμένη διεύθυνση email για αποστολή εξαγωγών. Μπορείτε να το αλλάξετε και κατα την εξαγωγή.</string>
-    <string name="summary_use_double_entry">Όλες οι κινήσεις θα μεταφερθούν από τον ένα λογαριασμό στον άλλο.</string>
+  <string name="summary_use_double_entry">Όλες οι κινήσεις θα μεταφερθούν από τον ένα λογαριασμό στον άλλο.</string>
   <string name="title_use_double_entry">Ενεργοποίηση Διπλών Λογιστικών Εγγραφών</string>
   <string name="account_balance">Υπόλοιπο</string>
   <string name="toast_no_account_name_entered">Εισαγωγή ονόματος λογαριασμού
@@ -129,7 +129,7 @@
   <string name="label_dismiss">Απόρριψη</string>
   <string name="toast_transanction_amount_required">Εισαγωγή ποσού για
 	αποθήκευση κίνησης</string>
-    <string name="toast_error_importing_accounts">Προέκυψε σφάλμα κατά την
+  <string name="toast_error_importing_accounts">Προέκυψε σφάλμα κατά την
 	εισαγωγή λογαριασμών GnuCash</string>
   <string name="toast_success_importing_accounts">Λογαριασμοί GnuCash
 	εισήχθησαν με επιτυχία</string>
@@ -146,18 +146,18 @@
   <string name="confirm_delete_all_accounts">Σίγουρα θέλετε να διαγράψετε
 	όλους του λογαριασμούς και τις κινήσεις; \nΑυτή η ενέργεια δε μπορεί να αναιρεθεί!
     </string>
-    <string name="summary_delete_all_transactions">Όλες οι κινήσεις σε όλους
+  <string name="summary_delete_all_transactions">Όλες οι κινήσεις σε όλους
 	τους λογαριασμούς θα διαγραφούν!</string>
   <string name="title_delete_all_transactions">Διαγραφή όλων των κινήσεων</string>
   <string name="toast_all_transactions_deleted">Όλες οι κινήσεις διαγράφηκαν
 	με επιτυχία!</string>
   <string name="title_progress_importing_accounts">Εισαγωγή λογαριασμών</string>
-    <string name="section_header_transactions">Κινήσεις</string>
+  <string name="section_header_transactions">Κινήσεις</string>
   <string name="section_header_subaccounts">Υπο-Λογαριασμοί</string>
   <string name="menu_search_accounts">Αναζήτηση</string>
   <string name="title_default_export_format">Προεπιλεγμένη Μορφή Εξόδου</string>
   <string name="summary_default_export_format">Μορφή αρχείου για προεπιλεγμένη χρήση κατά την εξαγωγή κινήσεων.</string>
-    <string name="label_recurring_transaction">Επαναλαμβανόμενη</string>
+  <string name="label_recurring_transaction">Επαναλαμβανόμενη</string>
   <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">Imbalance</string>
   <string name="title_progress_exporting_transactions">Εξαγωγή κινήσεων</string>
@@ -202,7 +202,7 @@
   <string name="summary_create_default_accounts">Δημιουργία προεπιλεγμένης συχνά χρησιμοποιούμενης δομής λογαριασμών GnuCash</string>
   <string name="title_create_default_accounts">Δημιουργία προεπιλεγμένων λογαριασμών</string>
   <string name="msg_confirm_create_default_accounts_setting">A new book will be opened with the default accounts\n\nYour current accounts and transactions will not be modified!</string>
-    <string name="title_scheduled_transactions">Προγραμματισμένες Κινήσεις</string>
+  <string name="title_scheduled_transactions">Προγραμματισμένες Κινήσεις</string>
   <string name="title_select_export_destination">Select destination for export</string>
   <string name="hint_split_memo">Memo</string>
   <string name="label_spend">Spend</string>
@@ -220,14 +220,14 @@
   <string name="label_invoice">Invoice</string>
   <string name="label_buy">Buy</string>
   <string name="label_sell">Sell</string>
-    <string name="account_name_opening_balances">Αρχικά υπόλοιπα</string>
+  <string name="account_name_opening_balances">Αρχικά υπόλοιπα</string>
   <string name="account_name_equity">Καθαρή Θέση</string>
   <string name="summary_save_opening_balances">Enable to save the current account balance (before deleting transactions) as new opening balance after deleting transactions
     </string>
   <string name="title_save_opening_balances">Save account opening balances</string>
   <string name="export_warning_ofx">OFX does not support double-entry transactions</string>
   <string name="export_warning_qif">Generates separate QIF files per currency</string>
-    <string name="label_imbalance">Imbalance:</string>
+  <string name="label_imbalance">Imbalance:</string>
   <string name="btn_add_split">Add split</string>
   <string name="menu_title_favorite">Favorite</string>
   <string name="drawer_open">Navigation drawer opened</string>
@@ -237,16 +237,16 @@
   <string name="title_line_chart">Line Chart</string>
   <string name="title_bar_chart">Bar Chart</string>
   <string name="title_report_prefs">Report Preferences</string>
-    <string name="title_use_account_color">Account color in reports</string>
+  <string name="title_use_account_color">Account color in reports</string>
   <string name="summary_use_account_color">Use account color in the bar/pie chart</string>
-    <string name="menu_order_by_size">Order by size</string>
+  <string name="menu_order_by_size">Order by size</string>
   <string name="menu_toggle_legend">Show legend</string>
   <string name="menu_toggle_labels">Show labels</string>
   <string name="menu_toggle_percentage_mode">Show percentage</string>
   <string name="menu_toggle_average_lines">Show average lines</string>
   <string name="menu_group_smaller_slices">Group Smaller Slices</string>
   <string name="label_chart_no_data">No chart data available</string>
-    <string name="label_chart_total">Total</string>
+  <string name="label_chart_total">Total</string>
   <string name="label_other_slice">Other</string>
   <string name="toast_chart_percentage_mode_total">The percentage of selected value calculated from the total amount</string>
   <string name="toast_chart_percentage_mode_current_bar">The percentage of selected value calculated from the current stacked bar amount</string>
@@ -263,19 +263,19 @@
   <string name="title_backup_preference_category">Backup</string>
   <string name="summary_dropbox_sync">Enable exporting to DropBox</string>
   <string name="summary_owncloud_sync">Enable exporting to ownCloud</string>
-    <string name="title_backup_prefs">Backup Preferences</string>
+  <string name="title_backup_prefs">Backup Preferences</string>
   <string name="title_create_backup_pref">Create Backup</string>
-  <string name="summary_create_backup_pref">By default backups are saved to the SDCARD</string>
-  <string name="summary_restore_backup_pref">Select a specific backup to restore</string>
+  <string name="summary_create_backup_pref">Create a backup of the active book</string>
+  <string name="summary_restore_backup_pref">Restore most recent backup of active book</string>
   <string name="toast_backup_successful">Backup successful</string>
   <string name="toast_backup_failed">Backup failed</string>
   <string name="export_warning_xml">Exports all accounts and transactions</string>
-    <string name="toast_install_file_manager">Install a file manager to select files</string>
+  <string name="toast_install_file_manager">Install a file manager to select files</string>
   <string name="title_select_backup_to_restore">Select backup to restore</string>
   <string name="nav_menu_favorites">Favorites</string>
   <string name="nav_menu_open">Open...</string>
   <string name="nav_menu_reports">Reports</string>
-    <string name="nav_menu_export">Export...</string>
+  <string name="nav_menu_export">Export...</string>
   <string name="nav_menu_settings">Settings</string>
   <string name="username">User Name</string>
   <string name="password">Password</string>
@@ -287,6 +287,10 @@
   <string name="owncloud_server_ok">OC server OK</string>
   <string name="owncloud_user_ok">OC username/password OK</string>
   <string name="owncloud_dir_ok">Dir name OK</string>
+  <plurals name="label_every_x_hours">
+    <item quantity="one">Hourly</item>
+    <item quantity="other">Every %d hours</item>
+  </plurals>
   <plurals name="label_every_x_days">
     <item quantity="one">Daily</item>
     <item quantity="other">Every %d days</item>
@@ -308,9 +312,9 @@
 No user-identifiable information will be collected as part of this process!
     </string>
   <string name="label_export_format"> Format</string>
-    <string name="label_old_passcode">Enter your old passcode</string>
+  <string name="label_old_passcode">Enter your old passcode</string>
   <string name="label_new_passcode">Enter your new passcode</string>
-    <string name="title_scheduled_exports">Scheduled Exports</string>
+  <string name="title_scheduled_exports">Scheduled Exports</string>
   <string name="label_no_scheduled_exports_to_display">No scheduled exports to display</string>
   <string name="title_create_export_schedule">Create export schedule</string>
   <string name="toast_exported_to">Exported to: %1$s</string>
@@ -320,7 +324,7 @@ No user-identifiable information will be collected as part of this process!
   <string name="label_no_favorite_accounts">No favorite accounts</string>
   <string name="nav_menu_scheduled_actions">Scheduled Actions</string>
   <string name="label_scheduled_action_ended">"Ended, last executed on "</string>
-    <string name="btn_wizard_next">Next</string>
+  <string name="btn_wizard_next">Next</string>
   <string name="btn_wizard_finish">Done</string>
   <string name="wizard_title_default_currency">Default Currency</string>
   <string name="wizard_title_account_setup">Account Setup</string>
@@ -340,7 +344,7 @@ No user-identifiable information will be collected as part of this process!
   <string name="toast_error_check_split_amounts">Check that all splits have valid amounts before saving!</string>
   <string name="label_error_invalid_expression">Invalid expression!</string>
   <string name="toast_scheduled_recurring_transaction">Scheduled recurring transaction</string>
-    <string name="title_transfer_funds">Transfer Funds</string>
+  <string name="title_transfer_funds">Transfer Funds</string>
   <string name="nav_menu_help"><![CDATA[Help & Feedback]]></string>
   <string name="label_select_pie_slice_to_see_details">Select a slice to see details</string>
   <string name="label_report_period">Period:</string>
@@ -358,7 +362,7 @@ No user-identifiable information will be collected as part of this process!
   <string name="label_assets">Assets</string>
   <string name="label_liabilities">Liabilities</string>
   <string name="label_equity">Equity</string>
-    <string name="label_move_to">Move to:</string>
+  <string name="label_move_to">Move to:</string>
   <string name="menu_group_by">Group By</string>
   <string name="menu_group_by_month">Month</string>
   <string name="menu_group_by_quarter">Quarter</string>
@@ -372,7 +376,7 @@ No user-identifiable information will be collected as part of this process!
   <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
   <string name="menu_move_transaction">Move&#8230;</string>
   <string name="menu_duplicate_transaction">Duplicate</string>
-    <string name="title_cash_flow_report">Cash Flow</string>
+  <string name="title_cash_flow_report">Cash Flow</string>
   <string name="title_budgets">Budgets</string>
   <string name="title_use_compact_list">Enable compact view</string>
   <string name="summary_use_compact_list">Enable to always use compact view for transactions list</string>
@@ -443,8 +447,22 @@ No user-identifiable information will be collected as part of this process!
   <string name="label_recommend_app">Recommend in Play Store</string>
   <string name="repeat_until_date">until %1$s</string>
   <string name="repeat_on_weekday">on %1$s</string>
-  <string name="repeat_x_times">for %1$s times</string>
+  <string name="repeat_x_times">for %1$d times</string>
   <string name="menu_show_compact_view">Compact View</string>
   <string name="book_default_name">Book %1$d</string>
   <string name="last_export_time_never">never</string>
+  <string name="title_rename_book">Rename Book</string>
+  <string name="btn_rename">Rename</string>
+  <string name="menu_rename">Rename</string>
+  <string name="title_select_backup_file">Select backup file</string>
+  <string name="summary_select_backup_file">Select a file for automatic backups</string>
+  <string name="title_confirm_restore_backup">Confirm restore from backup</string>
+  <string name="msg_confirm_restore_backup_into_new_book">A new book will be opened with the contents of this backup. Do you wish to proceed?</string>
+  <string name="btn_restore">Restore</string>
+  <string name="title_no_backups_found">No backups found</string>
+  <string name="msg_no_backups_to_restore_from">There are no existing backup files to restore from</string>
+  <!-- This is the filename for default backups. So use only simple characters and no spaces. Do not change the extension -->
+  <string name="label_backup_filename">gnucash_android_backup.gnca</string>
+  <string name="label_select_destination_after_export">Select the destination after export is complete</string>
+  <string name="label_dropbox_export_destination">Export to \'/Apps/GnuCash Android/\' folder on Dropbox</string>
 </resources>
