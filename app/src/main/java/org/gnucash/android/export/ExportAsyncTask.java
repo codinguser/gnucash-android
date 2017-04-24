@@ -117,7 +117,6 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     }
 
     @Override
-    @TargetApi(11)
     protected void onPreExecute() {
         super.onPreExecute();
         if (mContext instanceof Activity) {
@@ -125,10 +124,9 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             mProgressDialog.setTitle(R.string.title_progress_exporting_transactions);
             mProgressDialog.setIndeterminate(true);
             mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
-                mProgressDialog.setProgressNumberFormat(null);
-                mProgressDialog.setProgressPercentFormat(null);
-            }
+            mProgressDialog.setProgressNumberFormat(null);
+            mProgressDialog.setProgressPercentFormat(null);
+
             mProgressDialog.show();
         }
     }

@@ -58,7 +58,6 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
         this.mDelegate = delegate;
     }
 
-    @TargetApi(11)
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
@@ -67,11 +66,11 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         mProgressDialog.show();
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB){
-            //these methods must be called after progressDialog.show()
-            mProgressDialog.setProgressNumberFormat(null);
-            mProgressDialog.setProgressPercentFormat(null);
-        }
+
+        //these methods must be called after progressDialog.show()
+        mProgressDialog.setProgressNumberFormat(null);
+        mProgressDialog.setProgressPercentFormat(null);
+
 
     }
 

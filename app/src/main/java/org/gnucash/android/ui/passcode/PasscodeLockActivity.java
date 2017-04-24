@@ -44,9 +44,7 @@ public class PasscodeLockActivity extends AppCompatActivity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         boolean isPassEnabled = prefs.getBoolean(UxArgument.ENABLED_PASSCODE, false);
         if (isPassEnabled) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-                getWindow().addFlags(LayoutParams.FLAG_SECURE);
-            }
+            getWindow().addFlags(LayoutParams.FLAG_SECURE);
         } else {
             getWindow().clearFlags(LayoutParams.FLAG_SECURE);
         }
