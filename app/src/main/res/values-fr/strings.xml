@@ -117,7 +117,12 @@
   <string name="summary_xml_ofx_header">Activez cette option lors d\'un export vers une application tierce autre que GnuCash pour PC</string>
   <string name="title_whats_new">Nouveautés</string>
   <string name="whats_new">
--Support pour plusieurs livres comptables différents\n - Ajoute ownCloud comme destination pour les exportations\n - Vue compacte pour la liste de transactions\n - Nouvelle implémentation de l\'écran de verrouillage\n - Traitement amélioré des transactions programmées\n - Plusieurs corrections de bugs et améliorations\n</string>
+        - Added ability to export to any service which supports the Storage Access Framework \n
+        - Added option to set the location for regular automatic backups (See backup settings)\n
+        - Added Bitcoin currency support\n
+        - Added support for renaming books\n
+        - Multiple bug fixes and improvements\n
+	</string>
   <string name="label_dismiss">Passer</string>
   <string name="toast_transanction_amount_required">Entrez un montant pour sauvegarder la transaction</string>
   <string name="toast_error_importing_accounts">Une erreur s\'est produite pendant l\'import de vos comptes GnuCash</string>

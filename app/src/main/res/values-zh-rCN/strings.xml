@@ -56,10 +56,10 @@
   <string name="hint_delete_after_export">导出完成后被导出的所有交易都会被删除</string>
   <string name="title_settings">设置</string>
   <string-array name="export_destinations">
-    <item>Save As&#8230;</item>
+    <item>另存为...</item>
     <item>Dropbox</item>
     <item>ownCloud</item>
-    <item>Send to&#8230;</item>
+    <item>发送到...</item>
   </string-array>
   <string name="btn_move">移动</string>
   <string name="title_move_transactions">移动 %1$d 笔交易</string>
@@ -86,7 +86,7 @@
   <string name="label_widget_configuration">选择科目</string>
   <string name="toast_no_transactions_to_export">没有需要导出的交易</string>
   <string name="title_passcode_preferences">密码设置</string>
-  <string name="title_enable_passcode">Enable passcode</string>
+  <string name="title_enable_passcode">启用密码保护</string>
   <string name="title_change_passcode">修改密码</string>
   <string name="title_about_gnucash">关于GnuCash</string>
   <string name="title_export_email">GnuCash Android %1$s 导出</string>
@@ -117,12 +117,11 @@
   <string name="summary_xml_ofx_header">当导出数据到GnuCash桌面版以外的程序时需要开启这个选项。</string>
   <string name="title_whats_new">新功能</string>
   <string name="whats_new">
-- 支持多个账簿 \n
-- 支持导出至ownCloud\n
-- 紧凑的交易列表视图\n
-- 重新设计的锁屏界面\n
-- 改进计划交易功能\n
-- 多个缺陷修复以及性能提升\n
+        - Added ability to export to any service which supports the Storage Access Framework \n
+        - Added option to set the location for regular automatic backups (See backup settings)\n
+        - Added Bitcoin currency support\n
+        - Added support for renaming books\n
+        - Multiple bug fixes and improvements\n
 	</string>
   <string name="label_dismiss">知道了</string>
   <string name="toast_transanction_amount_required">输入金额才能保存交易</string>
@@ -252,8 +251,8 @@
   <string name="summary_owncloud_sync">启用导出到 ownCloud</string>
   <string name="title_backup_prefs">备份设置</string>
   <string name="title_create_backup_pref">创建备份</string>
-  <string name="summary_create_backup_pref">Create a backup of the active book</string>
-  <string name="summary_restore_backup_pref">Restore most recent backup of active book</string>
+  <string name="summary_create_backup_pref">为当前账簿创建备份</string>
+  <string name="summary_restore_backup_pref">还原至上次备份的状态</string>
   <string name="toast_backup_successful">备份成功</string>
   <string name="toast_backup_failed">备份失败</string>
   <string name="export_warning_xml">导出所有科目和交易</string>
@@ -275,7 +274,7 @@
   <string name="owncloud_user_ok">OC 用户名/密码正确</string>
   <string name="owncloud_dir_ok">目录名正确</string>
   <plurals name="label_every_x_hours">
-    <item quantity="other">Every %d hours</item>
+    <item quantity="other">每隔%d小时</item>
   </plurals>
   <plurals name="label_every_x_days">
     <item quantity="other">每 %d 天</item>
@@ -425,22 +424,22 @@
   <string name="label_recommend_app">在 Play Store 上推荐</string>
   <string name="repeat_until_date">直到%1$s</string>
   <string name="repeat_on_weekday">在%1$s</string>
-  <string name="repeat_x_times">for %1$d times</string>
+  <string name="repeat_x_times">%1$d 次</string>
   <string name="menu_show_compact_view">紧凑视图</string>
   <string name="book_default_name">账簿 %1$d</string>
-  <string name="last_export_time_never">never</string>
-  <string name="title_rename_book">Rename Book</string>
-  <string name="btn_rename">Rename</string>
-  <string name="menu_rename">Rename</string>
-  <string name="title_select_backup_file">Select backup file</string>
-  <string name="summary_select_backup_file">Select a file for automatic backups</string>
-  <string name="title_confirm_restore_backup">Confirm restore from backup</string>
-  <string name="msg_confirm_restore_backup_into_new_book">A new book will be opened with the contents of this backup. Do you wish to proceed?</string>
-  <string name="btn_restore">Restore</string>
-  <string name="title_no_backups_found">No backups found</string>
-  <string name="msg_no_backups_to_restore_from">There are no existing backup files to restore from</string>
+  <string name="last_export_time_never">从不</string>
+  <string name="title_rename_book">重命名</string>
+  <string name="btn_rename">重命名</string>
+  <string name="menu_rename">重命名</string>
+  <string name="title_select_backup_file">选择备份文件</string>
+  <string name="summary_select_backup_file">选择用于自动备份的文件</string>
+  <string name="title_confirm_restore_backup">确认</string>
+  <string name="msg_confirm_restore_backup_into_new_book">将会创建新的账簿</string>
+  <string name="btn_restore">还原</string>
+  <string name="title_no_backups_found">没有发现备份</string>
+  <string name="msg_no_backups_to_restore_from">没有找到备份文件</string>
   <!-- This is the filename for default backups. So use only simple characters and no spaces. Do not change the extension -->
   <string name="label_backup_filename">gnucash_android_backup.gnca</string>
-  <string name="label_select_destination_after_export">Select the destination after export is complete</string>
-  <string name="label_dropbox_export_destination">Export to \'/Apps/GnuCash Android/\' folder on Dropbox</string>
+  <string name="label_select_destination_after_export">选择导出位置</string>
+  <string name="label_dropbox_export_destination">导出到Dropbox的 \'/Apps/GnuCash Android/\' 文件夹</string>
 </resources>

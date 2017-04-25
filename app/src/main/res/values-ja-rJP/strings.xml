@@ -56,10 +56,10 @@
   <string name="hint_delete_after_export">エクスポート完了時に、エクスポートしたすべての取引が削除されます</string>
   <string name="title_settings">設定</string>
   <string-array name="export_destinations">
-    <item>Save As&#8230;</item>
+    <item>名前を付けて保存&#8230;</item>
     <item>Dropbox</item>
     <item>ownCloud</item>
-    <item>Send to&#8230;</item>
+    <item>&#8230;に送信</item>
   </string-array>
   <string name="btn_move">移動</string>
   <string name="title_move_transactions">%1$d件の取引を移動</string>
@@ -86,7 +86,7 @@
   <string name="label_widget_configuration">アカウントを選択</string>
   <string name="toast_no_transactions_to_export">エクスポート可能な取引がありません</string>
   <string name="title_passcode_preferences">パスコードの設定</string>
-  <string name="title_enable_passcode">Enable passcode</string>
+  <string name="title_enable_passcode">パスワードを有効にする</string>
   <string name="title_change_passcode">パスコードを変更する</string>
   <string name="title_about_gnucash">GnuCashについて</string>
   <string name="title_export_email">GnuCash Android %1$s エクスポート</string>
@@ -117,12 +117,11 @@
   <string name="summary_xml_ofx_header">GnuCash for desktopではなく他のサードパーティ製ソフトウェアにエクスポートする場合は、このオプションを有効にします</string>
   <string name="title_whats_new">新着情報</string>
   <string name="whats_new">
-- 複数の異なる帳簿のサポート \n
-- エクスポート先として ownCloud を追加\n
-- 取引リストのコンパクト表示\n
-- パスコードロック画面の再設計\n
-- スケジュールされた取引の処理を改善\n
-- 複数のバグの修正と改良\n</string>
+- ストレージ アクセス フレームワークをサポートしている任意のサービスにエクスポートする機能の追加 \n
+- 定期的な自動バックアップの場所を設定する機能の追加 (バックアップの設定を参照してください) \n
+- Bitcoin 通貨サポートの追加 \n
+- 帳簿の名前を変更するサポートの追加 \n
+- 複数のバグの修正と改善 \n</string>
   <string name="label_dismiss">消去</string>
   <string name="toast_transanction_amount_required">取引を保存するには金額の入力が必要です</string>
   <string name="toast_error_importing_accounts">GnuCashの勘定科目をインポート中にエラーが発生しました。</string>
@@ -249,8 +248,8 @@
   <string name="summary_owncloud_sync">ownCloud へのエクスポートを有効にします</string>
   <string name="title_backup_prefs">バックアップ設定</string>
   <string name="title_create_backup_pref">バックアップを作成</string>
-  <string name="summary_create_backup_pref">Create a backup of the active book</string>
-  <string name="summary_restore_backup_pref">Restore most recent backup of active book</string>
+  <string name="summary_create_backup_pref">アクティブな帳簿のバックアップを作成します</string>
+  <string name="summary_restore_backup_pref">アクティブな帳簿の最新バックアップを復元します</string>
   <string name="toast_backup_successful">バックアップに成功しました</string>
   <string name="toast_backup_failed">バックアップに失敗しました</string>
   <string name="export_warning_xml">すべての勘定と取引をエクスポートします</string>
@@ -272,7 +271,7 @@
   <string name="owncloud_user_ok">OC ユーザー名/パスワード OK</string>
   <string name="owncloud_dir_ok">ディレクトリ名 OK</string>
   <plurals name="label_every_x_hours">
-    <item quantity="other">Every %d hours</item>
+    <item quantity="other">%d 時間ごと</item>
   </plurals>
   <plurals name="label_every_x_days">
     <item quantity="other">%d 日ごと</item>
@@ -422,22 +421,22 @@
   <string name="label_recommend_app">Play ストア でお勧め</string>
   <string name="repeat_until_date">%1$s まで</string>
   <string name="repeat_on_weekday">%1$s に</string>
-  <string name="repeat_x_times">for %1$d times</string>
+  <string name="repeat_x_times">%1$d 回</string>
   <string name="menu_show_compact_view">コンパクト表示</string>
   <string name="book_default_name">帳簿 %1$d</string>
   <string name="last_export_time_never">しない</string>
-  <string name="title_rename_book">Rename Book</string>
-  <string name="btn_rename">Rename</string>
-  <string name="menu_rename">Rename</string>
-  <string name="title_select_backup_file">Select backup file</string>
-  <string name="summary_select_backup_file">Select a file for automatic backups</string>
-  <string name="title_confirm_restore_backup">Confirm restore from backup</string>
-  <string name="msg_confirm_restore_backup_into_new_book">A new book will be opened with the contents of this backup. Do you wish to proceed?</string>
-  <string name="btn_restore">Restore</string>
-  <string name="title_no_backups_found">No backups found</string>
-  <string name="msg_no_backups_to_restore_from">There are no existing backup files to restore from</string>
+  <string name="title_rename_book">帳簿の名前を変更</string>
+  <string name="btn_rename">名前を変更</string>
+  <string name="menu_rename">名前を変更</string>
+  <string name="title_select_backup_file">バックアップファイルを選択</string>
+  <string name="summary_select_backup_file">自動バックアップのファイルを選択します</string>
+  <string name="title_confirm_restore_backup">バックアップからの復元を確認</string>
+  <string name="msg_confirm_restore_backup_into_new_book">このバックアップの内容で新しい帳簿が開かれます。続行しますか?</string>
+  <string name="btn_restore">復元</string>
+  <string name="title_no_backups_found">バックアップが見つかりません</string>
+  <string name="msg_no_backups_to_restore_from">復元する既存のバックアップファイルはありません</string>
   <!-- This is the filename for default backups. So use only simple characters and no spaces. Do not change the extension -->
   <string name="label_backup_filename">gnucash_android_backup.gnca</string>
-  <string name="label_select_destination_after_export">Select the destination after export is complete</string>
-  <string name="label_dropbox_export_destination">Export to \'/Apps/GnuCash Android/\' folder on Dropbox</string>
+  <string name="label_select_destination_after_export">エクスポートが完了した後、移動先を選択します</string>
+  <string name="label_dropbox_export_destination">Dropbox の \'/Apps/GnuCash Android/\' フォルダーにエクスポート</string>
 </resources>

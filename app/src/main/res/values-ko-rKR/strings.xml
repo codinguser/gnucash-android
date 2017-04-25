@@ -117,11 +117,10 @@
   <string name="summary_xml_ofx_header">데스크탑용 GnuCash 이외의 타 응용 프로그램에 내보낼 때에 사용하세요</string>
   <string name="title_whats_new">새로운 기능</string>
   <string name="whats_new">
-        - Support for multiple different books \n
-        - Adds ownCloud as destination for exports\n
-        - Compact view for transactions list\n
-        - Re-design of passcode lock screen\n
-        - Improved handling of scheduled transactions\n
+        - Added ability to export to any service which supports the Storage Access Framework \n
+        - Added option to set the location for regular automatic backups (See backup settings)\n
+        - Added Bitcoin currency support\n
+        - Added support for renaming books\n
         - Multiple bug fixes and improvements\n
 	</string>
   <string name="label_dismiss">닫기</string>

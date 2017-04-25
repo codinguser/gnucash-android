@@ -56,10 +56,10 @@
   <string name="hint_delete_after_export">Все экспортированные проводки будут удалены по завершении.</string>
   <string name="title_settings">Настройки</string>
   <string-array name="export_destinations">
-    <item>Save As&#8230;</item>
+    <item>Сохранить как&#8230;</item>
     <item>Dropbox</item>
     <item>ownCloud</item>
-    <item>Send to&#8230;</item>
+    <item>Отправить&#8230;</item>
   </string-array>
   <string name="btn_move">Перенести</string>
   <string name="title_move_transactions">Перенести %1$d проводку (и)</string>
@@ -86,7 +86,7 @@
   <string name="label_widget_configuration">Выберите счёт</string>
   <string name="toast_no_transactions_to_export">Нет проводок для экспорта</string>
   <string name="title_passcode_preferences">Настройки парольной защиты</string>
-  <string name="title_enable_passcode">Enable passcode</string>
+  <string name="title_enable_passcode">Включить пароль</string>
   <string name="title_change_passcode">Сменить пароль</string>
   <string name="title_about_gnucash">О Gnucash</string>
   <string name="title_export_email">Экспорт %1$s-файла из Gnucash Android</string>
@@ -117,12 +117,11 @@
   <string name="summary_xml_ofx_header">Включите эту опцию, если экспортируете в программы отличные от GnuCash для ПК</string>
   <string name="title_whats_new">Новости</string>
   <string name="whats_new">
-        - Поддержка нескольких различных книг \n
-        - Добавляет ownCloud как место для экспорта\n
-        - Компактный вид списка операций\n
-        - Новый дизайн окна блокировки\n
-        - Улучшена обработка запланированных операций\n
-        - Множество других исправлений ошибок и улучшений\n
+        - Добавлена возможность экспорта с любым сервисом с поддержкой Storage Access Framework \n
+        - Добавлена опция выбора пути сохранения резервных копий (см. настройки)\n
+        - Добавлена поддержка валюты Bitcoin\n
+        - Добавлена поддержка переименования книги\n
+        - Множество мелких правок и улучшений\n
 	</string>
   <string name="label_dismiss">Отмена</string>
   <string name="toast_transanction_amount_required">Введите сумму, чтобы сохранить проводку</string>
@@ -253,8 +252,8 @@
   <string name="summary_owncloud_sync">Включить экспорт на ownCloud</string>
   <string name="title_backup_prefs">Резервная копия настроек</string>
   <string name="title_create_backup_pref">Создать резервную копию</string>
-  <string name="summary_create_backup_pref">Create a backup of the active book</string>
-  <string name="summary_restore_backup_pref">Restore most recent backup of active book</string>
+  <string name="summary_create_backup_pref">Создать резервную копию активной книги</string>
+  <string name="summary_restore_backup_pref">Восстановите последнюю резервную копию активной книги</string>
   <string name="toast_backup_successful">Резервная копия создана</string>
   <string name="toast_backup_failed">Не получилось создать резервную копию</string>
   <string name="export_warning_xml">Будут экспортированы все счета и проводки</string>
@@ -276,9 +275,9 @@
   <string name="owncloud_user_ok">OC имя/пароль ОК</string>
   <string name="owncloud_dir_ok">Имя папки ОК</string>
   <plurals name="label_every_x_hours">
-    <item quantity="one">Hourly</item>
-    <item quantity="few">Every %d hours</item>
-    <item quantity="other">Every %d hours</item>
+    <item quantity="one">Каждый час</item>
+    <item quantity="few">Каждые %d часа</item>
+    <item quantity="other">Каждые %d часов</item>
   </plurals>
   <plurals name="label_every_x_days">
     <item quantity="one">Ежедневно</item>
@@ -440,22 +439,22 @@
   <string name="label_recommend_app">Рекомендовать в Play Store</string>
   <string name="repeat_until_date">до %1$s</string>
   <string name="repeat_on_weekday">в %1$s</string>
-  <string name="repeat_x_times">for %1$d times</string>
+  <string name="repeat_x_times">для %1$d раз</string>
   <string name="menu_show_compact_view">Компактный вид</string>
   <string name="book_default_name">Книга %1$d</string>
   <string name="last_export_time_never">никогда</string>
-  <string name="title_rename_book">Rename Book</string>
-  <string name="btn_rename">Rename</string>
-  <string name="menu_rename">Rename</string>
-  <string name="title_select_backup_file">Select backup file</string>
-  <string name="summary_select_backup_file">Select a file for automatic backups</string>
-  <string name="title_confirm_restore_backup">Confirm restore from backup</string>
-  <string name="msg_confirm_restore_backup_into_new_book">A new book will be opened with the contents of this backup. Do you wish to proceed?</string>
-  <string name="btn_restore">Restore</string>
-  <string name="title_no_backups_found">No backups found</string>
-  <string name="msg_no_backups_to_restore_from">There are no existing backup files to restore from</string>
+  <string name="title_rename_book">Переименовать Книгу</string>
+  <string name="btn_rename">Переименование</string>
+  <string name="menu_rename">Переименовать</string>
+  <string name="title_select_backup_file">Выберите файл резервной копии</string>
+  <string name="summary_select_backup_file">Выберите файл для автоматического резервного копирования</string>
+  <string name="title_confirm_restore_backup">Подтвердите восстановление из резервной копии</string>
+  <string name="msg_confirm_restore_backup_into_new_book">Новая книга будет открыта с содержанием этой резервной копии. Вы хотите продолжить?</string>
+  <string name="btn_restore">Восстановить</string>
+  <string name="title_no_backups_found">Резервные копии не найдены</string>
+  <string name="msg_no_backups_to_restore_from">Нет существующих файлов резервных копий для восстановления</string>
   <!-- This is the filename for default backups. So use only simple characters and no spaces. Do not change the extension -->
   <string name="label_backup_filename">gnucash_android_backup.gnca</string>
-  <string name="label_select_destination_after_export">Select the destination after export is complete</string>
-  <string name="label_dropbox_export_destination">Export to \'/Apps/GnuCash Android/\' folder on Dropbox</string>
+  <string name="label_select_destination_after_export">Выберите пункт назначения после завершения экспорта</string>
+  <string name="label_dropbox_export_destination">Экспорт в \' / Apps/GnuCash Android /\' папку на Dropbox</string>
 </resources>

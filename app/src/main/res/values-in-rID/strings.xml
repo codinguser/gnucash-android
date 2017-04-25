@@ -117,12 +117,11 @@
   <string name="summary_xml_ofx_header">Aktifkan opsi ini ketika mengekspor ke aplikasi pihak ketiga selain GnuCash versi desktop</string>
   <string name="title_whats_new">Yang Terbaru</string>
   <string name="whats_new">
-        - Mendukung lebih dari satu buku yang berbeda \n
-        - Menambahkan ownCloud sebagai tujuan untuk ekspor\n
-        - Tampilan yang terpadu untuk daftar transaksi\n
-        - Desain ulang terkait layar kunci kode akses\n
-        - Penanganan yang ditingkatkan terkait transaksi terjadwal\n
-        - Perbaikan berbagai bug dan beberapa peningkatan\n
+        - Added ability to export to any service which supports the Storage Access Framework \n
+        - Added option to set the location for regular automatic backups (See backup settings)\n
+        - Added Bitcoin currency support\n
+        - Added support for renaming books\n
+        - Multiple bug fixes and improvements\n
 	</string>
   <string name="label_dismiss">Abaikan</string>
   <string name="toast_transanction_amount_required">Tuliskan jumlah untuk menyimpan transaksi</string>

@@ -117,12 +117,11 @@
   <string name="summary_xml_ofx_header">Diese Option aktivieren, wenn Sie die OFX-Dateien für ein anderes Programm als GnuCash auf dem Desktop exportieren</string>
   <string name="title_whats_new">Neuigkeiten in dieser Version</string>
   <string name="whats_new">
-	- Unterstützung für mehrere verschiedene Bücher\n
-	- Fügt ownCloud als Exportziel hinzu\n
-	- Kompaktansicht für Buchungsliste\n
-	- Neugestaltung des Zugangscode-Sperrbildschirms\n
-	- Verbesserte Handhabung terminierter Buchungen\n
-	- Mehrere Bugfixes und Verbesserungen\n
+        - Added ability to export to any service which supports the Storage Access Framework \n
+        - Added option to set the location for regular automatic backups (See backup settings)\n
+        - Added Bitcoin currency support\n
+        - Added support for renaming books\n
+        - Multiple bug fixes and improvements\n
 	</string>
   <string name="label_dismiss">Schließen</string>
   <string name="toast_transanction_amount_required">Geben Sie einen Betrag ein, um die Buchung speichern zu können</string>
