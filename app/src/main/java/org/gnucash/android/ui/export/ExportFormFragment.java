@@ -501,7 +501,17 @@ public class ExportFormFragment extends Fragment implements
 		Intent createIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
 		createIntent.setType("text/*").addCategory(Intent.CATEGORY_OPENABLE);
 		String bookName = BooksDbAdapter.getInstance().getActiveBookDisplayName();
-		createIntent.putExtra(Intent.EXTRA_TITLE, Exporter.buildExportFilename(mExportFormat, bookName));
+
+		if (mExportFormat == ExportFormat.XML || mExportFormat == ExportFormat.QIF) {
+			createIntent.setType("application/zip");
+		}
+
+		String filename = Exporter.buildExportFilename(mExportFormat, bookName);
+		if (mExportTarget == ExportParams.ExportTarget.URI && mExportFormat == ExportFormat.QIF){
+			filename += ".zip";
+		}
+
+		createIntent.putExtra(Intent.EXTRA_TITLE, filename);
 		startActivityForResult(createIntent, REQUEST_EXPORT_FILE);
 	}
 

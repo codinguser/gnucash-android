@@ -17,7 +17,6 @@
 
 package org.gnucash.android.export;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -27,7 +26,6 @@ import android.content.pm.ResolveInfo;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
@@ -79,6 +77,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Asynchronous task for exporting transactions.
@@ -280,21 +280,38 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             return;
         }
 
-        //we only support exporting to a single file
-        String exportedFile = mExportedFiles.get(0);
-        try {
-            moveFile(exportedFile, mContext.getContentResolver().openOutputStream(exportUri));
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e(TAG, "Error moving export file to: " + exportUri);
-            Crashlytics.logException(e);
+        if (mExportedFiles.size() > 0){
+            try {
+                OutputStream outputStream = mContext.getContentResolver().openOutputStream(exportUri);
+                ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
+                byte[] buffer = new byte[1024];
+                for (String exportedFile : mExportedFiles) {
+                    File file = new File(exportedFile);
+                    FileInputStream fileInputStream = new FileInputStream(file);
+                    zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
+
+                    int length;
+                    while ((length = fileInputStream.read(buffer)) > 0) {
+                        zipOutputStream.write(buffer, 0, length);
+                    }
+                    zipOutputStream.closeEntry();
+                    fileInputStream.close();
+                }
+                zipOutputStream.close();
+            } catch (IOException ex) {
+                Log.e(TAG, "Error when zipping QIF files for export");
+                ex.printStackTrace();
+                Crashlytics.logException(ex);
+            }
         }
     }
 
     /**
      * Move the exported files to a GnuCash folder on Google Drive
      * @throws Exporter.ExporterException
+     * @deprecated Explicit Google Drive integration is deprecated, use Storage Access Framework. See {@link #moveExportToUri()}
      */
+    @Deprecated
     private void moveExportToGoogleDrive() throws Exporter.ExporterException {
         Log.i(TAG, "Moving exported file to Google Drive");
         final GoogleApiClient googleApiClient = BackupPreferenceFragment.getGoogleApiClient(GnuCashApplication.getAppContext());
@@ -421,7 +438,9 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      * Moves the exported files from the internal storage where they are generated to
      * external storage, which is accessible to the user.
      * @return The list of files moved to the SD card.
+     * @deprecated Use the Storage Access Framework to save to SD card. See {@link #moveExportToUri()}
      */
+    @Deprecated
     private List<String> moveExportToSDCard() throws Exporter.ExporterException {
         Log.i(TAG, "Moving exported file to external storage");
         new File(Exporter.getExportFolderPath(mExporter.mBookUID));
