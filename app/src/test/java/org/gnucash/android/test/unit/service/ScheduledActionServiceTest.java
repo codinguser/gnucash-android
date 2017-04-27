@@ -48,6 +48,7 @@ import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
 import org.gnucash.android.util.BookUtils;
 import org.gnucash.android.util.TimestampHelper;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Weeks;
 import org.junit.After;
@@ -63,6 +64,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -199,8 +202,10 @@ public class ScheduledActionServiceTest {
 
         scheduledAction.setActionUID(mActionUID);
 
-        int multiplier = 2;
-        scheduledAction.setRecurrence(PeriodType.WEEK, multiplier);
+        Recurrence recurrence = new Recurrence(PeriodType.WEEK);
+        recurrence.setMultiplier(2);
+        recurrence.setByDays(Collections.singletonList(Calendar.MONDAY));
+        scheduledAction.setRecurrence(recurrence);
         ScheduledActionDbAdapter.getInstance().addRecord(scheduledAction, DatabaseAdapter.UpdateMethod.insert);
 
         TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
@@ -249,7 +254,10 @@ public class ScheduledActionServiceTest {
         scheduledAction.setStartTime(startTime.getMillis());
         scheduledAction.setActionUID(mActionUID);
 
-        scheduledAction.setRecurrence(PeriodType.WEEK, 2);
+        Recurrence recurrence = new Recurrence(PeriodType.WEEK);
+        recurrence.setMultiplier(2);
+        recurrence.setByDays(Collections.singletonList(Calendar.MONDAY));
+        scheduledAction.setRecurrence(recurrence);
         scheduledAction.setEndTime(new DateTime(2016, 8, 8, 9, 0).getMillis());
         ScheduledActionDbAdapter.getInstance().addRecord(scheduledAction, DatabaseAdapter.UpdateMethod.insert);
 
@@ -345,11 +353,15 @@ public class ScheduledActionServiceTest {
     @Test
     public void scheduledBackups_shouldNotRunBeforeNextScheduledExecution(){
         ScheduledAction scheduledBackup = new ScheduledAction(ScheduledAction.ActionType.BACKUP);
-        scheduledBackup.setStartTime(LocalDateTime.now().minusDays(2).toDate().getTime());
+        scheduledBackup.setStartTime(
+                LocalDateTime.now().withDayOfWeek(DateTimeConstants.WEDNESDAY).toDate().getTime());
         scheduledBackup.setLastRun(scheduledBackup.getStartTime());
         long previousLastRun = scheduledBackup.getLastRunTime();
         scheduledBackup.setExecutionCount(1);
-        scheduledBackup.setRecurrence(PeriodType.WEEK, 1);
+        Recurrence recurrence = new Recurrence(PeriodType.WEEK);
+        recurrence.setMultiplier(1);
+        recurrence.setByDays(Collections.singletonList(Calendar.MONDAY));
+        scheduledBackup.setRecurrence(recurrence);
 
         ExportParams backupParams = new ExportParams(ExportFormat.XML);
         backupParams.setExportTarget(ExportParams.ExportTarget.SD_CARD);
@@ -380,7 +392,10 @@ public class ScheduledActionServiceTest {
         scheduledBackup.setLastRun(LocalDateTime.now().minusDays(8).toDate().getTime());
         long previousLastRun = scheduledBackup.getLastRunTime();
         scheduledBackup.setExecutionCount(1);
-        scheduledBackup.setRecurrence(PeriodType.WEEK, 1);
+        Recurrence recurrence = new Recurrence(PeriodType.WEEK);
+        recurrence.setMultiplier(1);
+        recurrence.setByDays(Collections.singletonList(Calendar.WEDNESDAY));
+        scheduledBackup.setRecurrence(recurrence);
         ExportParams backupParams = new ExportParams(ExportFormat.QIF);
         backupParams.setExportTarget(ExportParams.ExportTarget.SD_CARD);
         backupParams.setExportStartTime(new Timestamp(scheduledBackup.getStartTime()));
@@ -438,7 +453,10 @@ public class ScheduledActionServiceTest {
         scheduledBackup.setLastRun(LocalDateTime.now().minusDays(8).toDate().getTime());
         long previousLastRun = scheduledBackup.getLastRunTime();
         scheduledBackup.setExecutionCount(1);
-        scheduledBackup.setRecurrence(PeriodType.WEEK, 1);
+        Recurrence recurrence = new Recurrence(PeriodType.WEEK);
+        recurrence.setMultiplier(1);
+        recurrence.setByDays(Collections.singletonList(Calendar.FRIDAY));
+        scheduledBackup.setRecurrence(recurrence);
         ExportParams backupParams = new ExportParams(ExportFormat.QIF);
         backupParams.setExportTarget(ExportParams.ExportTarget.SD_CARD);
         backupParams.setExportStartTime(new Timestamp(scheduledBackup.getStartTime()));
