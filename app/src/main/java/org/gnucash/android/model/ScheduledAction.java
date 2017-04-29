@@ -241,12 +241,19 @@ public class ScheduledAction extends BaseModel{
      * Computes the next time that this weekly scheduled action is supposed to be
      * executed starting at startTime.
      *
+     * If no weekdays have been set (GnuCash desktop allows it), it will return a
+     * date in the future to ensure ScheduledActionService doesn't execute it.
+     *
      * @param startTime LocalDateTime to use as start to compute the next schedule.
      *
-     * @return Next run time as a LocalDateTime
+     * @return Next run time as a LocalDateTime. A date in the future, if no weekdays
+     *      were set in the Recurrence.
      */
     @NonNull
     private LocalDateTime computeNextWeeklyExecutionStartingAt(LocalDateTime startTime) {
+        if (mRecurrence.getByDays().isEmpty())
+            return LocalDateTime.now().plusDays(1); // Just a date in the future
+
         // Look into the week of startTime for another scheduled weekday
         for (int weekDay : mRecurrence.getByDays() ) {
             int jodaWeekDay = convertCalendarWeekdayToJoda(weekDay);

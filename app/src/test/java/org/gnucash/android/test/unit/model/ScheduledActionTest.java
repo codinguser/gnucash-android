@@ -20,6 +20,7 @@ import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
 import java.sql.Timestamp;
@@ -174,6 +175,25 @@ public class ScheduledActionTest {
         long expectedNextDueDate = new DateTime(2017, 4, 26, 9, 0).getMillis();
         assertThat(scheduledAction.computeNextTimeBasedScheduledExecutionTime())
                 .isEqualTo(expectedNextDueDate);
+    }
+
+    /**
+     * Weekly actions should return a date in the future when no
+     * weekdays have been set in the recurrence.
+     *
+     * See ScheduledAction.computeNextTimeBasedScheduledExecutionTime()
+     */
+    @Test
+    public void weeklyActionsWithoutWeekdaySet_shouldReturnDateInTheFuture() {
+        ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.BACKUP);
+        Recurrence recurrence = new Recurrence(PeriodType.WEEK);
+        recurrence.setByDays(Collections.<Integer>emptyList());
+        scheduledAction.setRecurrence(recurrence);
+        scheduledAction.setStartTime(new DateTime(2016, 6, 6, 9, 0).getMillis());
+        scheduledAction.setLastRun(new DateTime(2017, 4, 12, 9, 0).getMillis());
+
+        long now = LocalDateTime.now().toDate().getTime();
+        assertThat(scheduledAction.computeNextTimeBasedScheduledExecutionTime()).isGreaterThan(now);
     }
 
     private long getTimeInMillis(int year, int month, int day) {
