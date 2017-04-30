@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+    http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<resources>
+    <string name="app_name">Gnucash</string>
+    <string name="title_add_account">Crear Cuenta</string>
+    <string name="title_edit_account">Editar Cuenta</string>
+    <string name="info_details">Info</string>
+    <string name="title_settings">Ajustes</string>
+    <string name="menu_export_ofx">Exportar OFX</string>
+    <string name="description_add_transaction_icon">A&#241;adir una nueva transacci&#243;n a una cuenta</string>
+    <string name="label_no_accounts">No hay cuentas que mostrar</string>
+    <string name="label_account_name">Nombre de la cuenta</string>
+    <string name="btn_cancel">Cancelar</string>
+    <string name="btn_save">Guardar</string>
+    <string name="label_no_transactions_to_display">No hay transacciones que mostrar</string>
+    <string name="label_transaction_name">Descripci&#243;n</string>
+    <string name="label_transaction_amount">Cantidad</string>
+    <string name="title_add_transaction">Nueva transacci&#243;n</string>
+    <string name="label_no_transactions">No hay transacciones</string>
+    <string name="label_timeanddate">FECHA &amp; HORA</string>
+    <string name="label_account">Cuenta</string>
+    <string name="label_debit">D&#201;BITO</string>
+    <string name="label_credit">CR&#201;DITO</string>
+    <string name="title_accounts">Cuentas</string>
+    <string name="title_transactions">Transacciones</string>
+    <string name="menu_delete">BORRAR</string>
+    <string name="alert_dialog_ok_delete">Borrar</string>
+    <string name="alert_dialog_cancel">Cancelar</string>
+    <string name="toast_account_deleted">Cuenta borrada</string>
+    <string name="title_confirm_delete">Confirmar borrado</string>
+    <string name="delete_confirmation_message">Todas las transacciones en esta cuenta ser&#225;n tambi&#233;n borradas</string>
+    <string name="title_edit_transaction">Editar Transacci&#243;n</string>
+    <string name="label_transaction_description">Nota</string>
+    <string name="menu_move">MOVER</string>
+    <string name="title_selected">%1$d seleccionado</string>
+    <string name="label_transactions_total">Total:</string>
+    <string name="label_export_destination">Destino de la exportaci&#243;n</string>
+    <string name="title_export_dialog">Exportar OFX</string>
+    <string name="option_export_all_transactions">Exportar todas las transacciones</string>
+    <string name="hint_export_choice">Por defecto solo las nuevas transacciones desde la &#250;ltima exportaci&#243;n ser&#225;n exportadas. Selecciona esta opci&#243;n para exportar todas las transacciones</string>
+    <string name="error_exporting">Error exportando datos OFX</string>    
+    <string name="btn_export">Exportar</string>
+    <string name="option_delete_after_export">Borrar despu&#233;s de exportar</string>
+    <string name="hint_delete_after_export">Todas las transacciones exportadas ser&#225;n borradas cuando la exportaci&#243;n haya terminado</string>
+    <string name="title_settings">Ajustes</string>
+    <string-array name="export_destinations">
+        <item>Compartir archivo&#8230;</item>
+        <item>Tarjeta SD</item>
+    </string-array>
+    <string name="btn_move">Mover</string>
+    <string name="title_move_transactions">Mover %1$d transacci&#243;n(es)</string>
+    <string name="label_move_destination">Cuenta Destino</string>
+    <string name="permission_access_sdcard">Acceder a la tarjeta SD</string>
+    <string name="title_share_ofx_with">Compartir exportaci&#243;n OFX con&#8230;</string>
+    <string name="key_default_currency">default_currency</string>
+    <string name="toast_incompatible_currency">No se pueden mover las transacciones.\nLa cuenta destino utiliza una divisa distinta a la de la cuenta de origen</string>
+    <string name="header_general_settings">General</string>
+    <string name="header_about_gnucash">Acerca de</string>
+    <string name="title_choose_currency">Elegir divisa por defecto</string>
+    <string name="title_default_currency">Divisa por defecto</string>
+    <string name="summary_default_currency">Divisa por defecto para las nuevas cuentas</string>
+    <string name="label_permission_record_transactions">Permite almacenar transacciones en Gnucash para Android</string>
+    <string name="label_permission_create_accounts">Permite crear cuentas en Gnucash para Android</string>
+    <string name="label_permission_group">Tus datos GnuCash</string>
+    <string name="description_permission_group">Leer y modificar datos Gnucash</string>
+    <string name="label_permission_record_transaction">almacenar transacciones</string>
+    <string name="label_permission_create_account">crear cuentas</string>
+    <string name="label_display_account">Mostrar cuentas</string>
+    <string name="btn_create_accounts">Crear Cuentas</string>
+    <string name="title_default_accounts">Seleccionar cuentas a crear</string>
+    <string name="key_first_run">key_first_run</string>
+    <string-array name="currency_names">
+        <item>Afghani</item>
+		<item>Algerian Dinar</item>
+		<item>Argentine Peso</item>
+		<item>Armenian Dram</item>
+		<item>Aruban Florin</item>
+		<item>Australian Dollar</item>
+		<item>Azerbaijanian Manat</item>
+		<item>Bahamian Dollar</item>
+		<item>Bahraini Dinar</item>
+		<item>Baht</item>
+		<item>Balboa</item>
+		<item>Barbados Dollar</item>
+		<item>Belarussian Ruble</item>
+		<item>Belize Dollar</item>
+		<item>Bermudian Dollar</item>
+		<item>Bolivar Fuerte</item>
+		<item>Boliviano</item>
+		<item>Brazilian Real</item>
+		<item>Brunei Dollar</item>
+		<item>Bulgarian Lev</item>
+		<item>Burundi Franc</item>
+		<item>Canadian Dollar</item>
+		<item>Cape Verde Escudo</item>
+		<item>Cayman Islands Dollar</item>
+		<item>CFA Franc BCEAO</item>
+		<item>CFA Franc BEAC</item>
+		<item>CFP Franc</item>
+		<item>Chilean Peso</item>
+		<item>Testing currency</item>
+		<item>Colombian Peso</item>
+		<item>Comoro Franc</item>
+		<item>Congolese Franc</item>
+		<item>Convertible Mark</item>
+		<item>Cordoba Oro</item>
+		<item>Costa Rican Colon</item>
+		<item>Croatian Kuna</item>
+		<item>Cuban Peso</item>
+		<item>Czech Koruna</item>
+		<item>Dalasi</item>
+		<item>Danish Krone</item>
+		<item>Denar</item>
+		<item>Djibouti Franc</item>
+		<item>Dobra</item>
+		<item>Dominican Peso</item>
+		<item>Dong</item>
+		<item>East Caribbean Dollar</item>
+		<item>Egyptian Pound</item>
+		<item>El Salvador Colon</item>
+		<item>Ethiopian Birr</item>
+		<item>Euro</item>
+		<item>Falkland Islands Pound</item>
+		<item>Fiji Dollar</item>
+		<item>Forint</item>
+		<item>Ghana Cedi</item>
+		<item>Gibraltar Pound</item>
+		<item>Gold</item>
+		<item>Gourde</item>
+		<item>Guarani</item>
+		<item>Guinea Franc</item>
+		<item>Guyana Dollar</item>
+		<item>Hong Kong Dollar</item>
+		<item>Hryvnia</item>
+		<item>Iceland Krona</item>
+		<item>Indian Rupee</item>
+		<item>Iranian Rial</item>
+		<item>Iraqi Dinar</item>
+		<item>Jamaican Dollar</item>
+		<item>Jordanian Dinar</item>
+		<item>Kenyan Shilling</item>
+		<item>Kina</item>
+		<item>Kip</item>
+		<item>Kuwaiti Dinar</item>
+		<item>Kwacha</item>
+		<item>Kwanza</item>
+		<item>Kyat</item>
+		<item>Lari</item>
+		<item>Latvian Lats</item>
+		<item>Lebanese Pound</item>
+		<item>Lek</item>
+		<item>Lempira</item>
+		<item>Leone</item>
+		<item>Liberian Dollar</item>
+		<item>Libyan Dinar</item>
+		<item>Lilangeni</item>
+		<item>Lithuanian Litas</item>
+		<item>Loti</item>
+		<item>Malagasy Ariary</item>
+		<item>Malaysian Ringgit</item>
+		<item>Mauritius Rupee</item>
+		<item>Mexican Peso</item>
+		<item>Mexican Unidad de Inversion (UDI)</item>
+		<item>Moldovan Leu</item>
+		<item>Moroccan Dirham</item>
+		<item>Mozambique Metical</item>
+		<item>Mvdol</item>
+		<item>Naira</item>
+		<item>Nakfa</item>
+		<item>Namibia Dollar</item>
+		<item>Nepalese Rupee</item>
+		<item>Netherlands Antillean Guilder</item>
+		<item>New Israeli Sheqel</item>
+		<item>New Romanian Leu</item>
+		<item>New Taiwan Dollar</item>
+		<item>New Zealand Dollar</item>
+		<item>Ngultrum</item>
+		<item>North Korean Won</item>
+		<item>Norwegian Krone</item>
+		<item>Nuevo Sol</item>
+		<item>Ouguiya</item>
+		<item>Pa’anga</item>
+		<item>Pakistan Rupee</item>
+		<item>Palladium</item>
+		<item>Pataca</item>
+		<item>Peso Convertible</item>
+		<item>Peso Uruguayo</item>
+		<item>Philippine Peso</item>
+		<item>Platinum</item>
+		<item>Pound Sterling</item>
+		<item>Pula</item>
+		<item>Qatari Rial</item>
+		<item>Quetzal</item>
+		<item>Rand</item>
+		<item>Rial Omani</item>
+		<item>Riel</item>
+		<item>Rufiyaa</item>
+		<item>Rupiah</item>
+		<item>Russian Ruble</item>
+		<item>Rwanda Franc</item>
+		<item>Saint Helena Pound</item>
+		<item>Saudi Riyal</item>
+		<item>SDR (Special Drawing Right)</item>
+		<item>Serbian Dinar</item>
+		<item>Seychelles Rupee</item>
+		<item>Silver</item>
+		<item>Singapore Dollar</item>
+		<item>Solomon Islands Dollar</item>
+		<item>Som</item>
+		<item>Somali Shilling</item>
+		<item>Somoni</item>
+		<item>South Sudanese Pound</item>
+		<item>Sri Lanka Rupee</item>
+		<item>Sucre</item>
+		<item>Sudanese Pound</item>
+		<item>Surinam Dollar</item>
+		<item>Swedish Krona</item>
+		<item>Swiss Franc</item>
+		<item>Syrian Pound</item>
+		<item>Taka</item>
+		<item>Tala</item>
+		<item>Tanzanian Shilling</item>
+		<item>Tenge</item>
+		<item>No currency</item>
+		<item>Trinidad and Tobago Dollar</item>
+		<item>Tugrik</item>
+		<item>Tunisian Dinar</item>
+		<item>Turkish Lira</item>
+		<item>Turkmenistan New Manat</item>
+		<item>UAE Dirham</item>
+		<item>Uganda Shilling</item>
+		<item>UIC-Franc</item>
+		<item>Unidad de Valor Real</item>
+		<item>Unidades de fomento</item>
+		<item>Uruguay Peso en Unidades Indexadas (URUIURUI)</item>
+		<item>US Dollar</item>
+		<item>Uzbekistan Sum</item>
+		<item>Vatu</item>
+		<item>WIR Euro</item>
+		<item>WIR Franc</item>
+		<item>Won</item>
+		<item>Yemeni Rial</item>
+		<item>Yen</item>
+		<item>Yuan Renminbi</item>
+		<item>Zambian Kwacha</item>
+		<item>Zimbabwe Dollar</item>
+		<item>Zloty</item>
+    </string-array>
+    
+	<string-array name="currency_codes">
+        <item>AFN</item>
+		<item>DZD</item>
+		<item>ARS</item>
+		<item>AMD</item>
+		<item>AWG</item>
+		<item>AUD</item>
+		<item>AZN</item>
+		<item>BSD</item>
+		<item>BHD</item>
+		<item>THB</item>
+		<item>PAB</item>
+		<item>BBD</item>
+		<item>BYR</item>
+		<item>BZD</item>
+		<item>BMD</item>
+		<item>VEF</item>
+		<item>BOB</item>
+		<item>BRL</item>
+		<item>BND</item>
+		<item>BGN</item>
+		<item>BIF</item>
+		<item>CAD</item>
+		<item>CVE</item>
+		<item>KYD</item>
+		<item>XOF</item>
+		<item>XAF</item>
+		<item>XPF</item>
+		<item>CLP</item>
+		<item>XTS</item>
+		<item>COP</item>
+		<item>KMF</item>
+		<item>CDF</item>
+		<item>BAM</item>
+		<item>NIO</item>
+		<item>CRC</item>
+		<item>HRK</item>
+		<item>CUP</item>
+		<item>CZK</item>
+		<item>GMD</item>
+		<item>DKK</item>
+		<item>MKD</item>
+		<item>DJF</item>
+		<item>STD</item>
+		<item>DOP</item>
+		<item>VND</item>
+		<item>XCD</item>
+		<item>EGP</item>
+		<item>SVC</item>
+		<item>ETB</item>
+		<item>EUR</item>
+		<item>FKP</item>
+		<item>FJD</item>
+		<item>HUF</item>
+		<item>GHS</item>
+		<item>GIP</item>
+		<item>XAU</item>
+		<item>HTG</item>
+		<item>PYG</item>
+		<item>GNF</item>
+		<item>GYD</item>
+		<item>HKD</item>
+		<item>UAH</item>
+		<item>ISK</item>
+		<item>INR</item>
+		<item>IRR</item>
+		<item>IQD</item>
+		<item>JMD</item>
+		<item>JOD</item>
+		<item>KES</item>
+		<item>PGK</item>
+		<item>LAK</item>
+		<item>KWD</item>
+		<item>MWK</item>
+		<item>AOA</item>
+		<item>MMK</item>
+		<item>GEL</item>
+		<item>LVL</item>
+		<item>LBP</item>
+		<item>ALL</item>
+		<item>HNL</item>
+		<item>SLL</item>
+		<item>LRD</item>
+		<item>LYD</item>
+		<item>SZL</item>
+		<item>LTL</item>
+		<item>LSL</item>
+		<item>MGA</item>
+		<item>MYR</item>
+		<item>MUR</item>
+		<item>MXN</item>
+		<item>MXV</item>
+		<item>MDL</item>
+		<item>MAD</item>
+		<item>MZN</item>
+		<item>BOV</item>
+		<item>NGN</item>
+		<item>ERN</item>
+		<item>NAD</item>
+		<item>NPR</item>
+		<item>ANG</item>
+		<item>ILS</item>
+		<item>RON</item>
+		<item>TWD</item>
+		<item>NZD</item>
+		<item>BTN</item>
+		<item>KPW</item>
+		<item>NOK</item>
+		<item>PEN</item>
+		<item>MRO</item>
+		<item>TOP</item>
+		<item>PKR</item>
+		<item>XPD</item>
+		<item>MOP</item>
+		<item>CUC</item>
+		<item>UYU</item>
+		<item>PHP</item>
+		<item>XPT</item>
+		<item>GBP</item>
+		<item>BWP</item>
+		<item>QAR</item>
+		<item>GTQ</item>
+		<item>ZAR</item>
+		<item>OMR</item>
+		<item>KHR</item>
+		<item>MVR</item>
+		<item>IDR</item>
+		<item>RUB</item>
+		<item>RWF</item>
+		<item>SHP</item>
+		<item>SAR</item>
+		<item>XDR</item>
+		<item>RSD</item>
+		<item>SCR</item>
+		<item>XAG</item>
+		<item>SGD</item>
+		<item>SBD</item>
+		<item>KGS</item>
+		<item>SOS</item>
+		<item>TJS</item>
+		<item>SSP</item>
+		<item>LKR</item>
+		<item>XSU</item>
+		<item>SDG</item>
+		<item>SRD</item>
+		<item>SEK</item>
+		<item>CHF</item>
+		<item>SYP</item>
+		<item>BDT</item>
+		<item>WST</item>
+		<item>TZS</item>
+		<item>KZT</item>
+		<item>XXX</item>
+		<item>TTD</item>
+		<item>MNT</item>
+		<item>TND</item>
+		<item>TRY</item>
+		<item>TMT</item>
+		<item>AED</item>
+		<item>UGX</item>
+		<item>XFU</item>
+		<item>COU</item>
+		<item>CLF</item>
+		<item>UYI</item>
+		<item>USD</item>
+		<item>UZS</item>
+		<item>VUV</item>
+		<item>CHE</item>
+		<item>CHW</item>
+		<item>KRW</item>
+		<item>YER</item>
+		<item>JPY</item>
+		<item>CNY</item>
+		<item>ZMK</item>
+		<item>ZWL</item>
+		<item>PLN</item>
+    </string-array>
+	<string-array name="default_accounts">
+	    <item>Gastos</item>
+	    <item>Ingresos</item>
+	    <item>Activos</item>	    
+	    <item>Entretenimiento</item>
+	    <item>Seguros</item>
+	</string-array>
+	<string name="error_no_accounts">No hay cuentas en Gnucash.\nCrea una cuenta antes de a&#241;adir un widget</string>
+	<string name="key_build_version">build_version</string>
+	<string name="title_build_version">Versi&#243;n de compilaci&#243;n</string>
+	<string name="app_version">1.0.beta2</string>
+	<string name="title_license">Licencia</string>
+	<string name="summary_licence_details">Apache License v2.0. Clic para m&#225;s detalles</string>
+	<string name="title_general_prefs">General</string>
+	<string name="key_license">app_license</string>
+	<string name="label_widget_configuration">Seleccionar Cuenta</string>
+	<string name="toast_no_transactions_to_export">No hay transacciones disponibles para exportar</string>
+	<string name="key_about">about_gnucash</string>
+	<string name="title_about_gnucash">Acerca de Gnucash</string>
+	<string name="summary_about_gnucash">GnucashMobile es una aplicaci&#243;n de registro de gastos financieros para Android.\nPermite un registro flexible  de gastos en cualquier lugar que luego pueden ser exportados al formato Open Financial eXchange (OFX) e importados en la aplicaci&#243;n Gnucash para el escritorio.</string>
+	<string name="title_about">About</string>
+	<string name="toast_error_exporting">No se pudo guardar el archivo OFX en:\n</string>
+	<string name="toast_ofx_exported_to">Archivo OFX exportado a:\n</string>
+	<string name="title_export_email">Exportaci&#243;n OFX de Gnucash</string>
+	<string name="description_export_email">Exportaci&#243;n OFX de Gnucash</string>
+</resources>
