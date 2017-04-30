@@ -219,6 +219,7 @@ public class OwnCloudDialogFragment extends DialogFragment {
         } else {
             mDirError.setTextColor(ContextCompat.getColor(getContext(), R.color.debit_red));
             mDirError.setText(getString(R.string.owncloud_dir_invalid));
+            mDirError.setTextColor(ContextCompat.getColor(getContext(), R.color.debit_red));
             mDirError.setVisibility(View.VISIBLE);
         }
         saveButton();
