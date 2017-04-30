@@ -220,8 +220,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
                 long amount_denom = cursor.getLong(1);
                 String commodityCode = cursor.getString(2);
                 //Log.d(getClass().getName(), commodity + " " + amount_num + "/" + amount_denom);
-                if (commodityCode.equals("XXX") || amount_num == 0) {
-                    // ignore custom currency
+                if (amount_num == 0) {
                     continue;
                 }
                 if (!hasDebitNormalBalance) {
