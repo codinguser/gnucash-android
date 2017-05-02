@@ -19,7 +19,7 @@
   <string name="title_create_account">Criar Conta</string>
   <string name="title_edit_account">Editar Conta</string>
   <string name="description_add_transaction_icon">Adicionar nova transacção a uma conta</string>
-  <string name="description_view_account_icon">View account details</string>
+  <string name="description_view_account_icon">Ver detalhes da conta</string>
   <string name="label_no_accounts">Sem contas para mostrar</string>
   <string name="label_account_name">Nome da conta</string>
   <string name="btn_cancel">Cancelar</string>
@@ -56,10 +56,10 @@
   <string name="hint_delete_after_export">Todas as transações exportadas serão apagadas quando a exportação estiver completa</string>
   <string name="title_settings">Configurações</string>
   <string-array name="export_destinations">
-    <item>Save As&#8230;</item>
+    <item>Guardar como&#8230;</item>
     <item>Dropbox</item>
     <item>ownCloud</item>
-    <item>Send to&#8230;</item>
+    <item>Enviar para&#8230;</item>
   </string-array>
   <string name="btn_move">Mover</string>
   <string name="title_move_transactions">Mover %1$d transacções</string>
@@ -77,7 +77,7 @@
   <string name="label_permission_record_transaction">Gravar transacções no GnuCash</string>
   <string name="label_permission_create_account">Criar contas no GnuCash</string>
   <string name="label_display_account">Mostrar conta</string>
-  <string name="label_hide_account_balance">Hide account balance in widget</string>
+  <string name="label_hide_account_balance">Esconder o saldo da conta no widget</string>
   <string name="btn_create_accounts">Criar contas</string>
   <string name="error_no_accounts">Não existem contas no GnuCash.\nCrie uma conta antes de adicionar um widget</string>
   <string name="title_license">Licença</string>
@@ -86,7 +86,7 @@
   <string name="label_widget_configuration">Escolha uma conta</string>
   <string name="toast_no_transactions_to_export">Não existem transacções para exportar</string>
   <string name="title_passcode_preferences">Preferências de senha</string>
-  <string name="title_enable_passcode">Enable passcode</string>
+  <string name="title_enable_passcode">Activar código de acesso</string>
   <string name="title_change_passcode">Mudar Palavra Passe</string>
   <string name="title_about_gnucash">Sobre o GnuCash</string>
   <string name="title_export_email">GnuCash Android %1$s exportação</string>
@@ -117,12 +117,11 @@
   <string name="summary_xml_ofx_header">Active esta opção quando fizer exportações para outras aplicações que não seja o GnuCash para Desktop</string>
   <string name="title_whats_new">O que há de novo</string>
   <string name="whats_new">
-        - Added ability to export to any service which supports the Storage Access Framework \n
-        - Added option to set the location for regular automatic backups (See backup settings)\n
-        - Added Bitcoin currency support\n
-        - Added support for renaming books\n
-        - Multiple bug fixes and improvements\n
-	</string>
+- Adicionada a funcionalidade de exportar para qualquer serviço que suporte o Storage Access Framework\n
+- Adiciona a opção para a localização para cópias de segurança automáticas (Ver definições de cópia de segurança)\n
+- Adicionada suporte à moeda Bitcoin\n
+- Adicionada funcionalidade de mudar os nomes aos livros\n
+- Várias correcções de bugs e melhoramentos\n</string>
   <string name="label_dismiss">Descartar</string>
   <string name="toast_transanction_amount_required">Introduza um valor para gravar a transação</string>
   <string name="toast_error_importing_accounts">Ocorreu um erro ao importar as contas do GnuCash</string>
@@ -251,8 +250,8 @@
   <string name="summary_owncloud_sync">Permitir a exportação para o ownCloud</string>
   <string name="title_backup_prefs">Preferências de Backup</string>
   <string name="title_create_backup_pref">Criar Backup</string>
-  <string name="summary_create_backup_pref">Create a backup of the active book</string>
-  <string name="summary_restore_backup_pref">Restore most recent backup of active book</string>
+  <string name="summary_create_backup_pref">Criar uma cópia de segurança do livro activo</string>
+  <string name="summary_restore_backup_pref">Restaurar a cópia de segurança do livro activo mais recente</string>
   <string name="toast_backup_successful">Backup efectuado com sucesso</string>
   <string name="toast_backup_failed">Erro ao efectuar o Backup</string>
   <string name="export_warning_xml">Exporta todas as contas e transações</string>
@@ -274,8 +273,8 @@
   <string name="owncloud_user_ok">Nome de utilizador/password OK</string>
   <string name="owncloud_dir_ok">Nome de directório OK</string>
   <plurals name="label_every_x_hours">
-    <item quantity="one">Hourly</item>
-    <item quantity="other">Every %d hours</item>
+    <item quantity="one">Todas as horas</item>
+    <item quantity="other">Todas as %d horas</item>
   </plurals>
   <plurals name="label_every_x_days">
     <item quantity="one">Diariamente</item>
@@ -432,22 +431,23 @@ Neste processo não serão recolhidas informações do utilizador!</string>
   <string name="label_recommend_app">Recomendado na Play Store</string>
   <string name="repeat_until_date">desde%1$s</string>
   <string name="repeat_on_weekday">na %1$s</string>
-  <string name="repeat_x_times">for %1$d times</string>
+  <string name="repeat_x_times">por %1$d vezes</string>
   <string name="menu_show_compact_view">Vista Compacta</string>
   <string name="book_default_name">Livro %1$d</string>
-  <string name="last_export_time_never">never</string>
-  <string name="title_rename_book">Rename Book</string>
-  <string name="btn_rename">Rename</string>
-  <string name="menu_rename">Rename</string>
-  <string name="title_select_backup_file">Select backup file</string>
-  <string name="summary_select_backup_file">Select a file for automatic backups</string>
-  <string name="title_confirm_restore_backup">Confirm restore from backup</string>
-  <string name="msg_confirm_restore_backup_into_new_book">A new book will be opened with the contents of this backup. Do you wish to proceed?</string>
-  <string name="btn_restore">Restore</string>
-  <string name="title_no_backups_found">No backups found</string>
-  <string name="msg_no_backups_to_restore_from">There are no existing backup files to restore from</string>
+  <string name="last_export_time_never">nunca</string>
+  <string name="title_rename_book">Mudar o nome ao livro</string>
+  <string name="btn_rename">Mudar o nome</string>
+  <string name="menu_rename">Mudar o nome</string>
+  <string name="title_select_backup_file">Escolha ficheiro de cópia de segurança</string>
+  <string name="summary_select_backup_file">Escolha ficheiro para cópias de segurança automáticas</string>
+  <string name="title_confirm_restore_backup">Confirme o restauro a partir de cópia de segurança</string>
+  <string name="msg_confirm_restore_backup_into_new_book">Será aberto um novo ficheiro com o conteúdo desta cópia de segurança. Deseja continuar?</string>
+  <string name="btn_restore">Restaurar</string>
+  <string name="title_no_backups_found">Não foram encontradas cópias de segurança</string>
+  <string name="msg_no_backups_to_restore_from">Não existem cópias de segurança para restaurar</string>
   <!-- This is the filename for default backups. So use only simple characters and no spaces. Do not change the extension -->
   <string name="label_backup_filename">gnucash_android_backup.gnca</string>
-  <string name="label_select_destination_after_export">Select the destination after export is complete</string>
-  <string name="label_dropbox_export_destination">Export to \'/Apps/GnuCash Android/\' folder on Dropbox</string>
+  <string name="label_select_destination_after_export">Escolha o destino após a exportação estar completa</string>
+  <string name="label_dropbox_export_destination">Exportar para a pasta \'/Apps/GnuCash Android/\' na Dropbox</string>
+  <string name="title_section_preferences">Preferências</string>
 </resources>

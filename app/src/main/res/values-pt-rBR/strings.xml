@@ -41,8 +41,8 @@
   <string name="menu_delete">Excluir</string>
   <string name="alert_dialog_ok_delete">Apagar</string>
   <string name="alert_dialog_cancel">Cancelar</string>
-  <string name="toast_account_deleted">Conta apagada</string>
-  <string name="title_confirm_delete">Confirma apagar</string>
+  <string name="toast_account_deleted">Conta excluída</string>
+  <string name="title_confirm_delete">Confirmar exclusão</string>
   <string name="title_edit_transaction">Editar Transação</string>
   <string name="label_transaction_description">Adicionar nota</string>
   <string name="title_selected">%1$d selecionado</string>
@@ -87,7 +87,7 @@
   <string name="toast_no_transactions_to_export">Não existem transações para exportar</string>
   <string name="title_passcode_preferences">Preferências de Senha</string>
   <string name="title_enable_passcode">Habilitar senha</string>
-  <string name="title_change_passcode">Modificar senha</string>
+  <string name="title_change_passcode">Alterar senha</string>
   <string name="title_about_gnucash">Sobre o GnuCash</string>
   <string name="title_export_email">GnuCash Android %1$s exportação</string>
   <string name="description_export_email">Exportação do GnuCash Android de</string>
@@ -449,4 +449,5 @@ Neste processo não serão recolhidas informações do utilizador!</string>
   <string name="label_backup_filename">gnucash_android_backup.gnca</string>
   <string name="label_select_destination_after_export">Selecione o destino após finalizar a exportação</string>
   <string name="label_dropbox_export_destination">Exportar para a pasta \' / Apps/GnuCash Android /\' no Dropbox</string>
+  <string name="title_section_preferences">Preferências</string>
 </resources>

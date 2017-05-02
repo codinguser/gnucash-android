@@ -457,4 +457,5 @@
   <string name="label_backup_filename">gnucash_android_backup.gnca</string>
   <string name="label_select_destination_after_export">Выберите пункт назначения после завершения экспорта</string>
   <string name="label_dropbox_export_destination">Экспорт в \' / Apps/GnuCash Android /\' папку на Dropbox</string>
+  <string name="title_section_preferences">Настройки</string>
 </resources>

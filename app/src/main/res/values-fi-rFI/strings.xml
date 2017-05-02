@@ -19,7 +19,7 @@
   <string name="title_create_account">Luo tili</string>
   <string name="title_edit_account">Muokkaa tiliä</string>
   <string name="description_add_transaction_icon">Lisää uusi tapahtuma tilille</string>
-  <string name="description_view_account_icon">View account details</string>
+  <string name="description_view_account_icon">Näytä tilin tiedot</string>
   <string name="label_no_accounts">Ei näytettävissä olevia tilejä</string>
   <string name="label_account_name">Tilin nimi</string>
   <string name="btn_cancel">Peruuta</string>
@@ -47,7 +47,7 @@
   <string name="label_transaction_description">Lisää huomautus</string>
   <string name="title_selected">%1$d valittuna</string>
   <string name="label_account_balance">Saldo:</string>
-  <string name="label_export_destination">Export To:</string>
+  <string name="label_export_destination">Vie:</string>
   <string name="title_export_dialog">Vie tapahtumat</string>
   <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
   <string name="toast_export_error">Error exporting %1$s file</string>
@@ -453,4 +453,5 @@
   <string name="label_backup_filename">gnucash_android_backup.gnca</string>
   <string name="label_select_destination_after_export">Select the destination after export is complete</string>
   <string name="label_dropbox_export_destination">Export to \'/Apps/GnuCash Android/\' folder on Dropbox</string>
+  <string name="title_section_preferences">Preferences</string>
 </resources>

@@ -10,6 +10,7 @@ Version 2.2.0 *(2017-05-xx)*
 * Fixed #654: Crash when editing account if its default transfer account no longer exists
 * Fixed #625: Hourly backups were being executed on a monthly basis
 * Fixed #607: Widgets stop functioning after switching books
+* Fixed #641: Weekday is ignored for weekly scheduled actions
 * Improved #635: Improved support for BYN currency 
 * Improved #661: Removed need for WRITE_EXTERNAL_STORAGE permission for Android 4.4 (KitKat) and above
     * This release raises the minimum API level to 19 (KitKat)
