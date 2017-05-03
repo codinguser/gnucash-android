@@ -1,6 +1,12 @@
 GnuCash Android is built by people like you! Please [join us](https://github.com/codinguser/gnucash-android).
 
-## Git and Pull requests
+## Reporting Issues
+* The GitHub issue tracker is used for collecting and managing bugs, feature requests and general development planning.
+* When creating a request, first search to make sure a similar one doesn't already exist in the tracker. 
+* Be as specific as possible when providing descriptions of the problems encountered and what the expected behaviour should be.
+* It is also possible to report issues by creating tickets directly from within the app (in the Help Center)
+
+## Code Contributions
 * Contributions are submitted, reviewed, and accepted using Github pull requests. [Read this article](https://help.github.com/articles/using-pull-requests) for some details. We use the _Fork and Pull_ model, as described there.
 * You can maintain your stable installation of GnuCash and test with another installation.
 The two instances of GnuCash Android will live side-by-side on your device and not affect each other. You can install the development version by executing `gradle installDD` inside the root project directory
@@ -18,8 +24,8 @@ The two instances of GnuCash Android will live side-by-side on your device and n
 * Try to make clean commits that are easily readable (including descriptive commit messages!)
 * Test before you push make sure all test pass on your machine.
   * Unit tests can be run with `gradle test`
-  * UI tests can be run with `gradle cDDAT`
-* Make small pull requests that are easy to review but make sure they do add value by themselves.
+  * UI tests can be run with `gradle spoonDD`. This will run the tests on all connected devices/emulators.
+* Make small pull requests that are easy to review but which also add value.
 
 ## Coding style
 * Do write comments. You don't have to comment every line, but if you come up with something thats a bit complex/weird, just leave a comment. Bear in mind that you will probably leave the project at some point and that other people will read your code. Undocumented huge amounts of code are nearly worthless!

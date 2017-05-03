@@ -88,12 +88,12 @@ Google+ Community: https://plus.google.com/communities/104728406764752407046
 
 There are several ways you could contribute to the development.
 
+* Pull requests are always welcome! You could contribute code by fixing bugs, adding new features or automated tests. 
+Take a look at the [bug tracker](https://github.com/codinguser/gnucash-android/issues?state=open)
+for ideas where to start. Also make sure to read our [contribution guidlines](https://github.com/codinguser/gnucash-android/blob/master/.github/CONTRIBUTING.md)
+
 * One way is providing translations for locales which are not yet available, or improving translations.
 Please visit [CrowdIn](https://crowdin.com/project/gnucash-android) in order to update and create new translations
-
-* You could as well contribute code, fixing bugs, new features or automated tests. Pull requests are always welcome.
-Take a look at the [bug tracker](https://github.com/codinguser/gnucash-android/issues?state=open)
-for ideas where to start. Also take a look at the [contribution guidlines](https://github.com/codinguser/gnucash-android/blob/master/.github/CONTRIBUTING.md)
 
 For development, it is recommended to use the Android Studio for development which is available for free.
 Import the project into the IDE using the build.gradle file. The IDE will resolve dependencies automatically.

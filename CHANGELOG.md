@@ -1,6 +1,6 @@
 Change Log
 ===============================================================================
-Version 2.2.0 *(2017-05-xx)*
+Version 2.2.0 *(2017-05-05)*
 ----------------------------
 * Feature #646: Option to select backup file using Storage Access Framework
 * Feature #565: Regular automatic backups (even when not explicitly set by user)
