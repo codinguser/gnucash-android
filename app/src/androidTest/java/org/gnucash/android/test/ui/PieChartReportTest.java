@@ -45,6 +45,7 @@ import org.gnucash.android.ui.report.BaseReportFragment;
 import org.gnucash.android.ui.report.ReportsActivity;
 import org.gnucash.android.ui.report.piechart.PieChartFragment;
 import org.gnucash.android.ui.settings.PreferenceActivity;
+import org.gnucash.android.util.BookUtils;
 import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -118,7 +119,7 @@ public class PieChartReportTest {
         oldActiveBookUID = BooksDbAdapter.getInstance().getActiveBookUID();
         testBookUID = GncXmlImporter.parse(context.getResources().openRawResource(R.raw.default_accounts));
 
-        GnuCashApplication.loadBook(testBookUID);
+        BookUtils.loadBook(testBookUID);
         mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 

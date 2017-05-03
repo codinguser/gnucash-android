@@ -93,7 +93,6 @@ public class PreferenceActivity extends PasscodeLockActivity implements
         actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT) //for one of the exceptions caught
     @Override
     public boolean onPreferenceStartFragment(PreferenceFragmentCompat caller, Preference pref) {
         String key = pref.getKey();
@@ -128,13 +127,9 @@ public class PreferenceActivity extends PasscodeLockActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    android.app.FragmentManager fm = getFragmentManager();
-                    if (fm.getBackStackEntryCount() > 0) {
-                        fm.popBackStack();
-                    } else {
-                        finish();
-                    }
+                android.app.FragmentManager fm = getFragmentManager();
+                if (fm.getBackStackEntryCount() > 0) {
+                    fm.popBackStack();
                 } else {
                     finish();
                 }

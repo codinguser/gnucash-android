@@ -89,7 +89,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Currency;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -273,7 +272,7 @@ public class TransactionFormFragment extends Fragment implements
             return;
 
         BigDecimal amountBigd = mAmountEditText.getValue();
-        if (amountBigd.equals(BigDecimal.ZERO))
+        if ((amountBigd == null) || amountBigd.equals(BigDecimal.ZERO))
             return;
         Money amount 	= new Money(amountBigd, fromCommodity).abs();
 
@@ -556,7 +555,7 @@ public class TransactionFormFragment extends Fragment implements
 
         if (mUseDoubleEntry){
             String currentAccountUID = mAccountUID;
-            long defaultTransferAccountID = 0;
+            long defaultTransferAccountID;
             String rootAccountUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
             do {
                 defaultTransferAccountID = mAccountsDbAdapter.getDefaultTransferAccountID(mAccountsDbAdapter.getID(currentAccountUID));

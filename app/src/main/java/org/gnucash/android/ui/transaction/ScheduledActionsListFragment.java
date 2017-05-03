@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -561,9 +562,13 @@ public class ScheduledActionsListFragment extends ListFragment implements
 
             TextView primaryTextView = (TextView) view.findViewById(R.id.primary_text);
             ExportParams params = ExportParams.parseCsv(scheduledAction.getTag());
+            String exportDestination = params.getExportTarget().getDescription();
+            if (params.getExportTarget() == ExportParams.ExportTarget.URI){
+                exportDestination = exportDestination + " (" + Uri.parse(params.getExportLocation()).getHost() + ")";
+            }
             primaryTextView.setText(params.getExportFormat().name() + " "
                     + scheduledAction.getActionType().name().toLowerCase() + " to "
-                    + params.getExportTarget().name().toLowerCase());
+                    + exportDestination);
 
             view.findViewById(R.id.right_text).setVisibility(View.GONE);
 

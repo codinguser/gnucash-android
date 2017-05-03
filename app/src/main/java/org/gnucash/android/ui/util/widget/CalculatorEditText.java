@@ -21,6 +21,7 @@ import android.content.res.TypedArray;
 import android.inputmethodservice.KeyboardView;
 import android.support.annotation.Nullable;
 import android.support.annotation.XmlRes;
+import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -29,7 +30,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -54,7 +54,7 @@ import java.util.Locale;
  * with the view from your layout where the calculator keyboard should be displayed.</p>
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class CalculatorEditText extends EditText {
+public class CalculatorEditText extends AppCompatEditText {
     private CalculatorKeyboard mCalculatorKeyboard;
 
     private Commodity mCommodity = Commodity.DEFAULT_COMMODITY;

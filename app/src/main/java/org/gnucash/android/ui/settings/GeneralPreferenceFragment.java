@@ -77,9 +77,6 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat implemen
         final Intent intent = new Intent(getActivity(), PasscodePreferenceActivity.class);
 
         mCheckBoxPreference = (CheckBoxPreference) findPreference(getString(R.string.key_enable_passcode));
-        mCheckBoxPreference.setTitle(mCheckBoxPreference.isChecked()
-                ? getString(R.string.title_passcode_enabled)
-                : getString(R.string.title_passcode_disabled));
         mCheckBoxPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -145,12 +142,10 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat implemen
                     mEditor.putString(UxArgument.PASSCODE, data.getStringExtra(UxArgument.PASSCODE));
                     mEditor.putBoolean(UxArgument.ENABLED_PASSCODE, true);
                     Toast.makeText(getActivity(), R.string.toast_passcode_set, Toast.LENGTH_SHORT).show();
-                    mCheckBoxPreference.setTitle(getString(R.string.title_passcode_enabled));
                 }
                 if (resultCode == Activity.RESULT_CANCELED) {
                     mEditor.putBoolean(UxArgument.ENABLED_PASSCODE, false);
                     mCheckBoxPreference.setChecked(false);
-                    mCheckBoxPreference.setTitle(getString(R.string.title_passcode_disabled));
                 }
                 break;
             case REQUEST_DISABLE_PASSCODE:
@@ -163,7 +158,6 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat implemen
                     mEditor.putString(UxArgument.PASSCODE, data.getStringExtra(UxArgument.PASSCODE));
                     mEditor.putBoolean(UxArgument.ENABLED_PASSCODE, true);
                     Toast.makeText(getActivity(), R.string.toast_passcode_set, Toast.LENGTH_SHORT).show();
-                    mCheckBoxPreference.setTitle(getString(R.string.title_passcode_enabled));
                 }
                 break;
         }

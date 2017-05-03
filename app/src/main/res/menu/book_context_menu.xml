@@ -19,9 +19,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/ctx_menu_rename_book"
+        android:title="@string/menu_rename"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="1" />
+
     <item android:id="@+id/ctx_menu_sync_book"
+          android:visible="false"
           android:checkable="true"
           android:title="@string/menu_title_enable_sync"
-          app:showAsAction="always"
-          android:orderInCategory="1" />
+          app:showAsAction="ifRoom"
+          android:orderInCategory="2" />
+
+    <item android:id="@+id/ctx_menu_delete_book"
+        android:title="@string/menu_delete"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="3" />
 </menu>

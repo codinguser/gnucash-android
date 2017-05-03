@@ -28,9 +28,8 @@ You can also import an existing account hierarchy from GnuCash desktop.
 
 <br/><small>
 <i><u>What does the app use the requested permissions for? </u></i>
-&bull; READ_EXTERNAL_STORAGE: Used to export transactions/accounts to the SD card
-&bull; RECEIVE_BOOT_COMPLETED: Used to restart service for scheduled transactions or exports after device is rebooted
 &bull; VIBRATE: Used to provide haptic feedback when entering some inputs
 &bull; WAKE_LOCK: Used for keeping device active when exporting scheduled transactions in the background service
-&bull; INTERNET/ACCESS_NETWORK_STATE: Used when exporting accounts/transactions to 3rd-party service like Google Drive or DropBox
+&bull; RECEIVE_BOOT_COMPLETED: Used to restart service for scheduled transactions or exports after device is rebooted
+&bull; INTERNET/ACCESS_NETWORK_STATE: Used when exporting accounts/transactions to 3rd-party service like DropBox or ownCloud
 </small>

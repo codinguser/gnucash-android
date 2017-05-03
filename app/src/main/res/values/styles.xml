@@ -33,10 +33,6 @@
         <item name="android:gravity">center_vertical</item>
     </style>
     
-    <style name="ListItemSubTitle">
-        <item name="android:textSize">@dimen/text_size_small</item>
-    </style>
-    
     <style name="Dropdown.TextView" parent="@style/Widget.AppCompat.Spinner.DropDown.ActionBar">
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
