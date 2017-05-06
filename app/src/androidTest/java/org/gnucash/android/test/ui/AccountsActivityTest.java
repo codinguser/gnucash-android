@@ -175,7 +175,6 @@ public class AccountsActivityTest {
     }
 
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void testDisplayAccountsList(){
         AccountsActivity.createDefaultAccounts("EUR", mAccountsActivity);
         mAccountsActivity.recreate();
@@ -462,7 +461,6 @@ public class AccountsActivityTest {
     /**
      * Tests that the setup wizard is displayed on first run
      */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void shouldShowWizardOnFirstRun() throws Throwable {
         Editor editor = PreferenceManager.getDefaultSharedPreferences(mAccountsActivity)

@@ -18,8 +18,6 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="title_create_account">Neues Konto</string>
   <string name="title_edit_account">Konto bearbeiten</string>
-  <string name="info_details">Info</string>
-  <string name="menu_export">OFX-Datei exportieren</string>
   <string name="description_add_transaction_icon">Neue Buchung in ein Konto</string>
   <string name="description_view_account_icon">View account details</string>
   <string name="label_no_accounts">Keine Konten vorhanden</string>
@@ -36,8 +34,6 @@
   <string name="label_transaction_amount">Betrag </string>
   <string name="title_add_transaction">Neue Buchung</string>
   <string name="label_no_transactions">Keine Buchungen vorhanden</string>
-  <string name="label_timeanddate">Datum &amp; Zeit</string>
-  <string name="label_account">Konto</string>
   <string name="label_debit">Soll</string>
   <string name="label_credit">Haben</string>
   <string name="title_accounts">Konten</string>
@@ -47,15 +43,12 @@
   <string name="alert_dialog_cancel">Abbrechen</string>
   <string name="toast_account_deleted">Das Konto wurde gelöscht</string>
   <string name="title_confirm_delete">Löschen bestätigen</string>
-  <string name="delete_account_confirmation_message">Alle Buchungen dieses Kontos werden gelöscht</string>
   <string name="title_edit_transaction">Buchung bearbeiten</string>
   <string name="label_transaction_description">Notizen</string>
-  <string name="menu_move">Verschieben</string>
   <string name="title_selected">%1$d ausgewählt</string>
   <string name="label_account_balance">Saldo:</string>
   <string name="label_export_destination">Exportziel</string>
   <string name="title_export_dialog">Buchungen exportieren</string>
-  <string name="option_export_all_transactions">Alle Buchungen exportieren</string>
   <string name="hint_export_choice">Auswählen, um alle Buchungen zu exportieren. Andernfalls werden nur die neuen Buchungen seit letztem Export exportiert.</string>
   <string name="toast_export_error">Fehler beim Exportieren der %1$s-Datei</string>
   <string name="btn_export">Exportieren</string>
@@ -63,16 +56,14 @@
   <string name="hint_delete_after_export">Alle exportierten Buchungen werden nach dem Export gelöscht.</string>
   <string name="title_settings">Einstellungen</string>
   <string-array name="export_destinations">
-    <item>SD-Kartenspeicher</item>
+    <item>Save As&#8230;</item>
     <item>Dropbox</item>
-    <item>Google Drive</item>
     <item>ownCloud</item>
-    <item>Senden an&#8230;</item>
+    <item>Send to&#8230;</item>
   </string-array>
   <string name="btn_move">Verschieben</string>
   <string name="title_move_transactions">%1$d Buchung(en) verschieben</string>
   <string name="label_move_destination">Zielkonto</string>
-  <string name="permission_access_sdcard">Zugriff auf SD-Kartenspeicher</string>
   <string name="toast_incompatible_currency">Buchungen könnten nicht verschoben werden.\Die Währung des Zielkontos ist inkompatibel</string>
   <string name="header_general_settings">Allgemein</string>
   <string name="header_about_gnucash">Über GnuCash</string>
@@ -88,23 +79,16 @@
   <string name="label_display_account">Konto anzeigen</string>
   <string name="label_hide_account_balance">Hide account balance in widget</string>
   <string name="btn_create_accounts">Konten erstellen</string>
-  <string name="title_default_accounts">Zu erstellende Konten auswählen</string>
   <string name="error_no_accounts">Keine Konten vorhanden.\nErstellen Sie ein Konto um Widgets hinzuzufügen</string>
-  <string name="title_build_version">Version</string>
   <string name="title_license">Lizenz</string>
   <string name="summary_licence_details">Apache License v2.0. Klicken für Details</string>
   <string name="title_general_prefs">Allgemein</string>
   <string name="label_widget_configuration">Konto auswählen</string>
   <string name="toast_no_transactions_to_export">Keine Buchungen zum Exportieren</string>
-  <string name="header_passcode_settings">PIN Einstellungen</string>
   <string name="title_passcode_preferences">Sicherheit</string>
-  <string name="title_passcode_enabled">Zugang nur mit PIN</string>
-  <string name="title_passcode_disabled">Zugang ohne PIN</string>
+  <string name="title_enable_passcode">Enable passcode</string>
   <string name="title_change_passcode">PIN ändern</string>
   <string name="title_about_gnucash">Über GnuCash</string>
-  <string name="summary_about_gnucash">Ein leistungsfähiger und flexibler mobiler Finanzmanager für Android</string>
-  <string name="title_about">Über</string>
-  <string name="toast_format_exported_to">%1$s-Datei erfolgreich exportiert nach:\n</string>
   <string name="title_export_email">GnuCash Android exportierte %1$s-Datei</string>
   <string name="description_export_email">GnuCash-Android-Konten-Export von </string>
   <string name="header_transaction_settings">Buchungen</string>
@@ -123,7 +107,6 @@
   <string name="title_always_delete_exported_transactions">Alle exportierten Buchungen löschen</string>
   <string name="title_default_export_email">Standard Export E-Mail</string>
   <string name="summary_default_export_email">Die Standard-E-Mail, an die exportierte OFX Dateien geschickt werden. Sie können diese immer noch beim Exportieren ändern.</string>
-  <string name="label_double_entry_account">Überweisungskonto</string>
   <string name="summary_use_double_entry">Alle Buchungen stellen eine Überweisung von einem Konto zu einem anderen dar</string>
   <string name="title_use_double_entry">Doppelte Buchführung aktivieren</string>
   <string name="account_balance">Kontostand</string>
@@ -134,18 +117,14 @@
   <string name="summary_xml_ofx_header">Diese Option aktivieren, wenn Sie die OFX-Dateien für ein anderes Programm als GnuCash auf dem Desktop exportieren</string>
   <string name="title_whats_new">Neuigkeiten in dieser Version</string>
   <string name="whats_new">
-	- Unterstützung für mehrere verschiedene Bücher\n
-	- Fügt ownCloud als Exportziel hinzu\n
-	- Kompaktansicht für Buchungsliste\n
-	- Neugestaltung des Zugangscode-Sperrbildschirms\n
-	- Verbesserte Handhabung terminierter Buchungen\n
-	- Mehrere Bugfixes und Verbesserungen\n
+        - Added ability to export to any service which supports the Storage Access Framework \n
+        - Added option to set the location for regular automatic backups (See backup settings)\n
+        - Added Bitcoin currency support\n
+        - Added support for renaming books\n
+        - Multiple bug fixes and improvements\n
 	</string>
   <string name="label_dismiss">Schließen</string>
   <string name="toast_transanction_amount_required">Geben Sie einen Betrag ein, um die Buchung speichern zu können</string>
-  <string name="toast_error_edit_multi_currency_transaction">Mehrwährungsbuchungen können nicht bearbeitet werden</string>
-  <string name="menu_import_accounts">GnuCash-Konten importieren</string>
-  <string name="btn_import_accounts">Konten importieren</string>
   <string name="toast_error_importing_accounts">Beim Importieren der GnuCash-Konten ist ein Fehler aufgetreten!</string>
   <string name="toast_success_importing_accounts">GnuCash-Konten wurden erfolgreich importiert</string>
   <string name="summary_import_accounts">Importiere Kontenstruktur, welche von der Desktop-Version von GnuCash exportiert wurde</string>
@@ -157,18 +136,15 @@
   <string name="confirm_delete_all_accounts">Wollen Sie wirklich ALLE Konten und Buchungen löschen?
         \n\nDiese Operation kann nicht rückgängig gemacht werden!
     </string>
-  <string name="label_account_type">Kontoart</string>
   <string name="summary_delete_all_transactions">Alle Buchungen in allen Konten werden gelöscht</string>
   <string name="title_delete_all_transactions">Alle Buchungen löschen</string>
   <string name="toast_all_transactions_deleted">Alle Buchungen wurden erfolgreich gelöscht</string>
   <string name="title_progress_importing_accounts">Konten werden importiert</string>
-  <string name="toast_tap_again_to_confirm_delete">Erneut Tippen zum Bestätigen. ALLE Einträge werden gelöscht!</string>
   <string name="section_header_transactions">Buchungen</string>
   <string name="section_header_subaccounts">Unterkonten</string>
   <string name="menu_search_accounts">Suchen</string>
   <string name="title_default_export_format">Standard-Export-Format</string>
   <string name="summary_default_export_format">Dateiformat, welches standardmäßig verwendet wird, wenn Buchungen exportiert werden</string>
-  <string name="menu_export_transactions">Buchungen exportieren&#8230;</string>
   <string name="label_recurring_transaction">Wiederholung</string>
   <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">Ausgleichskonto</string>
@@ -214,9 +190,6 @@
   <string name="summary_create_default_accounts">Erstellt die häufig verwendeten Standard-GnuCash-Konten</string>
   <string name="title_create_default_accounts">Standard-Konten erstellen</string>
   <string name="msg_confirm_create_default_accounts_setting">Ein neues Buch wird mit den Standardkonten geöffnet\n\nIhre aktuellen Konten und Buchungen werden nicht geändert!</string>
-  <string name="menu_scheduled_transactions">Geplante Buchungen</string>
-  <string name="msg_confirm_create_default_accounts_first_run">Willkommen bei GnuCash Android!\nSie können entweder eine Hierarchie der für gewöhnlich verwendeten Konten erstellen oder Ihre eigene GnuCash-Kontenstruktur importieren.\n\nBeide Optionen sind auch in den Einstellungen verfügbar, sodass Sie dies später entscheiden können.
-    </string>
   <string name="title_scheduled_transactions">Eingeplante Buchungen</string>
   <string name="title_select_export_destination">Exportziel auswählen</string>
   <string name="hint_split_memo">Buchungstext</string>
@@ -235,8 +208,6 @@
   <string name="label_invoice">Rechnung</string>
   <string name="label_buy">Kauf</string>
   <string name="label_sell">Verkauf</string>
-  <string name="label_repeats">Wiederholungen</string>
-  <string name="toast_no_recent_backup">Keine Sicherheitskopie vorhanden</string>
   <string name="account_name_opening_balances">Anfangsbestand</string>
   <string name="account_name_equity">Eigenkapital</string>
   <string name="summary_save_opening_balances">Möglichkeit aktivieren, den aktuellen Saldo als neuen Anfangsbestand nach dem Löschen der Buchungen zu übernehmen
@@ -244,7 +215,6 @@
   <string name="title_save_opening_balances">Saldo als neuen Anfangsbestand übernehmen</string>
   <string name="export_warning_ofx">OFX unterstützt keine doppelte Buchführung</string>
   <string name="export_warning_qif">Erzeugt eine QIF-Datei für jede Währung</string>
-  <string name="title_transaction_splits">Split Buchung</string>
   <string name="label_imbalance">Differenz:</string>
   <string name="btn_add_split">Split hinzufügen</string>
   <string name="menu_title_favorite">Favorit</string>
@@ -255,10 +225,8 @@
   <string name="title_line_chart">Liniendiagramm</string>
   <string name="title_bar_chart">Balkendiagramm</string>
   <string name="title_report_prefs">Berichte</string>
-  <string name="label_report_currency">Wählen Sie eine Währung</string>
   <string name="title_use_account_color">Kontofarbe</string>
   <string name="summary_use_account_color">Verwende Kontofarben in Balken- und Tortendiagrammen</string>
-  <string name="header_report_settings">Berichte</string>
   <string name="menu_order_by_size">Nach Größe sortieren</string>
   <string name="menu_toggle_legend">Legende anzeigen</string>
   <string name="menu_toggle_labels">Beschreibung anzeigen</string>
@@ -266,7 +234,6 @@
   <string name="menu_toggle_average_lines">Durchschnitt anzeigen</string>
   <string name="menu_group_smaller_slices">Kleine Segmente zusammenfassen</string>
   <string name="label_chart_no_data">Keine Daten zum anzeigen gefunden</string>
-  <string name="label_chart_overall">Summe</string>
   <string name="label_chart_total">Summe</string>
   <string name="label_other_slice">Sonstige</string>
   <string name="toast_chart_percentage_mode_total">Der Prozentsatz wird aus der Gesamtsumme errechnet</string>
@@ -284,22 +251,18 @@
   <string name="title_backup_preference_category">Backup</string>
   <string name="summary_dropbox_sync">Dropbox-Export aktivieren</string>
   <string name="summary_owncloud_sync">ownCload-Export aktivieren</string>
-  <string name="title_select_gnucash_xml_file">GnuCash XML Datei auswählen</string>
   <string name="title_backup_prefs">Sicherungs-Einstellungen</string>
   <string name="title_create_backup_pref">Sicherung erstellen</string>
-  <string name="summary_create_backup_pref">Sicherungen werden auf der SDCARD gespeichert</string>
-  <string name="summary_restore_backup_pref">Wähle eine Sicherungskopie zur Wiederherstellung aus</string>
+  <string name="summary_create_backup_pref">Create a backup of the active book</string>
+  <string name="summary_restore_backup_pref">Restore most recent backup of active book</string>
   <string name="toast_backup_successful">Sicherung erfolgreich</string>
   <string name="toast_backup_failed">Sicherung fehlgeschlagen</string>
   <string name="export_warning_xml">Alle Konten und Buchungen werden exportiert</string>
-  <string name="title_google_drive_sync_pref">Google Drive aktivieren</string>
-  <string name="summary_google_drive_sync">Google Drive - Export aktivieren</string>
   <string name="toast_install_file_manager">Installieren Sie einen Dateimanager um Dateien auszuwählen</string>
   <string name="title_select_backup_to_restore">Wähle eine Sicherungskopie</string>
   <string name="nav_menu_favorites">Favoriten</string>
   <string name="nav_menu_open">Öffnen&#8230;</string>
   <string name="nav_menu_reports">Berichte</string>
-  <string name="nav_menu_scheduled_transactions">Geplante Buchungen</string>
   <string name="nav_menu_export">Exportieren&#8230;</string>
   <string name="nav_menu_settings">Einstellungen</string>
   <string name="username">Benutzername</string>
@@ -312,6 +275,10 @@
   <string name="owncloud_server_ok">OC-Server OK</string>
   <string name="owncloud_user_ok">OC Benutzername/Passwort OK</string>
   <string name="owncloud_dir_ok">Dir-Name OK</string>
+  <plurals name="label_every_x_hours">
+    <item quantity="one">Hourly</item>
+    <item quantity="other">Every %d hours</item>
+  </plurals>
   <plurals name="label_every_x_days">
     <item quantity="one">Täglich</item>
     <item quantity="other">Jeden %d. Tag</item>
@@ -332,10 +299,8 @@
   <string name="msg_enable_crashlytics">Enable to send information about malfunctions to the developers for improvement (recommended).
 No user-identifiable information will be collected as part of this process!</string>
   <string name="label_export_format"> Format</string>
-  <string name="toast_backup_folder_not_found">Sicherungsordner nicht gefunden. Prüfe, ob eine SD-Karte vorhanden ist!</string>
   <string name="label_old_passcode">Alten PIN eingeben</string>
   <string name="label_new_passcode">Neuen PIN eingeben</string>
-  <string name="nav_menu_scheduled_backups">Geplanten Exporte</string>
   <string name="title_scheduled_exports">Scheduled Exports</string>
   <string name="label_no_scheduled_exports_to_display">Keine geplanten Exporte</string>
   <string name="title_create_export_schedule">Wiederkehrenden Export erstellen</string>
@@ -346,7 +311,6 @@ No user-identifiable information will be collected as part of this process!</str
   <string name="label_no_favorite_accounts">Keine bevorzugten Konten</string>
   <string name="nav_menu_scheduled_actions">Geplante Aktionen</string>
   <string name="label_scheduled_action_ended">"Ended, last executed on "</string>
-  <string name="label_select_bar_to_view_details">Wählen Sie einen Balken für Details</string>
   <string name="btn_wizard_next">Weiter</string>
   <string name="btn_wizard_finish">Fertig</string>
   <string name="wizard_title_default_currency">Standardwährung</string>
@@ -367,8 +331,6 @@ No user-identifiable information will be collected as part of this process!</str
   <string name="toast_error_check_split_amounts">Prüfen Sie vor dem Speichern, ob alle Buchungsteile gültige Beträge enthalten!</string>
   <string name="label_error_invalid_expression">Ungültiger Ausdruck!</string>
   <string name="toast_scheduled_recurring_transaction">Geplante wiederkehrende Buchung</string>
-  <string name="error_exchange_rate_required">Ein Wechselkurs ist erforderlich</string>
-  <string name="error_converted_amount_required">Ein Wechselbetrag ist erforderlich</string>
   <string name="title_transfer_funds">Überweisungen</string>
   <string name="nav_menu_help"><![CDATA[Hilfe & Feedback]]></string>
   <string name="label_select_pie_slice_to_see_details">Tippe auf ein Segment um Details zu sehen</string>
@@ -387,7 +349,6 @@ No user-identifiable information will be collected as part of this process!</str
   <string name="label_assets">Vermögen</string>
   <string name="label_liabilities">Verbindlichkeiten</string>
   <string name="label_equity">Eigenkapital</string>
-  <string name="label_total_liabilities_and_equity"><![CDATA[Summe Verbindlichkeiten & Eigenkapital]]></string>
   <string name="label_move_to">Verschieben nach:</string>
   <string name="menu_group_by">Gruppieren nach</string>
   <string name="menu_group_by_month">Monat</string>
@@ -402,7 +363,6 @@ No user-identifiable information will be collected as part of this process!</str
   <string name="toast_no_compatible_apps_to_receive_export">Es gibt keine kompatible App, welche die exportierten Buchungen empfangen kann!</string>
   <string name="menu_move_transaction">Bewegen&#8230;</string>
   <string name="menu_duplicate_transaction">Duplizieren</string>
-  <string name="nav_menu_budgets">Budgets</string>
   <string name="title_cash_flow_report">Geldfluss</string>
   <string name="title_budgets">Budgets</string>
   <string name="title_use_compact_list">Kompaktansicht verwenden</string>
@@ -474,8 +434,23 @@ No user-identifiable information will be collected as part of this process!</str
   <string name="label_recommend_app">Im Play Store empfehlen</string>
   <string name="repeat_until_date">bis %1$s</string>
   <string name="repeat_on_weekday">am %1$s</string>
-  <string name="repeat_x_times">%1$s mal</string>
+  <string name="repeat_x_times">for %1$d times</string>
   <string name="menu_show_compact_view">Kompakte Ansicht</string>
   <string name="book_default_name">Buch %1$d</string>
   <string name="last_export_time_never">never</string>
+  <string name="title_rename_book">Rename Book</string>
+  <string name="btn_rename">Rename</string>
+  <string name="menu_rename">Rename</string>
+  <string name="title_select_backup_file">Select backup file</string>
+  <string name="summary_select_backup_file">Select a file for automatic backups</string>
+  <string name="title_confirm_restore_backup">Confirm restore from backup</string>
+  <string name="msg_confirm_restore_backup_into_new_book">A new book will be opened with the contents of this backup. Do you wish to proceed?</string>
+  <string name="btn_restore">Restore</string>
+  <string name="title_no_backups_found">No backups found</string>
+  <string name="msg_no_backups_to_restore_from">There are no existing backup files to restore from</string>
+  <!-- This is the filename for default backups. So use only simple characters and no spaces. Do not change the extension -->
+  <string name="label_backup_filename">gnucash_android_backup.gnca</string>
+  <string name="label_select_destination_after_export">Select the destination after export is complete</string>
+  <string name="label_dropbox_export_destination">Export to \'/Apps/GnuCash Android/\' folder on Dropbox</string>
+  <string name="title_section_preferences">Preferences</string>
 </resources>

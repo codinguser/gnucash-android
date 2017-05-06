@@ -18,8 +18,6 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="title_create_account">Создать счёт</string>
   <string name="title_edit_account">Изменить счёт</string>
-  <string name="info_details">Информация</string>
-  <string name="menu_export">Экспорт&#8230;</string>
   <string name="description_add_transaction_icon">Новая проводка</string>
   <string name="description_view_account_icon">Посмотреть дели счета</string>
   <string name="label_no_accounts">Нет счетов</string>
@@ -36,8 +34,6 @@
   <string name="label_transaction_amount">Сумма</string>
   <string name="title_add_transaction">Новая проводка</string>
   <string name="label_no_transactions">Нет проводок</string>
-  <string name="label_timeanddate">ДАТА &amp; ВРЕМЯ</string>
-  <string name="label_account">Счёт</string>
   <string name="label_debit">ДЕБЕТ</string>
   <string name="label_credit">КРЕДИТ</string>
   <string name="title_accounts">Счета</string>
@@ -47,15 +43,12 @@
   <string name="alert_dialog_cancel">Отмена</string>
   <string name="toast_account_deleted">Счёт удалён</string>
   <string name="title_confirm_delete">Подтвердите удаление</string>
-  <string name="delete_account_confirmation_message">Все проводки этого счёта будут удалены</string>
   <string name="title_edit_transaction">Редактировать проводку</string>
   <string name="label_transaction_description">Заметка</string>
-  <string name="menu_move">ПЕРЕНЕСТИ</string>
   <string name="title_selected">%1$d выбрано</string>
   <string name="label_account_balance">Баланс:</string>
   <string name="label_export_destination">Экспорт в:</string>
   <string name="title_export_dialog">Экспорт проводок</string>
-  <string name="option_export_all_transactions">Экспорт всех проводок</string>
   <string name="hint_export_choice">По умолчанию экспортируются проводки после последнего экспорта. Отметьте для экспорта всех проводок</string>
   <string name="toast_export_error">Ошибка экспорта %1$s</string>
   <string name="btn_export">Экспорт</string>
@@ -63,16 +56,14 @@
   <string name="hint_delete_after_export">Все экспортированные проводки будут удалены по завершении.</string>
   <string name="title_settings">Настройки</string>
   <string-array name="export_destinations">
-    <item>Карта памяти</item>
+    <item>Сохранить как&#8230;</item>
     <item>Dropbox</item>
-    <item>Google Диск</item>
     <item>ownCloud</item>
     <item>Отправить&#8230;</item>
   </string-array>
   <string name="btn_move">Перенести</string>
   <string name="title_move_transactions">Перенести %1$d проводку (и)</string>
   <string name="label_move_destination">Счёт-получатель</string>
-  <string name="permission_access_sdcard">Доступ к карте памяти</string>
   <string name="toast_incompatible_currency">Невозможно перенести проводки.\nСчёт-получатель в другой валюте</string>
   <string name="header_general_settings">Общие</string>
   <string name="header_about_gnucash">О программе</string>
@@ -88,23 +79,16 @@
   <string name="label_display_account">Показать счёт</string>
   <string name="label_hide_account_balance">Скрыть баланс счета в виджете</string>
   <string name="btn_create_accounts">Создать счета</string>
-  <string name="title_default_accounts">Выберите счета для создания</string>
   <string name="error_no_accounts">Нет счетов в Gnucash.\nСначала создайте счета, а потом добавляйте виджет.</string>
-  <string name="title_build_version">Версия сборки</string>
   <string name="title_license">Лицензия</string>
   <string name="summary_licence_details">Apache License v2.0. Нажмите, чтобы просмотреть.</string>
   <string name="title_general_prefs">Общие</string>
   <string name="label_widget_configuration">Выберите счёт</string>
   <string name="toast_no_transactions_to_export">Нет проводок для экспорта</string>
-  <string name="header_passcode_settings">Пароль</string>
   <string name="title_passcode_preferences">Настройки парольной защиты</string>
-  <string name="title_passcode_enabled">Используется пароль</string>
-  <string name="title_passcode_disabled">Пароль не используется</string>
+  <string name="title_enable_passcode">Включить пароль</string>
   <string name="title_change_passcode">Сменить пароль</string>
   <string name="title_about_gnucash">О Gnucash</string>
-  <string name="summary_about_gnucash">Программа учёта расходов для Android</string>
-  <string name="title_about">О программе</string>
-  <string name="toast_format_exported_to">Файл %1$s экспортирован в:\n</string>
   <string name="title_export_email">Экспорт %1$s-файла из Gnucash Android</string>
   <string name="description_export_email">Экспорт из GnuCash Android </string>
   <string name="header_transaction_settings">Проводки</string>
@@ -123,7 +107,6 @@
   <string name="title_always_delete_exported_transactions">Всегда удалять после экспорта</string>
   <string name="title_default_export_email">E-mail для экспорта</string>
   <string name="summary_default_export_email">Почтовый ящик по умолчанию для экспорта. Можете менять его в процессе.</string>
-  <string name="label_double_entry_account">Трансфертный счёт</string>
   <string name="summary_use_double_entry">Все проводки будут переводами с одного счёта на другой.</string>
   <string name="title_use_double_entry">Вести двойную запись</string>
   <string name="account_balance">Баланс</string>
@@ -134,18 +117,14 @@
   <string name="summary_xml_ofx_header">Включите эту опцию, если экспортируете в программы отличные от GnuCash для ПК</string>
   <string name="title_whats_new">Новости</string>
   <string name="whats_new">
-        - Поддержка нескольких различных книг \n
-        - Добавляет ownCloud как место для экспорта\n
-        - Компактный вид списка операций\n
-        - Новый дизайн окна блокировки\n
-        - Улучшена обработка запланированных операций\n
-        - Множество других исправлений ошибок и улучшений\n
+        - Добавлена возможность экспорта с любым сервисом с поддержкой Storage Access Framework \n
+        - Добавлена опция выбора пути сохранения резервных копий (см. настройки)\n
+        - Добавлена поддержка валюты Bitcoin\n
+        - Добавлена поддержка переименования книги\n
+        - Множество мелких правок и улучшений\n
 	</string>
   <string name="label_dismiss">Отмена</string>
   <string name="toast_transanction_amount_required">Введите сумму, чтобы сохранить проводку</string>
-  <string name="toast_error_edit_multi_currency_transaction">Мультивалютные проводки не изменяются</string>
-  <string name="menu_import_accounts">Импорт счетов из GnuCash</string>
-  <string name="btn_import_accounts">Импорт счетов</string>
   <string name="toast_error_importing_accounts">Ошибка импорта счетов из GnuCash</string>
   <string name="toast_success_importing_accounts">Счета из GnuCash успешно импортированы</string>
   <string name="summary_import_accounts">Импорт структуры счетов из GnuCash для ПК</string>
@@ -155,18 +134,15 @@
   <string name="header_account_settings">Счета</string>
   <string name="toast_all_accounts_deleted">Все счета удалены</string>
   <string name="confirm_delete_all_accounts">Вы точно хотите удалить все счета и проводки? \nЭто нельзя отменить!</string>
-  <string name="label_account_type">Тип счёта</string>
   <string name="summary_delete_all_transactions">Все проводки во всех счетах будут удалены!</string>
   <string name="title_delete_all_transactions">Удалить все проводки</string>
   <string name="toast_all_transactions_deleted">Все проводки удалены!</string>
   <string name="title_progress_importing_accounts">Импортируются счета</string>
-  <string name="toast_tap_again_to_confirm_delete">Нажмите ещё раз для подтверждения. ВСЕ записи будут удалены!</string>
   <string name="section_header_transactions">Проводки</string>
   <string name="section_header_subaccounts">Дочерние счета</string>
   <string name="menu_search_accounts">Поиск</string>
   <string name="title_default_export_format">Формат экспорта по умолчанию</string>
   <string name="summary_default_export_format">Формат файла, используемый по умолчанию при экспорте</string>
-  <string name="menu_export_transactions">Экспортировать проводки&#8230;</string>
   <string name="label_recurring_transaction">Периодическая проводка</string>
   <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">Дисбаланс</string>
@@ -213,12 +189,6 @@
   <string name="summary_create_default_accounts">Создать структуру счетов GnuCash по умолчанию</string>
   <string name="title_create_default_accounts">Создать счета по умолчанию</string>
   <string name="msg_confirm_create_default_accounts_setting">Новая книга будет открыта с помощью учетной записи по умолчанию\n\nВаши текущие счета и операции не изменятся!</string>
-  <string name="menu_scheduled_transactions">Запланированные проводки</string>
-  <string name="msg_confirm_create_default_accounts_first_run">Добро
-        пожаловать в GnuCash для Android!\nВы можете создать структуру счетов или импортировать её из GnuCash.\n\nОбе
-        возможности будут доступны из настроек приложения, если вы захотите
-        сделать это позже.
-    </string>
   <string name="title_scheduled_transactions">Запланированные проводки</string>
   <string name="title_select_export_destination">Выберите получателя экспорта</string>
   <string name="hint_split_memo">Заметка</string>
@@ -237,8 +207,6 @@
   <string name="label_invoice">Чек</string>
   <string name="label_buy">Покупка</string>
   <string name="label_sell">Продажа</string>
-  <string name="label_repeats">Повторы</string>
-  <string name="toast_no_recent_backup">Нет резервной копии</string>
   <string name="account_name_opening_balances">Начальное сальдо</string>
   <string name="account_name_equity">Собственные средства</string>
   <string name="summary_save_opening_balances">Сохранить текущий баланс (перед удалением проводок) как новое начальное сальдо после их удаления
@@ -246,7 +214,6 @@
   <string name="title_save_opening_balances">Сохранить начальное сальдо счетов</string>
   <string name="export_warning_ofx">OFX не поддерживает двойную запись</string>
   <string name="export_warning_qif">Создаёт на каждую валюту отдельный QIF-файл</string>
-  <string name="title_transaction_splits">Части проводки</string>
   <string name="label_imbalance">Дисбаланс:</string>
   <string name="btn_add_split">Добавить часть</string>
   <string name="menu_title_favorite">Закладки</string>
@@ -257,10 +224,8 @@
   <string name="title_line_chart">График</string>
   <string name="title_bar_chart">Гистограмма</string>
   <string name="title_report_prefs">Настройки отчётов</string>
-  <string name="label_report_currency">Выбор валюты</string>
   <string name="title_use_account_color">Цвет счёта в отчётых</string>
   <string name="summary_use_account_color">Использовать цвет счёта в отчётах</string>
-  <string name="header_report_settings">Отчёты</string>
   <string name="menu_order_by_size">Отсортировать по размеру</string>
   <string name="menu_toggle_legend">Показать легенду</string>
   <string name="menu_toggle_labels">Показать ярлыки</string>
@@ -268,7 +233,6 @@
   <string name="menu_toggle_average_lines">Показывать промежуточные линии</string>
   <string name="menu_group_smaller_slices">Группировать мелкие части</string>
   <string name="label_chart_no_data">Нет данных для диаграммы</string>
-  <string name="label_chart_overall">За всё время</string>
   <string name="label_chart_total">Общая сумма</string>
   <string name="label_other_slice">Прочее</string>
   <string name="toast_chart_percentage_mode_total">Проценты считаются по общему</string>
@@ -286,22 +250,18 @@
   <string name="title_backup_preference_category">Резервное копирование</string>
   <string name="summary_dropbox_sync">Включить экспорт на DropBox</string>
   <string name="summary_owncloud_sync">Включить экспорт на ownCloud</string>
-  <string name="title_select_gnucash_xml_file">Выберите файл GnuCash XML</string>
   <string name="title_backup_prefs">Резервная копия настроек</string>
   <string name="title_create_backup_pref">Создать резервную копию</string>
-  <string name="summary_create_backup_pref">По умолчанию резервные копии сохраняются на карту памяти</string>
-  <string name="summary_restore_backup_pref">Выбор резервной копии для восстановления</string>
+  <string name="summary_create_backup_pref">Создать резервную копию активной книги</string>
+  <string name="summary_restore_backup_pref">Восстановите последнюю резервную копию активной книги</string>
   <string name="toast_backup_successful">Резервная копия создана</string>
   <string name="toast_backup_failed">Не получилось создать резервную копию</string>
   <string name="export_warning_xml">Будут экспортированы все счета и проводки</string>
-  <string name="title_google_drive_sync_pref">Включить Google Drive</string>
-  <string name="summary_google_drive_sync">Включить синхронизацию с Google Drive</string>
   <string name="toast_install_file_manager">Установите программу для просмотра файловой системы</string>
   <string name="title_select_backup_to_restore">Выберите резервную копию для восстановления</string>
   <string name="nav_menu_favorites">Закладки</string>
   <string name="nav_menu_open">Открыть...</string>
   <string name="nav_menu_reports">Отчёты</string>
-  <string name="nav_menu_scheduled_transactions">Запланированные проводки</string>
   <string name="nav_menu_export">Экспорт...</string>
   <string name="nav_menu_settings">Настройки</string>
   <string name="username">Имя пользователя</string>
@@ -314,6 +274,11 @@
   <string name="owncloud_server_ok">OC сервер ОК</string>
   <string name="owncloud_user_ok">OC имя/пароль ОК</string>
   <string name="owncloud_dir_ok">Имя папки ОК</string>
+  <plurals name="label_every_x_hours">
+    <item quantity="one">Каждый час</item>
+    <item quantity="few">Каждые %d часа</item>
+    <item quantity="other">Каждые %d часов</item>
+  </plurals>
   <plurals name="label_every_x_days">
     <item quantity="one">Ежедневно</item>
     <item quantity="few">Каждые %d дня</item>
@@ -337,10 +302,8 @@
   <string name="title_enable_crashlytics">Записывать отказы программы</string>
   <string name="msg_enable_crashlytics">Включить запись отказов программы (рекомендуем). Обещаем не собирать приватную информацию.</string>
   <string name="label_export_format">Формат </string>
-  <string name="toast_backup_folder_not_found">Каталог для резервных копий не найден. Карта помяти точно подключена?</string>
   <string name="label_old_passcode">Введите старый пароль</string>
   <string name="label_new_passcode">Введите новый пароль</string>
-  <string name="nav_menu_scheduled_backups">Запланированный экспорт</string>
   <string name="title_scheduled_exports">Запланированный экспорт</string>
   <string name="label_no_scheduled_exports_to_display">Вы ещё не планировали экспорт данных</string>
   <string name="title_create_export_schedule">Создать расписание экспорта</string>
@@ -351,7 +314,6 @@
   <string name="label_no_favorite_accounts">Нет избранных счетов</string>
   <string name="nav_menu_scheduled_actions">Запланированные действия</string>
   <string name="label_scheduled_action_ended">"Завершено. Последний раз выполнено "</string>
-  <string name="label_select_bar_to_view_details">Выберите, чтобы посмотреть детали</string>
   <string name="btn_wizard_next">Далее</string>
   <string name="btn_wizard_finish">Конец</string>
   <string name="wizard_title_default_currency">Валюта по умолчанию</string>
@@ -372,8 +334,6 @@
   <string name="toast_error_check_split_amounts">Проверьте, что все части корректно распределены перед сохранением!</string>
   <string name="label_error_invalid_expression">Неверное выражение!</string>
   <string name="toast_scheduled_recurring_transaction">Запланированная повторяющаяся проводка</string>
-  <string name="error_exchange_rate_required">Нужен курс обмена</string>
-  <string name="error_converted_amount_required">Нужна обмененная сумма</string>
   <string name="title_transfer_funds">Перевод денег</string>
   <string name="nav_menu_help"><![CDATA[Справка & Обратная связь]]></string>
   <string name="label_select_pie_slice_to_see_details">Выберите часть, чтобы посмотреть подробно</string>
@@ -392,7 +352,6 @@
   <string name="label_assets">Активы</string>
   <string name="label_liabilities">Долги</string>
   <string name="label_equity">Акции</string>
-  <string name="label_total_liabilities_and_equity"><![CDATA[Итого по долгам и акциям]]></string>
   <string name="label_move_to">Переместить в:</string>
   <string name="menu_group_by">Группировать по</string>
   <string name="menu_group_by_month">Месяц</string>
@@ -407,7 +366,6 @@
   <string name="toast_no_compatible_apps_to_receive_export">Не совместимых приложений, чтобы получить экспортированные транзакции!</string>
   <string name="menu_move_transaction">Перемещение&#8230;</string>
   <string name="menu_duplicate_transaction">Повтор</string>
-  <string name="nav_menu_budgets">Бюджеты</string>
   <string name="title_cash_flow_report">Денежный поток</string>
   <string name="title_budgets">Бюджеты</string>
   <string name="title_use_compact_list">Компактный вид</string>
@@ -481,8 +439,23 @@
   <string name="label_recommend_app">Рекомендовать в Play Store</string>
   <string name="repeat_until_date">до %1$s</string>
   <string name="repeat_on_weekday">в %1$s</string>
-  <string name="repeat_x_times">для %1$s раз</string>
+  <string name="repeat_x_times">для %1$d раз</string>
   <string name="menu_show_compact_view">Компактный вид</string>
   <string name="book_default_name">Книга %1$d</string>
   <string name="last_export_time_never">никогда</string>
+  <string name="title_rename_book">Переименовать Книгу</string>
+  <string name="btn_rename">Переименование</string>
+  <string name="menu_rename">Переименовать</string>
+  <string name="title_select_backup_file">Выберите файл резервной копии</string>
+  <string name="summary_select_backup_file">Выберите файл для автоматического резервного копирования</string>
+  <string name="title_confirm_restore_backup">Подтвердите восстановление из резервной копии</string>
+  <string name="msg_confirm_restore_backup_into_new_book">Новая книга будет открыта с содержанием этой резервной копии. Вы хотите продолжить?</string>
+  <string name="btn_restore">Восстановить</string>
+  <string name="title_no_backups_found">Резервные копии не найдены</string>
+  <string name="msg_no_backups_to_restore_from">Нет существующих файлов резервных копий для восстановления</string>
+  <!-- This is the filename for default backups. So use only simple characters and no spaces. Do not change the extension -->
+  <string name="label_backup_filename">gnucash_android_backup.gnca</string>
+  <string name="label_select_destination_after_export">Выберите пункт назначения после завершения экспорта</string>
+  <string name="label_dropbox_export_destination">Экспорт в \' / Apps/GnuCash Android /\' папку на Dropbox</string>
+  <string name="title_section_preferences">Настройки</string>
 </resources>

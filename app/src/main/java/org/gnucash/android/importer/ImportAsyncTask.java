@@ -31,10 +31,10 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.ui.util.TaskDelegate;
+import org.gnucash.android.util.BookUtils;
 
 import java.io.InputStream;
 
@@ -58,7 +58,6 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
         this.mDelegate = delegate;
     }
 
-    @TargetApi(11)
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
@@ -67,11 +66,11 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         mProgressDialog.show();
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB){
-            //these methods must be called after progressDialog.show()
-            mProgressDialog.setProgressNumberFormat(null);
-            mProgressDialog.setProgressPercentFormat(null);
-        }
+
+        //these methods must be called after progressDialog.show()
+        mProgressDialog.setProgressNumberFormat(null);
+        mProgressDialog.setProgressPercentFormat(null);
+
 
     }
 
@@ -138,7 +137,7 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
         Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
 
         if (mImportedBookUID != null)
-            GnuCashApplication.loadBook(mImportedBookUID);
+            BookUtils.loadBook(mImportedBookUID);
 
         if (mDelegate != null)
             mDelegate.onTaskComplete();

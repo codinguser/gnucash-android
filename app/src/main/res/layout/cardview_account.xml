@@ -95,7 +95,7 @@
             android:id="@+id/account_balance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:singleLine="true"
+            android:maxLines="1"
             android:layout_alignParentBottom="true"
             android:paddingBottom="4dp"
             android:textSize="18sp"

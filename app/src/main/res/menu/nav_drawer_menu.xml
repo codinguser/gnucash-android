@@ -53,7 +53,7 @@
     </item>
     <item
         android:id="@+id/nav_section_settings"
-        android:title="Preferences">
+        android:title="@string/title_section_preferences">
         <menu>
             <item
                 android:id="@+id/nav_item_settings"

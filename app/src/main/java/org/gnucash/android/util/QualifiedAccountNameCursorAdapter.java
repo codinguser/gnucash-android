@@ -73,7 +73,7 @@ public class QualifiedAccountNameCursorAdapter extends SimpleCursorAdapter {
         if(isFavorite == 0) {
             textView.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
         } else {
-            textView.setCompoundDrawablesWithIntrinsicBounds(0,0,R.drawable.ic_star_black_24dp,0);
+            textView.setCompoundDrawablesWithIntrinsicBounds(0,0,R.drawable.ic_star_black_18dp,0);
         }
     }
 

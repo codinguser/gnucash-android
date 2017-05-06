@@ -24,6 +24,7 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.util.PreferencesHelper;
 import org.gnucash.android.util.TimestampHelper;
 
@@ -159,7 +160,7 @@ public class QifExporter extends Exporter{
                         if (decimalImbalance.compareTo(BigDecimal.ZERO) != 0) {
                             writer.append(QifHelper.SPLIT_CATEGORY_PREFIX)
                                     .append(AccountsDbAdapter.getImbalanceAccountName(
-                                            Currency.getInstance(cursor.getString(cursor.getColumnIndexOrThrow("acct1_currency")))
+                                            Commodity.getInstance(cursor.getString(cursor.getColumnIndexOrThrow("acct1_currency")))
                                     ))
                                     .append(newLine);
                             writer.append(QifHelper.SPLIT_AMOUNT_PREFIX)

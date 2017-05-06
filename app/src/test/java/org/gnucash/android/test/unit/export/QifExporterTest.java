@@ -21,11 +21,18 @@ import org.gnucash.android.BuildConfig;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.BookDbHelper;
 import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
+import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.export.qif.QifExporter;
+import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Book;
+import org.gnucash.android.model.Commodity;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Split;
+import org.gnucash.android.model.Transaction;
 import org.gnucash.android.test.unit.testutil.GnucashTestRunner;
 import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
 import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
@@ -34,6 +41,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
+
+import java.io.File;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -69,4 +79,70 @@ public class QifExporterTest {
         QifExporter exporter = new QifExporter(exportParameters, mDb);
         assertThat(exporter.generateExport()).isEmpty();
     }
+
+    /**
+     * Test that QIF files are generated
+     */
+    //// FIXME: 20.04.2017 Test failing with NPE
+    public void testGenerateQIFExport(){
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(mDb);
+
+        Account account = new Account("Basic Account");
+        Transaction transaction = new Transaction("One transaction");
+        transaction.addSplit(new Split(Money.createZeroInstance("EUR"),account.getUID()));
+        account.addTransaction(transaction);
+
+        accountsDbAdapter.addRecord(account);
+
+        ExportParams exportParameters = new ExportParams(ExportFormat.QIF);
+        exportParameters.setExportStartTime(TimestampHelper.getTimestampFromEpochZero());
+        exportParameters.setExportTarget(ExportParams.ExportTarget.SD_CARD);
+        exportParameters.setDeleteTransactionsAfterExport(false);
+
+        OfxExporter ofxExporter = new OfxExporter(exportParameters, mDb);
+        List<String> exportedFiles = ofxExporter.generateExport();
+
+        assertThat(exportedFiles).hasSize(1);
+        File file = new File(exportedFiles.get(0));
+        assertThat(file).exists().hasExtension("qif");
+        assertThat(file.length()).isGreaterThan(0L);
+    }
+
+    /**
+     * Test that when more than one currency is in use, multiple QIF files will be generated
+     */
+    //// FIXME: 20.04.2017 test failing with NPE
+    public void multiCurrencyTransactions_shouldResultInMultipleQifFiles(){
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(mDb);
+
+        Account account = new Account("Basic Account", Commodity.getInstance("EUR"));
+        Transaction transaction = new Transaction("One transaction");
+        transaction.addSplit(new Split(Money.createZeroInstance("EUR"),account.getUID()));
+        account.addTransaction(transaction);
+        accountsDbAdapter.addRecord(account);
+
+        Account foreignAccount = new Account("US Konto", Commodity.getInstance("USD"));
+        Transaction multiCulti = new Transaction("Multicurrency");
+        Split split = new Split(new Money("12", "USD"), new Money("15", "EUR"), foreignAccount.getUID());
+        Split split2 = split.createPair(account.getUID());
+        multiCulti.addSplit(split);
+        multiCulti.addSplit(split2);
+        foreignAccount.addTransaction(multiCulti);
+
+        accountsDbAdapter.addRecord(foreignAccount);
+
+        ExportParams exportParameters = new ExportParams(ExportFormat.QIF);
+        exportParameters.setExportStartTime(TimestampHelper.getTimestampFromEpochZero());
+        exportParameters.setExportTarget(ExportParams.ExportTarget.SD_CARD);
+        exportParameters.setDeleteTransactionsAfterExport(false);
+
+        OfxExporter ofxExporter = new OfxExporter(exportParameters, mDb);
+        List<String> exportedFiles = ofxExporter.generateExport();
+
+        assertThat(exportedFiles).hasSize(2);
+        File file = new File(exportedFiles.get(0));
+        assertThat(file).exists().hasExtension("qif");
+        assertThat(file.length()).isGreaterThan(0L);
+    }
+
 }

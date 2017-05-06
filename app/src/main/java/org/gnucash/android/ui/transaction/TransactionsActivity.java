@@ -260,12 +260,8 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         if (mPagerAdapter != null)
             mPagerAdapter.notifyDataSetChanged();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            // make sure the account balance task is truely multi-thread
-            new AccountBalanceTask(mSumTextView).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mAccountUID);
-        } else {
-            new AccountBalanceTask(mSumTextView).execute(mAccountUID);
-        }
+        new AccountBalanceTask(mSumTextView).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mAccountUID);
+
     }
 
     @Override

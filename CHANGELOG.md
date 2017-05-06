@@ -1,5 +1,20 @@
 Change Log
 ===============================================================================
+Version 2.2.0 *(2017-05-05)*
+----------------------------
+* Feature #646: Option to select backup file using Storage Access Framework
+* Feature #565: Regular automatic backups (even when not explicitly set by user)
+* Feature #656: Added Bitcoin (BTC) currency support
+* Feature #634: Added support for renaming books
+* Fixed #672: Crash when exporting multi-currency transactions to Google Drive
+* Fixed #654: Crash when editing account if its default transfer account no longer exists
+* Fixed #625: Hourly backups were being executed on a monthly basis
+* Fixed #607: Widgets stop functioning after switching books
+* Fixed #641: Weekday is ignored for weekly scheduled actions
+* Improved #635: Improved support for BYN currency 
+* Improved #661: Removed need for WRITE_EXTERNAL_STORAGE permission for Android 4.4 (KitKat) and above
+    * This release raises the minimum API level to 19 (KitKat)
+    
 Version 2.1.7 *(2017-04-18)*
 ----------------------------
 * Properly handle crashes during migration of backup/export files to new location

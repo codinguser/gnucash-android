@@ -16,12 +16,10 @@
 
 package org.gnucash.android.ui.export;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.os.Build;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -53,15 +51,16 @@ import com.dropbox.core.android.Auth;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.export.DropboxHelper;
 import org.gnucash.android.export.ExportAsyncTask;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
+import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.ScheduledAction;
-import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.settings.BackupPreferenceFragment;
 import org.gnucash.android.ui.settings.dialog.OwnCloudDialogFragment;
@@ -91,7 +90,12 @@ public class ExportFormFragment extends Fragment implements
 		RecurrencePickerDialogFragment.OnRecurrenceSetListener,
 		CalendarDatePickerDialogFragment.OnDateSetListener,
 		RadialTimePickerDialogFragment.OnTimeSetListener {
-		
+
+	/**
+	 * Request code for intent to pick export file destination
+	 */
+	private static final int REQUEST_EXPORT_FILE = 0x14;
+
 	/**
 	 * Spinner for selecting destination for the exported file.
 	 * The destination could either be SD card, or another application which
@@ -108,6 +112,8 @@ public class ExportFormFragment extends Fragment implements
      * Text view for showing warnings based on chosen export format
      */
     @BindView(R.id.export_warning) TextView mExportWarningTextView;
+
+	@BindView(R.id.target_uri) TextView mTargetUriTextView;
 
 	/**
 	 * Recurrence text view
@@ -132,6 +138,7 @@ public class ExportFormFragment extends Fragment implements
 	@BindView(R.id.radio_qif_format) RadioButton mQifRadioButton;
 	@BindView(R.id.radio_xml_format) RadioButton mXmlRadioButton;
 
+	@BindView(R.id.recurrence_options) View mRecurrenceOptionsView;
 	/**
 	 * Event recurrence options
 	 */
@@ -156,6 +163,16 @@ public class ExportFormFragment extends Fragment implements
 
 	private ExportParams.ExportTarget mExportTarget = ExportParams.ExportTarget.SD_CARD;
 
+	/**
+	 * The Uri target for the export
+	 */
+	private Uri mExportUri;
+
+	/**
+	 * Flag to determine if export has been started.
+	 * Used to continue export after user has picked a destination file
+	 */
+	private boolean mExportStarted = false;
 
 	private void onRadioButtonClicked(View view){
         switch (view.getId()){
@@ -232,8 +249,6 @@ public class ExportFormFragment extends Fragment implements
 		assert supportActionBar != null;
 		supportActionBar.setTitle(R.string.title_export_dialog);
 		setHasOptionsMenu(true);
-
-		getSDWritePermission();
 	}
 
 	@Override
@@ -253,22 +268,15 @@ public class ExportFormFragment extends Fragment implements
     }
 
 	/**
-	 * Get permission for WRITING SD card for Android Marshmallow and above
-	 */
-	private void getSDWritePermission(){
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			if (getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-					!= PackageManager.PERMISSION_GRANTED) {
-				getActivity().requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-						Manifest.permission.READ_EXTERNAL_STORAGE}, AccountsActivity.REQUEST_PERMISSION_WRITE_SD_CARD);
-			}
-		}
-	}
-
-	/**
 	 * Starts the export of transactions with the specified parameters
 	 */
 	private void startExport(){
+		if (mExportTarget == ExportParams.ExportTarget.URI && mExportUri == null){
+			mExportStarted = true;
+			selectExportFile();
+			return;
+		}
+
 		ExportParams exportParameters = new ExportParams(mExportFormat);
 
 		if (mExportAllSwitch.isChecked()){
@@ -278,6 +286,7 @@ public class ExportFormFragment extends Fragment implements
 		}
 
 		exportParameters.setExportTarget(mExportTarget);
+		exportParameters.setExportLocation(mExportUri != null ? mExportUri.toString() : null);
 		exportParameters.setDeleteTransactionsAfterExport(mDeleteAllCheckBox.isChecked());
 
 		Log.i(TAG, "Commencing async export of transactions");
@@ -313,14 +322,19 @@ public class ExportFormFragment extends Fragment implements
 		mDestinationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				View recurrenceOptionsView = getView().findViewById(R.id.recurrence_options);
+				if (view == null) //the item selection is fired twice by the Android framework. Ignore the first one
+					return;
 				switch (position) {
 					case 0:
-						mExportTarget = ExportParams.ExportTarget.SD_CARD;
-						recurrenceOptionsView.setVisibility(View.VISIBLE);
+						mExportTarget = ExportParams.ExportTarget.URI;
+						mRecurrenceOptionsView.setVisibility(View.VISIBLE);
+						if (mExportUri != null)
+							setExportUriText(mExportUri.toString());
+						selectExportFile();
 						break;
-					case 1:
-						recurrenceOptionsView.setVisibility(View.VISIBLE);
+					case 1: //DROPBOX
+						setExportUriText(getString(R.string.label_dropbox_export_destination));
+						mRecurrenceOptionsView.setVisibility(View.VISIBLE);
 						mExportTarget = ExportParams.ExportTarget.DROPBOX;
 						String dropboxAppKey = getString(R.string.dropbox_app_key, BackupPreferenceFragment.DROPBOX_APP_KEY);
 						String dropboxAppSecret = getString(R.string.dropbox_app_secret, BackupPreferenceFragment.DROPBOX_APP_SECRET);
@@ -330,13 +344,8 @@ public class ExportFormFragment extends Fragment implements
 						}
 						break;
 					case 2:
-						recurrenceOptionsView.setVisibility(View.VISIBLE);
-						mExportTarget = ExportParams.ExportTarget.GOOGLE_DRIVE;
-						BackupPreferenceFragment.mGoogleApiClient = BackupPreferenceFragment.getGoogleApiClient(getActivity());
-						BackupPreferenceFragment.mGoogleApiClient.connect();
-						break;
-					case 3:
-						recurrenceOptionsView.setVisibility(View.VISIBLE);
+						setExportUriText(null);
+						mRecurrenceOptionsView.setVisibility(View.VISIBLE);
 						mExportTarget = ExportParams.ExportTarget.OWNCLOUD;
 						if(!(PreferenceManager.getDefaultSharedPreferences(getActivity())
 								.getBoolean(getString(R.string.key_owncloud_sync), false))) {
@@ -344,9 +353,10 @@ public class ExportFormFragment extends Fragment implements
 							ocDialog.show(getActivity().getSupportFragmentManager(), "ownCloud dialog");
 						}
 						break;
-					case 4:
+					case 3:
+						setExportUriText(getString(R.string.label_select_destination_after_export));
 						mExportTarget = ExportParams.ExportTarget.SHARING;
-						recurrenceOptionsView.setVisibility(View.GONE);
+						mRecurrenceOptionsView.setVisibility(View.GONE);
 						break;
 
 					default:
@@ -470,6 +480,41 @@ public class ExportFormFragment extends Fragment implements
 
 	}
 
+	/**
+	 * Display the file path of the file where the export will be saved
+	 * @param filepath Path to export file. If {@code null}, the view will be hidden and nothing displayed
+	 */
+	private void setExportUriText(String filepath){
+		if (filepath == null){
+			mTargetUriTextView.setVisibility(View.GONE);
+			mTargetUriTextView.setText("");
+		} else {
+			mTargetUriTextView.setText(filepath);
+			mTargetUriTextView.setVisibility(View.VISIBLE);
+		}
+	}
+
+	/**
+	 * Open a chooser for user to pick a file to export to
+	 */
+	private void selectExportFile() {
+		Intent createIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+		createIntent.setType("text/*").addCategory(Intent.CATEGORY_OPENABLE);
+		String bookName = BooksDbAdapter.getInstance().getActiveBookDisplayName();
+
+		if (mExportFormat == ExportFormat.XML || mExportFormat == ExportFormat.QIF) {
+			createIntent.setType("application/zip");
+		}
+
+		String filename = Exporter.buildExportFilename(mExportFormat, bookName);
+		if (mExportTarget == ExportParams.ExportTarget.URI && mExportFormat == ExportFormat.QIF){
+			filename += ".zip";
+		}
+
+		createIntent.putExtra(Intent.EXTRA_TITLE, filename);
+		startActivityForResult(createIntent, REQUEST_EXPORT_FILE);
+	}
+
 	@Override
 	public void onRecurrenceSet(String rrule) {
 		mRecurrenceRule = rrule;
@@ -488,8 +533,30 @@ public class ExportFormFragment extends Fragment implements
 	 */
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == BackupPreferenceFragment.REQUEST_RESOLVE_CONNECTION && resultCode == Activity.RESULT_OK) {
-			BackupPreferenceFragment.mGoogleApiClient.connect();
+
+		switch (requestCode){
+			case BackupPreferenceFragment.REQUEST_RESOLVE_CONNECTION:
+				if (resultCode == Activity.RESULT_OK) {
+					BackupPreferenceFragment.mGoogleApiClient.connect();
+				}
+				break;
+
+			case REQUEST_EXPORT_FILE:
+				if (resultCode == Activity.RESULT_OK){
+					if (data != null){
+						mExportUri = data.getData();
+					}
+
+					final int takeFlags = data.getFlags()
+							& (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+					getActivity().getContentResolver().takePersistableUriPermission(mExportUri, takeFlags);
+
+					mTargetUriTextView.setText(mExportUri.toString());
+					if (mExportStarted)
+						startExport();
+
+				}
+				break;
 		}
 	}
 

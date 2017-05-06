@@ -51,7 +51,6 @@ public class CheckableLinearLayout extends LinearLayout implements Checkable {
         super(context, attrs);
     }
 
-    @TargetApi(11)
     public CheckableLinearLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }

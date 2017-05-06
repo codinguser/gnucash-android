@@ -50,10 +50,9 @@ public class ScrollingFABBehavior extends CoordinatorLayout.Behavior<FloatingAct
             CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
             int fabBottomMargin = lp.bottomMargin;
             int distanceToScroll = fab.getHeight() + fabBottomMargin;
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
-                float ratio = (float) dependency.getY() / (float) toolbarHeight;
-                fab.setTranslationY(-distanceToScroll * ratio);
-            }
+            float ratio = (float) dependency.getY() / (float) toolbarHeight;
+            fab.setTranslationY(-distanceToScroll * ratio);
+
         }
         return true;
     }

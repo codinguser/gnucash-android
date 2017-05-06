@@ -22,7 +22,6 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.LayoutRes;
@@ -50,6 +49,7 @@ import org.gnucash.android.ui.passcode.PasscodeLockActivity;
 import org.gnucash.android.ui.report.ReportsActivity;
 import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
+import org.gnucash.android.util.BookUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -105,7 +105,7 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
         //if a parameter was passed to open an account within a specific book, then switch
         String bookUID = getIntent().getStringExtra(UxArgument.BOOK_UID);
         if (bookUID != null && !bookUID.equals(BooksDbAdapter.getInstance().getActiveBookUID())){
-            GnuCashApplication.activateBook(bookUID);
+            BookUtils.activateBook(bookUID);
         }
 
         ButterKnife.bind(this);
@@ -233,16 +233,13 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
     protected void onDrawerMenuItemClicked(int itemId) {
         switch (itemId){
             case R.id.nav_item_open: { //Open... files
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-                    //use the storage access framework
-                    Intent openDocument = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                    openDocument.addCategory(Intent.CATEGORY_OPENABLE);
-                    openDocument.setType("*/*");
-                    startActivityForResult(openDocument, REQUEST_OPEN_DOCUMENT);
-
-                } else {
-                    AccountsActivity.startXmlFileChooser(this);
-                }
+                //use the storage access framework
+                Intent openDocument = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                openDocument.addCategory(Intent.CATEGORY_OPENABLE);
+                openDocument.setType("text/*|application/*");
+                String[] mimeTypes = {"text/*", "application/*"};
+                openDocument.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+                startActivityForResult(openDocument, REQUEST_OPEN_DOCUMENT);
             }
             break;
 
@@ -328,7 +325,7 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
         BooksDbAdapter booksDbAdapter = BooksDbAdapter.getInstance();
         String bookUID = booksDbAdapter.getUID(id);
         if (!bookUID.equals(booksDbAdapter.getActiveBookUID())){
-            GnuCashApplication.loadBook(bookUID);
+            BookUtils.loadBook(bookUID);
             finish();
         }
         AccountsActivity.start(GnuCashApplication.getAppContext());

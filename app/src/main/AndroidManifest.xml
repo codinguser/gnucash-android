@@ -33,18 +33,17 @@
         android:protectionLevel="dangerous" />
     
     <uses-permission android:label="@string/label_permission_record_transactions"
-        android:name="org.gnucash.android.permission.RECORD_TRANSACTION" />
+                     android:name="org.gnucash.android.permission.RECORD_TRANSACTION" />
     <uses-permission android:label="@string/label_permission_create_accounts"
-        android:name="org.gnucash.android.permission.CREATE_ACCOUNT" />
-    <uses-permission android:label="@string/permission_access_sdcard"
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+                     android:name="org.gnucash.android.permission.CREATE_ACCOUNT" />
+
     <uses-permission android:name="android.permission.VIBRATE"
                      android:label="Allow device to vibrate with notifications" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"
-        android:label="Schedule repeating transactions when device is rebooted"/>
+                     android:label="Schedule repeating transactions when device is rebooted"/>
     <uses-permission android:name="android.permission.INTERNET"
-        android:label="Export and backup to 3rd party hosting services" />
+                     android:label="Export and backup to 3rd party hosting services" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application android:name="org.gnucash.android.app.GnuCashApplication"

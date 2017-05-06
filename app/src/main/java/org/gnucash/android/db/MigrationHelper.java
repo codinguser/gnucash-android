@@ -1468,6 +1468,18 @@ public class MigrationHelper {
                 .putBoolean(keyUseCompactView, useCompactTrnView)
                 .apply();
 
+        rescheduleServiceAlarm();
+
+
+        return oldVersion;
+    }
+
+    /**
+     * Cancel the existing alarm for the scheduled service and restarts/reschedules the service
+     */
+    private static void rescheduleServiceAlarm() {
+        Context context = GnuCashApplication.getAppContext();
+
         //cancel the existing pending intent so that the alarm can be rescheduled
         Intent alarmIntent = new Intent(context, ScheduledActionService.class);
         PendingIntent pendingIntent = PendingIntent.getService(context, 0, alarmIntent, PendingIntent.FLAG_NO_CREATE);
@@ -1477,9 +1489,7 @@ public class MigrationHelper {
             pendingIntent.cancel();
         }
 
-        GnuCashApplication.startScheduledActionExecutionService(GnuCashApplication.getAppContext());
-
-        return oldVersion;
+        GnuCashApplication.startScheduledActionExecutionService(context);
     }
 
     /**
@@ -1508,6 +1518,9 @@ public class MigrationHelper {
                 throw new IOException(String.format("Target directory %s does not exist and could not be created", dstDir.getPath()));
             }
         }
+
+        if (srcDir.listFiles() == null) //nothing to see here, move along
+            return;
 
         for (File src : srcDir.listFiles()){
             if (src.isDirectory()){
@@ -1569,5 +1582,50 @@ public class MigrationHelper {
         }).start();
 
         return 14;
+    }
+
+    /**
+     * Upgrades the database to version 14.
+     * <p>This migration makes the following changes to the database:
+     * <ul>
+     *     <li>Fixes accounts referencing a default transfer account that no longer
+     *         exists (see #654)</li>
+     * </ul>
+     * </p>
+     * @param db SQLite database to be upgraded
+     * @return New database version, 14 if migration succeeds, 13 otherwise
+     */
+    static int upgradeDbToVersion15(SQLiteDatabase db) {
+        Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 15");
+        int dbVersion = 14;
+
+        db.beginTransaction();
+        try {
+            ContentValues contentValues = new ContentValues();
+            contentValues.putNull(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID);
+            db.update(
+                    AccountEntry.TABLE_NAME,
+                    contentValues,
+                    AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID
+                            + " NOT IN (SELECT " + AccountEntry.COLUMN_UID
+                            + "             FROM " + AccountEntry.TABLE_NAME + ")",
+                    null);
+            db.setTransactionSuccessful();
+            dbVersion = 15;
+        } finally {
+            db.endTransaction();
+        }
+
+        //remove previously saved export destination index because the number of destinations has changed
+        //an invalid value would lead to crash on start
+        Context context = GnuCashApplication.getAppContext();
+        android.preference.PreferenceManager.getDefaultSharedPreferences(context)
+                .edit()
+                .remove(context.getString(R.string.key_last_export_destination))
+                .apply();
+
+        //the default interval has been changed from daily to hourly with this release. So reschedule alarm
+        rescheduleServiceAlarm();
+        return dbVersion;
     }
 }

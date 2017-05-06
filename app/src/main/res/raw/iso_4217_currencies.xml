@@ -2970,6 +2970,19 @@
         smallest-fraction="1000000"
         local-symbol=""
     />
+    <!-- "XBT" - "Bitcoin"
+    -->
+    <currency
+      isocode="XBT"
+      fullname="Bitcoin"
+      unitname="bitcoin"
+      partname="microbitcoin"
+      namespace="ISO4217"
+      exchange-code="nil"
+      parts-per-unit="1000000"
+      smallest-fraction="1000000"
+      local-symbol="XBT"
+    />
 
     <!-- precious metals -->
     <!-- "XAG" - "Silver"

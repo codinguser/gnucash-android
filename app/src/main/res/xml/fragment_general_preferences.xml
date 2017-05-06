@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/title_passcode_preferences">
-        <CheckBoxPreference android:key="@string/key_enable_passcode" />
+        <CheckBoxPreference android:key="@string/key_enable_passcode"
+            android:title="@string/title_enable_passcode"/>
         <Preference android:key="@string/key_change_passcode"
             android:title="@string/title_change_passcode"
             android:dependency="@string/key_enable_passcode" />

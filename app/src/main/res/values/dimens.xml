@@ -16,15 +16,11 @@
 -->
 
 <resources>
-    <dimen name="add_button_padding">3dp</dimen>
     <dimen name="dialog_padding">10dp</dimen>
     <dimen name="hint_margin">-8dp</dimen>
-    <dimen name="text_size_small">14sp</dimen>
     <dimen name="text_size_medium">16sp</dimen>
-    <dimen name="text_size_large">18sp</dimen>
     <dimen name="edge_padding">12dp</dimen>
     <dimen name="widget_margin">8dp</dimen>
-    <dimen name="section_header_height">20dp</dimen>
     <dimen name="form_row_bottom_margin">10dp</dimen>
     <dimen name="strip_width">5dp</dimen>
     <dimen name="color_swatch_large">64dip</dimen>
