@@ -342,6 +342,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
             finish();
             return;
         }
+        getSDWritePermission();
 
         if (hasNewFeatures()){
             showWhatsNewDialog(this);
