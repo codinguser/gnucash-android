@@ -241,12 +241,12 @@ public class ScheduledAction extends BaseModel{
      * Computes the next time that this weekly scheduled action is supposed to be
      * executed starting at startTime.
      *
-     * If no weekdays have been set (GnuCash desktop allows it), it will return a
+     * If no days of the week have been set (GnuCash desktop allows it), it will return a
      * date in the future to ensure ScheduledActionService doesn't execute it.
      *
      * @param startTime LocalDateTime to use as start to compute the next schedule.
      *
-     * @return Next run time as a LocalDateTime. A date in the future, if no weekdays
+     * @return Next run time as a LocalDateTime. A date in the future, if no days of the week
      *      were set in the Recurrence.
      */
     @NonNull
@@ -254,30 +254,30 @@ public class ScheduledAction extends BaseModel{
         if (mRecurrence.getByDays().isEmpty())
             return LocalDateTime.now().plusDays(1); // Just a date in the future
 
-        // Look into the week of startTime for another scheduled weekday
-        for (int weekDay : mRecurrence.getByDays() ) {
-            int jodaWeekDay = convertCalendarWeekdayToJoda(weekDay);
-            LocalDateTime candidateNextDueTime = startTime.withDayOfWeek(jodaWeekDay);
+        // Look into the week of startTime for another scheduled day of the week
+        for (int dayOfWeek : mRecurrence.getByDays() ) {
+            int jodaDayOfWeek = convertCalendarDayOfWeekToJoda(dayOfWeek);
+            LocalDateTime candidateNextDueTime = startTime.withDayOfWeek(jodaDayOfWeek);
             if (candidateNextDueTime.isAfter(startTime))
                 return candidateNextDueTime;
         }
 
-        // Return the first scheduled weekday from the next due week
-        int firstScheduledWeekday = convertCalendarWeekdayToJoda(mRecurrence.getByDays().get(0));
+        // Return the first scheduled day of the week from the next due week
+        int firstScheduledDayOfWeek = convertCalendarDayOfWeekToJoda(mRecurrence.getByDays().get(0));
         return startTime.plusWeeks(mRecurrence.getMultiplier())
-                        .withDayOfWeek(firstScheduledWeekday);
+                        .withDayOfWeek(firstScheduledDayOfWeek);
     }
 
     /**
-     * Converts a java.util.Calendar weekday constant to the
+     * Converts a java.util.Calendar day of the week constant to the
      * org.joda.time.DateTimeConstants equivalent.
      *
-     * @param calendarWeekday weekday constant from java.util.Calendar
-     * @return weekday constant equivalent from org.joda.time.DateTimeConstants
+     * @param calendarDayOfWeek day of the week constant from java.util.Calendar
+     * @return day of the week constant equivalent from org.joda.time.DateTimeConstants
      */
-    private int convertCalendarWeekdayToJoda(int calendarWeekday) {
+    private int convertCalendarDayOfWeekToJoda(int calendarDayOfWeek) {
         Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.DAY_OF_WEEK, calendarWeekday);
+        cal.set(Calendar.DAY_OF_WEEK, calendarDayOfWeek);
         return LocalDateTime.fromCalendarFields(cal).getDayOfWeek();
     }
 
