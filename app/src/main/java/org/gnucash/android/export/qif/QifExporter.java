@@ -38,8 +38,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
+import java.util.Locale;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
 import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
@@ -210,9 +210,10 @@ public class QifExporter extends Exporter{
                     if (quantity_denom != 0) {
                         quantity = quantity_num / quantity_denom;
                     }
+                    final Locale noLocale = null;
                     writer.append(QifHelper.SPLIT_AMOUNT_PREFIX)
                             .append(splitType.equals("DEBIT") ? "-" : "")
-                            .append(String.format("%." + precision + "f", quantity))
+                            .append(String.format(noLocale, "%." + precision + "f", quantity))
                             .append(newLine);
                 }
                 if (!currentTransactionUID.equals("")) {
