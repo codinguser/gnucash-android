@@ -178,7 +178,8 @@ public class Transaction extends BaseModel{
         if (!imbalance.isAmountZero()){
             // yes, this is on purpose the account UID is set to the currency.
             // This should be overridden before saving to db
-            Split split = new Split(imbalance.negate(), mCommodity.getCurrencyCode());
+            Split split = new Split(imbalance.abs(), mCommodity.getCurrencyCode());
+            split.setType(imbalance.isNegative() ? TransactionType.CREDIT : TransactionType.DEBIT);
             addSplit(split);
             return split;
         }
