@@ -262,7 +262,7 @@ public class Transaction extends BaseModel{
      * <p><b>Note:</b> If this is a multi-currency transaction, an imbalance of zero will be returned</p>
      * @return Money imbalance of the transaction or zero if it is a multi-currency transaction
      */
-    public Money getImbalance(){
+    private Money getImbalance(){
         Money imbalance = Money.createZeroInstance(mCommodity.getCurrencyCode());
         for (Split split : mSplitList) {
             if (!split.getQuantity().getCommodity().equals(mCommodity)) {
