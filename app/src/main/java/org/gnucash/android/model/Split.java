@@ -11,11 +11,14 @@ import java.sql.Timestamp;
 
 /**
  * A split amount in a transaction.
- * Every transaction is made up of at least two splits (representing a double entry transaction)
- * <p>The split amount is always stored in the database as the absolute value alongside its transaction type of CREDIT/DEBIT<br/>
- * This is independent of the negative values which are shown in the UI (for user convenience).
- * The actual movement of the balance in the account depends on the type of normal balance of the account and the
- * transaction type of the split.</p>
+ *
+ * <p>Every transaction is made up of at least two splits (representing a double
+ * entry transaction)</p>
+ *
+ * <p>Amounts are always stored unsigned. This is independent of the negative values
+ * which are shown in the UI (for user convenience). The actual movement of the
+ * balance in the account depends on the type of normal balance of the account
+ * and the transaction type of the split (CREDIT/DEBIT).</p>
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
@@ -75,24 +78,29 @@ public class Split extends BaseModel implements Parcelable{
     private Timestamp mReconcileDate = new Timestamp(System.currentTimeMillis());
 
     /**
-     * Initialize split with a value amount and account
-     * @param value Money value amount of this split
+     * Initialize split with a value and quantity amounts and the owning account
+     *
+     * <p>The transaction type is set to CREDIT. The amounts are stored unsigned.</p>
+     *
+     * @param value Money value amount of this split in the currency of the transaction.
+     * @param quantity Money value amount of this split in the currency of the
+     *                 owning account.
      * @param accountUID String UID of transfer account
      */
     public Split(@NonNull Money value, @NonNull Money quantity, String accountUID){
         setQuantity(quantity);
         setValue(value);
         setAccountUID(accountUID);
-        //NOTE: This is a rather simplististic approach to the split type.
-        //It typically also depends on the account type of the account. But we do not want to access
-        //the database everytime a split is created. So we keep it simple here. Set the type you want explicity.
-        mSplitType = value.isNegative() ? TransactionType.DEBIT : TransactionType.CREDIT;
     }
 
     /**
-     * Initialize split with a value amount and account
-     * @param amount Money value amount of this split. Value is always in the currency the owning transaction.
-     *               This amount will be assigned as both the value and the quantity of this split
+     * Initialize split with a value amount and the owning account
+     *
+     * <p>The transaction type is set to CREDIT. The amount is stored unsigned.</p>
+     *
+     * @param amount Money value amount of this split. Value is always in the
+     *               currency the owning transaction. This amount will be assigned
+     *               as both the value and the quantity of this split.
      * @param accountUID String UID of owning account
      */
     public Split(@NonNull Money amount, String accountUID){
@@ -103,7 +111,8 @@ public class Split extends BaseModel implements Parcelable{
     /**
      * Clones the <code>sourceSplit</code> to create a new instance with same fields
      * @param sourceSplit Split to be cloned
-     * @param generateUID Determines if the clone should have a new UID or should maintain the one from source
+     * @param generateUID Determines if the clone should have a new UID or should
+     *                    maintain the one from source
      */
     public Split(Split sourceSplit, boolean generateUID){
         this.mMemo          = sourceSplit.mMemo;
@@ -131,13 +140,16 @@ public class Split extends BaseModel implements Parcelable{
     }
 
     /**
-     * Sets the value amount of the split.<br>
-     * The value is in the currency of the containing transaction
+     * Sets the value amount of the split.
+     *
+     * <p>The value is in the currency of the containing transaction.
+     * It's stored unsigned.</p>
+     *
      * @param value Money value of this split
      * @see #setQuantity(Money)
      */
     public void setValue(Money value) {
-        mValue = value;
+        mValue = value.abs();
     }
 
     /**
@@ -151,12 +163,16 @@ public class Split extends BaseModel implements Parcelable{
     }
 
     /**
-     * Sets the quantity value of the split
+     * Sets the quantity value of the split.
+     *
+     * <p>The quantity is in the currency of the owning account.
+     * It will be stored unsigned.</p>
+     *
      * @param quantity Money quantity amount
      * @see #setValue(Money)
      */
     public void setQuantity(Money quantity) {
-        this.mQuantity = quantity;
+        this.mQuantity = quantity.abs();
     }
 
     /**
@@ -232,7 +248,7 @@ public class Split extends BaseModel implements Parcelable{
      * @see TransactionType#invert()
      */
     public Split createPair(String accountUID){
-        Split pair = new Split(mValue.abs(), accountUID);
+        Split pair = new Split(mValue, accountUID);
         pair.setType(mSplitType.invert());
         pair.setMemo(mMemo);
         pair.setTransactionUID(mTransactionUID);
@@ -257,12 +273,13 @@ public class Split extends BaseModel implements Parcelable{
 
     /**
      * Checks is this <code>other</code> is a pair split of this.
-     * <p>Two splits are considered a pair if they have the same amount and opposite split types</p>
+     * <p>Two splits are considered a pair if they have the same amount and
+     * opposite split types</p>
      * @param other the other split of the pair to be tested
      * @return whether the two splits are a pair
      */
     public boolean isPairOf(Split other) {
-        return mValue.abs().equals(other.mValue.abs())
+        return mValue.equals(other.mValue)
                 && mSplitType.invert().equals(other.mSplitType);
     }
 
@@ -286,12 +303,13 @@ public class Split extends BaseModel implements Parcelable{
 
     /**
      * Splits are saved as absolute values to the database, with no negative numbers.
-     * The type of movement the split causes to the balance of an account determines its sign, and
-     * that depends on the split type and the account type
+     * The type of movement the split causes to the balance of an account determines
+     * its sign, and that depends on the split type and the account type
      * @param amount Money amount to format
      * @param accountUID GUID of the account
      * @param splitType Transaction type of the split
-     * @return -{@code amount} if the amount would reduce the balance of {@code account}, otherwise +{@code amount}
+     * @return -{@code amount} if the amount would reduce the balance of
+     *   {@code account}, otherwise +{@code amount}
      */
     public static Money getFormattedAmount(Money amount, String accountUID, TransactionType splitType){
         boolean isDebitAccount = AccountsDbAdapter.getInstance().getAccountType(accountUID).hasDebitNormalBalance();
@@ -322,8 +340,10 @@ public class Split extends BaseModel implements Parcelable{
      *         <li><b>n</b>: means this split is not reconciled</li>
      *         <li><b>c</b>: means split has been cleared, but not reconciled</li>
      *     </ul>
-     * </p> <br>
-     * You can check the return value against the reconciled flags {@link #FLAG_RECONCILED}, {@link #FLAG_NOT_RECONCILED}, {@link #FLAG_CLEARED}
+     * </p>
+     * <p>You can check the return value against the reconciled flags
+     * {@link #FLAG_RECONCILED}, {@link #FLAG_NOT_RECONCILED}, {@link #FLAG_CLEARED}</p>
+     *
      * @return Character showing reconciled state
      */
     public char getReconcileState() {
@@ -348,7 +368,8 @@ public class Split extends BaseModel implements Parcelable{
      *         <li><b>c</b>: means split has been cleared, but not reconciled</li>
      *     </ul>
      * </p>
-     * @param reconcileState One of the following flags {@link #FLAG_RECONCILED}, {@link #FLAG_NOT_RECONCILED}, {@link #FLAG_CLEARED}
+     * @param reconcileState One of the following flags {@link #FLAG_RECONCILED},
+     *  {@link #FLAG_NOT_RECONCILED}, {@link #FLAG_CLEARED}
      */
     public void setReconcileState(char reconcileState) {
         this.mReconcileState = reconcileState;
@@ -376,11 +397,15 @@ public class Split extends BaseModel implements Parcelable{
     }
 
     /**
-     * Returns a string representation of the split which can be parsed again using {@link org.gnucash.android.model.Split#parseSplit(String)}
+     * Returns a string representation of the split which can be parsed again
+     * using {@link org.gnucash.android.model.Split#parseSplit(String)}
+     *
      * <p>The string is formatted as:<br/>
      * "&lt;uid&gt;;&lt;valueNum&gt;;&lt;valueDenom&gt;;&lt;valueCurrencyCode&gt;;&lt;quantityNum&gt;;&lt;quantityDenom&gt;;&lt;quantityCurrencyCode&gt;;&lt;transaction_uid&gt;;&lt;account_uid&gt;;&lt;type&gt;;&lt;memo&gt;"
      * </p>
+     *
      * <p><b>Only the memo field is allowed to be null</b></p>
+     *
      * @return the converted CSV string of this split
      */
     public String toCsv(){
@@ -399,9 +424,11 @@ public class Split extends BaseModel implements Parcelable{
     /**
      * Parses a split which is in the format:<br/>
      * "<uid>;<valueNum>;<valueDenom>;<currency_code>;<quantityNum>;<quantityDenom>;<currency_code>;<transaction_uid>;<account_uid>;<type>;<memo>".
-     * <p>Also supports parsing of the deprecated format "<amount>;<currency_code>;<transaction_uid>;<account_uid>;<type>;<memo>".
-     * The split input string is the same produced by the {@link Split#toCsv()} method
-     *</p>
+     *
+     * <p>Also supports parsing of the deprecated format
+     * "<amount>;<currency_code>;<transaction_uid>;<account_uid>;<type>;<memo>".
+     * The split input string is the same produced by the {@link Split#toCsv()} method.</p>
+     *
      * @param splitCsvString String containing formatted split
      * @return Split instance parsed from the string
      */
@@ -441,11 +468,16 @@ public class Split extends BaseModel implements Parcelable{
     }
 
     /**
-     * Two splits are considered equivalent if all the fields (excluding GUID and timestamps - created, modified, reconciled) are equal.
-     * Any two splits which are equal are also equivalent, but the reverse is not true
-     * <p>The difference with to {@link #equals(Object)} is that the GUID of the split is not considered.
-     * This is useful in cases where a new split is generated for a transaction with the same properties,
-     * but a new GUID is generated e.g. when editing a transaction and modifying the splits</p>
+     * Two splits are considered equivalent if all the fields (excluding GUID
+     * and timestamps - created, modified, reconciled) are equal.
+     *
+     * <p>Any two splits which are equal are also equivalent, but the reverse
+     * is not true</p>
+     *
+     * <p>The difference with to {@link #equals(Object)} is that the GUID of
+     * the split is not considered. This is useful in cases where a new split
+     * is generated for a transaction with the same properties, but a new GUID
+     * is generated e.g. when editing a transaction and modifying the splits</p>
      *
      * @param split Other split for which to test equivalence
      * @return {@code true} if both splits are equivalent, {@code false} otherwise
@@ -464,7 +496,9 @@ public class Split extends BaseModel implements Parcelable{
     }
 
     /**
-     * Two splits are considered equal if all their properties excluding timestampes (created, modified, reconciled) are equal.
+     * Two splits are considered equal if all their properties excluding
+     * timestamps (created, modified, reconciled) are equal.
+     *
      * @param o Other split to compare for equality
      * @return {@code true} if this split is equal to {@code o}, {@code false} otherwise
      */
@@ -537,12 +571,12 @@ public class Split extends BaseModel implements Parcelable{
         long valueNum = source.readLong();
         long valueDenom = source.readLong();
         String valueCurrency = source.readString();
-        mValue = new Money(valueNum, valueDenom, valueCurrency);
+        mValue = new Money(valueNum, valueDenom, valueCurrency).abs();
 
         long qtyNum = source.readLong();
         long qtyDenom = source.readLong();
         String qtyCurrency = source.readString();
-        mQuantity = new Money(qtyNum, qtyDenom, qtyCurrency);
+        mQuantity = new Money(qtyNum, qtyDenom, qtyCurrency).abs();
 
         String memo = source.readString();
         mMemo = memo.isEmpty() ? null : memo;
