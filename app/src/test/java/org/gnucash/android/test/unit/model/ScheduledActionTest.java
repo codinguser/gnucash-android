@@ -136,7 +136,7 @@ public class ScheduledActionTest {
     }
 
     /**
-     * Weekly actions scheduled to run on multiple weekdays should be due
+     * Weekly actions scheduled to run on multiple days of the week should be due
      * in each of them in the same week.
      *
      * For an action scheduled on Mondays and Thursdays, we test that, if
@@ -144,7 +144,7 @@ public class ScheduledActionTest {
      * of the same week instead of the following week.
      */
     @Test
-    public void multiWeekdayWeeklyActions_shouldBeDueOnEachWeekdaySet() {
+    public void multiDayOfWeekWeeklyActions_shouldBeDueOnEachDayOfWeekSet() {
         ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.BACKUP);
         Recurrence recurrence = new Recurrence(PeriodType.WEEK);
         recurrence.setByDays(Arrays.asList(Calendar.MONDAY, Calendar.THURSDAY));
@@ -159,10 +159,10 @@ public class ScheduledActionTest {
 
     /**
      * Weekly actions scheduled with multiplier should skip intermediate
-     * weeks and be due in the specified weekday.
+     * weeks and be due in the specified day of the week.
      */
     @Test
-    public void weeklyActionsWithMultiplier_shouldBeDueOnTheWeekdaySet() {
+    public void weeklyActionsWithMultiplier_shouldBeDueOnTheDayOfWeekSet() {
         ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.BACKUP);
         Recurrence recurrence = new Recurrence(PeriodType.WEEK);
         recurrence.setMultiplier(2);
@@ -179,12 +179,12 @@ public class ScheduledActionTest {
 
     /**
      * Weekly actions should return a date in the future when no
-     * weekdays have been set in the recurrence.
+     * days of the week have been set in the recurrence.
      *
      * See ScheduledAction.computeNextTimeBasedScheduledExecutionTime()
      */
     @Test
-    public void weeklyActionsWithoutWeekdaySet_shouldReturnDateInTheFuture() {
+    public void weeklyActionsWithoutDayOfWeekSet_shouldReturnDateInTheFuture() {
         ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.BACKUP);
         Recurrence recurrence = new Recurrence(PeriodType.WEEK);
         recurrence.setByDays(Collections.<Integer>emptyList());

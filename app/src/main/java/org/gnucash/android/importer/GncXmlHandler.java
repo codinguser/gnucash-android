@@ -60,6 +60,9 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -791,6 +794,10 @@ public class GncXmlHandler extends DefaultHandler {
 
             case GncXmlHelper.TAG_SCHEDULED_ACTION:
                 if (mScheduledAction.getActionUID() != null && !mIgnoreScheduledAction) {
+                    if (mScheduledAction.getRecurrence().getPeriodType() == PeriodType.WEEK) {
+                        // TODO: implement parsing of by days for scheduled actions
+                        setMinimalScheduledActionByDays();
+                    }
                     mScheduledActionsList.add(mScheduledAction);
                     int count = generateMissedScheduledTransactions(mScheduledAction);
                     Log.i(LOG_TAG, String.format("Generated %d transactions from scheduled action", count));
@@ -1114,5 +1121,18 @@ public class GncXmlHandler extends DefaultHandler {
         }
         scheduledAction.setLastRun(lastRuntime);
         return generatedTransactionCount;
+    }
+
+    /**
+     * Sets the by days of the scheduled action to the day of the week of the start time.
+     *
+     * <p>Until we implement parsing of days of the week for scheduled actions,
+     * this ensures they are executed at least once per week.</p>
+     */
+    private void setMinimalScheduledActionByDays() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date(mScheduledAction.getStartTime()));
+        mScheduledAction.getRecurrence().setByDays(
+                Collections.singletonList(calendar.get(Calendar.DAY_OF_WEEK)));
     }
 }

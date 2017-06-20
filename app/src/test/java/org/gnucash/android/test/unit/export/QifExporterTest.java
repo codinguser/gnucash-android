@@ -25,7 +25,6 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
-import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.export.qif.QifExporter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Book;
@@ -99,8 +98,8 @@ public class QifExporterTest {
         exportParameters.setExportTarget(ExportParams.ExportTarget.SD_CARD);
         exportParameters.setDeleteTransactionsAfterExport(false);
 
-        OfxExporter ofxExporter = new OfxExporter(exportParameters, mDb);
-        List<String> exportedFiles = ofxExporter.generateExport();
+        QifExporter qifExporter = new QifExporter(exportParameters, mDb);
+        List<String> exportedFiles = qifExporter.generateExport();
 
         assertThat(exportedFiles).hasSize(1);
         File file = new File(exportedFiles.get(0));
@@ -136,8 +135,8 @@ public class QifExporterTest {
         exportParameters.setExportTarget(ExportParams.ExportTarget.SD_CARD);
         exportParameters.setDeleteTransactionsAfterExport(false);
 
-        OfxExporter ofxExporter = new OfxExporter(exportParameters, mDb);
-        List<String> exportedFiles = ofxExporter.generateExport();
+        QifExporter qifExporter = new QifExporter(exportParameters, mDb);
+        List<String> exportedFiles = qifExporter.generateExport();
 
         assertThat(exportedFiles).hasSize(2);
         File file = new File(exportedFiles.get(0));
