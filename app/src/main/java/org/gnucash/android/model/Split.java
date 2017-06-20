@@ -96,13 +96,7 @@ public class Split extends BaseModel implements Parcelable{
      * @param accountUID String UID of owning account
      */
     public Split(@NonNull Money amount, String accountUID){
-        setValue(amount);
-        setQuantity(new Money(amount));
-        setAccountUID(accountUID);
-        //NOTE: This is a rather simplististic approach to the split type.
-        //It typically also depends on the account type of the account. But we do not want to access
-        //the database everytime a split is created. So we keep it simple here. Set the type you want explicity.
-        mSplitType = amount.isNegative() ? TransactionType.DEBIT : TransactionType.CREDIT;
+        this(amount, new Money(amount), accountUID);
     }
 
 
