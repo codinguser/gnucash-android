@@ -311,7 +311,8 @@ public class Split extends BaseModel implements Parcelable{
      * @return -{@code amount} if the amount would reduce the balance of
      *   {@code account}, otherwise +{@code amount}
      */
-    public static Money getFormattedAmount(Money amount, String accountUID, TransactionType splitType){
+    private static Money getFormattedAmount(Money amount, String accountUID, TransactionType
+            splitType){
         boolean isDebitAccount = AccountsDbAdapter.getInstance().getAccountType(accountUID).hasDebitNormalBalance();
         Money absAmount = amount.abs();
 
@@ -482,6 +483,7 @@ public class Split extends BaseModel implements Parcelable{
      * @param split Other split for which to test equivalence
      * @return {@code true} if both splits are equivalent, {@code false} otherwise
      */
+    @SuppressWarnings("SimplifiableIfStatement")
     public boolean isEquivalentTo(Split split){
         if (this == split) return true;
         if (super.equals(split)) return true;
@@ -502,6 +504,7 @@ public class Split extends BaseModel implements Parcelable{
      * @param o Other split to compare for equality
      * @return {@code true} if this split is equal to {@code o}, {@code false} otherwise
      */
+    @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
