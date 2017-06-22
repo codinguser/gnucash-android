@@ -5,10 +5,10 @@ import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.test.unit.testutil.GnucashTestRunner;
 import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
 import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
-import org.gnucash.android.ui.transaction.SplitEditorFragment;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -75,5 +75,33 @@ public class TransactionTest {
 				.contains(t1.getUID())
 				.doesNotContain("non-existent")
 				.doesNotContain("pre-existent");
+	}
+
+	@Test
+	public void testCreateAutoBalanceSplit() {
+		Transaction transactionCredit = new Transaction("Transaction with more credit");
+		Split creditSplit = new Split(new Money("1", "EUR"), "test-account");
+		creditSplit.setType(TransactionType.CREDIT);
+		transactionCredit.addSplit(creditSplit);
+		Split debitBalanceSplit = transactionCredit.createAutoBalanceSplit();
+
+		assertThat(creditSplit.getValue().isNegative()).isFalse();
+		assertThat(debitBalanceSplit.getValue()).isEqualTo(creditSplit.getValue());
+
+		assertThat(creditSplit.getQuantity().isNegative()).isFalse();
+		assertThat(debitBalanceSplit.getQuantity()).isEqualTo(creditSplit.getQuantity());
+
+
+		Transaction transactionDebit = new Transaction("Transaction with more debit");
+		Split debitSplit = new Split(new Money("1", "EUR"), "test-account");
+		debitSplit.setType(TransactionType.DEBIT);
+		transactionDebit.addSplit(debitSplit);
+		Split creditBalanceSplit = transactionDebit.createAutoBalanceSplit();
+
+		assertThat(debitSplit.getValue().isNegative()).isFalse();
+		assertThat(creditBalanceSplit.getValue()).isEqualTo(debitSplit.getValue());
+
+		assertThat(debitSplit.getQuantity().isNegative()).isFalse();
+		assertThat(creditBalanceSplit.getQuantity()).isEqualTo(debitSplit.getQuantity());
 	}
 }
