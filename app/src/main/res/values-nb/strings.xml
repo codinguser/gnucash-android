@@ -18,9 +18,8 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="title_create_account">Opprett konto</string>
   <string name="title_edit_account">Rediger konto</string>
-  <string name="info_details">Informasjon</string>
-  <string name="menu_export">Eksport...</string>
   <string name="description_add_transaction_icon">Legge til en ny transaksjon i en konto</string>
+  <string name="description_view_account_icon">Vis kontoinformasjon</string>
   <string name="label_no_accounts">Ingen kontoer for å vise</string>
   <string name="label_account_name">Kontonavn</string>
   <string name="btn_cancel">Avbryt</string>
@@ -35,8 +34,6 @@
   <string name="label_transaction_amount">Beløp</string>
   <string name="title_add_transaction">Ny transaksjon</string>
   <string name="label_no_transactions">Ingen transaksjoner å vise</string>
-  <string name="label_timeanddate">DATO &amp; TID</string>
-  <string name="label_account">Konto</string>
   <string name="label_debit">DEBET</string>
   <string name="label_credit">KREDIT</string>
   <string name="title_accounts">Kontoer</string>
@@ -46,15 +43,12 @@
   <string name="alert_dialog_cancel">Avbryt</string>
   <string name="toast_account_deleted">Konto slettet</string>
   <string name="title_confirm_delete">Bekreft sletting</string>
-  <string name="delete_account_confirmation_message">Alle transaksjoner i denne kontoen vil også slettes</string>
   <string name="title_edit_transaction">Redigere transaksjonen</string>
   <string name="label_transaction_description">Legg til notat</string>
-  <string name="menu_move">FLYTT</string>
   <string name="title_selected">%1$d valgt</string>
   <string name="label_account_balance">Saldo:</string>
   <string name="label_export_destination">Eksporter til:</string>
   <string name="title_export_dialog">Eksport av transaksjoner</string>
-  <string name="option_export_all_transactions">Eksportere alle transaksjoner</string>
   <string name="hint_export_choice">Standard eksporteres bare nye transaksjoner siden siste eksport. Merk dette alternativet for å eksportere alle transaksjoner</string>
   <string name="toast_export_error">Feil ved eksport av %1$s</string>
   <string name="btn_export">Eksporter</string>
@@ -62,16 +56,14 @@
   <string name="hint_delete_after_export">Alle eksporterte transaksjoner slettes når eksport er fullført</string>
   <string name="title_settings">Innstillinger</string>
   <string-array name="export_destinations">
-    <item>SD-kort</item>
-    <item>DropBox</item>
-    <item>Google Disk</item>
+    <item>Save As&#8230;</item>
+    <item>Dropbox</item>
     <item>ownCloud</item>
-    <item>Send til&#8230;</item>
+    <item>Send to&#8230;</item>
   </string-array>
   <string name="btn_move">Flytt</string>
   <string name="title_move_transactions">Flytt %1$d transaksjon(er)</string>
   <string name="label_move_destination">Målkonto</string>
-  <string name="permission_access_sdcard">Aksesser SD-kort</string>
   <string name="toast_incompatible_currency">Kan ikke flytte transaksjonene. \nMålkontoen bruker en annen valuta enn opprinnelig konto</string>
   <string name="header_general_settings">Generelt</string>
   <string name="header_about_gnucash">Om</string>
@@ -85,24 +77,18 @@
   <string name="label_permission_record_transaction">Registrere transaksjoner i GnuCash</string>
   <string name="label_permission_create_account">Opprette kontoer i GnuCash</string>
   <string name="label_display_account">Vis konto</string>
+  <string name="label_hide_account_balance">Skjul saldo i widget</string>
   <string name="btn_create_accounts">Opprett konto</string>
-  <string name="title_default_accounts">Velg kontoer å opprette</string>
   <string name="error_no_accounts">Det finnes ingen kontoer i GnuCash.\nOpprett en konto før du legger til en widget</string>
-  <string name="title_build_version">Byggversjon</string>
   <string name="title_license">Lisens</string>
   <string name="summary_licence_details">Apache Lisens v2.0. Klikk for mer informasjon</string>
   <string name="title_general_prefs">Generelle innstillinger</string>
   <string name="label_widget_configuration">Velg konto</string>
   <string name="toast_no_transactions_to_export">Det finnes ingen transaksjoner som er tilgjengelige for eksport</string>
-  <string name="header_passcode_settings">Passord</string>
   <string name="title_passcode_preferences">Passordpreferanser</string>
-  <string name="title_passcode_enabled">Passord aktivert</string>
-  <string name="title_passcode_disabled">Passord deaktivert</string>
+  <string name="title_enable_passcode">Enable passcode</string>
   <string name="title_change_passcode">Endre passord</string>
   <string name="title_about_gnucash">Om GnuCash</string>
-  <string name="summary_about_gnucash">En mobil økonomistyrer og utgiftsfører laget for Android</string>
-  <string name="title_about">Om</string>
-  <string name="toast_format_exported_to">%1$s filen er eksportert til: \n</string>
   <string name="title_export_email">GnuCash Android %1$s eksport</string>
   <string name="description_export_email">GnuCash Android eksport fra </string>
   <string name="header_transaction_settings">Transaksjoner</string>
@@ -121,7 +107,6 @@
   <string name="title_always_delete_exported_transactions">Slett eksporterte transaksjoner</string>
   <string name="title_default_export_email">Standard eksport e-post</string>
   <string name="summary_default_export_email">Standard postadresse å sende eksporter til. Du kan endre dette når du eksporterer.</string>
-  <string name="label_double_entry_account">Overføringskonto</string>
   <string name="summary_use_double_entry">Alle transaksjoner blir en overføring fra en konto til en annen</string>
   <string name="title_use_double_entry">Aktiver dobbel bokføring</string>
   <string name="account_balance">Balanse</string>
@@ -132,18 +117,14 @@
   <string name="summary_xml_ofx_header">Aktiver dette alternativet når du eksporterer til tredjeparts programvare, borsett fra GnuCash for PC</string>
   <string name="title_whats_new">Hva er nytt</string>
   <string name="whats_new">
-        - Support for multiple different books \n
-        - Adds ownCloud as destination for exports\n
-        - Compact view for transactions list\n
-        - Re-design of passcode lock screen\n
-        - Improved handling of scheduled transactions\n
+        - Added ability to export to any service which supports the Storage Access Framework \n
+        - Added option to set the location for regular automatic backups (See backup settings)\n
+        - Added Bitcoin currency support\n
+        - Added support for renaming books\n
         - Multiple bug fixes and improvements\n
 	</string>
   <string name="label_dismiss">Avvis</string>
   <string name="toast_transanction_amount_required">Angi et beløp for å lagre transaksjonen</string>
-  <string name="toast_error_edit_multi_currency_transaction">Multi-valutatransaksjoner kan ikke endres</string>
-  <string name="menu_import_accounts">Importere GnuCash kontoer</string>
-  <string name="btn_import_accounts">Importere kontoer</string>
   <string name="toast_error_importing_accounts">Det oppstod en feil under import av GnuCash kontoene</string>
   <string name="toast_success_importing_accounts">GnuCash kontoer importert</string>
   <string name="summary_import_accounts">Importere kontostrukturen eksportert fra GnuCash desktop</string>
@@ -153,18 +134,15 @@
   <string name="header_account_settings">Kontoer</string>
   <string name="toast_all_accounts_deleted">Alle kontoer ble slettet</string>
   <string name="confirm_delete_all_accounts">Er du sikker på at du vil slette alle kontoer og transaksjoner? \n\nDenne operasjonen kan ikke angres!    </string>
-  <string name="label_account_type">Kontotype</string>
   <string name="summary_delete_all_transactions">Alle transaksjoner i alle kontoer vil bli slettet!</string>
   <string name="title_delete_all_transactions">Slett alle transaksjoner</string>
   <string name="toast_all_transactions_deleted">Alle transaksjoner slettet!</string>
   <string name="title_progress_importing_accounts">Importere kontoer</string>
-  <string name="toast_tap_again_to_confirm_delete">Trykk igjen for å bekrefte. ALLE oppføringene slettes!!</string>
   <string name="section_header_transactions">Transaksjoner</string>
   <string name="section_header_subaccounts">Underkontoer</string>
   <string name="menu_search_accounts">Søk</string>
   <string name="title_default_export_format">Standard eksportformat</string>
   <string name="summary_default_export_format">Filformat som skal brukes som standard når du eksporterer transaksjoner</string>
-  <string name="menu_export_transactions">Eksporter transaksjoner&#8230;</string>
   <string name="label_recurring_transaction">Gjentakelse</string>
   <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">Ubalanse</string>
@@ -210,8 +188,6 @@
   <string name="summary_create_default_accounts">Oppretter standard GnuCash kontostruktur</string>
   <string name="title_create_default_accounts">Opprette standardkontoer</string>
   <string name="msg_confirm_create_default_accounts_setting">En ny bok åpnes med standard accounts\n\nYour gjeldende kontoer og transaksjoner vil ikke bli endret!</string>
-  <string name="menu_scheduled_transactions">Planlagte transaksjoner</string>
-  <string name="msg_confirm_create_default_accounts_first_run">Velkommen til GnuCash Android! \nDu kan enten opprette et hierarki av brukte kontoer, eller importere din egen GnuCash kontostruktur. \n\nBegge alternativer er også tilgjengelige i app innstillinger så du kan velge senere.</string>
   <string name="title_scheduled_transactions">Transaksjoner</string>
   <string name="title_select_export_destination">Velg sted for eksport</string>
   <string name="hint_split_memo">Notat</string>
@@ -230,15 +206,12 @@
   <string name="label_invoice">Faktura</string>
   <string name="label_buy">Kjøp</string>
   <string name="label_sell">Selg</string>
-  <string name="label_repeats">Gjentar</string>
-  <string name="toast_no_recent_backup">Ingen nylig sikkerhetskopi funnet</string>
   <string name="account_name_opening_balances">Åpningssaldoer</string>
   <string name="account_name_equity">Egenkapital</string>
   <string name="summary_save_opening_balances">Aktiver lagring av den gjeldende saldoen (før sletting av transaksjoner) som ny startsaldo etter sletting av transaksjoner    </string>
   <string name="title_save_opening_balances">Lagre konto startsaldoer</string>
   <string name="export_warning_ofx">OFX støtter ikke dobbeltoppføringstransaksjoner</string>
   <string name="export_warning_qif">Genererer separate QIF filer per valuta</string>
-  <string name="title_transaction_splits">Transaksjonssplitter</string>
   <string name="label_imbalance">Ubalanse:</string>
   <string name="btn_add_split">Legge til splitt</string>
   <string name="menu_title_favorite">Favoritt</string>
@@ -249,10 +222,8 @@
   <string name="title_line_chart">Linjediagram</string>
   <string name="title_bar_chart">Stolpediagram</string>
   <string name="title_report_prefs">Rapportinnstillinger</string>
-  <string name="label_report_currency">Velg valuta</string>
   <string name="title_use_account_color">Kontofarge i rapporter</string>
   <string name="summary_use_account_color">Bruke kontofargen i søyle/sektordiagrammet</string>
-  <string name="header_report_settings">Rapporter</string>
   <string name="menu_order_by_size">Sorter etter størrelse</string>
   <string name="menu_toggle_legend">Vis forklaring</string>
   <string name="menu_toggle_labels">Vis etiketter</string>
@@ -260,7 +231,6 @@
   <string name="menu_toggle_average_lines">Viser gjennomsnittslinjer</string>
   <string name="menu_group_smaller_slices">Grupper mindre deler</string>
   <string name="label_chart_no_data">Ingen diagramdata tilgjengelig</string>
-  <string name="label_chart_overall">Total</string>
   <string name="label_chart_total">Totalt</string>
   <string name="label_other_slice">Andre</string>
   <string name="toast_chart_percentage_mode_total">Prosentandelen av valgte verdien beregnet ut i fra totalbeløpet</string>
@@ -278,22 +248,18 @@
   <string name="title_backup_preference_category">Sikkerhetskopiering</string>
   <string name="summary_dropbox_sync">Aktiver eksportering til DropBox</string>
   <string name="summary_owncloud_sync">Aktiver eksport til ownCloud</string>
-  <string name="title_select_gnucash_xml_file">Velg GnuCash XML-fil</string>
   <string name="title_backup_prefs">Innstillinger for sikkerhetskopiering</string>
   <string name="title_create_backup_pref">Opprett sikkerhetskopi</string>
-  <string name="summary_create_backup_pref">Som standard lagres sikkerhetskopier på SD minne-kortet</string>
-  <string name="summary_restore_backup_pref">Velg en bestemt backup å gjenopprette</string>
+  <string name="summary_create_backup_pref">Create a backup of the active book</string>
+  <string name="summary_restore_backup_pref">Restore most recent backup of active book</string>
   <string name="toast_backup_successful">Sikkerhetskopiering vellykket</string>
   <string name="toast_backup_failed">Sikkerhetskopiering mislyktes</string>
   <string name="export_warning_xml">Eksporterer alle kontoer og transaksjoner</string>
-  <string name="title_google_drive_sync_pref">Aktiver Google Drive</string>
-  <string name="summary_google_drive_sync">Aktiver eksportering til Google Drive</string>
   <string name="toast_install_file_manager">Installer en filbehandler for å velge filer</string>
   <string name="title_select_backup_to_restore">Velg sikkerhetskopien som skal gjenopprettes</string>
   <string name="nav_menu_favorites">Favoritter</string>
   <string name="nav_menu_open">Åpne&#8230;</string>
   <string name="nav_menu_reports">Rapporter</string>
-  <string name="nav_menu_scheduled_transactions">Planlagte transaksjoner</string>
   <string name="nav_menu_export">Eksport&#8230;</string>
   <string name="nav_menu_settings">Innstillinger</string>
   <string name="username">Brukernavn</string>
@@ -303,9 +269,13 @@
   <string name="owncloud_server_invalid">Finner ikke OC-server</string>
   <string name="owncloud_user_invalid">OC brukernavn/passord ugyldig</string>
   <string name="owncloud_dir_invalid">Ugyldige tegn: \\ &lt; &gt;: \ \"| * ? </string>
-  <string name="owncloud_server_ok">OC server OK</string>
-  <string name="owncloud_user_ok">OC username/password OK</string>
-  <string name="owncloud_dir_ok">Dir name OK</string>
+  <string name="owncloud_server_ok">OC serveren OK</string>
+  <string name="owncloud_user_ok">OC brukernavn/passord OK</string>
+  <string name="owncloud_dir_ok">Mappenavn OK</string>
+  <plurals name="label_every_x_hours">
+    <item quantity="one">Hourly</item>
+    <item quantity="other">Every %d hours</item>
+  </plurals>
   <plurals name="label_every_x_days">
     <item quantity="one">Daglig</item>
     <item quantity="other">Hver %d dag</item>
@@ -325,10 +295,8 @@
   <string name="title_enable_crashlytics">Aktiver Logging av feil</string>
   <string name="msg_enable_crashlytics">Send automatisk informasjon om feil på app til utviklerne.</string>
   <string name="label_export_format"> Format</string>
-  <string name="toast_backup_folder_not_found">Finner ikke sikkerhetskopimappen. Kontroller at SD-kortet er montert!</string>
   <string name="label_old_passcode">Angi ditt gamle passord</string>
   <string name="label_new_passcode">Skriv inn ditt nye passord</string>
-  <string name="nav_menu_scheduled_backups">Planlagte eksporteringer</string>
   <string name="title_scheduled_exports">Eksporter</string>
   <string name="label_no_scheduled_exports_to_display">Ingen planlagte eksporter å vise</string>
   <string name="title_create_export_schedule">Opprette ekporteringsplan</string>
@@ -339,7 +307,6 @@
   <string name="label_no_favorite_accounts">Ingen favoritt kontoer</string>
   <string name="nav_menu_scheduled_actions">Planlagte handlinger</string>
   <string name="label_scheduled_action_ended">"Avsluttet. Sist kjørt på %1$s"</string>
-  <string name="label_select_bar_to_view_details">Velg en søyle for å vise detaljer</string>
   <string name="btn_wizard_next">Neste</string>
   <string name="btn_wizard_finish">Ferdig</string>
   <string name="wizard_title_default_currency">Standardvaluta</string>
@@ -360,8 +327,6 @@
   <string name="toast_error_check_split_amounts">Sjekk at alle splitter har gyldig beløp før lagring!</string>
   <string name="label_error_invalid_expression">Ugyldig uttrykk!</string>
   <string name="toast_scheduled_recurring_transaction">Planlagt gjentakende transaksjon</string>
-  <string name="error_exchange_rate_required">En valutakurs kreves</string>
-  <string name="error_converted_amount_required">Det konverterte beløpet kreves</string>
   <string name="title_transfer_funds">Overføre penger</string>
   <string name="nav_menu_help"><![CDATA[Hjelp & tilbakemelding]]></string>
   <string name="label_select_pie_slice_to_see_details">Merk et stykke for å se detaljer</string>
@@ -380,7 +345,6 @@
   <string name="label_assets">Eiendeler</string>
   <string name="label_liabilities">Gjeld</string>
   <string name="label_equity">Egenkapital</string>
-  <string name="label_total_liabilities_and_equity"><![CDATA[Totalt Gjeld & Egenkapital]]></string>
   <string name="label_move_to">Flytt til:</string>
   <string name="menu_group_by">Gruppere etter</string>
   <string name="menu_group_by_month">Måned</string>
@@ -393,13 +357,12 @@
   <string name="summary_google_plus">Dele ideer, diskutere endringer eller rapportere problemer</string>
   <string name="summary_translate_gnucash">Oversette eller korrekturles på CrowdIn</string>
   <string name="toast_no_compatible_apps_to_receive_export">Ingen kompatible apper til å motta de eksporterte transaksjonene!</string>
-  <string name="menu_move_transaction">Move&#8230;</string>
-  <string name="menu_duplicate_transaction">Duplicate</string>
-  <string name="nav_menu_budgets">Budgets</string>
+  <string name="menu_move_transaction">Flytt&#8230;</string>
+  <string name="menu_duplicate_transaction">Dupliser</string>
   <string name="title_cash_flow_report">Kontantstrøm</string>
-  <string name="title_budgets">Budgets</string>
-  <string name="title_use_compact_list">Enable compact view</string>
-  <string name="summary_use_compact_list">Enable to always use compact view for transactions list</string>
+  <string name="title_budgets">Budsjetter</string>
+  <string name="title_use_compact_list">Aktiver Kompaktvisning</string>
+  <string name="summary_use_compact_list">Aktiver Kompaktvisning for Transaksjonsliste</string>
   <string name="error_invalid_exchange_rate">Ugyldig valutakurs</string>
   <string name="sample_exchange_rate">e.g. 1 %1$s = x.xx %2$s</string>
   <string name="error_invalid_amount">Ugyldig beløp</string>
@@ -435,13 +398,13 @@
   <string name="digit_zero_text">+</string>
   <string name="title_manage_books">Manage Books</string>
   <string name="menu_manage_books">Manage Books&#8230;</string>
-  <string name="select_chart_to_view_details">Select any part of the chart to view details</string>
-  <string name="title_confirm_delete_book">Confirm delete Book</string>
-  <string name="msg_all_book_data_will_be_deleted">All accounts and transactions in this book will be deleted!</string>
-  <string name="btn_delete_book">Delete Book</string>
-  <string name="label_last_export_time">Last Exported:</string>
-  <string name="menu_title_enable_sync">Enable Sync</string>
-  <string name="menu_title_new_book">New Book</string>
+  <string name="select_chart_to_view_details">Merk en del av diagrammet for detaljer</string>
+  <string name="title_confirm_delete_book">Bekreft sletting</string>
+  <string name="msg_all_book_data_will_be_deleted">Alle kontoer og transaksjoner i denne boken vil bli slettet!</string>
+  <string name="btn_delete_book">Slett bok</string>
+  <string name="label_last_export_time">Sist eksportert:</string>
+  <string name="menu_title_enable_sync">Aktiver synkronisering</string>
+  <string name="menu_title_new_book">Ny Bok</string>
   <string name="toast_transaction_has_no_splits_and_cannot_open">The selected transaction has no splits and cannot be opened</string>
   <string name="label_split_count">%1$d splits</string>
   <string name="label_inside_account_with_name">in %1$s</string>
@@ -467,7 +430,23 @@
   <string name="label_recommend_app">Recommend in Play Store</string>
   <string name="repeat_until_date">until %1$s</string>
   <string name="repeat_on_weekday">on %1$s</string>
-  <string name="repeat_x_times">for %1$s times</string>
+  <string name="repeat_x_times">for %1$d times</string>
   <string name="menu_show_compact_view">Compact View</string>
   <string name="book_default_name">Book %1$d</string>
+  <string name="last_export_time_never">never</string>
+  <string name="title_rename_book">Rename Book</string>
+  <string name="btn_rename">Rename</string>
+  <string name="menu_rename">Rename</string>
+  <string name="title_select_backup_file">Select backup file</string>
+  <string name="summary_select_backup_file">Select a file for automatic backups</string>
+  <string name="title_confirm_restore_backup">Confirm restore from backup</string>
+  <string name="msg_confirm_restore_backup_into_new_book">A new book will be opened with the contents of this backup. Do you wish to proceed?</string>
+  <string name="btn_restore">Restore</string>
+  <string name="title_no_backups_found">No backups found</string>
+  <string name="msg_no_backups_to_restore_from">There are no existing backup files to restore from</string>
+  <!-- This is the filename for default backups. So use only simple characters and no spaces. Do not change the extension -->
+  <string name="label_backup_filename">gnucash_android_backup.gnca</string>
+  <string name="label_select_destination_after_export">Select the destination after export is complete</string>
+  <string name="label_dropbox_export_destination">Export to \'/Apps/GnuCash Android/\' folder on Dropbox</string>
+  <string name="title_section_preferences">Preferences</string>
 </resources>

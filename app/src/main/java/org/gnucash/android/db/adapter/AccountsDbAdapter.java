@@ -43,7 +43,6 @@ import org.gnucash.android.util.TimestampHelper;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -440,8 +439,8 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         account.setDescription(description == null ? "" : description);
         account.setParentUID(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_PARENT_ACCOUNT_UID)));
         account.setAccountType(AccountType.valueOf(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_TYPE))));
-        Currency currency = Currency.getInstance(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_CURRENCY)));
-        account.setCommodity(mCommoditiesDbAdapter.getCommodity(currency.getCurrencyCode()));
+        String currencyCode = c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_CURRENCY));
+        account.setCommodity(mCommoditiesDbAdapter.getCommodity(currencyCode));
         account.setPlaceHolderFlag(c.getInt(c.getColumnIndexOrThrow(AccountEntry.COLUMN_PLACEHOLDER)) == 1);
         account.setDefaultTransferAccountUID(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID)));
         String color = c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_COLOR_CODE));
@@ -581,12 +580,11 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     /**
      * Retrieves the unique ID of the imbalance account for a particular currency (creates the imbalance account
      * on demand if necessary)
-     * @param currency Currency for the imbalance account
+     * @param commodity Commodity for the imbalance account
      * @return String unique ID of the account
      */
-    public String getOrCreateImbalanceAccountUID(Currency currency){
-        String imbalanceAccountName = getImbalanceAccountName(currency);
-        Commodity commodity = mCommoditiesDbAdapter.getCommodity(currency.getCurrencyCode());
+    public String getOrCreateImbalanceAccountUID(Commodity commodity){
+        String imbalanceAccountName = getImbalanceAccountName(commodity);
         String uid = findAccountUidByFullName(imbalanceAccountName);
         if (uid == null){
             Account account = new Account(imbalanceAccountName, commodity);
@@ -601,25 +599,13 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     }
 
     /**
-     * Returns the GUID of the imbalance account for the currency
-     * <p>This method will not create the imbalance account if it doesn't exist</p>
-     * @param currency Currency for the imbalance account
-     * @return GUID of the account or null if the account doesn't exist yet
-     * @see #getOrCreateImbalanceAccountUID(java.util.Currency)
-     */
-    public String getImbalanceAccountUID(Currency currency){
-        String imbalanceAccountName = getImbalanceAccountName(currency);
-        return findAccountUidByFullName(imbalanceAccountName);
-    }
-
-    /**
      * Returns the GUID of the imbalance account for the commodity
      *
      * <p>This method will not create the imbalance account if it doesn't exist</p>
      *
      * @param commodity Commodity for the imbalance account
      * @return GUID of the account or null if the account doesn't exist yet
-     * @see #getOrCreateImbalanceAccountUID(java.util.Currency)
+     * @see #getOrCreateImbalanceAccountUID(Commodity)
      */
     public String getImbalanceAccountUID(Commodity commodity){
         String imbalanceAccountName = getImbalanceAccountName(commodity);
@@ -749,6 +735,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
                 null, where, whereArgs, null, null,
                 orderBy);
     }
+    
     /**
      * Returns a Cursor set of accounts which fulfill <code>where</code>
      * <p>This method returns the accounts list sorted by the full account name</p>
@@ -761,6 +748,21 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         return mDb.query(AccountEntry.TABLE_NAME,
                 null, where, whereArgs, null, null,
                 AccountEntry.COLUMN_FULL_NAME + " ASC");
+    }
+
+    /**
+     * Returns a Cursor set of accounts which fulfill <code>where</code>
+     * <p>This method returns the favorite accounts first, sorted by name, and then the other accounts,
+     * sorted by name.</p>
+     * @param where SQL WHERE statement without the 'WHERE' itself
+     * @param whereArgs where args
+     * @return Cursor set of accounts which fulfill <code>where</code>
+     */
+    public Cursor fetchAccountsOrderedByFavoriteAndFullName(String where, String[] whereArgs) {
+        Log.v(LOG_TAG, "Fetching all accounts from db where " + where + " order by Favorite then Name");
+        return mDb.query(AccountEntry.TABLE_NAME,
+                null, where, whereArgs, null, null,
+                AccountEntry.COLUMN_FAVORITE + " DESC, " + AccountEntry.COLUMN_FULL_NAME + " ASC");
     }
 
     /**
@@ -1161,7 +1163,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
 
                 Transaction transaction = new Transaction(GnuCashApplication.getAppContext().getString(R.string.account_name_opening_balances));
                 transaction.setNote(getAccountName(accountUID));
-                transaction.setCurrencyCode(currencyCode);
+                transaction.setCommodity(Commodity.getInstance(currencyCode));
                 TransactionType transactionType = Transaction.getTypeForBalance(getAccountType(accountUID),
                         balance.isNegative());
                 Split split = new Split(balance.abs(), accountUID);
@@ -1179,15 +1181,6 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
 
     public static String getImbalanceAccountPrefix() {
          return GnuCashApplication.getAppContext().getString(R.string.imbalance_account_name) + "-";
-    }
-
-    /**
-     * Returns the imbalance account where to store transactions which are not double entry
-     * @param currency Currency of the transaction
-     * @return Imbalance account name
-     */
-    public static String getImbalanceAccountName(Currency currency){
-        return getImbalanceAccountPrefix() + currency.getCurrencyCode();
     }
 
     /**
@@ -1248,25 +1241,27 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     }
 
     /**
-     * Returns the list of currencies in use in the database.
-     * <p>This is not the same as the list of all available commodities</p>
-     * @return List of currencies in use
+     * Returns the list of commodities in use in the database.
+     *
+     * <p>This is not the same as the list of all available commodities.</p>
+     *
+     * @return List of commodities in use
      */
-    public List<Currency> getCurrenciesInUse(){
+    public List<Commodity> getCommoditiesInUse() {
         Cursor cursor = mDb.query(true, AccountEntry.TABLE_NAME, new String[]{AccountEntry.COLUMN_CURRENCY},
                 null, null, null, null, null, null);
-        List<Currency> currencyList = new ArrayList<>();
+        List<Commodity> commodityList = new ArrayList<>();
         try {
             while (cursor.moveToNext()) {
-                String currencyCode = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_CURRENCY));
-                currencyList.add(Currency.getInstance(currencyCode));
+                String currencyCode =
+                    cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_CURRENCY));
+                commodityList.add(mCommoditiesDbAdapter.getCommodity(currencyCode));
             }
         } finally {
             cursor.close();
         }
-        return currencyList;
+        return commodityList;
     }
-
     /**
 	 * Deletes all accounts, transactions (and their splits) from the database.
      * Basically empties all 3 tables, so use with care ;)

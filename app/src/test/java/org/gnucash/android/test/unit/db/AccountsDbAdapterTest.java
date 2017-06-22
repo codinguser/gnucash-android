@@ -15,9 +15,7 @@
  */
 package org.gnucash.android.test.unit.db;
 
-import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v7.preference.PreferenceManager;
 
 import org.assertj.core.data.Index;
 import org.gnucash.android.BuildConfig;
@@ -60,7 +58,6 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -77,8 +74,9 @@ public class AccountsDbAdapterTest{
     private AccountsDbAdapter mAccountsDbAdapter;
     private TransactionsDbAdapter mTransactionsDbAdapter;
     private SplitsDbAdapter mSplitsDbAdapter;
+    private CommoditiesDbAdapter mCommoditiesDbAdapter;
 
-	@Before
+    @Before
 	public void setUp() throws Exception {
         initAdapters(null);
 	}
@@ -93,12 +91,14 @@ public class AccountsDbAdapterTest{
             mSplitsDbAdapter = SplitsDbAdapter.getInstance();
             mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
             mAccountsDbAdapter = AccountsDbAdapter.getInstance();
+            mCommoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
         } else {
             DatabaseHelper databaseHelper = new DatabaseHelper(GnuCashApplication.getAppContext(), bookUID);
             SQLiteDatabase db = databaseHelper.getWritableDatabase();
             mSplitsDbAdapter = new SplitsDbAdapter(db);
             mTransactionsDbAdapter = new TransactionsDbAdapter(db, mSplitsDbAdapter);
             mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);
+            mCommoditiesDbAdapter = new CommoditiesDbAdapter(db);
             BooksDbAdapter.getInstance().setActive(bookUID);
         }
     }
@@ -423,7 +423,7 @@ public class AccountsDbAdapterTest{
     public void shouldCreateImbalanceAccountOnDemand(){
         assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(1L);
 
-        Currency usd = Currency.getInstance("USD");
+        Commodity usd = mCommoditiesDbAdapter.getCommodity("USD");
         String imbalanceUID = mAccountsDbAdapter.getImbalanceAccountUID(usd);
         assertThat(imbalanceUID).isNull();
         assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(1L);

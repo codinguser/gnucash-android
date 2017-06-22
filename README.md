@@ -7,28 +7,32 @@
 GnuCash Android is a companion expense-tracker application for GnuCash (desktop) designed for Android.
 It allows you to record transactions on-the-go and later import the data into GnuCash for the desktop.
 
-The application supports Android 2.3.3 Gingerbread (API level 10) and above.
+Accounts            |  Transactions          |  Reports
+:-------------------------:|:-------------------------:|:-------------------------:
+![Accounts List](docs/images/v2.0.0_home.png)  |  ![Transactions List](docs/images/v2.0.0_transactions_list.png) |  ![Reports](docs/images/v2.0.0_reports.png)
+
+The application supports Android 4.4 KitKat (API level 10) and above.
 
 Features include:
 
   * An easy-to-use interface.
 
-  * Chart of Accounts: A master account can have a hierarchy of detail accounts underneath it.  
+  * **Chart of Accounts**: A master account can have a hierarchy of detail accounts underneath it.  
     This allows similar account types (e.g. Cash, Bank, Stock) to be grouped into one master account (e.g. Assets).
 
-  * Split Transactions: A single transaction can be split into several pieces to record taxes, fees, and other compound entries.
+  * **Split Transactions**: A single transaction can be split into several pieces to record taxes, fees, and other compound entries.
 
-  * Double Entry: Every transaction must debit one account and credit another by an equal amount.
+  * **Double Entry**: Every transaction must debit one account and credit another by an equal amount.
     This ensures that the "books balance": that the difference between income and outflow exactly
     equals the sum of all assets, be they bank, cash, stock or other.
 
-  * Income/Expense Account Types (Categories): These serve not only to categorize your cash flow, but when used properly with the double-entry feature, these can provide an accurate Profit&Loss statement.
+  * **Income/Expense Account Types (Categories)**: These serve not only to categorize your cash flow, but when used properly with the double-entry feature, these can provide an accurate Profit&Loss statement.
 
-  * Scheduled Transactions: GnuCash has the ability to automatically create and enter transactions.
+  * **Scheduled Transactions**: GnuCash has the ability to automatically create and enter transactions.
 
-  * Export to GnuCash XML, QIF or OFX. Also, scheduled exports to 3rd-party sync services like DropBox and Google Drive
+  * **Export to GnuCash XML**, QIF or OFX. Also, scheduled exports to 3rd-party sync services like DropBox and Google Drive
 
-  * Reports: View summary of transactions (income and expenses) as pie/bar/line charts
+  * **Reports**: View summary of transactions (income and expenses) as pie/bar/line charts
 
 
 # Installation
@@ -66,7 +70,7 @@ The app is configured to allow you to install a development and production versi
 
 ### With Android Studio
 The easiest way to build is to install [Android Studio](https://developer.android.com/sdk/index.html) v2.+
-with [Gradle](https://www.gradle.org/) v2.10
+with [Gradle](https://www.gradle.org/) v3.4.1
 Once installed, then you can import the project into Android Studio:
 
 1. Open `File`
@@ -84,17 +88,17 @@ Google+ Community: https://plus.google.com/communities/104728406764752407046
 
 There are several ways you could contribute to the development.
 
+* Pull requests are always welcome! You could contribute code by fixing bugs, adding new features or automated tests. 
+Take a look at the [bug tracker](https://github.com/codinguser/gnucash-android/issues?state=open)
+for ideas where to start. Also make sure to read our [contribution guidlines](https://github.com/codinguser/gnucash-android/blob/master/.github/CONTRIBUTING.md)
+
 * One way is providing translations for locales which are not yet available, or improving translations.
 Please visit [CrowdIn](https://crowdin.com/project/gnucash-android) in order to update and create new translations
-
-* You could as well contribute code, fixing bugs, new features or automated tests. Pull requests are always welcome.
-Take a look at the [bug tracker](https://github.com/codinguser/gnucash-android/issues?state=open)
-for ideas where to start.
 
 For development, it is recommended to use the Android Studio for development which is available for free.
 Import the project into the IDE using the build.gradle file. The IDE will resolve dependencies automatically.
 
-#Licence
+# Licence
 GnuCash Android is free software; you can redistribute it and/or
 modify it under the terms of the Apache license, version 2.0.
 You may obtain a copy of the License at

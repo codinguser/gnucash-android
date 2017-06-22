@@ -18,9 +18,8 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="title_create_account">계정 만들기</string>
   <string name="title_edit_account">계정 편집</string>
-  <string name="info_details">정보</string>
-  <string name="menu_export">내보내기...</string>
   <string name="description_add_transaction_icon">계정에 새 거래 추가</string>
+  <string name="description_view_account_icon">View account details</string>
   <string name="label_no_accounts">계정 없음</string>
   <string name="label_account_name">계정 이름</string>
   <string name="btn_cancel">취소</string>
@@ -35,8 +34,6 @@
   <string name="label_transaction_amount">금액</string>
   <string name="title_add_transaction">새 거래</string>
   <string name="label_no_transactions">표시할 거래가 없습니다.</string>
-  <string name="label_timeanddate">날짜 및 시간</string>
-  <string name="label_account">계정</string>
   <string name="label_debit">현금</string>
   <string name="label_credit">신용</string>
   <string name="title_accounts">계정</string>
@@ -46,15 +43,12 @@
   <string name="alert_dialog_cancel">취소</string>
   <string name="toast_account_deleted">계정이 삭제되었습니다.</string>
   <string name="title_confirm_delete">삭제 확인</string>
-  <string name="delete_account_confirmation_message">이 계정의 모든 거래내역도 삭제됩니다</string>
   <string name="title_edit_transaction">거래내역 편집</string>
   <string name="label_transaction_description">메모 추가</string>
-  <string name="menu_move">이동</string>
   <string name="title_selected">%1$d건 선택됨</string>
   <string name="label_account_balance">잔액:</string>
   <string name="label_export_destination">내보낼 위치:</string>
   <string name="title_export_dialog">거래내역 내보내기</string>
-  <string name="option_export_all_transactions">모든 거래내역 내보내기</string>
   <string name="hint_export_choice">기본적으로 마지막 내보내기 이후에 생성된 거래내역만 내보내집니다. 모든 거래내역을 내보내려면 체크하세요.</string>
   <string name="toast_export_error">%1$s 파일을 내보내는 중 오류가 발생했습니다.</string>
   <string name="btn_export">내보내기</string>
@@ -62,16 +56,14 @@
   <string name="hint_delete_after_export">내보낸 모든 거래내역은 작업 완료후 삭제됩니다.</string>
   <string name="title_settings">설정</string>
   <string-array name="export_destinations">
-    <item>SD 카드</item>
-    <item>DropBox</item>
-    <item>Google Drive</item>
+    <item>Save As&#8230;</item>
+    <item>Dropbox</item>
     <item>ownCloud</item>
-    <item>보낼 곳 지정...</item>
+    <item>Send to&#8230;</item>
   </string-array>
   <string name="btn_move">이동</string>
   <string name="title_move_transactions">%1$d개 거래내역 이동</string>
   <string name="label_move_destination">대상 계정</string>
-  <string name="permission_access_sdcard">SD 카드에 접근</string>
   <string name="toast_incompatible_currency">거래내역을 이동할 수 없습니다. \n대상 계정과 원 계정의 통화가 다릅니다.</string>
   <string name="header_general_settings">일반</string>
   <string name="header_about_gnucash">소개</string>
@@ -85,24 +77,18 @@
   <string name="label_permission_record_transaction">GnuCash에서 거래를 기록</string>
   <string name="label_permission_create_account">GnuCash에서 계정 만들기</string>
   <string name="label_display_account">계정 표시</string>
+  <string name="label_hide_account_balance">Hide account balance in widget</string>
   <string name="btn_create_accounts">계정 만들기</string>
-  <string name="title_default_accounts">만들 계정을 선택합니다</string>
   <string name="error_no_accounts">GnuCash에 계정이 없습니다.\n위젯을 만들기 전에 계정을 생성하십시오</string>
-  <string name="title_build_version">빌드 버전</string>
   <string name="title_license">약관</string>
   <string name="summary_licence_details">아파치 라이선스 v 2.0. 클릭하여 상세 정보 확인</string>
   <string name="title_general_prefs">일반 설정</string>
   <string name="label_widget_configuration">계정 선택</string>
   <string name="toast_no_transactions_to_export">내보낼 거래내역이 없습니다</string>
-  <string name="header_passcode_settings">암호</string>
   <string name="title_passcode_preferences">암호 설정</string>
-  <string name="title_passcode_enabled">암호 사용중</string>
-  <string name="title_passcode_disabled">암호 미사용</string>
+  <string name="title_enable_passcode">Enable passcode</string>
   <string name="title_change_passcode">암호 변경</string>
   <string name="title_about_gnucash">GnuCash 정보</string>
-  <string name="summary_about_gnucash">안드로이드용 금융 및 지출관리 앱</string>
-  <string name="title_about">애플리케이션 정보</string>
-  <string name="toast_format_exported_to">%1$s 파일을 다음에 내보냄:\n</string>
   <string name="title_export_email">안드로이드용 GnuCash %1$s 내보내기</string>
   <string name="description_export_email">안드로이드용 GnuCash에서 내보냄. 날짜: </string>
   <string name="header_transaction_settings">거래</string>
@@ -121,7 +107,6 @@
   <string name="title_always_delete_exported_transactions">내보낸 거래내역 삭제</string>
   <string name="title_default_export_email">기본 내보내기 이메일</string>
   <string name="summary_default_export_email">내보내는 파일을 보낼 기본 이메일 주소입니다. 내보낼 때에 다시 선택할 수 있습니다.</string>
-  <string name="label_double_entry_account">보낼 계정</string>
   <string name="summary_use_double_entry">모든 거래는 하나의 계정에서 다른 계정으로의 이동의 형식으로 이루어질 것입니다</string>
   <string name="title_use_double_entry">복식부기 활성화</string>
   <string name="account_balance">잔액</string>
@@ -132,18 +117,14 @@
   <string name="summary_xml_ofx_header">데스크탑용 GnuCash 이외의 타 응용 프로그램에 내보낼 때에 사용하세요</string>
   <string name="title_whats_new">새로운 기능</string>
   <string name="whats_new">
-        - Support for multiple different books \n
-        - Adds ownCloud as destination for exports\n
-        - Compact view for transactions list\n
-        - Re-design of passcode lock screen\n
-        - Improved handling of scheduled transactions\n
+        - Added ability to export to any service which supports the Storage Access Framework \n
+        - Added option to set the location for regular automatic backups (See backup settings)\n
+        - Added Bitcoin currency support\n
+        - Added support for renaming books\n
         - Multiple bug fixes and improvements\n
 	</string>
   <string name="label_dismiss">닫기</string>
   <string name="toast_transanction_amount_required">거래기록에 저장할 금액을 입력해 주세요</string>
-  <string name="toast_error_edit_multi_currency_transaction">다중 통화 거래는 수정할 수 없습니다.</string>
-  <string name="menu_import_accounts">GnuCash 계정 가져오기</string>
-  <string name="btn_import_accounts">계정 가져오기</string>
   <string name="toast_error_importing_accounts">GnuCash 계정을 가져오는 동안 오류가 발생했습니다.</string>
   <string name="toast_success_importing_accounts">GnuCash 계정을 가져왔습니다</string>
   <string name="summary_import_accounts">데스크톱용 GnuCash프로그램에서 내보낸 계정 구조를 가져옵니다.</string>
@@ -155,18 +136,15 @@
   <string name="confirm_delete_all_accounts">정말로 모든 거래내역을 삭제할까요?\n\n삭제후에는
         되돌릴 수 없습니다!
     </string>
-  <string name="label_account_type">계정 유형</string>
   <string name="summary_delete_all_transactions">모든 계정의 모든 거래내역이 삭제됩니다!</string>
   <string name="title_delete_all_transactions">모든 거래내역 삭제</string>
   <string name="toast_all_transactions_deleted">모든 거래내역을 삭제하였습니다!</string>
   <string name="title_progress_importing_accounts">계정 가져오기</string>
-  <string name="toast_tap_again_to_confirm_delete">확인을 위해 다시 한번 탭해주세요. 모든 항목이 삭제됩니다!!</string>
   <string name="section_header_transactions">거래내역</string>
   <string name="section_header_subaccounts">하위 계정</string>
   <string name="menu_search_accounts">검색</string>
   <string name="title_default_export_format">기본 내보내기 형식</string>
   <string name="summary_default_export_format">내보낼 때 기본적으로 사용할 파일 형식</string>
-  <string name="menu_export_transactions">거래내역 내보내기&#8230;</string>
   <string name="label_recurring_transaction">반복거래</string>
   <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">불균형</string>
@@ -211,8 +189,6 @@
   <string name="summary_create_default_accounts">GnuCash에서 일반적으로 사용되는 기본 계정구조를 생성합니다.</string>
   <string name="title_create_default_accounts">기본 계정을 생성합니다</string>
   <string name="msg_confirm_create_default_accounts_setting">A new book will be opened with the default accounts\n\nYour current accounts and transactions will not be modified!</string>
-  <string name="menu_scheduled_transactions">예약거래</string>
-  <string name="msg_confirm_create_default_accounts_first_run">안드로이드용 GnuCash 사용을 환영합니다! \n일반적으로 사용되는 계정 구조를 만들거나, 이전에 사용하던 GnuCash 계정구조를 가져올 수 있습니다. \n\n지금 결정하지 않아도 나중에 설정 메뉴에 들어가서 정할 수 있습니다.    </string>
   <string name="title_scheduled_transactions">거래내역</string>
   <string name="title_select_export_destination">내보낼 곳 선택</string>
   <string name="hint_split_memo">메모</string>
@@ -231,15 +207,12 @@
   <string name="label_invoice">납품서</string>
   <string name="label_buy">구매</string>
   <string name="label_sell">판매</string>
-  <string name="label_repeats">반복</string>
-  <string name="toast_no_recent_backup">최근 백업 없음</string>
   <string name="account_name_opening_balances">최초 잔고</string>
   <string name="account_name_equity">자본</string>
   <string name="summary_save_opening_balances">거래내역을 지우기 전의 잔고를 새로운 초기잔고로 사용합니다.    </string>
   <string name="title_save_opening_balances">계정 초기잔고를 저장합니다</string>
   <string name="export_warning_ofx">OFX 형식으로는 복식부기 거래내역을 저장할 수 없습니다</string>
   <string name="export_warning_qif">통화마다 각각 QIF 파일 생성</string>
-  <string name="title_transaction_splits">거래내역 분할</string>
   <string name="label_imbalance">불균형:</string>
   <string name="btn_add_split">분할 추가</string>
   <string name="menu_title_favorite">즐겨찾기</string>
@@ -250,10 +223,8 @@
   <string name="title_line_chart">꺾은선형 차트</string>
   <string name="title_bar_chart">막대 차트</string>
   <string name="title_report_prefs">보고서 설정</string>
-  <string name="label_report_currency">통화 선택</string>
   <string name="title_use_account_color">보고서에 사용될 계정 색상</string>
   <string name="summary_use_account_color">막대/원형 차트에서 계정별 색상 사용</string>
-  <string name="header_report_settings">보고서</string>
   <string name="menu_order_by_size">크기순</string>
   <string name="menu_toggle_legend">범례 보기</string>
   <string name="menu_toggle_labels">레이블 표시</string>
@@ -261,7 +232,6 @@
   <string name="menu_toggle_average_lines">평균선 표시</string>
   <string name="menu_group_smaller_slices">작은 슬라이스를 묶어서 표시</string>
   <string name="label_chart_no_data">차트 데이터가 없습니다</string>
-  <string name="label_chart_overall">전체</string>
   <string name="label_chart_total">합계</string>
   <string name="label_other_slice">기타</string>
   <string name="toast_chart_percentage_mode_total">선택한 부분의 총액대비 비율</string>
@@ -279,22 +249,18 @@
   <string name="title_backup_preference_category">백업</string>
   <string name="summary_dropbox_sync">DropBox에 내보내기 사용</string>
   <string name="summary_owncloud_sync">ownCloud에 내보내기 사용</string>
-  <string name="title_select_gnucash_xml_file">GnuCash XML파일을 선택해 주세요</string>
   <string name="title_backup_prefs">백업 설정</string>
   <string name="title_create_backup_pref">백업 만들기</string>
-  <string name="summary_create_backup_pref">기본적으로 백업은 SD카드에 저장됩니다</string>
-  <string name="summary_restore_backup_pref">복원할 백업을 선택해 주세요</string>
+  <string name="summary_create_backup_pref">Create a backup of the active book</string>
+  <string name="summary_restore_backup_pref">Restore most recent backup of active book</string>
   <string name="toast_backup_successful">백업되었습니다</string>
   <string name="toast_backup_failed">백업에 실패했습니다</string>
   <string name="export_warning_xml">모든 계정 및 거래내역 내보내기</string>
-  <string name="title_google_drive_sync_pref">구글 드라이브 사용</string>
-  <string name="summary_google_drive_sync">구글 드라이브에 내보내기 활성화</string>
   <string name="toast_install_file_manager">파일을 선택할수 있게 파일 관리자를 설치합니다</string>
   <string name="title_select_backup_to_restore">복원할 백업파일을 선택해 주세요</string>
   <string name="nav_menu_favorites">즐겨찾기</string>
   <string name="nav_menu_open">열기...</string>
   <string name="nav_menu_reports">보고서</string>
-  <string name="nav_menu_scheduled_transactions">예약거래</string>
   <string name="nav_menu_export">내보내기...</string>
   <string name="nav_menu_settings">설정</string>
   <string name="username">사용자 이름</string>
@@ -307,6 +273,9 @@
   <string name="owncloud_server_ok">Owncloud서버 정상</string>
   <string name="owncloud_user_ok">아이디와 비밀번호 확인</string>
   <string name="owncloud_dir_ok">폴더 확인</string>
+  <plurals name="label_every_x_hours">
+    <item quantity="other">Every %d hours</item>
+  </plurals>
   <plurals name="label_every_x_days">
     <item quantity="other">%d일마다</item>
   </plurals>
@@ -322,10 +291,8 @@
   <string name="title_enable_crashlytics">비정상 종료시 로그함</string>
   <string name="msg_enable_crashlytics">앱 비정상 작동시 개발자들에게 자동으로 관련 정보를 보냅니다.</string>
   <string name="label_export_format"> 내보낼 형식</string>
-  <string name="toast_backup_folder_not_found">백업 폴더를 찾을 수 없습니다. SD카드가 장착되어 있는지 확인해 주세요.</string>
   <string name="label_old_passcode">이전 암호</string>
   <string name="label_new_passcode">새 암호</string>
-  <string name="nav_menu_scheduled_backups">예약된 내보내기</string>
   <string name="title_scheduled_exports">내보내기</string>
   <string name="label_no_scheduled_exports_to_display">예약된 내보내기가 없습니다</string>
   <string name="title_create_export_schedule">내보내기 예약을 생성합니다</string>
@@ -336,7 +303,6 @@
   <string name="label_no_favorite_accounts">즐겨찾기에 등록된 계정 없음</string>
   <string name="nav_menu_scheduled_actions">예약된 작업</string>
   <string name="label_scheduled_action_ended">"완료, 마지막으로 %1$s에 실행"</string>
-  <string name="label_select_bar_to_view_details">세부정보를 확인하려면 막대를 선택하세요</string>
   <string name="btn_wizard_next">다음</string>
   <string name="btn_wizard_finish">완료</string>
   <string name="wizard_title_default_currency">기본 통화</string>
@@ -357,8 +323,6 @@
   <string name="toast_error_check_split_amounts">Check that all splits have valid amounts before saving!</string>
   <string name="label_error_invalid_expression">식이 맞지 않습니다!</string>
   <string name="toast_scheduled_recurring_transaction">예약된 반복 거래</string>
-  <string name="error_exchange_rate_required">환율이 필요합니다</string>
-  <string name="error_converted_amount_required">변환된 금액이 필요합니다</string>
   <string name="title_transfer_funds">자금을 이동</string>
   <string name="nav_menu_help"><![CDATA[도움말 & 피드백]]></string>
   <string name="label_select_pie_slice_to_see_details">Select a slice to see details</string>
@@ -377,7 +341,6 @@
   <string name="label_assets">자산</string>
   <string name="label_liabilities">부채</string>
   <string name="label_equity">자본</string>
-  <string name="label_total_liabilities_and_equity"><![CDATA[부채와 자본의 합계]]></string>
   <string name="label_move_to">이동할 곳:</string>
   <string name="menu_group_by">Group By</string>
   <string name="menu_group_by_month">월</string>
@@ -392,7 +355,6 @@
   <string name="toast_no_compatible_apps_to_receive_export">내보낸 거래내역을 받을 앱이 없습니다</string>
   <string name="menu_move_transaction">이동...</string>
   <string name="menu_duplicate_transaction">중복</string>
-  <string name="nav_menu_budgets">예산</string>
   <string name="title_cash_flow_report">현금흐름</string>
   <string name="title_budgets">예산</string>
   <string name="title_use_compact_list">간단히 표시하기</string>
@@ -462,7 +424,23 @@
   <string name="label_recommend_app">Recommend in Play Store</string>
   <string name="repeat_until_date">until %1$s</string>
   <string name="repeat_on_weekday">on %1$s</string>
-  <string name="repeat_x_times">for %1$s times</string>
+  <string name="repeat_x_times">for %1$d times</string>
   <string name="menu_show_compact_view">Compact View</string>
   <string name="book_default_name">Book %1$d</string>
+  <string name="last_export_time_never">never</string>
+  <string name="title_rename_book">Rename Book</string>
+  <string name="btn_rename">Rename</string>
+  <string name="menu_rename">Rename</string>
+  <string name="title_select_backup_file">Select backup file</string>
+  <string name="summary_select_backup_file">Select a file for automatic backups</string>
+  <string name="title_confirm_restore_backup">Confirm restore from backup</string>
+  <string name="msg_confirm_restore_backup_into_new_book">A new book will be opened with the contents of this backup. Do you wish to proceed?</string>
+  <string name="btn_restore">Restore</string>
+  <string name="title_no_backups_found">No backups found</string>
+  <string name="msg_no_backups_to_restore_from">There are no existing backup files to restore from</string>
+  <!-- This is the filename for default backups. So use only simple characters and no spaces. Do not change the extension -->
+  <string name="label_backup_filename">gnucash_android_backup.gnca</string>
+  <string name="label_select_destination_after_export">Select the destination after export is complete</string>
+  <string name="label_dropbox_export_destination">Export to \'/Apps/GnuCash Android/\' folder on Dropbox</string>
+  <string name="title_section_preferences">Preferences</string>
 </resources>

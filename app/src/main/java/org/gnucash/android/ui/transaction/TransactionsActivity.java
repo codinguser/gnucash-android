@@ -143,6 +143,10 @@ public class TransactionsActivity extends BaseDrawerActivity implements
                     mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_transactions));
                 }
             }
+            if (view != null) {
+                // Hide the favorite icon of the selected account to avoid clutter
+                ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+            }
             //refresh any fragments in the tab with the new account UID
             refresh();
         }
@@ -256,12 +260,8 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         if (mPagerAdapter != null)
             mPagerAdapter.notifyDataSetChanged();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            // make sure the account balance task is truely multi-thread
-            new AccountBalanceTask(mSumTextView).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mAccountUID);
-        } else {
-            new AccountBalanceTask(mSumTextView).execute(mAccountUID);
-        }
+        new AccountBalanceTask(mSumTextView).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mAccountUID);
+
     }
 
     @Override

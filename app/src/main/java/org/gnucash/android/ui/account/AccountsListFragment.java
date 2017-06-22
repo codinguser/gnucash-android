@@ -247,7 +247,9 @@ public class AccountsListFragment extends Fragment implements
         if (acc.getTransactionCount() > 0 || mAccountsDbAdapter.getSubAccountCount(acc.getUID()) > 0) {
             showConfirmationDialog(rowId);
         } else {
-            mAccountsDbAdapter.deleteRecord(rowId);
+            // Avoid calling AccountsDbAdapter.deleteRecord(long). See #654
+            String uid = mAccountsDbAdapter.getUID(rowId);
+            mAccountsDbAdapter.deleteRecord(uid);
             refresh();
         }
     }
@@ -494,12 +496,10 @@ public class AccountsListFragment extends Fragment implements
                 holder.description.setVisibility(View.GONE);
 
             // add a summary of transactions to the account view
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+
                 // Make sure the balance task is truly multithread
-                new AccountBalanceTask(holder.accountBalance).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, accountUID);
-            } else {
-                new AccountBalanceTask(holder.accountBalance).execute(accountUID);
-            }
+            new AccountBalanceTask(holder.accountBalance).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, accountUID);
+
             String accountColor = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_COLOR_CODE));
             int colorCode = accountColor == null ? Color.TRANSPARENT : Color.parseColor(accountColor);
             holder.colorStripView.setBackgroundColor(colorCode);

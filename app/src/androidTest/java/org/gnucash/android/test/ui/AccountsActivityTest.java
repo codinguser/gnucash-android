@@ -175,7 +175,6 @@ public class AccountsActivityTest {
     }
 
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void testDisplayAccountsList(){
         AccountsActivity.createDefaultAccounts("EUR", mAccountsActivity);
         mAccountsActivity.recreate();
@@ -328,7 +327,7 @@ public class AccountsActivityTest {
         Account account = new Account("Transfer Account");
         account.setCommodity(Commodity.getInstance(ACCOUNTS_CURRENCY.getCurrencyCode()));
         Transaction transaction = new Transaction("Simple transaction");
-        transaction.setCurrencyCode(ACCOUNTS_CURRENCY.getCurrencyCode());
+        transaction.setCommodity(ACCOUNTS_CURRENCY);
         Split split = new Split(new Money(BigDecimal.TEN, ACCOUNTS_CURRENCY), account.getUID());
         transaction.addSplit(split);
         transaction.addSplit(split.createPair(SIMPLE_ACCOUNT_UID));
@@ -462,7 +461,6 @@ public class AccountsActivityTest {
     /**
      * Tests that the setup wizard is displayed on first run
      */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void shouldShowWizardOnFirstRun() throws Throwable {
         Editor editor = PreferenceManager.getDefaultSharedPreferences(mAccountsActivity)

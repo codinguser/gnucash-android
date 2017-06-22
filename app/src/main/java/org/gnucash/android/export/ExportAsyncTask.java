@@ -17,7 +17,6 @@
 
 package org.gnucash.android.export;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -27,7 +26,6 @@ import android.content.pm.ResolveInfo;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
@@ -39,7 +37,6 @@ import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.Metadata;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveApi;
 import com.google.android.gms.drive.DriveContents;
@@ -79,6 +76,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Asynchronous task for exporting transactions.
@@ -117,7 +117,6 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     }
 
     @Override
-    @TargetApi(11)
     protected void onPreExecute() {
         super.onPreExecute();
         if (mContext instanceof Activity) {
@@ -125,10 +124,9 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             mProgressDialog.setTitle(R.string.title_progress_exporting_transactions);
             mProgressDialog.setIndeterminate(true);
             mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
-                mProgressDialog.setProgressNumberFormat(null);
-                mProgressDialog.setProgressPercentFormat(null);
-            }
+            mProgressDialog.setProgressNumberFormat(null);
+            mProgressDialog.setProgressPercentFormat(null);
+
             mProgressDialog.show();
         }
     }
@@ -141,21 +139,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     @Override
     protected Boolean doInBackground(ExportParams... params) {
         mExportParams = params[0];
-
-        switch (mExportParams.getExportFormat()) {
-                case QIF:
-                    mExporter = new QifExporter(mExportParams, mDb);
-                    break;
-
-                case OFX:
-                    mExporter = new OfxExporter(mExportParams, mDb);
-                    break;
-
-                case XML:
-                default:
-                    mExporter = new GncXmlExporter(mExportParams, mDb);
-                    break;
-        }
+        mExporter = getExporter();
 
         try {
             mExportedFiles = mExporter.generateExport();
@@ -180,40 +164,33 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         if (mExportedFiles.isEmpty())
             return false;
 
-        switch (mExportParams.getExportTarget()) {
-            case SHARING:
-                shareFiles(mExportedFiles);
-                return true;
-
-            case DROPBOX:
-                moveExportToDropbox();
-                return true;
-
-            case GOOGLE_DRIVE:
-                moveExportToGoogleDrive();
-                return true;
-
-            case OWNCLOUD:
-                moveExportToOwnCloud();
-                return true;
-
-            case SD_CARD:
-                moveExportToSDCard();
-                return true;
+        try {
+            moveToTarget();
+        } catch (Exporter.ExporterException e) {
+            Crashlytics.log(Log.ERROR, TAG, "Error sending exported files to target: " + e.getMessage());
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     /**
      * Transmits the exported transactions to the designated location, either SD card or third-party application
      * Finishes the activity if the export was starting  in the context of an activity
-     * @param exportResult Result of background export execution
+     * @param exportSuccessful Result of background export execution
      */
     @Override
-    protected void onPostExecute(Boolean exportResult) {
-        if (mContext instanceof Activity) {
-            if (!exportResult) {
+    protected void onPostExecute(Boolean exportSuccessful) {
+        if (exportSuccessful) {
+            if (mContext instanceof Activity)
+                reportSuccess();
+
+            if (mExportParams.shouldDeleteTransactionsAfterExport()) {
+                backupAndDeleteTransactions();
+                refreshViews();
+            }
+        } else {
+            if (mContext instanceof Activity) {
                 dismissProgressDialog();
                 if (mExportedFiles.isEmpty()) {
                     Toast.makeText(mContext,
@@ -224,53 +201,6 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                             mContext.getString(R.string.toast_export_error, mExportParams.getExportFormat().name()),
                             Toast.LENGTH_LONG).show();
                 }
-                return;
-            } else {
-                String targetLocation;
-                switch (mExportParams.getExportTarget()){
-                    case SD_CARD:
-                        targetLocation = "SD card";
-                        break;
-                    case DROPBOX:
-                        targetLocation = "DropBox -> Apps -> GnuCash";
-                        break;
-                    case GOOGLE_DRIVE:
-                        targetLocation = "Google Drive -> " + mContext.getString(R.string.app_name);
-                        break;
-                    case OWNCLOUD:
-                        targetLocation = mContext.getSharedPreferences(
-                                mContext.getString(R.string.owncloud_pref),
-                                Context.MODE_PRIVATE).getBoolean(
-                                mContext.getString(R.string.owncloud_sync), false) ?
-
-                                "ownCloud -> " +
-                                mContext.getSharedPreferences(
-                                        mContext.getString(R.string.owncloud_pref),
-                                        Context.MODE_PRIVATE).getString(
-                                        mContext.getString(R.string.key_owncloud_dir), null) :
-                                "ownCloud sync not enabled";
-                        break;
-                    default:
-                        targetLocation = mContext.getString(R.string.label_export_target_external_service);
-                }
-                Toast.makeText(mContext,
-                        String.format(mContext.getString(R.string.toast_exported_to), targetLocation),
-                        Toast.LENGTH_LONG).show();
-            }
-        }
-
-        if (mExportParams.shouldDeleteTransactionsAfterExport()) {
-            Log.i(TAG, "Backup and deleting transactions after export");
-            backupAndDeleteTransactions();
-
-            //now refresh the respective views
-            if (mContext instanceof AccountsActivity){
-                AccountsListFragment fragment = ((AccountsActivity) mContext).getCurrentAccountListFragment();
-                if (fragment != null)
-                    fragment.refresh();
-            }
-            if (mContext instanceof TransactionsActivity){
-                ((TransactionsActivity) mContext).refresh();
             }
         }
 
@@ -285,64 +215,149 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         }
     }
 
-    private void moveExportToGoogleDrive(){
+    /**
+     * Returns an exporter corresponding to the user settings.
+     * @return Object of one of {@link QifExporter}, {@link OfxExporter} or {@link GncXmlExporter}
+     */
+    private Exporter getExporter() {
+        switch (mExportParams.getExportFormat()) {
+            case QIF:
+                return new QifExporter(mExportParams, mDb);
+
+            case OFX:
+                return new OfxExporter(mExportParams, mDb);
+
+            case XML:
+            default:
+                return new GncXmlExporter(mExportParams, mDb);
+        }
+    }
+
+    /**
+     * Moves the generated export files to the target specified by the user
+     * @throws Exporter.ExporterException if the move fails
+     */
+    private void moveToTarget() throws Exporter.ExporterException {
+        switch (mExportParams.getExportTarget()) {
+            case SHARING:
+                shareFiles(mExportedFiles);
+                break;
+
+            case DROPBOX:
+                moveExportToDropbox();
+                break;
+
+            case GOOGLE_DRIVE:
+                moveExportToGoogleDrive();
+                break;
+
+            case OWNCLOUD:
+                moveExportToOwnCloud();
+                break;
+
+            case SD_CARD:
+                moveExportToSDCard();
+                break;
+
+            case URI:
+                moveExportToUri();
+                break;
+
+            default:
+                throw new Exporter.ExporterException(mExportParams, "Invalid target");
+        }
+    }
+
+    /**
+     * Move the exported files to a specified URI.
+     * This URI could be a Storage Access Framework file
+     * @throws Exporter.ExporterException
+     */
+    private void moveExportToUri() throws Exporter.ExporterException {
+        Uri exportUri = Uri.parse(mExportParams.getExportLocation());
+        if (exportUri == null){
+            Log.w(TAG, "No URI found for export destination");
+            return;
+        }
+
+        if (mExportedFiles.size() > 0){
+            try {
+                OutputStream outputStream = mContext.getContentResolver().openOutputStream(exportUri);
+                ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
+                byte[] buffer = new byte[1024];
+                for (String exportedFile : mExportedFiles) {
+                    File file = new File(exportedFile);
+                    FileInputStream fileInputStream = new FileInputStream(file);
+                    zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
+
+                    int length;
+                    while ((length = fileInputStream.read(buffer)) > 0) {
+                        zipOutputStream.write(buffer, 0, length);
+                    }
+                    zipOutputStream.closeEntry();
+                    fileInputStream.close();
+                }
+                zipOutputStream.close();
+            } catch (IOException ex) {
+                Log.e(TAG, "Error when zipping QIF files for export");
+                ex.printStackTrace();
+                Crashlytics.logException(ex);
+            }
+        }
+    }
+
+    /**
+     * Move the exported files to a GnuCash folder on Google Drive
+     * @throws Exporter.ExporterException
+     * @deprecated Explicit Google Drive integration is deprecated, use Storage Access Framework. See {@link #moveExportToUri()}
+     */
+    @Deprecated
+    private void moveExportToGoogleDrive() throws Exporter.ExporterException {
         Log.i(TAG, "Moving exported file to Google Drive");
         final GoogleApiClient googleApiClient = BackupPreferenceFragment.getGoogleApiClient(GnuCashApplication.getAppContext());
         googleApiClient.blockingConnect();
-        final ResultCallback<DriveFolder.DriveFileResult> fileCallback = new
-                ResultCallback<DriveFolder.DriveFileResult>() {
-                    @Override
-                    public void onResult(DriveFolder.DriveFileResult result) {
-                        if (!result.getStatus().isSuccess())
-                            Log.e(TAG, "Error while trying to sync to Google Drive");
-                        else
-                            Log.i(TAG, "Created a file with content: " + result.getDriveFile().getDriveId());
-                    }
-                };
 
-        Drive.DriveApi.newDriveContents(googleApiClient).setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
-            @Override
-            public void onResult(DriveApi.DriveContentsResult result) {
-                if (!result.getStatus().isSuccess()) {
-                    Log.e(TAG, "Error while trying to create new file contents");
-                    return;
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String folderId = sharedPreferences.getString(mContext.getString(R.string.key_google_drive_app_folder_id), "");
+        DriveFolder folder = DriveId.decodeFromString(folderId).asDriveFolder();
+        try {
+            for (String exportedFilePath : mExportedFiles) {
+                DriveApi.DriveContentsResult driveContentsResult =
+                        Drive.DriveApi.newDriveContents(googleApiClient).await(1, TimeUnit.MINUTES);
+                if (!driveContentsResult.getStatus().isSuccess()) {
+                    throw new Exporter.ExporterException(mExportParams,
+                                                "Error while trying to create new file contents");
                 }
-                final DriveContents driveContents = result.getDriveContents();
-                try {
-                    // write content to DriveContents
-                    OutputStream outputStream = driveContents.getOutputStream();
-                    for (String exportedFilePath : mExportedFiles) {
-                        File exportedFile = new File(exportedFilePath);
-                        FileInputStream fileInputStream = new FileInputStream(exportedFile);
-                        byte[] buffer = new byte[1024];
-                        int count;
+                final DriveContents driveContents = driveContentsResult.getDriveContents();
+                OutputStream outputStream = driveContents.getOutputStream();
+                File exportedFile = new File(exportedFilePath);
+                FileInputStream fileInputStream = new FileInputStream(exportedFile);
+                byte[] buffer = new byte[1024];
+                int count;
 
-                        while ((count = fileInputStream.read(buffer)) >= 0) {
-                            outputStream.write(buffer, 0, count);
-                        }
-                        fileInputStream.close();
-                        outputStream.flush();
-                        exportedFile.delete();
+                while ((count = fileInputStream.read(buffer)) >= 0) {
+                    outputStream.write(buffer, 0, count);
+                }
+                fileInputStream.close();
+                outputStream.flush();
+                exportedFile.delete();
 
-                        MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
-                                .setTitle(exportedFile.getName())
-                                .setMimeType(mExporter.getExportMimeType())
-                                .build();
-
-                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-                        String folderId = sharedPreferences.getString(mContext.getString(R.string.key_google_drive_app_folder_id), "");
-                        DriveFolder folder = Drive.DriveApi.getFolder(googleApiClient, DriveId.decodeFromString(folderId));
-                        // create a file on root folder
+                MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
+                        .setTitle(exportedFile.getName())
+                        .setMimeType(mExporter.getExportMimeType())
+                        .build();
+                // create a file on root folder
+                DriveFolder.DriveFileResult driveFileResult =
                         folder.createFile(googleApiClient, changeSet, driveContents)
-                                .setResultCallback(fileCallback);
-                    }
+                                                .await(1, TimeUnit.MINUTES);
+                if (!driveFileResult.getStatus().isSuccess())
+                    throw new Exporter.ExporterException(mExportParams, "Error creating file in Google Drive");
 
-                } catch (IOException e) {
-                    Crashlytics.logException(e);
-                    Log.e(TAG, e.getMessage());
-                }
+                Log.i(TAG, "Created file with id: " + driveFileResult.getDriveFile().getDriveId());
             }
-        });
+        } catch (IOException e) {
+            throw new Exporter.ExporterException(mExportParams, e);
+        }
     }
 
     /**
@@ -375,16 +390,15 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         }
     }
 
-    private void moveExportToOwnCloud() {
+    private void moveExportToOwnCloud() throws Exporter.ExporterException {
         Log.i(TAG, "Copying exported file to ownCloud");
 
         SharedPreferences mPrefs = mContext.getSharedPreferences(mContext.getString(R.string.owncloud_pref), Context.MODE_PRIVATE);
 
         Boolean mOC_sync = mPrefs.getBoolean(mContext.getString(R.string.owncloud_sync), false);
 
-        if(!mOC_sync){
-            Log.e(TAG, "ownCloud not enabled.");
-            return;
+        if (!mOC_sync) {
+            throw new Exporter.ExporterException(mExportParams, "ownCloud not enabled.");
         }
 
         String mOC_server = mPrefs.getString(mContext.getString(R.string.key_owncloud_server), null);
@@ -401,8 +415,10 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         if (mOC_dir.length() != 0) {
             RemoteOperationResult dirResult = new CreateRemoteFolderOperation(
                     mOC_dir, true).execute(mClient);
-            if (!dirResult.isSuccess())
-                Log.e(TAG, dirResult.getLogMessage(), dirResult.getException());
+            if (!dirResult.isSuccess()) {
+                Log.w(TAG, "Error creating folder (it may happen if it already exists): "
+                           + dirResult.getLogMessage());
+            }
         }
         for (String exportedFilePath : mExportedFiles) {
             String remotePath = mOC_dir + FileUtils.PATH_SEPARATOR + stripPathPart(exportedFilePath);
@@ -412,10 +428,9 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                     exportedFilePath, remotePath, mimeType).execute(mClient);
 
             if (!result.isSuccess())
-                Log.e(TAG, result.getLogMessage(), result.getException());
-            else {
-                new File(exportedFilePath).delete();
-            }
+                throw new Exporter.ExporterException(mExportParams, result.getLogMessage());
+
+            new File(exportedFilePath).delete();
         }
     }
 
@@ -423,8 +438,10 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      * Moves the exported files from the internal storage where they are generated to
      * external storage, which is accessible to the user.
      * @return The list of files moved to the SD card.
+     * @deprecated Use the Storage Access Framework to save to SD card. See {@link #moveExportToUri()}
      */
-    private List<String> moveExportToSDCard() {
+    @Deprecated
+    private List<String> moveExportToSDCard() throws Exporter.ExporterException {
         Log.i(TAG, "Moving exported file to external storage");
         new File(Exporter.getExportFolderPath(mExporter.mBookUID));
         List<String> dstFiles = new ArrayList<>();
@@ -435,8 +452,6 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 moveFile(src, dst);
                 dstFiles.add(dst);
             } catch (IOException e) {
-                Crashlytics.logException(e);
-                Log.e(TAG, e.getMessage());
                 throw new Exporter.ExporterException(mExportParams, e);
             }
         }
@@ -454,6 +469,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      * and deletes all non-template transactions in the database.
      */
     private void backupAndDeleteTransactions(){
+        Log.i(TAG, "Backup and deleting transactions after export");
         GncXmlExporter.createBackup(); //create backup before deleting everything
         List<Transaction> openingBalances = new ArrayList<>();
         boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
@@ -491,9 +507,8 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             shareIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{defaultEmail});
 
         SimpleDateFormat formatter = (SimpleDateFormat) SimpleDateFormat.getDateTimeInstance();
-        ArrayList<CharSequence> extraText = new ArrayList<>();
-        extraText.add(mContext.getString(R.string.description_export_email)
-                + " " + formatter.format(new Date(System.currentTimeMillis())));
+        String extraText = mContext.getString(R.string.description_export_email)
+                           + " " + formatter.format(new Date(System.currentTimeMillis()));
         shareIntent.putExtra(Intent.EXTRA_TEXT, extraText);
 
         if (mContext instanceof Activity) {
@@ -547,4 +562,70 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         srcFile.delete();
     }
 
+    /**
+     * Move file from a location on disk to an outputstream.
+     * The outputstream could be for a URI in the Storage Access Framework
+     * @param src Input file (usually newly exported file)
+     * @param outputStream Output stream to write to
+     * @throws IOException if error occurred while moving the file
+     */
+    public void moveFile(@NonNull String src, @NonNull OutputStream outputStream) throws IOException {
+        byte[] buffer = new byte[1024];
+        int read;
+        try (FileInputStream inputStream = new FileInputStream(src)) {
+            while ((read = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, read);
+            }
+        } finally {
+            outputStream.flush();
+            outputStream.close();
+        }
+        Log.i(TAG, "Deleting temp export file: " + src);
+        new File(src).delete();
+    }
+
+    private void reportSuccess() {
+        String targetLocation;
+        switch (mExportParams.getExportTarget()){
+            case SD_CARD:
+                targetLocation = "SD card";
+                break;
+            case DROPBOX:
+                targetLocation = "DropBox -> Apps -> GnuCash";
+                break;
+            case GOOGLE_DRIVE:
+                targetLocation = "Google Drive -> " + mContext.getString(R.string.app_name);
+                break;
+            case OWNCLOUD:
+                targetLocation = mContext.getSharedPreferences(
+                        mContext.getString(R.string.owncloud_pref),
+                        Context.MODE_PRIVATE).getBoolean(
+                        mContext.getString(R.string.owncloud_sync), false) ?
+
+                        "ownCloud -> " +
+                                mContext.getSharedPreferences(
+                                        mContext.getString(R.string.owncloud_pref),
+                                        Context.MODE_PRIVATE).getString(
+                                        mContext.getString(R.string.key_owncloud_dir), null) :
+                        "ownCloud sync not enabled";
+                break;
+            default:
+                targetLocation = mContext.getString(R.string.label_export_target_external_service);
+        }
+        Toast.makeText(mContext,
+                String.format(mContext.getString(R.string.toast_exported_to), targetLocation),
+                Toast.LENGTH_LONG).show();
+    }
+
+    private void refreshViews() {
+        if (mContext instanceof AccountsActivity){
+            AccountsListFragment fragment =
+                    ((AccountsActivity) mContext).getCurrentAccountListFragment();
+            if (fragment != null)
+                fragment.refresh();
+        }
+        if (mContext instanceof TransactionsActivity){
+            ((TransactionsActivity) mContext).refresh();
+        }
+    }
 }

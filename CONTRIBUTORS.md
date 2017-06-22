@@ -7,34 +7,59 @@ project through the early phases (as Google Summer of Code project 2012) and pro
 * Ngewi Fet <ngewif@gmail.com> - Project maintainer
 * Yongxin Wang <fefe.wyx@gmail.com>
 * Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
-* Àlex Magaz Graça <rivaldi8@gmail.com>
+* Àlex Magaz Graça <alexandre.magaz@gmail.com>
 
 ### Other Contributors
-The following (incomplete list of) people (in no particular order) contributed (patches and translations) to GnuCash Android:
-* Christian Stimming <christian@cstimming.de>
-* Cristian Marchi <cri.penta@gmail.com>
-* Menelaos Maglis <mmaglis@metacom.gr>
-* Kjell Thomas Pedersen <kjelltp@gmail.com>
-* Alexander Galanin <al@galanin.nnov.ru>
-* Jorge Martínez López <jorgeml@gmail.com>
-* Israel Buitron <israel.buitron@gmail.com>
-* Geert Janssens <janssens-geert@telenet.be>
-* Nicolas Barranger <wicowyn@gmail.com>
-* Sigurd Gartmann <sigurdga-github@sigurdga.no>
-* Pedro Abel <pedroabel@gmail.com>
-* windwarrior <lennartbuit@gmail.com>
-* Alex Lei <lxbzmy@gmail.com>
-* Matthew Hague <matthewhague@zoho.com>
-* Spanti Nicola <rydroid_dev@yahoo.com>
-* Jesse Shieh <jesse.shieh.pub@gmail.com>
-* Terry Chung <terrywmc@gmail.com>
-* Caesar Wirth <cjwirth@gmail.com>
-* Alceu Rodrigues Neto <alceurneto@gmail.com>
-* Carlo Zancanaro <carlo@zancanaro.id.au>
-* Eric Daly <edaly@hpsnet.com>
-* Weslly Oliveira <weslly99@hotmail.com>
-* Felipe Morato <me@fmorato.com>
-* Alceu Rodrigues Neto <alceurneto@gmail.com>
-* Salama AB <aksalj@aksalj.me>
+The following people (in alphabetical order) contributed (commits on GitHub) to GnuCash Android:
+* aerkefiende
+* Alceu Rodrigues Neto
+* Aleksey Ivanovski
+* Àlex Magaz Graça
+* Alexander Galanin
+* Alexandr Makaric
+* Caesar Wirth
+* Carlo Zancanaro
+* choni wani@dri-h.net
+* Christian Stimming
+* Cristian Marchi
+* David Landry
+* Eric Daly
+* Falk Brockmann
+* Felipe Morato
+* Geert Janssens
+* Jörg Möller
+* Israel Buitron
+* Jesse Shieh
+* Jorge Martínez López
+* Juan Villa
+* Kjell Thomas Pedersen
+* Lian Kai
+* lxb leixb@agilean.cn
+* Alex Lei
+* Mark Haanen
+* Matthew Hague
+* Menelaos Maglis
+* moshe.w@invest.com
+* Ngewi Fet
+* Nicolas Barranger
+* Oleg Kosmakov
+* Oleksandr Tyshkovets
+* PBNeves bastosdasneves@gmail.com
+* Pedro Abel
+* Salama AB
+* Sandro Santilli
+* Sigurd Gartmann
+* smisger sameer.misger@prospectasoftware.com
+* Spanti Nicola
+* Stephan Windmüller
+* Terry Chung
+* thesebas thesebas@thesebas.net
+* Vladimir Rutsky
+* Weslly Oliveira
+* windwarrior lennartbuit@gmail.com
+* yapiti wicowyn@gmail.com
+* Yongxin Wang
 
+
+### Translators
 Please visit https://crowdin.com/project/gnucash-android for a more complete list of translation contributions

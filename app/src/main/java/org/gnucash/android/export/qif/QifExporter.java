@@ -24,6 +24,7 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.util.PreferencesHelper;
 import org.gnucash.android.util.TimestampHelper;
 
@@ -95,8 +96,6 @@ public class QifExporter extends Exporter{
                     },
                     // no recurrence transactions
                     TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TEMPLATE + " == 0 AND " +
-                            // exclude transactions involving multiple currencies
-                            "trans_extra_info.trans_currency_count = 1 AND " +
                             // in qif, split from the one account entry is not recorded (will be auto balanced)
                             "( " + AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_UID + " != account1." + AccountEntry.COLUMN_UID + " OR " +
                             // or if the transaction has only one split (the whole transaction would be lost if it is not selected)
@@ -161,7 +160,7 @@ public class QifExporter extends Exporter{
                         if (decimalImbalance.compareTo(BigDecimal.ZERO) != 0) {
                             writer.append(QifHelper.SPLIT_CATEGORY_PREFIX)
                                     .append(AccountsDbAdapter.getImbalanceAccountName(
-                                            Currency.getInstance(cursor.getString(cursor.getColumnIndexOrThrow("acct1_currency")))
+                                            Commodity.getInstance(cursor.getString(cursor.getColumnIndexOrThrow("acct1_currency")))
                                     ))
                                     .append(newLine);
                             writer.append(QifHelper.SPLIT_AMOUNT_PREFIX)

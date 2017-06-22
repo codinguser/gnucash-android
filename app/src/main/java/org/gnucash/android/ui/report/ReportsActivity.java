@@ -73,6 +73,7 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
             Color.parseColor("#ba037c"), Color.parseColor("#708809"), Color.parseColor("#32072c"),
             Color.parseColor("#fddef8"), Color.parseColor("#fa0e6e"), Color.parseColor("#d9e7b5")
     };
+    private static final String STATE_REPORT_TYPE = "STATE_REPORT_TYPE";
 
     @BindView(R.id.time_range_spinner) Spinner mTimeRangeSpinner;
     @BindView(R.id.report_account_type_spinner) Spinner mAccountTypeSpinner;
@@ -122,8 +123,11 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            mReportType = (ReportType) savedInstanceState.getSerializable(STATE_REPORT_TYPE);
+        }
 
+        super.onCreate(savedInstanceState);
         mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.report_time_range,
@@ -412,5 +416,12 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
      */
     public void refresh(String uid) {
         refresh();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putSerializable(STATE_REPORT_TYPE, mReportType);
     }
 }

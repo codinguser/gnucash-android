@@ -160,13 +160,7 @@ public class FirstRunWizardActivity extends AppCompatActivity implements
                     }
                     preferenceEditor.apply();
 
-
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                Manifest.permission.READ_EXTERNAL_STORAGE}, AccountsActivity.REQUEST_PERMISSION_WRITE_SD_CARD);
-                    } else { //on other version of Android, just proceed with processing. On Android M, we import when permission grant returns
-                        createAccountsAndFinish();
-                    }
+                    createAccountsAndFinish();
                 } else {
                     if (mEditingAfterReview) {
                         mPager.setCurrentItem(mPagerAdapter.getCount() - 1);
@@ -228,7 +222,8 @@ public class FirstRunWizardActivity extends AppCompatActivity implements
             finish();
         } else if (mAccountOptions.equals(getString(R.string.wizard_option_import_my_accounts))){
             AccountsActivity.startXmlFileChooser(this);
-        } else {
+        } else { //user prefers to handle account creation themselves
+            AccountsActivity.start(this);
             finish();
         }
     }
@@ -279,23 +274,6 @@ public class FirstRunWizardActivity extends AppCompatActivity implements
                 }
                 break;
         }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode){
-            case AccountsActivity.REQUEST_PERMISSION_WRITE_SD_CARD:{
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    createAccountsAndFinish();
-                } else {
-                    // permission denied, boo!
-                    // nothing to see here, move along
-                    finish();
-                    AccountsActivity.removeFirstRunFlag();
-                }
-            }
-        }
-
     }
 
     @Override

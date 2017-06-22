@@ -269,15 +269,13 @@ public final class Money implements Comparable<Money>{
     public String formattedString(Locale locale){
 
 		NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(locale);
-		Currency currency = Currency.getInstance(mCommodity.getCurrencyCode());
 
 		String symbol;
+		//if we want to show US Dollars for locales which also use Dollars, for example, Canada
 		if (mCommodity.equals(Commodity.USD) && !locale.equals(Locale.US)) {
 			symbol = "US$";
-		} else if (mCommodity.equals(Commodity.EUR)) {
-			symbol = currency.getSymbol(Locale.GERMANY); //euro currency is pretty unique around the world
 		} else {
-			symbol = currency.getSymbol(Locale.US); // US locale has the best symbol formatting table.
+			symbol = mCommodity.getSymbol();
 		}
 		DecimalFormatSymbols decimalFormatSymbols = ((DecimalFormat)currencyFormat).getDecimalFormatSymbols();
 		decimalFormatSymbols.setCurrencySymbol(symbol);

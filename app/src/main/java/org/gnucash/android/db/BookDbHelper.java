@@ -159,15 +159,15 @@ public class BookDbHelper extends SQLiteOpenHelper {
     private void migrateBackupFiles(String activeBookUID){
 
         Log.d(LOG_TAG, "Moving export and backup files to book-specific folders");
-        File newBasePath = new File(Exporter.BASE_FOLDER_PATH + "/" + activeBookUID);
+        File newBasePath = new File(Exporter.LEGACY_BASE_FOLDER_PATH + "/" + activeBookUID);
         newBasePath.mkdirs();
 
-        File src = new File(Exporter.BASE_FOLDER_PATH + "/backups/");
-        File dst = new File(Exporter.BASE_FOLDER_PATH + "/" + activeBookUID + "/backups/");
+        File src = new File(Exporter.LEGACY_BASE_FOLDER_PATH + "/backups/");
+        File dst = new File(Exporter.LEGACY_BASE_FOLDER_PATH + "/" + activeBookUID + "/backups/");
         new Thread(new RecursiveMoveFiles(src, dst)).start();
 
-        src = new File(Exporter.BASE_FOLDER_PATH + "/exports/");
-        dst = new File(Exporter.BASE_FOLDER_PATH + "/" + activeBookUID + "/exports/");
+        src = new File(Exporter.LEGACY_BASE_FOLDER_PATH + "/exports/");
+        dst = new File(Exporter.LEGACY_BASE_FOLDER_PATH + "/" + activeBookUID + "/exports/");
         new Thread(new RecursiveMoveFiles(src, dst)).start();
 
         File nameFile = new File(newBasePath, "Book 1");

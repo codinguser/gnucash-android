@@ -22,8 +22,10 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.Espresso;
 import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.runner.AndroidJUnit4;
@@ -53,6 +55,7 @@ import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.settings.PreferenceActivity;
+import org.gnucash.android.util.BookUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -61,7 +64,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
 import java.io.File;
-import java.util.Currency;
 import java.util.List;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -133,144 +135,12 @@ public class ExportTransactionsTest extends
         Split split = new Split(new Money("8.99", currencyCode), account.getUID());
 		split.setMemo("Hawaii is the best!");
 		transaction.addSplit(split);
-		transaction.addSplit(split.createPair(mAccountsDbAdapter.getOrCreateImbalanceAccountUID(Currency.getInstance(currencyCode))));
+		transaction.addSplit(split.createPair(
+				mAccountsDbAdapter.getOrCreateImbalanceAccountUID(Commodity.DEFAULT_COMMODITY)));
 		account.addTransaction(transaction);
 
 		mAccountsDbAdapter.addRecord(account, DatabaseAdapter.UpdateMethod.insert);
 
-	}
-	
-	/**
-	 * Tests the export of an OFX file with the transactions from the application.
-	 * The exported file name contains a timestamp with minute precision.
-	 * If this test fails, it may be due to the file being created and tested in different minutes of the clock
-	 * Just try rerunning it again.
-	 */
-	@Test
-	public void testOfxExport(){
-		SharedPreferences.Editor prefsEditor = PreferenceActivity.getActiveBookSharedPreferences()
-				.edit();
-		prefsEditor.putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), false)
-				.commit();
-        testExport(ExportFormat.OFX);
-		prefsEditor.putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), true)
-				.commit();
-	}
-
-	@Test
-	public void whenInSingleEntry_shouldHideXmlExportOption(){
-		SharedPreferences.Editor prefsEditor = PreferenceActivity.getActiveBookSharedPreferences()
-				.edit();
-		prefsEditor.putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), false)
-				.commit();
-
-		DrawerActions.openDrawer(R.id.drawer_layout);
-		onView(withText(R.string.nav_menu_export)).perform(click());
-		onView(withId(R.id.radio_xml_format)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
-
-		prefsEditor.putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), true)
-				.commit();
-	}
-
-	/**
-	 * Test the export of transactions in the QIF format
-	 */
-	@Test
-	public void testQifExport(){
-		testExport(ExportFormat.QIF);
-	}
-
-	@Test
-	public void testXmlExport(){
-		testExport(ExportFormat.XML);
-	}
-
-	/**
-	 * Generates export for the specified format and tests that the file actually is created
-	 * @param format Export format to use
-	 */
-    public void testExport(ExportFormat format){
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			if (mAcccountsActivity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-					!= PackageManager.PERMISSION_GRANTED) {
-				mAcccountsActivity.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-						Manifest.permission.READ_EXTERNAL_STORAGE}, 0x23);
-
-				onView(withId(AlertDialog.BUTTON_POSITIVE)).perform(click());
-			}
-		}
-
-		File folder = new File(Exporter.getExportFolderPath(BooksDbAdapter.getInstance().getActiveBookUID()));
-		folder.mkdirs();
-		assertThat(folder).exists();
-
-		for (File file : folder.listFiles()) {
-			file.delete();
-		}
-
-		onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
-		onView(withText(R.string.nav_menu_export)).perform(click());
-
-		onView(withId(R.id.spinner_export_destination)).perform(click());
-		String[] destinations = getActivity().getResources().getStringArray(R.array.export_destinations);
-
-		onView(withText(destinations[0])).perform(click());
-		onView(withText(format.name())).perform(click());
-
-		onView(withId(R.id.menu_save)).perform(click());
-
-		assertThat(folder.listFiles().length).isEqualTo(1);
-		File exportFile = folder.listFiles()[0];
-		assertThat(exportFile.getName()).endsWith(format.getExtension());
-    }
-
-	@Test
-	public void testDeleteTransactionsAfterExport(){
-		assertThat(mTransactionsDbAdapter.getRecordsCount()).isGreaterThan(0);
-
-		SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit(); //PreferenceActivity.getActiveBookSharedPreferences(getActivity()).edit();
-		editor.putBoolean(mAcccountsActivity.getString(R.string.key_delete_transactions_after_export), true);
-		editor.commit();
-
-		PreferenceActivity.getActiveBookSharedPreferences()
-				.edit()
-				.putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), true)
-				.apply();
-
-		testExport(ExportFormat.XML);
-
-		assertThat(mTransactionsDbAdapter.getRecordsCount()).isEqualTo(0);
-		List<Transaction> transactions = mTransactionsDbAdapter.getAllTransactions();
-
-		editor.putBoolean(mAcccountsActivity.getString(R.string.key_delete_transactions_after_export), false).commit();
-	}
-
-	/**
-	 * Test creating a scheduled export
-	 * Does not work on Travis yet
-	 */
-	@Test
-	public void testShouldCreateExportSchedule(){
-		onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
-		onView(withText(R.string.nav_menu_export)).perform(click());
-
-		onView(withText(ExportFormat.XML.name())).perform(click());
-		onView(withId(R.id.input_recurrence)).perform(click());
-
-		//switch on recurrence dialog
-		onView(allOf(isAssignableFrom(CompoundButton.class), isDisplayed(), isEnabled())).perform(click());
-		onView(withText("OK")).perform(click());
-
-		onView(withId(R.id.menu_save)).perform(click());
-		ScheduledActionDbAdapter scheduledactionDbAdapter = ScheduledActionDbAdapter.getInstance(); //new ScheduledActionDbAdapter(mDb, new RecurrenceDbAdapter(mDb));
-		List<ScheduledAction> scheduledActions = scheduledactionDbAdapter.getAllEnabledScheduledActions();
-		assertThat(scheduledActions)
-				.hasSize(1)
-				.extracting("mActionType").contains(ScheduledAction.ActionType.BACKUP);
-
-		ScheduledAction action = scheduledActions.get(0);
-		assertThat(action.getRecurrence().getPeriodType()).isEqualTo(PeriodType.WEEK);
-		assertThat(action.getEndTime()).isEqualTo(0);
 	}
 
 	@Test

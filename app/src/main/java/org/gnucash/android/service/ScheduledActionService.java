@@ -18,8 +18,10 @@ package org.gnucash.android.service;
 
 import android.app.IntentService;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.PowerManager;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
@@ -36,15 +38,23 @@ import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportAsyncTask;
+import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
+import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.model.Book;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.util.BookUtils;
 
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Service for running scheduled events.
@@ -69,10 +79,11 @@ public class ScheduledActionService extends IntentService {
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, LOG_TAG);
         wakeLock.acquire();
 
+        autoBackup(); //First run automatic backup of all books before doing anything else
         try {
             BooksDbAdapter booksDbAdapter = BooksDbAdapter.getInstance();
             List<Book> books = booksDbAdapter.getAllRecords();
-            for (Book book : books) {
+            for (Book book : books) { //// TODO: 20.04.2017 Retrieve only the book UIDs with new method
                 DatabaseHelper dbHelper = new DatabaseHelper(GnuCashApplication.getAppContext(), book.getUID());
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
                 RecurrenceDbAdapter recurrenceDbAdapter = new RecurrenceDbAdapter(db);
@@ -127,7 +138,7 @@ public class ScheduledActionService extends IntentService {
      */
     private static void executeScheduledEvent(ScheduledAction scheduledAction, SQLiteDatabase db){
         Log.i(LOG_TAG, "Executing scheduled action: " + scheduledAction.toString());
-        int executionCount = scheduledAction.getExecutionCount();
+        int executionCount = 0;
 
         switch (scheduledAction.getActionType()){
             case TRANSACTION:
@@ -139,20 +150,21 @@ public class ScheduledActionService extends IntentService {
                 break;
         }
 
-        //the last run time is computed instead of just using "now" so that if the more than
-        // one period has been skipped, all intermediate transactions can be created
-
-        scheduledAction.setLastRun(System.currentTimeMillis());
-        //set the execution count in the object because it will be checked for the next iteration in the calling loop
-        scheduledAction.setExecutionCount(executionCount); //this call is important, do not remove!!
-        //update the last run time and execution count
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_LAST_RUN,
-                          scheduledAction.getLastRunTime());
-        contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_EXECUTION_COUNT,
-                          scheduledAction.getExecutionCount());
-        db.update(DatabaseSchema.ScheduledActionEntry.TABLE_NAME, contentValues,
-                DatabaseSchema.ScheduledActionEntry.COLUMN_UID + "=?", new String[]{scheduledAction.getUID()});
+        if (executionCount > 0) {
+            scheduledAction.setLastRun(System.currentTimeMillis());
+            // Set the execution count in the object because it will be checked
+            // for the next iteration in the calling loop.
+            // This call is important, do not remove!!
+            scheduledAction.setExecutionCount(scheduledAction.getExecutionCount() + executionCount);
+            // Update the last run time and execution count
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_LAST_RUN,
+                    scheduledAction.getLastRunTime());
+            contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_EXECUTION_COUNT,
+                    scheduledAction.getExecutionCount());
+            db.update(DatabaseSchema.ScheduledActionEntry.TABLE_NAME, contentValues,
+                    DatabaseSchema.ScheduledActionEntry.COLUMN_UID + "=?", new String[]{scheduledAction.getUID()});
+        }
     }
 
     /**
@@ -167,16 +179,25 @@ public class ScheduledActionService extends IntentService {
             return 0;
 
         ExportParams params = ExportParams.parseCsv(scheduledAction.getTag());
+        // HACK: the tag isn't updated with the new date, so set the correct by hand
+        params.setExportStartTime(new Timestamp(scheduledAction.getLastRunTime()));
+        Boolean result = false;
         try {
             //wait for async task to finish before we proceed (we are holding a wake lock)
-            new ExportAsyncTask(GnuCashApplication.getAppContext(), db).execute(params).get();
+            result = new ExportAsyncTask(GnuCashApplication.getAppContext(), db).execute(params).get();
         } catch (InterruptedException | ExecutionException e) {
             Crashlytics.logException(e);
             Log.e(LOG_TAG, e.getMessage());
         }
+        Log.i(LOG_TAG, "Backup/export did not occur. There might have beeen no new transactions to export or it might have crashed");
         return 1;
     }
 
+    /**
+     * Check if a scheduled action is due for execution
+     * @param scheduledAction Scheduled action
+     * @return {@code true} if execution is due, {@code false} otherwise
+     */
     private static boolean shouldExecuteScheduledBackup(ScheduledAction scheduledAction) {
         long now = System.currentTimeMillis();
         long endTime = scheduledAction.getEndTime();
@@ -219,6 +240,7 @@ public class ScheduledActionService extends IntentService {
         int totalPlannedExecutions = scheduledAction.getTotalPlannedExecutionCount();
         List<Transaction> transactions = new ArrayList<>();
 
+        int previousExecutionCount = scheduledAction.getExecutionCount(); // We'll modify it
         //we may be executing scheduled action significantly after scheduled time (depending on when Android fires the alarm)
         //so compute the actual transaction time from pre-known values
         long transactionTime = scheduledAction.computeNextCountBasedScheduledExecutionTime();
@@ -235,6 +257,38 @@ public class ScheduledActionService extends IntentService {
         }
 
         transactionsDbAdapter.bulkAddRecords(transactions, DatabaseAdapter.UpdateMethod.insert);
+        // Be nice and restore the parameter's original state to avoid confusing the callers
+        scheduledAction.setExecutionCount(previousExecutionCount);
         return executionCount;
+    }
+
+    /**
+     * Perform an automatic backup of all books in the database.
+     * This method is run everytime the service is executed
+     */
+    private static void autoBackup(){
+        BooksDbAdapter booksDbAdapter = BooksDbAdapter.getInstance();
+        List<String> bookUIDs = booksDbAdapter.getAllBookUIDs();
+        Context context = GnuCashApplication.getAppContext();
+
+        for (String bookUID : bookUIDs) {
+            String backupFile = BookUtils.getBookBackupFileUri(bookUID);
+            if (backupFile == null){
+                GncXmlExporter.createBackup();
+                continue;
+            }
+
+            try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(context.getContentResolver().openOutputStream(Uri.parse(backupFile)))){
+                GZIPOutputStream gzipOutputStream = new GZIPOutputStream(bufferedOutputStream);
+                OutputStreamWriter writer = new OutputStreamWriter(gzipOutputStream);
+                ExportParams params = new ExportParams(ExportFormat.XML);
+                new GncXmlExporter(params).generateExport(writer);
+                writer.close();
+            } catch (IOException ex) {
+                Log.e(LOG_TAG, "Auto backup failed for book " + bookUID);
+                ex.printStackTrace();
+                Crashlytics.logException(ex);
+            }
+        }
     }
 }

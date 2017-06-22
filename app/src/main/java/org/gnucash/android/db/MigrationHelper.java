@@ -56,6 +56,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -64,6 +65,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -167,12 +169,17 @@ public class MigrationHelper {
      * @throws IOException if an error occurred during the file copy
      */
     static void moveFile(File src, File dst) throws IOException {
+        Log.d(LOG_TAG, String.format(Locale.US, "Moving %s from %s to %s",
+                src.getName(), src.getParent(), dst.getParent()));
         FileChannel inChannel = new FileInputStream(src).getChannel();
         FileChannel outChannel = new FileOutputStream(dst).getChannel();
         try {
             long bytesCopied = inChannel.transferTo(0, inChannel.size(), outChannel);
-            if(bytesCopied >= src.length())
-                src.delete();
+            if(bytesCopied >= src.length()) {
+                boolean result = src.delete();
+                String msg = result ? "Deleted src file: " : "Could not delete src: ";
+                Log.d(LOG_TAG, msg + src.getPath());
+            }
         } finally {
             if (inChannel != null)
                 inChannel.close();
@@ -194,7 +201,7 @@ public class MigrationHelper {
                 for (File src : oldExportFolder.listFiles()) {
                     if (src.isDirectory())
                         continue;
-                    File dst = new File(Exporter.BASE_FOLDER_PATH + "/exports/" + src.getName());
+                    File dst = new File(Exporter.LEGACY_BASE_FOLDER_PATH + "/exports/" + src.getName());
                     try {
                         MigrationHelper.moveFile(src, dst);
                     } catch (IOException e) {
@@ -210,7 +217,7 @@ public class MigrationHelper {
             File oldBackupFolder = new File(oldExportFolder, "backup");
             if (oldBackupFolder.exists()){
                 for (File src : new File(oldExportFolder, "backup").listFiles()) {
-                    File dst = new File(Exporter.BASE_FOLDER_PATH + "/backups/" + src.getName());
+                    File dst = new File(Exporter.LEGACY_BASE_FOLDER_PATH + "/backups/" + src.getName());
                     try {
                         MigrationHelper.moveFile(src, dst);
                     } catch (IOException e) {
@@ -490,8 +497,8 @@ public class MigrationHelper {
     static int upgradeDbToVersion8(SQLiteDatabase db) {
         Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 8");
         int oldVersion = 7;
-        new File(Exporter.BASE_FOLDER_PATH + "/backups/").mkdirs();
-        new File(Exporter.BASE_FOLDER_PATH + "/exports/").mkdirs();
+        new File(Exporter.LEGACY_BASE_FOLDER_PATH + "/backups/").mkdirs();
+        new File(Exporter.LEGACY_BASE_FOLDER_PATH + "/exports/").mkdirs();
         //start moving the files in background thread before we do the database stuff
         new Thread(moveExportedFilesToNewDefaultLocation).start();
 
@@ -1461,6 +1468,18 @@ public class MigrationHelper {
                 .putBoolean(keyUseCompactView, useCompactTrnView)
                 .apply();
 
+        rescheduleServiceAlarm();
+
+
+        return oldVersion;
+    }
+
+    /**
+     * Cancel the existing alarm for the scheduled service and restarts/reschedules the service
+     */
+    private static void rescheduleServiceAlarm() {
+        Context context = GnuCashApplication.getAppContext();
+
         //cancel the existing pending intent so that the alarm can be rescheduled
         Intent alarmIntent = new Intent(context, ScheduledActionService.class);
         PendingIntent pendingIntent = PendingIntent.getService(context, 0, alarmIntent, PendingIntent.FLAG_NO_CREATE);
@@ -1470,8 +1489,143 @@ public class MigrationHelper {
             pendingIntent.cancel();
         }
 
-        GnuCashApplication.startScheduledActionExecutionService(GnuCashApplication.getAppContext());
+        GnuCashApplication.startScheduledActionExecutionService(context);
+    }
 
-        return oldVersion;
+    /**
+     * Move files from {@code srcDir} to {@code dstDir}
+     * Subdirectories will be created in the target as necessary
+     * @param srcDir Source directory which should already exist
+     * @param dstDir Destination directory which should already exist
+     * @see #moveFile(File, File)
+     * @throws IOException if the {@code srcDir} does not exist or {@code dstDir} could not be created
+     * @throws IllegalArgumentException if {@code srcDir} is not a directory
+     */
+    private static void moveDirectory(File srcDir, File dstDir) throws IOException {
+        if (!srcDir.isDirectory()){
+            throw new IllegalArgumentException("Source is not a directory: " + srcDir.getPath());
+        }
+
+        if (!srcDir.exists()){
+            String msg = String.format(Locale.US, "Source directory %s does not exist", srcDir.getPath());
+            Log.e(LOG_TAG, msg);
+            throw new IOException(msg);
+        }
+
+        if (!dstDir.exists() || !dstDir.isDirectory()){
+            Log.w(LOG_TAG, "Target directory does not exist. Attempting to create..." + dstDir.getPath());
+            if (!dstDir.mkdirs()){
+                throw new IOException(String.format("Target directory %s does not exist and could not be created", dstDir.getPath()));
+            }
+        }
+
+        if (srcDir.listFiles() == null) //nothing to see here, move along
+            return;
+
+        for (File src : srcDir.listFiles()){
+            if (src.isDirectory()){
+                File dst = new File(dstDir, src.getName());
+                dst.mkdir();
+                moveDirectory(src, dst);
+                if (!src.delete())
+                    Log.i(LOG_TAG, "Failed to delete directory: " + src.getPath());
+                continue;
+            }
+
+            try {
+                File dst = new File(dstDir, src.getName());
+                MigrationHelper.moveFile(src, dst);
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "Error moving file " + src.getPath());
+                Crashlytics.logException(e);
+            }
+        }
+    }
+
+    /**
+     * Upgrade the database to version 14
+     * <p>
+     *     This migration actually does not change anything in the database
+     *     It moves the backup files to a new backup location which does not require SD CARD write permission
+     * </p>
+     * @param db SQLite database to be upgraded
+     * @return New database version
+     */
+    public static int upgradeDbToVersion14(SQLiteDatabase db){
+        Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 14");
+        int oldDbVersion = 13;
+        File backupFolder = new File(Exporter.BASE_FOLDER_PATH);
+        backupFolder.mkdir();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                File srcDir = new File(Exporter.LEGACY_BASE_FOLDER_PATH);
+                File dstDir = new File(Exporter.BASE_FOLDER_PATH);
+                try {
+                    moveDirectory(srcDir, dstDir);
+                    File readmeFile = new File(Exporter.LEGACY_BASE_FOLDER_PATH, "README.txt");
+                    FileWriter writer = null;
+                    writer = new FileWriter(readmeFile);
+                    writer.write("Backup files have been moved to " + dstDir.getPath() +
+                            "\nYou can now delete this folder");
+                    writer.flush();
+                } catch (IOException | IllegalArgumentException ex) {
+                    ex.printStackTrace();
+                    String msg = String.format("Error moving files from %s to %s", srcDir.getPath(), dstDir.getPath());
+                    Log.e(LOG_TAG, msg);
+                    Crashlytics.log(msg);
+                    Crashlytics.logException(ex);
+                }
+
+            }
+        }).start();
+
+        return 14;
+    }
+
+    /**
+     * Upgrades the database to version 14.
+     * <p>This migration makes the following changes to the database:
+     * <ul>
+     *     <li>Fixes accounts referencing a default transfer account that no longer
+     *         exists (see #654)</li>
+     * </ul>
+     * </p>
+     * @param db SQLite database to be upgraded
+     * @return New database version, 14 if migration succeeds, 13 otherwise
+     */
+    static int upgradeDbToVersion15(SQLiteDatabase db) {
+        Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 15");
+        int dbVersion = 14;
+
+        db.beginTransaction();
+        try {
+            ContentValues contentValues = new ContentValues();
+            contentValues.putNull(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID);
+            db.update(
+                    AccountEntry.TABLE_NAME,
+                    contentValues,
+                    AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID
+                            + " NOT IN (SELECT " + AccountEntry.COLUMN_UID
+                            + "             FROM " + AccountEntry.TABLE_NAME + ")",
+                    null);
+            db.setTransactionSuccessful();
+            dbVersion = 15;
+        } finally {
+            db.endTransaction();
+        }
+
+        //remove previously saved export destination index because the number of destinations has changed
+        //an invalid value would lead to crash on start
+        Context context = GnuCashApplication.getAppContext();
+        android.preference.PreferenceManager.getDefaultSharedPreferences(context)
+                .edit()
+                .remove(context.getString(R.string.key_last_export_destination))
+                .apply();
+
+        //the default interval has been changed from daily to hourly with this release. So reschedule alarm
+        rescheduleServiceAlarm();
+        return dbVersion;
     }
 }

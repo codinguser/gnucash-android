@@ -16,159 +16,133 @@
  limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="title_create_account">Create Account</string>
-  <string name="title_edit_account">Edit Account</string>
-  <string name="info_details">Info</string>
-  <string name="menu_export">Export&#8230;</string>
-  <string name="description_add_transaction_icon">Add a new transaction to an account</string>
-  <string name="label_no_accounts">No accounts to display</string>
-  <string name="label_account_name">Account name</string>
-  <string name="btn_cancel">Cancel</string>
-  <string name="btn_save">Save</string>
+  <string name="title_create_account">Vytvořit účet</string>
+  <string name="title_edit_account">Upravit účet</string>
+  <string name="description_add_transaction_icon">Přidat novou transakci na účet</string>
+  <string name="description_view_account_icon">Zobrazit podrobnosti o účtu</string>
+  <string name="label_no_accounts">Žádné účty ke zobrazení</string>
+  <string name="label_account_name">Název účtu</string>
+  <string name="btn_cancel">Zrušit</string>
+  <string name="btn_save">Uložit</string>
   <string name="btn_test">Test</string>
-  <string name="label_passcode">Enter Passcode</string>
-  <string name="toast_wrong_passcode">Wrong passcode, please try again</string>
-  <string name="toast_passcode_set">Passcode set</string>
-  <string name="label_confirm_passcode">Please confirm your passcode</string>
-  <string name="toast_invalid_passcode_confirmation">Invalid passcode confirmation. Please try again</string>
-  <string name="label_transaction_name">Description</string>
-  <string name="label_transaction_amount">Amount</string>
-  <string name="title_add_transaction">New transaction</string>
-  <string name="label_no_transactions">No transactions to display</string>
-  <string name="label_timeanddate">DATE &amp; TIME</string>
-  <string name="label_account">Account</string>
-  <string name="label_debit">DEBIT</string>
-  <string name="label_credit">CREDIT</string>
-  <string name="title_accounts">Accounts</string>
-  <string name="title_transactions">Transactions</string>
-  <string name="menu_delete">Delete</string>
-  <string name="alert_dialog_ok_delete">Delete</string>
-  <string name="alert_dialog_cancel">Cancel</string>
-  <string name="toast_account_deleted">Account deleted</string>
-  <string name="title_confirm_delete">Confirm delete</string>
-  <string name="delete_account_confirmation_message">All transactions in this account will also be deleted</string>
-  <string name="title_edit_transaction">Edit Transaction</string>
-  <string name="label_transaction_description">Add note</string>
-  <string name="menu_move">MOVE</string>
-  <string name="title_selected">%1$d selected</string>
-  <string name="label_account_balance">Balance:</string>
-  <string name="label_export_destination">Export To:</string>
-  <string name="title_export_dialog">Export Transactions</string>
-  <string name="option_export_all_transactions">Export all transactions</string>
-  <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
-  <string name="toast_export_error">Error exporting %1$s file</string>
-  <string name="btn_export">Export</string>
-  <string name="option_delete_after_export">Delete transactions after export</string>
-  <string name="hint_delete_after_export">All exported transactions will be deleted when exporting is completed</string>
-  <string name="title_settings">Settings</string>
+  <string name="label_passcode">Zadejte heslo</string>
+  <string name="toast_wrong_passcode">Chybné heslo, prosím zkuste to znovu</string>
+  <string name="toast_passcode_set">Heslo nastaveno</string>
+  <string name="label_confirm_passcode">Potvrďte prosím své heslo</string>
+  <string name="toast_invalid_passcode_confirmation">Přístupový kód je neplatný. Zkuste to prosím znovu</string>
+  <string name="label_transaction_name">Popis</string>
+  <string name="label_transaction_amount">Částka</string>
+  <string name="title_add_transaction">Nová transakce</string>
+  <string name="label_no_transactions">Žádné transakce k zobrazení</string>
+  <string name="label_debit">DEBET</string>
+  <string name="label_credit">ÚVĚR</string>
+  <string name="title_accounts">Účty</string>
+  <string name="title_transactions">Transakce</string>
+  <string name="menu_delete">Smazat</string>
+  <string name="alert_dialog_ok_delete">Smazat</string>
+  <string name="alert_dialog_cancel">Zrušit</string>
+  <string name="toast_account_deleted">Účet smazán</string>
+  <string name="title_confirm_delete">Potvrdit smazání</string>
+  <string name="title_edit_transaction">Upravit transakci</string>
+  <string name="label_transaction_description">Přidat poznámku</string>
+  <string name="title_selected">Vybráno %1$d</string>
+  <string name="label_account_balance">Bilance:</string>
+  <string name="label_export_destination">Exportovat do:</string>
+  <string name="title_export_dialog">Exportovat transakce</string>
+  <string name="hint_export_choice">Ve výchozím nastavení jsou exportovány pouze nové transakce přidané od posledního exportu. Zaškrtněte tuto volbu, chcete-li exportovat všechny transakce</string>
+  <string name="toast_export_error">Chyba při exportu %1$s souboru</string>
+  <string name="btn_export">Exportovat</string>
+  <string name="option_delete_after_export">Odstranit transakce po exportu</string>
+  <string name="hint_delete_after_export">Všechny exportované transakce budou odstraněny po dokončení exportu</string>
+  <string name="title_settings">Nastavení</string>
   <string-array name="export_destinations">
-    <item>SD Card</item>
-    <item>DropBox</item>
-    <item>Google Drive</item>
+    <item>Uložit jako&#8230;</item>
+    <item>Dropbox</item>
     <item>ownCloud</item>
-    <item>Send to&#8230;</item>
+    <item>Odeslat&#8230;</item>
   </string-array>
-  <string name="btn_move">Move</string>
-  <string name="title_move_transactions">Move %1$d transaction(s)</string>
-  <string name="label_move_destination">Destination Account</string>
-  <string name="permission_access_sdcard">Access SD Card</string>
-  <string name="toast_incompatible_currency">Cannot move transactions.\nThe destination account uses a different currency from origin account</string>
-  <string name="header_general_settings">General</string>
-  <string name="header_about_gnucash">About</string>
-  <string name="title_choose_currency">Choose default currency</string>
-  <string name="title_default_currency">Default currency</string>
-  <string name="summary_default_currency">Default currency to assign to new accounts</string>
-  <string name="label_permission_record_transactions">Enables recording transactions in GnuCash for Android</string>
-  <string name="label_permission_create_accounts">Enables creation of accounts in GnuCash for Android</string>
-  <string name="label_permission_group">Your GnuCash data</string>
-  <string name="description_permission_group">Read and modify GnuCash data</string>
-  <string name="label_permission_record_transaction">Record transactions in GnuCash</string>
-  <string name="label_permission_create_account">Create accounts in GnuCash</string>
-  <string name="label_display_account">Display account</string>
-  <string name="btn_create_accounts">Create Accounts</string>
-  <string name="title_default_accounts">Select accounts to create</string>
-  <string name="error_no_accounts">No accounts exist in GnuCash.\nCreate an account before adding a widget</string>
-  <string name="title_build_version">Build version</string>
-  <string name="title_license">License</string>
-  <string name="summary_licence_details">Apache License v2.0. Click for details</string>
-  <string name="title_general_prefs">General Preferences</string>
-  <string name="label_widget_configuration">Select Account</string>
-  <string name="toast_no_transactions_to_export">There are no transactions available to export</string>
-  <string name="header_passcode_settings">Passcode</string>
-  <string name="title_passcode_preferences">Passcode Preferences</string>
-  <string name="title_passcode_enabled">Passcode Turned On</string>
-  <string name="title_passcode_disabled">Passcode Turned Off</string>
-  <string name="title_change_passcode">Change Passcode</string>
-  <string name="title_about_gnucash">About GnuCash</string>
-  <string name="summary_about_gnucash">A mobile finance management and expense-tracker designed for Android</string>
-  <string name="title_about">About</string>
-  <string name="toast_format_exported_to">%1$s file exported to:\n</string>
+  <string name="btn_move">Přesunout</string>
+  <string name="title_move_transactions">Přesunout transakci(e) %1$d</string>
+  <string name="label_move_destination">Cílový účet</string>
+  <string name="toast_incompatible_currency">Nelze přesunout transakce.\nCílový účet používá jinou měnu než původu účet</string>
+  <string name="header_general_settings">Všeobecné</string>
+  <string name="header_about_gnucash">O Produktu</string>
+  <string name="title_choose_currency">Vyberte výchozí měnu</string>
+  <string name="title_default_currency">Výchozí měna</string>
+  <string name="summary_default_currency">Výchozí měna k novým účtům</string>
+  <string name="label_permission_record_transactions">Umožňuje záznam transakcí v GnuCash pro Android</string>
+  <string name="label_permission_create_accounts">Umožňuje vytváření účtů v GnuCash pro Android</string>
+  <string name="label_permission_group">Vaše GnuCash data</string>
+  <string name="description_permission_group">Číst a upravovat GnuCash data</string>
+  <string name="label_permission_record_transaction">Záznam transakcí v GnuCash</string>
+  <string name="label_permission_create_account">Vytvořit účty v GnuCash</string>
+  <string name="label_display_account">Zobrazit účet</string>
+  <string name="label_hide_account_balance">Skrýt zůstatek účtu ve widget</string>
+  <string name="btn_create_accounts">Vytvořit účet</string>
+  <string name="error_no_accounts">Neexistují účty v GnuCash.\nVytvořte účet před přidáním widgetu</string>
+  <string name="title_license">Licence</string>
+  <string name="summary_licence_details">Licence Apache v2.0. Klikněte pro podrobnosti</string>
+  <string name="title_general_prefs">Všeobecné předvolby</string>
+  <string name="label_widget_configuration">Vybrat účet</string>
+  <string name="toast_no_transactions_to_export">Neexistují žádné transakce pro export</string>
+  <string name="title_passcode_preferences">Předvolby hesla</string>
+  <string name="title_enable_passcode">Enable passcode</string>
+  <string name="title_change_passcode">Změnit heslo</string>
+  <string name="title_about_gnucash">O GnuCash</string>
   <string name="title_export_email">GnuCash Android %1$s export</string>
-  <string name="description_export_email">GnuCash Android Export from </string>
-  <string name="header_transaction_settings">Transactions</string>
-  <string name="title_transaction_preferences">Transaction Preferences</string>
-  <string name="title_account_preferences">Account Preferences</string>
-  <string name="title_default_transaction_type">Default Transaction Type</string>
-  <string name="summary_default_transaction_type">The type of transaction to use by default, CREDIT or DEBIT</string>
+  <string name="description_export_email">GnuCash Android exportováno z </string>
+  <string name="header_transaction_settings">Transakce</string>
+  <string name="title_transaction_preferences">Transakce předvolby</string>
+  <string name="title_account_preferences">Předvolby účtu</string>
+  <string name="title_default_transaction_type">Výchozí typ transakce</string>
+  <string name="summary_default_transaction_type">Typ transakce pro výchozí použití, KREDITNÍ nebo DEBETNÍ</string>
   <string-array name="transaction_types">
-    <item>CREDIT</item>
-    <item>DEBIT</item>
+    <item>ÚVĚR</item>
+    <item>DEBET</item>
   </string-array>
-  <string name="msg_delete_all_transactions_confirmation">Are you sure you want to delete ALL transactions?</string>
-  <string name="msg_delete_transaction_confirmation">Are you sure you want to delete this transaction?</string>
+  <string name="msg_delete_all_transactions_confirmation">Opravdu chcete odstranit všechny transakce?</string>
+  <string name="msg_delete_transaction_confirmation">Opravdu chcete odstranit tuto transakci?</string>
   <string name="title_export_preference_category">Export</string>
-  <string name="title_export_all_transactions">Export all transactions</string>
-  <string name="title_always_delete_exported_transactions">Delete exported transactions</string>
-  <string name="title_default_export_email">Default export email</string>
-  <string name="summary_default_export_email">The default email address to send exports to. You can still change this when you export.</string>
-  <string name="label_double_entry_account">Transfer Account</string>
-  <string name="summary_use_double_entry">All transactions will be a transfer from one account to another</string>
+  <string name="title_export_all_transactions">Exportovat všechny transakce</string>
+  <string name="title_always_delete_exported_transactions">Odstranit exportované transakce</string>
+  <string name="title_default_export_email">Výchozí exportní e-mail</string>
+  <string name="summary_default_export_email">Výchozí e-mailovou adresa pro export. Můžete změnit při exportu.</string>
+  <string name="summary_use_double_entry">Všechny transakce budou převedeny z jednoho účtu na jiný</string>
   <string name="title_use_double_entry">Activate Double Entry</string>
-  <string name="account_balance">Balance</string>
-  <string name="toast_no_account_name_entered">Enter an account name to create an account</string>
-  <string name="label_account_currency">Currency</string>
+  <string name="account_balance">Zůstatek</string>
+  <string name="toast_no_account_name_entered">Zadejte název účtu pro jeho vytvoření</string>
+  <string name="label_account_currency">Měna</string>
   <string name="label_parent_account">Parent account</string>
-  <string name="title_xml_ofx_header">Use XML OFX header</string>
-  <string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>
-  <string name="title_whats_new">What\'s New</string>
+  <string name="title_xml_ofx_header">Použit XML OFX hlavičku</string>
+  <string name="summary_xml_ofx_header">Použijte tuto možnost při exportu do aplikace jiného výrobce než GnuCash pro stolní počítače</string>
+  <string name="title_whats_new">Co je nového</string>
   <string name="whats_new">
-        - Support for multiple different books \n
-        - Adds ownCloud as destination for exports\n
-        - Compact view for transactions list\n
-        - Re-design of passcode lock screen\n
-        - Improved handling of scheduled transactions\n
+        - Added ability to export to any service which supports the Storage Access Framework \n
+        - Added option to set the location for regular automatic backups (See backup settings)\n
+        - Added Bitcoin currency support\n
+        - Added support for renaming books\n
         - Multiple bug fixes and improvements\n
 	</string>
-  <string name="label_dismiss">Dismiss</string>
-  <string name="toast_transanction_amount_required">Enter an amount to save the transaction</string>
-  <string name="toast_error_edit_multi_currency_transaction">Multi-currency transactions cannot be modified</string>
-  <string name="menu_import_accounts">Import GnuCash Accounts</string>
-  <string name="btn_import_accounts">Import Accounts</string>
-  <string name="toast_error_importing_accounts">An error occurred while importing the GnuCash accounts</string>
-  <string name="toast_success_importing_accounts">GnuCash Accounts successfully imported</string>
-  <string name="summary_import_accounts">Import account structure exported from GnuCash desktop</string>
-  <string name="title_import_accounts">Import GnuCash XML</string>
-  <string name="summary_delete_all_accounts">Delete all accounts in the database. All transactions will be deleted as
-        well.
-    </string>
-  <string name="title_delete_all_accounts">Delete all accounts</string>
-  <string name="header_account_settings">Accounts</string>
-  <string name="toast_all_accounts_deleted">All accounts have been successfully deleted</string>
-  <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions?\n\nThis
-        operation cannot be undone!
-    </string>
-  <string name="label_account_type">Account Type</string>
-  <string name="summary_delete_all_transactions">All transactions in all accounts will be deleted!</string>
-  <string name="title_delete_all_transactions">Delete all transactions</string>
-  <string name="toast_all_transactions_deleted">All transactions successfully deleted!</string>
-  <string name="title_progress_importing_accounts">Importing accounts</string>
-  <string name="toast_tap_again_to_confirm_delete">Tap again to confirm. ALL entries will be deleted!!</string>
-  <string name="section_header_transactions">Transactions</string>
+  <string name="label_dismiss">Zrušit</string>
+  <string name="toast_transanction_amount_required">Zadejte částku k uložení transakce</string>
+  <string name="toast_error_importing_accounts">Při importu GnuCash účtů došlo k chybě</string>
+  <string name="toast_success_importing_accounts">GnuCash účty úspěšně importovány</string>
+  <string name="summary_import_accounts">Importovat strukturu účtu exportovaného z GnuCash pro stolní počítače</string>
+  <string name="title_import_accounts">Importovat GnuCash XML</string>
+  <string name="summary_delete_all_accounts">Smazáním všech účtů v databázi dojde také ke smazání všech transakcí.    </string>
+  <string name="title_delete_all_accounts">Smazat všechny účty</string>
+  <string name="header_account_settings">Účty</string>
+  <string name="toast_all_accounts_deleted">Všechny účty byly úspěšně smazány</string>
+  <string name="confirm_delete_all_accounts">Opravdu chcete smazat všechny účty a transakce? \n\nTato operaci nelze vrátit zpět!    </string>
+  <string name="summary_delete_all_transactions">Budou smazány všechny transakce ve všech účtech!</string>
+  <string name="title_delete_all_transactions">Smazat všechny transakce</string>
+  <string name="toast_all_transactions_deleted">Všechny transakce byly úspěšně smazány!</string>
+  <string name="title_progress_importing_accounts">Importování účtů</string>
+  <string name="section_header_transactions">Transakce</string>
   <string name="section_header_subaccounts">Sub-Accounts</string>
-  <string name="menu_search_accounts">Search</string>
-  <string name="title_default_export_format">Default Export Format</string>
+  <string name="menu_search_accounts">Vyhledat</string>
+  <string name="title_default_export_format">Výchozí formát pro Export</string>
   <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
-  <string name="menu_export_transactions">Export transactions&#8230;</string>
   <string name="label_recurring_transaction">Recurrence</string>
   <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">Imbalance</string>
@@ -215,39 +189,30 @@
   <string name="summary_create_default_accounts">Creates default GnuCash commonly-used account structure</string>
   <string name="title_create_default_accounts">Create default accounts</string>
   <string name="msg_confirm_create_default_accounts_setting">A new book will be opened with the default accounts\n\nYour current accounts and transactions will not be modified!</string>
-  <string name="menu_scheduled_transactions">Scheduled Transactions</string>
-  <string name="msg_confirm_create_default_accounts_first_run">Welcome to GnuCash Android! \nYou can either create
-        a hierarchy of commonly-used accounts, or import your own GnuCash account structure. \n\nBoth options are also
-        available in app Settings so you can decide later.
-    </string>
   <string name="title_scheduled_transactions">Transactions</string>
   <string name="title_select_export_destination">Select destination for export</string>
   <string name="hint_split_memo">Memo</string>
   <string name="label_spend">Spend</string>
   <string name="label_receive">Receive</string>
   <string name="label_withdrawal">Withdrawal</string>
-  <string name="label_deposit">Deposit</string>
-  <string name="label_payment">Payment</string>
-  <string name="label_charge">Charge</string>
-  <string name="label_decrease">Decrease</string>
-  <string name="label_increase">Increase</string>
-  <string name="label_income">Income</string>
-  <string name="label_rebate">Rebate</string>
-  <string name="label_expense">Expense</string>
-  <string name="label_bill">Bill</string>
-  <string name="label_invoice">Invoice</string>
-  <string name="label_buy">Buy</string>
-  <string name="label_sell">Sell</string>
-  <string name="label_repeats">Repeats</string>
-  <string name="toast_no_recent_backup">No recent backup found</string>
-  <string name="account_name_opening_balances">Opening Balances</string>
-  <string name="account_name_equity">Equity</string>
-  <string name="summary_save_opening_balances">Enable to save the current account balance (before deleting transactions) as new opening balance after deleting transactions
-    </string>
-  <string name="title_save_opening_balances">Save account opening balances</string>
-  <string name="export_warning_ofx">OFX does not support double-entry transactions</string>
+  <string name="label_deposit">Vklad</string>
+  <string name="label_payment">Platba</string>
+  <string name="label_charge">Poplatek</string>
+  <string name="label_decrease">Snížení</string>
+  <string name="label_increase">Zvýšení</string>
+  <string name="label_income">Příjem</string>
+  <string name="label_rebate">Sleva</string>
+  <string name="label_expense">Výdaj</string>
+  <string name="label_bill">Účet</string>
+  <string name="label_invoice">Faktura</string>
+  <string name="label_buy">Koupit</string>
+  <string name="label_sell">Prodej</string>
+  <string name="account_name_opening_balances">Počáteční zůstatky</string>
+  <string name="account_name_equity">Vlastní kapitál</string>
+  <string name="summary_save_opening_balances">Povolit uložení saldo běžného účtu (před odstraněním transakcí) jako nový počáteční zůstatek po odstranění transakcí    </string>
+  <string name="title_save_opening_balances">Uložit počáteční zůstatek účet</string>
+  <string name="export_warning_ofx">OFX nepodporuje transakce podvojného účetnictní</string>
   <string name="export_warning_qif">Generates separate QIF files per currency</string>
-  <string name="title_transaction_splits">Transaction splits</string>
   <string name="label_imbalance">Imbalance:</string>
   <string name="btn_add_split">Add split</string>
   <string name="menu_title_favorite">Favorite</string>
@@ -258,10 +223,8 @@
   <string name="title_line_chart">Line Chart</string>
   <string name="title_bar_chart">Bar Chart</string>
   <string name="title_report_prefs">Report Preferences</string>
-  <string name="label_report_currency">Select currency</string>
   <string name="title_use_account_color">Account color in reports</string>
   <string name="summary_use_account_color">Use account color in the bar/pie chart</string>
-  <string name="header_report_settings">Reports</string>
   <string name="menu_order_by_size">Order by size</string>
   <string name="menu_toggle_legend">Show legend</string>
   <string name="menu_toggle_labels">Show labels</string>
@@ -269,7 +232,6 @@
   <string name="menu_toggle_average_lines">Show average lines</string>
   <string name="menu_group_smaller_slices">Group Smaller Slices</string>
   <string name="label_chart_no_data">No chart data available</string>
-  <string name="label_chart_overall">Overall</string>
   <string name="label_chart_total">Total</string>
   <string name="label_other_slice">Other</string>
   <string name="toast_chart_percentage_mode_total">The percentage of selected value calculated from the total amount</string>
@@ -287,43 +249,44 @@
   <string name="title_backup_preference_category">Backup</string>
   <string name="summary_dropbox_sync">Enable exporting to DropBox</string>
   <string name="summary_owncloud_sync">Enable exporting to ownCloud</string>
-  <string name="title_select_gnucash_xml_file">Select GnuCash XML file</string>
   <string name="title_backup_prefs">Backup Preferences</string>
   <string name="title_create_backup_pref">Create Backup</string>
-  <string name="summary_create_backup_pref">By default backups are saved to the SDCARD</string>
-  <string name="summary_restore_backup_pref">Select a specific backup to restore</string>
+  <string name="summary_create_backup_pref">Create a backup of the active book</string>
+  <string name="summary_restore_backup_pref">Restore most recent backup of active book</string>
   <string name="toast_backup_successful">Backup successful</string>
   <string name="toast_backup_failed">Backup failed</string>
   <string name="export_warning_xml">Exports all accounts and transactions</string>
-  <string name="title_google_drive_sync_pref">Enable Google Drive</string>
-  <string name="summary_google_drive_sync">Enable exporting to Google Drive</string>
   <string name="toast_install_file_manager">Install a file manager to select files</string>
   <string name="title_select_backup_to_restore">Select backup to restore</string>
   <string name="nav_menu_favorites">Favorites</string>
   <string name="nav_menu_open">Open&#8230;</string>
   <string name="nav_menu_reports">Reports</string>
-  <string name="nav_menu_scheduled_transactions">Scheduled Transactions</string>
   <string name="nav_menu_export">Export&#8230;</string>
-  <string name="nav_menu_settings">Settings</string>
-  <string name="username">User Name</string>
-  <string name="password">Password</string>
+  <string name="nav_menu_settings">Nastavení</string>
+  <string name="username">Uživatelské jméno</string>
+  <string name="password">Heslo</string>
   <string name="owncloud_pref">owncloud</string>
   <string name="owncloud_server">https://</string>
-  <string name="owncloud_server_invalid">OC server not found</string>
-  <string name="owncloud_user_invalid">OC username/password invalid</string>
-  <string name="owncloud_dir_invalid">Invalid chars: \\ &lt; &gt; : \&quot; | * ? </string>
+  <string name="owncloud_server_invalid">OC server nebyl nalezen</string>
+  <string name="owncloud_user_invalid">OC uživatelské jméno/heslo je neplatné</string>
+  <string name="owncloud_dir_invalid">Neplatné znaky: \\ &lt; &gt;: \&quot;| * ? </string>
   <string name="owncloud_server_ok">OC server OK</string>
-  <string name="owncloud_user_ok">OC username/password OK</string>
-  <string name="owncloud_dir_ok">Dir name OK</string>
+  <string name="owncloud_user_ok">OC uživatelské jméno/heslo OK</string>
+  <string name="owncloud_dir_ok">Název složky OK</string>
+  <plurals name="label_every_x_hours">
+    <item quantity="one">Každou hodinu</item>
+    <item quantity="few">Every %d hours</item>
+    <item quantity="other">Every %d hours</item>
+  </plurals>
   <plurals name="label_every_x_days">
-    <item quantity="one">Daily</item>
-    <item quantity="few">Every %d days</item>
-    <item quantity="other">Every %d days</item>
+    <item quantity="one">Denně</item>
+    <item quantity="few">Každých %d dní</item>
+    <item quantity="other">Každých %d dní</item>
   </plurals>
   <plurals name="label_every_x_weeks">
-    <item quantity="one">Weekly</item>
-    <item quantity="few">Every %d weeks</item>
-    <item quantity="other">Every %d weeks</item>
+    <item quantity="one">Týdně</item>
+    <item quantity="few">Každých %d týdnů</item>
+    <item quantity="other">Každých %d týdnů</item>
   </plurals>
   <plurals name="label_every_x_months">
     <item quantity="one">Monthly</item>
@@ -338,10 +301,8 @@
   <string name="title_enable_crashlytics">Enable Crash Logging</string>
   <string name="msg_enable_crashlytics">Automatically send information about app malfunction to the developers.</string>
   <string name="label_export_format"> Format</string>
-  <string name="toast_backup_folder_not_found">Backup folder cannot be found. Make sure the SD Card is mounted!</string>
   <string name="label_old_passcode">Enter your old passcode</string>
   <string name="label_new_passcode">Enter your new passcode</string>
-  <string name="nav_menu_scheduled_backups">Scheduled Exports</string>
   <string name="title_scheduled_exports">Exports</string>
   <string name="label_no_scheduled_exports_to_display">No scheduled exports to display</string>
   <string name="title_create_export_schedule">Create export schedule</string>
@@ -352,7 +313,6 @@
   <string name="label_no_favorite_accounts">No favorite accounts</string>
   <string name="nav_menu_scheduled_actions">Scheduled Actions</string>
   <string name="label_scheduled_action_ended">"Ended, last executed on %1$s"</string>
-  <string name="label_select_bar_to_view_details">Select a bar to view details</string>
   <string name="btn_wizard_next">Next</string>
   <string name="btn_wizard_finish">Done</string>
   <string name="wizard_title_default_currency">Default Currency</string>
@@ -373,8 +333,6 @@
   <string name="toast_error_check_split_amounts">Check that all splits have valid amounts before saving!</string>
   <string name="label_error_invalid_expression">Invalid expression!</string>
   <string name="toast_scheduled_recurring_transaction">Scheduled recurring transaction</string>
-  <string name="error_exchange_rate_required">An exchange rate is required</string>
-  <string name="error_converted_amount_required">The converted amount is required</string>
   <string name="title_transfer_funds">Transfer Funds</string>
   <string name="nav_menu_help"><![CDATA[Help & Feedback]]></string>
   <string name="label_select_pie_slice_to_see_details">Select a slice to see details</string>
@@ -393,7 +351,6 @@
   <string name="label_assets">Assets</string>
   <string name="label_liabilities">Liabilities</string>
   <string name="label_equity">Equity</string>
-  <string name="label_total_liabilities_and_equity"><![CDATA[Total Liabilites & Equity]]></string>
   <string name="label_move_to">Move to:</string>
   <string name="menu_group_by">Group By</string>
   <string name="menu_group_by_month">Month</string>
@@ -408,7 +365,6 @@
   <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
   <string name="menu_move_transaction">Move&#8230;</string>
   <string name="menu_duplicate_transaction">Duplicate</string>
-  <string name="nav_menu_budgets">Budgets</string>
   <string name="title_cash_flow_report">Cash Flow</string>
   <string name="title_budgets">Budgets</string>
   <string name="title_use_compact_list">Enable compact view</string>
@@ -482,7 +438,23 @@
   <string name="label_recommend_app">Recommend in Play Store</string>
   <string name="repeat_until_date">until %1$s</string>
   <string name="repeat_on_weekday">on %1$s</string>
-  <string name="repeat_x_times">for %1$s times</string>
+  <string name="repeat_x_times">for %1$d times</string>
   <string name="menu_show_compact_view">Compact View</string>
   <string name="book_default_name">Book %1$d</string>
+  <string name="last_export_time_never">never</string>
+  <string name="title_rename_book">Rename Book</string>
+  <string name="btn_rename">Rename</string>
+  <string name="menu_rename">Rename</string>
+  <string name="title_select_backup_file">Select backup file</string>
+  <string name="summary_select_backup_file">Select a file for automatic backups</string>
+  <string name="title_confirm_restore_backup">Confirm restore from backup</string>
+  <string name="msg_confirm_restore_backup_into_new_book">A new book will be opened with the contents of this backup. Do you wish to proceed?</string>
+  <string name="btn_restore">Restore</string>
+  <string name="title_no_backups_found">No backups found</string>
+  <string name="msg_no_backups_to_restore_from">There are no existing backup files to restore from</string>
+  <!-- This is the filename for default backups. So use only simple characters and no spaces. Do not change the extension -->
+  <string name="label_backup_filename">gnucash_android_backup.gnca</string>
+  <string name="label_select_destination_after_export">Select the destination after export is complete</string>
+  <string name="label_dropbox_export_destination">Export to \'/Apps/GnuCash Android/\' folder on Dropbox</string>
+  <string name="title_section_preferences">Preferences</string>
 </resources>

@@ -21,6 +21,7 @@ import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import org.gnucash.android.R;
+import org.gnucash.android.db.BookDbHelper;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.model.Book;
 import org.gnucash.android.test.ui.util.DisableAnimationsRule;
@@ -37,10 +38,13 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.swipeUp;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.allOf;
 
 /**
  * Test support for multiple books in the application
@@ -117,6 +121,28 @@ public class MultiBookTest {
                 .perform(click());
 
         assertThat(mBooksDbAdapter.getRecordsCount()).isEqualTo(bookCount+1);
+    }
+
+    //TODO: Finish implementation of this test
+    public void testDeleteBook(){
+        long bookCount = mBooksDbAdapter.getRecordsCount();
+
+        Book book = new Book();
+        String displayName = "To Be Deleted";
+        book.setDisplayName(displayName);
+        mBooksDbAdapter.addRecord(book);
+
+        assertThat(mBooksDbAdapter.getRecordsCount()).isEqualTo(bookCount + 1);
+
+        shouldOpenBookManager();
+
+        onView(allOf(withParent(hasDescendant(withText(displayName))),
+                withId(R.id.options_menu))).perform(click());
+
+        onView(withText(R.string.menu_delete)).perform(click());
+        onView(withText(R.string.btn_delete_book)).perform(click());
+
+        assertThat(mBooksDbAdapter.getRecordsCount()).isEqualTo(bookCount);
     }
 
     private static void sleep(long millis){
