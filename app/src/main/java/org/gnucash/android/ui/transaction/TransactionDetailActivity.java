@@ -42,7 +42,9 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
 
     @BindView(R.id.trn_description) TextView mTransactionDescription;
     @BindView(R.id.trn_time_and_date) TextView mTimeAndDate;
+    @BindView(R.id.row_trn_recurrence) View mRowRecurrence;
     @BindView(R.id.trn_recurrence) TextView mRecurrence;
+    @BindView(R.id.row_trn_notes) View mRowNotes;
     @BindView(R.id.trn_notes) TextView mNotes;
     @BindView(R.id.toolbar) Toolbar mToolBar;
     @BindView(R.id.transaction_account) TextView mTransactionAccount;
@@ -148,17 +150,16 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
         if (transaction.getScheduledActionUID() != null){
             ScheduledAction scheduledAction = ScheduledActionDbAdapter.getInstance().getRecord(transaction.getScheduledActionUID());
             mRecurrence.setText(scheduledAction.getRepeatString());
-            findViewById(R.id.row_trn_recurrence).setVisibility(View.VISIBLE);
-
+            mRowRecurrence.setVisibility(View.VISIBLE);
         } else {
-            findViewById(R.id.row_trn_recurrence).setVisibility(View.GONE);
+            mRowRecurrence.setVisibility(View.GONE);
         }
 
         if (transaction.getNote() != null && !transaction.getNote().isEmpty()){
             mNotes.setText(transaction.getNote());
-            findViewById(R.id.row_trn_notes).setVisibility(View.VISIBLE);
+            mRowNotes.setVisibility(View.VISIBLE);
         } else {
-            findViewById(R.id.row_trn_notes).setVisibility(View.GONE);
+            mRowNotes.setVisibility(View.GONE);
         }
 
     }
