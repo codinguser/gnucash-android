@@ -39,114 +39,113 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
                 <TextView android:id="@+id/trn_description"
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          tools:text="Transaction description which can be rather long"
-                          android:gravity="bottom"
-                          android:maxLines="3"
-                          android:paddingBottom="20dp"
-                          android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"/>
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="Transaction description which can be rather long"
+                    android:gravity="bottom"
+                    android:maxLines="3"
+                    android:paddingBottom="20dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"/>
 
                 <TextView android:id="@+id/transaction_account"
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:gravity="bottom"
-                          android:layout_gravity="bottom"
-                          android:layout_marginStart="8dp"
-                          android:layout_marginLeft="8dp"
-                          android:maxLines="1"
-                          android:ellipsize="start"
-                          android:textStyle="italic"
-                          android:textColor="@android:color/white"
-                          tools:text="Expenses:Computer"/>
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:layout_gravity="bottom"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:maxLines="1"
+                    android:ellipsize="start"
+                    android:textStyle="italic"
+                    android:textColor="@android:color/white"
+                    tools:text="Expenses:Computer"/>
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <TableLayout android:id="@+id/fragment_transaction_details"
-                         android:layout_width="match_parent"
-                         android:layout_height="wrap_content"
-                         android:padding="@dimen/dialog_padding"
-                         android:layout_marginTop="20dp"
-                         android:stretchColumns="1"
-                         android:orientation="vertical" >
+        <TableLayout android:id="@+id/fragment_transaction_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dialog_padding"
+            android:layout_marginTop="20dp"
+            android:stretchColumns="1"
+            android:orientation="vertical" >
 
-                <TableRow android:id="@+id/row_balance"
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:weightSum="5"
-                          android:paddingTop="5dp"
-                          android:paddingBottom="5dp"
-                          android:layout_marginLeft="6dp">
+            <TableRow android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="5"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:layout_marginLeft="6dp">
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="2"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical|right"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:text="@string/account_balance"
-                        android:textColor="@android:color/black" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical|right"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:text="@string/account_balance"
+                    android:textColor="@android:color/black" />
 
-                    <TextView
-                        android:id="@+id/balance_debit"
-                        android:layout_width="0dp"
-                        android:layout_weight="1.5"
-                        android:layout_height="wrap_content"
-                        android:gravity="right"
-                        android:layout_gravity="center"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        tools:text="$ 2000"
-                        android:textColor="@android:color/black" />
+                <TextView
+                    android:id="@+id/balance_debit"
+                    android:layout_width="0dp"
+                    android:layout_weight="1.5"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:layout_gravity="center"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    tools:text="$ 2000"
+                    android:textColor="@android:color/black" />
 
-                    <TextView
-                        android:id="@+id/balance_credit"
-                        android:layout_width="0dp"
-                        android:layout_weight="1.5"
-                        android:layout_height="wrap_content"
-                        android:gravity="right"
-                        android:layout_gravity="center"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        tools:text="$ 2000"
-                        android:textColor="@android:color/black" />
-                </TableRow>
+                <TextView
+                    android:id="@+id/balance_credit"
+                    android:layout_width="0dp"
+                    android:layout_weight="1.5"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:layout_gravity="center"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    tools:text="$ 2000"
+                    android:textColor="@android:color/black" />
+            </TableRow>
 
-                <TableRow android:id="@+id/row_time_and_date"
-                          android:layout_marginTop="20dp"
-                          style="@style/FormRow" >
+            <TableRow android:id="@+id/row_time_and_date"
+                android:layout_marginTop="20dp"
+                style="@style/FormRow" >
 
-                    <ImageView style="@style/FormIcon"
-                               android:src="@drawable/ic_action_time"/>
+                <ImageView style="@style/FormIcon"
+                    android:src="@drawable/ic_action_time"/>
 
-                    <TextView android:id="@+id/trn_time_and_date"
-                              style="@style/TransactionInfo" />
-                </TableRow>
+                <TextView android:id="@+id/trn_time_and_date"
+                    style="@style/TransactionInfo" />
+            </TableRow>
 
-                <TableRow android:id="@+id/row_trn_notes"
-                          style="@style/FormRow">
-                    <ImageView style="@style/FormIcon"
-                               android:src="@drawable/ic_action_sort_by_size"/>
+            <TableRow android:id="@+id/row_trn_notes"
+                style="@style/FormRow">
+                <ImageView style="@style/FormIcon"
+                    android:src="@drawable/ic_action_sort_by_size"/>
 
-                    <TextView android:id="@+id/trn_notes"
-                              style="@style/TransactionInfo" />
-                </TableRow>
+                <TextView android:id="@+id/trn_notes"
+                    style="@style/TransactionInfo" />
+            </TableRow>
 
-                <TableRow android:id="@+id/row_trn_recurrence"
-                          style="@style/FormRow">
+            <TableRow android:id="@+id/row_trn_recurrence"
+                style="@style/FormRow">
 
-                    <ImageView style="@style/FormIcon"
-                               android:src="@drawable/ic_action_rotate_right"/>
+                <ImageView style="@style/FormIcon"
+                    android:src="@drawable/ic_action_rotate_right"/>
 
-                    <TextView android:id="@+id/trn_recurrence"
-                              style="@style/TransactionInfo" />
-                </TableRow>
+                <TextView android:id="@+id/trn_recurrence"
+                    style="@style/TransactionInfo" />
+            </TableRow>
 
-            </TableLayout>
+        </TableLayout>
         </ScrollView>
     </LinearLayout>
     <android.support.design.widget.FloatingActionButton
