@@ -175,8 +175,15 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
      * Remove the split item views from the transaction detail prior to refreshing them
      */
     private void removeSplitItemViews(){
-        long splitCount = TransactionsDbAdapter.getInstance().getSplitCount(mTransactionUID);
-        mDetailTableLayout.removeViews(0, (int)splitCount);
+        final int childCount = mDetailTableLayout.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            if (mDetailTableLayout.getChildAt(0).getId() == R.id.row_split_amount_info) {
+                mDetailTableLayout.removeViewAt(0);
+            } else {
+                // All splits are at the top of the table.
+                break;
+            }
+        }
         mDebitBalance.setText("");
         mCreditBalance.setText("");
     }
