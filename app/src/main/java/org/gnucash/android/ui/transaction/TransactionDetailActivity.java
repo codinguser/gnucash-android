@@ -54,6 +54,7 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
 
     private String mTransactionUID;
     private String mAccountUID;
+    private int mDetailTableRows;
 
     public static final int REQUEST_EDIT_TRANSACTION = 0x10;
 
@@ -126,6 +127,7 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
         TextView balanceTextView = accountBalance.isNegative() ? mDebitBalance : mCreditBalance;
         TransactionsActivity.displayBalance(balanceTextView, accountBalance);
 
+        mDetailTableRows = mDetailTableLayout.getChildCount();
         boolean useDoubleEntry = GnuCashApplication.isDoubleEntryEnabled();
         LayoutInflater inflater = LayoutInflater.from(this);
         int index = 0;
@@ -175,14 +177,10 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
      * Remove the split item views from the transaction detail prior to refreshing them
      */
     private void removeSplitItemViews(){
-        final int childCount = mDetailTableLayout.getChildCount();
-        for (int i = 0; i < childCount; i++) {
-            if (mDetailTableLayout.getChildAt(0).getId() == R.id.row_split_amount_info) {
-                mDetailTableLayout.removeViewAt(0);
-            } else {
-                // All splits are at the top of the table.
-                break;
-            }
+        // Remove all rows that are not special.
+        final int rowsToRemove = mDetailTableLayout.getChildCount() - mDetailTableRows;
+        for (int i = 0; i < rowsToRemove; i++) {
+            mDetailTableLayout.removeViewAt(0);
         }
         mDebitBalance.setText("");
         mCreditBalance.setText("");
