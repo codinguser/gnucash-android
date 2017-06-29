@@ -1063,7 +1063,7 @@ public class GncXmlHandler extends DefaultHandler {
                 BigDecimal amountBigD = GncXmlHelper.parseSplitAmount(characterString);
                 Money amount = new Money(amountBigD, getCommodityForAccount(mSplit.getAccountUID()));
 
-                mSplit.setValue(amount.abs());
+                mSplit.setValue(amount);
                 mSplit.setType(splitType);
                 mIgnoreTemplateTransaction = false; //we have successfully parsed an amount
             }

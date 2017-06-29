@@ -698,7 +698,7 @@ public class TransactionFormFragment extends Fragment implements
 
         BigDecimal amountBigd = mAmountEditText.getValue();
         String baseCurrencyCode = mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID);
-        Money value 	= new Money(amountBigd, Commodity.getInstance(baseCurrencyCode)).abs();
+        Money value 	= new Money(amountBigd, Commodity.getInstance(baseCurrencyCode));
         Money quantity = new Money(value);
 
         String transferAcctUID = getTransferAccountUID();

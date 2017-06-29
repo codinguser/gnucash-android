@@ -1166,7 +1166,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
                 transaction.setCommodity(Commodity.getInstance(currencyCode));
                 TransactionType transactionType = Transaction.getTypeForBalance(getAccountType(accountUID),
                         balance.isNegative());
-                Split split = new Split(balance.abs(), accountUID);
+                Split split = new Split(balance, accountUID);
                 split.setType(transactionType);
                 transaction.addSplit(split);
                 transaction.addSplit(split.createPair(getOrCreateOpeningBalanceAccountUID()));
