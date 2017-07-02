@@ -72,6 +72,7 @@
                     android:background="@android:color/transparent"
                     android:textColor="@color/debit_red"
                     android:textSize="20sp"
+                    android:textIsSelectable="true"
                     gnucash:keyboardKeysLayout="@xml/calculator_keyboard"/>
 
                 <ImageView android:id="@+id/btn_split_editor"
