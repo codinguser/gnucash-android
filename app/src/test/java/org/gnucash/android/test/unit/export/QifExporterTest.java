@@ -144,4 +144,33 @@ public class QifExporterTest {
         assertThat(file.length()).isGreaterThan(0L);
     }
 
+    public void description_and_memo_field_test() {
+        // setup
+
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(mDb);
+        Account account = new Account("Basic Account");
+        Transaction transaction = new Transaction("One transaction");
+        transaction.setDescription("my description");
+        transaction.setNote("my note");
+        account.addTransaction(transaction);
+        accountsDbAdapter.addRecord(account);
+
+        ExportParams exportParameters = new ExportParams(ExportFormat.QIF);
+        exportParameters.setExportStartTime(TimestampHelper.getTimestampFromEpochZero());
+        exportParameters.setExportTarget(ExportParams.ExportTarget.SD_CARD);
+        exportParameters.setDeleteTransactionsAfterExport(false);
+
+        // action
+
+        QifExporter qifExporter = new QifExporter(exportParameters, mDb);
+        List<String> exportedFiles = qifExporter.generateExport();
+
+        // assert
+
+        assertThat(exportedFiles).hasSize(1);
+        File file = new File(exportedFiles.get(0));
+        assertThat(file).exists().hasExtension("qif");
+
+        // todo: check the description & memo fields.
+    }
 }
