@@ -153,11 +153,14 @@ public class QifExporterTest {
     public void description_and_memo_field_test() {
         // arrange
 
+        String expectedDescription = "my description";
+        String expectedMemo = "my memo";
+
         AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(mDb);
         Account account = new Account("Basic Account");
         Transaction transaction = new Transaction("One transaction");
-        transaction.setDescription("my description");
-        transaction.setNote("my note");
+        transaction.setDescription(expectedDescription);
+        transaction.setNote(expectedMemo);
         account.addTransaction(transaction);
         accountsDbAdapter.addRecord(account);
 
@@ -180,12 +183,12 @@ public class QifExporterTest {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
             fileContentsBuilder.append(reader.readLine());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
         // todo: check the description & memo fields.
         String fileContent = fileContentsBuilder.toString();
+        assertThat(fileContent.contains(expectedDescription));
+        assertThat(fileContent.contains(expectedMemo));
     }
 }
