@@ -73,8 +73,7 @@
             android:stretchColumns="1"
             android:orientation="vertical" >
 
-            <TableRow android:id="@+id/row_balance"
-                android:layout_width="match_parent"
+            <TableRow android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:weightSum="5"
                 android:paddingTop="5dp"
