@@ -178,10 +178,7 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
      */
     private void removeSplitItemViews(){
         // Remove all rows that are not special.
-        final int rowsToRemove = mDetailTableLayout.getChildCount() - mDetailTableRows;
-        for (int i = 0; i < rowsToRemove; i++) {
-            mDetailTableLayout.removeViewAt(0);
-        }
+        mDetailTableLayout.removeViews(0, mDetailTableLayout.getChildCount() - mDetailTableRows);
         mDebitBalance.setText("");
         mCreditBalance.setText("");
     }
