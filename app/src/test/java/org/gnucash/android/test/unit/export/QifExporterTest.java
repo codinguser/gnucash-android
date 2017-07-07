@@ -41,7 +41,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -144,4 +149,46 @@ public class QifExporterTest {
         assertThat(file.length()).isGreaterThan(0L);
     }
 
+    //@Test
+    public void description_and_memo_field_test() {
+        // arrange
+
+        String expectedDescription = "my description";
+        String expectedMemo = "my memo";
+
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(mDb);
+        Account account = new Account("Basic Account");
+        Transaction transaction = new Transaction("One transaction");
+        transaction.setDescription(expectedDescription);
+        transaction.setNote(expectedMemo);
+        account.addTransaction(transaction);
+        accountsDbAdapter.addRecord(account);
+
+        ExportParams exportParameters = new ExportParams(ExportFormat.QIF);
+        exportParameters.setExportStartTime(TimestampHelper.getTimestampFromEpochZero());
+        exportParameters.setExportTarget(ExportParams.ExportTarget.SD_CARD);
+        exportParameters.setDeleteTransactionsAfterExport(false);
+
+        // act
+
+        QifExporter qifExporter = new QifExporter(exportParameters, mDb);
+        List<String> exportedFiles = qifExporter.generateExport();
+
+        // assert
+
+        assertThat(exportedFiles).hasSize(1);
+        File file = new File(exportedFiles.get(0));
+        assertThat(file).exists().hasExtension("qif");
+        StringBuilder fileContentsBuilder = new StringBuilder();
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            fileContentsBuilder.append(reader.readLine());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // todo: check the description & memo fields.
+        String fileContent = fileContentsBuilder.toString();
+        assertThat(fileContent.contains(expectedDescription));
+        assertThat(fileContent.contains(expectedMemo));
+    }
 }
