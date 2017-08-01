@@ -20,15 +20,15 @@
 
     <item android:id="@+id/context_menu_move_transaction"
           android:title="@string/menu_move_transaction"
-          app:showAsAction="always"
+          app:showAsAction="ifRoom"
           android:orderInCategory="1" />
     <item android:id="@+id/context_menu_duplicate_transaction"
         android:title="@string/menu_duplicate_transaction"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:orderInCategory="2" />
 	<item android:id="@+id/context_menu_delete"
           android:icon="@drawable/content_discard_holo_dark"
           android:title="@string/menu_delete"
-          app:showAsAction="always"
+          app:showAsAction="ifRoom"
           android:orderInCategory="3"/>
 </menu>

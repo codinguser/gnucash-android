@@ -23,7 +23,7 @@
         <item name="android:paddingLeft">@dimen/dialog_padding</item>
         <item name="android:paddingRight">@dimen/dialog_padding</item>
         <item name="android:paddingTop">8dp</item>
-        <item name="android:paddingBottom">8dp</item>        
+        <item name="android:paddingBottom">8dp</item>
         <item name="android:gravity">center_vertical</item>
     </style>
     
@@ -35,10 +35,6 @@
     
     <style name="Dropdown.TextView" parent="@style/Widget.AppCompat.Spinner.DropDown.ActionBar">
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-    </style>
-    
-    <style name="ButtonBaseStyle">
-        <item name="android:textColor">@android:color/white</item>
     </style>
     
     <style name="TextAppearance" parent="android:TextAppearance">
