@@ -283,25 +283,10 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         if (mExportedFiles.size() > 0){
             try {
                 OutputStream outputStream = mContext.getContentResolver().openOutputStream(exportUri);
-                ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
-                byte[] buffer = new byte[1024];
-                for (String exportedFile : mExportedFiles) {
-                    File file = new File(exportedFile);
-                    FileInputStream fileInputStream = new FileInputStream(file);
-                    zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
-
-                    int length;
-                    while ((length = fileInputStream.read(buffer)) > 0) {
-                        zipOutputStream.write(buffer, 0, length);
-                    }
-                    zipOutputStream.closeEntry();
-                    fileInputStream.close();
-                }
-                zipOutputStream.close();
+                // Now we always get just one file exported (QIFs are zipped)
+                moveFile(mExportedFiles.get(0), outputStream);
             } catch (IOException ex) {
-                Log.e(TAG, "Error when zipping QIF files for export");
-                ex.printStackTrace();
-                Crashlytics.logException(ex);
+                throw new Exporter.ExporterException(mExportParams, "Error when moving file to URI");
             }
         }
     }
