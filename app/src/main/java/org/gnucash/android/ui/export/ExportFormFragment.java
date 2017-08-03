@@ -502,7 +502,7 @@ public class ExportFormFragment extends Fragment implements
 		createIntent.setType("text/*").addCategory(Intent.CATEGORY_OPENABLE);
 		String bookName = BooksDbAdapter.getInstance().getActiveBookDisplayName();
 
-		if (mExportFormat == ExportFormat.XML || mExportFormat == ExportFormat.QIF) {
+		if (mExportFormat == ExportFormat.QIF) {
 			createIntent.setType("application/zip");
 		}
 
