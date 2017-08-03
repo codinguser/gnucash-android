@@ -499,7 +499,7 @@ public class ExportFormFragment extends Fragment implements
 	 */
 	private void selectExportFile() {
 		Intent createIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-		createIntent.setType("text/*").addCategory(Intent.CATEGORY_OPENABLE);
+		createIntent.setType("*/*").addCategory(Intent.CATEGORY_OPENABLE);
 		String bookName = BooksDbAdapter.getInstance().getActiveBookDisplayName();
 
 		if (mExportFormat == ExportFormat.QIF) {
