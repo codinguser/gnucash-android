@@ -55,7 +55,6 @@ import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
  * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
 public class QifExporter extends Exporter{
-    private static final String TAG = "QifExporter";
 
     /**
      * Initialize the exporter
@@ -261,7 +260,7 @@ public class QifExporter extends Exporter{
      * @return a list of paths of the newly created Qif files.
      * @throws IOException if something went wrong while splitting the file.
      */
-    public List<String> splitQIF(File file) throws IOException {
+    private List<String> splitQIF(File file) throws IOException {
         // split only at the last dot
         String[] pathParts = file.getPath().split("(?=\\.[^\\.]+$)");
         ArrayList<String> splitFiles = new ArrayList<>();
