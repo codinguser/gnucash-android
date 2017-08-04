@@ -948,14 +948,15 @@ public class GncXmlExporter extends Exporter{
     }
 
     /**
-     * Returns the full path of a file to make database backup of the specified book
-     * Backups are done in XML format and are zipped (with ".zip" extension).
+     * Returns the full path of a file to make database backup of the specified book.
+     * Backups are done in XML format and are Gzipped (with ".gnca" extension).
      * @param bookUID GUID of the book
      * @return the file path for backups of the database.
      * @see #getBackupFolderPath(String)
      */
     private static String getBackupFilePath(String bookUID){
         Book book = BooksDbAdapter.getInstance().getRecord(bookUID);
-        return Exporter.getBackupFolderPath(book.getUID()) + buildExportFilename(ExportFormat.XML, book.getDisplayName()) + ".zip";
+        return Exporter.getBackupFolderPath(book.getUID())
+               + buildExportFilename(ExportFormat.XML, book.getDisplayName());
     }
 }
