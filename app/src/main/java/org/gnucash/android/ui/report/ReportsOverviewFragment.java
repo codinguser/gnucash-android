@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.AppCompatButton;
 import android.view.Menu;
@@ -126,13 +127,13 @@ public class ReportsOverviewFragment extends BaseReportFragment {
         legend.setPosition(LegendPosition.RIGHT_OF_CHART_CENTER);
         legend.setTextSize(LEGEND_TEXT_SIZE);
 
-        ColorStateList csl = new ColorStateList(new int[][]{new int[0]}, new int[]{getResources().getColor(R.color.account_green)});
+        ColorStateList csl = new ColorStateList(new int[][]{new int[0]}, new int[]{ContextCompat.getColor(getContext(), R.color.account_green)});
         setButtonTint(mPieChartButton, csl);
-        csl = new ColorStateList(new int[][]{new int[0]}, new int[]{getResources().getColor(R.color.account_red)});
+        csl = new ColorStateList(new int[][]{new int[0]}, new int[]{ContextCompat.getColor(getContext(), R.color.account_red)});
         setButtonTint(mBarChartButton, csl);
-        csl = new ColorStateList(new int[][]{new int[0]}, new int[]{getResources().getColor(R.color.account_blue)});
+        csl = new ColorStateList(new int[][]{new int[0]}, new int[]{ContextCompat.getColor(getContext(), R.color.account_blue)});
         setButtonTint(mLineChartButton, csl);
-        csl = new ColorStateList(new int[][]{new int[0]}, new int[]{getResources().getColor(R.color.account_purple)});
+        csl = new ColorStateList(new int[][]{new int[0]}, new int[]{ContextCompat.getColor(getContext(), R.color.account_purple)});
         setButtonTint(mBalanceSheetButton, csl);
     }
 
@@ -261,7 +262,7 @@ public class ReportsOverviewFragment extends BaseReportFragment {
         } else {
             ViewCompat.setBackgroundTintList(button, tint);
         }
-        button.setTextColor(getResources().getColor(android.R.color.white));
+        button.setTextColor(ContextCompat.getColor(getContext(), android.R.color.white));
     }
 
 }

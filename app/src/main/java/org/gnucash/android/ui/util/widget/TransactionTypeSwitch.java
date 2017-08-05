@@ -17,6 +17,7 @@
 package org.gnucash.android.ui.util.widget;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.SwitchCompat;
 import android.util.AttributeSet;
 import android.widget.CompoundButton;
@@ -165,13 +166,13 @@ public class TransactionTypeSwitch extends SwitchCompat {
         public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
             setText(isChecked ? getTextOn() : getTextOff());
             if (isChecked){
-                int red = getResources().getColor(R.color.debit_red);
+                int red = ContextCompat.getColor(getContext(), R.color.debit_red);
                 TransactionTypeSwitch.this.setTextColor(red);
                 mAmountEditText.setTextColor(red);
                 mCurrencyTextView.setTextColor(red);
             }
             else {
-                int green = getResources().getColor(R.color.credit_green);
+                int green = ContextCompat.getColor(getContext(), R.color.credit_green);
                 TransactionTypeSwitch.this.setTextColor(green);
                 mAmountEditText.setTextColor(green);
                 mCurrencyTextView.setTextColor(green);

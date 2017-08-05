@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -519,7 +520,8 @@ public class AccountFormFragment extends Fragment {
         TypedArray colorTypedArray = res.obtainTypedArray(R.array.account_colors);
         int[] colorOptions = new int[colorTypedArray.length()];
         for (int i = 0; i < colorTypedArray.length(); i++) {
-             int color = colorTypedArray.getColor(i, getResources().getColor(R.color.title_green));
+             int color = colorTypedArray.getColor(i, ContextCompat.getColor(getContext(),
+                                                  R.color.title_green));
              colorOptions[i] = color;
         }
         colorTypedArray.recycle();
