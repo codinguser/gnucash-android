@@ -35,7 +35,6 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
-import com.dropbox.core.v2.files.Metadata;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveApi;
@@ -68,10 +67,8 @@ import org.gnucash.android.ui.transaction.TransactionsActivity;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -282,7 +279,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             try {
                 OutputStream outputStream = mContext.getContentResolver().openOutputStream(exportUri);
                 // Now we always get just one file exported (QIFs are zipped)
-                moveFile(mExportedFiles.get(0), outputStream);
+                org.gnucash.android.util.FileUtils.moveFile(mExportedFiles.get(0), outputStream);
             } catch (IOException ex) {
                 throw new Exporter.ExporterException(mExportParams, "Error when moving file to URI");
             }
@@ -429,7 +426,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         for (String src: mExportedFiles) {
             String dst = Exporter.getExportFolderPath(mExporter.mBookUID) + stripPathPart(src);
             try {
-                moveFile(src, dst);
+                org.gnucash.android.util.FileUtils.moveFile(src, dst);
                 dstFiles.add(dst);
             } catch (IOException e) {
                 throw new Exporter.ExporterException(mExportParams, e);
@@ -519,49 +516,6 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             exportFiles.add(contentUri);
         }
         return exportFiles;
-    }
-
-    /**
-     * Moves a file from <code>src</code> to <code>dst</code>
-     * @param src Absolute path to the source file
-     * @param dst Absolute path to the destination file
-     * @throws IOException if the file could not be moved.
-     */
-    public void moveFile(String src, String dst) throws IOException {
-        File srcFile = new File(src);
-        File dstFile = new File(dst);
-        FileChannel inChannel = new FileInputStream(srcFile).getChannel();
-        FileChannel outChannel = new FileOutputStream(dstFile).getChannel();
-        try {
-            inChannel.transferTo(0, inChannel.size(), outChannel);
-        } finally {
-            if (inChannel != null)
-                inChannel.close();
-            outChannel.close();
-        }
-        srcFile.delete();
-    }
-
-    /**
-     * Move file from a location on disk to an outputstream.
-     * The outputstream could be for a URI in the Storage Access Framework
-     * @param src Input file (usually newly exported file)
-     * @param outputStream Output stream to write to
-     * @throws IOException if error occurred while moving the file
-     */
-    public void moveFile(@NonNull String src, @NonNull OutputStream outputStream) throws IOException {
-        byte[] buffer = new byte[1024];
-        int read;
-        try (FileInputStream inputStream = new FileInputStream(src)) {
-            while ((read = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, read);
-            }
-        } finally {
-            outputStream.flush();
-            outputStream.close();
-        }
-        Log.i(TAG, "Deleting temp export file: " + src);
-        new File(src).delete();
     }
 
     private void reportSuccess() {
