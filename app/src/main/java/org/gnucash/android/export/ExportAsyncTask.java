@@ -77,8 +77,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /**
  * Asynchronous task for exporting transactions.
@@ -271,7 +269,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     /**
      * Move the exported files to a specified URI.
      * This URI could be a Storage Access Framework file
-     * @throws Exporter.ExporterException
+     * @throws Exporter.ExporterException if something failed while moving the exported file
      */
     private void moveExportToUri() throws Exporter.ExporterException {
         Uri exportUri = Uri.parse(mExportParams.getExportLocation());
@@ -293,7 +291,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
     /**
      * Move the exported files to a GnuCash folder on Google Drive
-     * @throws Exporter.ExporterException
+     * @throws Exporter.ExporterException if something failed while moving the exported file
      * @deprecated Explicit Google Drive integration is deprecated, use Storage Access Framework. See {@link #moveExportToUri()}
      */
     @Deprecated
@@ -355,11 +353,8 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
         for (String exportedFilePath : mExportedFiles) {
             File exportedFile = new File(exportedFilePath);
-            FileInputStream inputStream = null;
             try {
-                inputStream = new FileInputStream(exportedFile);
-                List<Metadata> entries = dbxClient.files().listFolder("").getEntries();
-
+                FileInputStream inputStream = new FileInputStream(exportedFile);
                 FileMetadata metadata = dbxClient.files()
                         .uploadBuilder("/" + exportedFile.getName())
                         .uploadAndFinish(inputStream);
