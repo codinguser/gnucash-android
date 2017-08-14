@@ -21,13 +21,13 @@
     <item android:id="@+id/context_menu_edit_accounts"
           android:icon="@drawable/content_edit_holo_dark"
           android:title="@string/title_edit_account"
-          app:showAsAction="always"
+          app:showAsAction="ifRoom"
           android:orderInCategory="1"/> 
           
 	<item android:id="@+id/context_menu_delete"
           android:icon="@drawable/content_discard_holo_dark"
           android:title="@string/menu_delete"
-          app:showAsAction="always"
+          app:showAsAction="ifRoom"
           android:orderInCategory="2"/>    
 
 </menu>
