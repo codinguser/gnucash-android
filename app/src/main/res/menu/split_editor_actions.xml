@@ -19,7 +19,7 @@ limitations under the License.
     <item android:id="@+id/menu_add_split"
         android:icon="@drawable/ic_add_white_24dp"
         android:title="@string/btn_add_split"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/menu_save"
         android:title="@string/btn_save"
