@@ -82,7 +82,7 @@ public class GnuCashApplication extends MultiDexApplication {
      */
     public static long PASSCODE_SESSION_INIT_TIME = 0L;
 
-    private static Context context
+    private static Context context;
 
     private static AccountsDbAdapter mAccountsDbAdapter;
 
