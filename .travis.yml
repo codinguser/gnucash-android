@@ -35,3 +35,10 @@ android:
 script:
   - ./gradlew build
 #  - ./gradlew connectedCheck
+
+notifications:
+   email: 
+        recipients:
+          - wanching_97@hotmail.com
+   
+   

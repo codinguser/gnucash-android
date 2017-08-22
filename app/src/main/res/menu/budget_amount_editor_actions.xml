@@ -19,7 +19,7 @@ limitations under the License.
     <item android:id="@+id/menu_add_budget_amount"
         android:icon="@drawable/ic_add_white_24dp"
         android:title="Add Budget Amount"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/menu_save"
         android:title="@string/btn_save"
