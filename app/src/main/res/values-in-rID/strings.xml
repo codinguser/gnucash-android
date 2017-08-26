@@ -56,10 +56,10 @@
   <string name="hint_delete_after_export">Semua transaksi yang diekspor akan dihapus saat proses ekspor selesai</string>
   <string name="title_settings">Pengaturan</string>
   <string-array name="export_destinations">
-    <item>Save As&#8230;</item>
+    <item>Simpan sbg&#8230;</item>
     <item>Dropbox</item>
     <item>ownCloud</item>
-    <item>Send to&#8230;</item>
+    <item>Kirim ke&#8230;</item>
   </string-array>
   <string name="btn_move">Pindahkan</string>
   <string name="title_move_transactions">Memindah transaksi %1$d</string>
@@ -86,7 +86,7 @@
   <string name="label_widget_configuration">Pilih akun</string>
   <string name="toast_no_transactions_to_export">Tidak ada transaksi yang tersedia untuk diekspor</string>
   <string name="title_passcode_preferences">Pengaturan Kode Akses</string>
-  <string name="title_enable_passcode">Enable passcode</string>
+  <string name="title_enable_passcode">Aktifkan kode akses</string>
   <string name="title_change_passcode">Ganti Kode Akses</string>
   <string name="title_about_gnucash">Tentang GnuCash</string>
   <string name="title_export_email">GnuCash Android %1$s ekspor</string>
@@ -117,12 +117,7 @@
   <string name="summary_xml_ofx_header">Aktifkan opsi ini ketika mengekspor ke aplikasi pihak ketiga selain GnuCash versi desktop</string>
   <string name="title_whats_new">Yang Terbaru</string>
   <string name="whats_new">
-        - Added ability to export to any service which supports the Storage Access Framework \n
-        - Added option to set the location for regular automatic backups (See backup settings)\n
-        - Added Bitcoin currency support\n
-        - Added support for renaming books\n
-        - Multiple bug fixes and improvements\n
-	</string>
+</string>
   <string name="label_dismiss">Abaikan</string>
   <string name="toast_transanction_amount_required">Tuliskan jumlah untuk menyimpan transaksi</string>
   <string name="toast_error_importing_accounts">Terjadi error saat mengimpor akun GnuCash</string>
@@ -151,7 +146,7 @@
   <string name="title_progress_exporting_transactions">Mengekspor transaksi</string>
   <string name="label_no_recurring_transactions">Tidak ada transaksi berulang untuk ditampilkan.</string>
   <string name="toast_recurring_transaction_deleted">Berhasil menghapus transaksi berulang</string>
-  <string name="label_placeholder_account">Placeholder account</string>
+  <string name="label_placeholder_account">Pengganti akun</string>
   <string name="label_default_transfer_account">Akun Transfer Default</string>
   <plurals name="label_sub_accounts">
     <item quantity="other">%d sub-akun</item>
@@ -230,7 +225,7 @@
   <string name="menu_toggle_labels">Tampilkan label</string>
   <string name="menu_toggle_percentage_mode">Tampilkan persentase</string>
   <string name="menu_toggle_average_lines">Tampilkan garis rata-rata</string>
-  <string name="menu_group_smaller_slices">Group Smaller Slices</string>
+  <string name="menu_group_smaller_slices">Kelompokkan Potongan Terkecil</string>
   <string name="label_chart_no_data">Tidak ada data bagan tersedia</string>
   <string name="label_chart_total">Total</string>
   <string name="label_other_slice">Lainnya</string>
@@ -251,7 +246,7 @@
   <string name="summary_owncloud_sync">Aktifkan mengekspor ke ownCloud</string>
   <string name="title_backup_prefs">Pengaturan Cadangan</string>
   <string name="title_create_backup_pref">Membuat Cadangan</string>
-  <string name="summary_create_backup_pref">Create a backup of the active book</string>
+  <string name="summary_create_backup_pref">Buat cadangan dari pembukuan yang aktif</string>
   <string name="summary_restore_backup_pref">Restore most recent backup of active book</string>
   <string name="toast_backup_successful">Pencadangan berhasil</string>
   <string name="toast_backup_failed">Pencadangan gagal</string>
@@ -297,38 +292,38 @@
   <string name="label_no_scheduled_exports_to_display">Tidak ada ekspor terjadwal untuk ditampilkan</string>
   <string name="title_create_export_schedule">Membuat jadwal ekspor</string>
   <string name="toast_exported_to">Telah diekspor ke: %1$s</string>
-  <string name="toast_legend_too_long">The legend is too long</string>
-  <string name="hint_account_description">Account description</string>
-  <string name="label_no_recent_accounts">No recent accounts</string>
-  <string name="label_no_favorite_accounts">No favorite accounts</string>
-  <string name="nav_menu_scheduled_actions">Scheduled Actions</string>
-  <string name="label_scheduled_action_ended">"Ended, last executed on %1$s"</string>
-  <string name="btn_wizard_next">Next</string>
-  <string name="btn_wizard_finish">Done</string>
-  <string name="wizard_title_default_currency">Default Currency</string>
-  <string name="wizard_title_account_setup">Account Setup</string>
-  <string name="wizard_title_select_currency">Select Currency</string>
-  <string name="wizard_title_feedback_options">Feedback Options</string>
-  <string name="wizard_option_create_default_accounts">Create default accounts</string>
-  <string name="wizard_option_import_my_accounts">Import my accounts</string>
-  <string name="wizard_option_let_me_handle_it">Let me handle it</string>
-  <string name="wizard_option_currency_other">Other&#8230;</string>
-  <string name="wizard_option_auto_send_crash_reports">Automatically send crash reports</string>
-  <string name="wizard_option_disable_crash_reports">Disable crash reports</string>
-  <string name="wizard_btn_back">Back</string>
-  <string name="title_setup_gnucash">Setup GnuCash</string>
-  <string name="wizard_title_welcome_to_gnucash">Welcome to GnuCash</string>
+  <string name="toast_legend_too_long">Legenda terlalu panjang</string>
+  <string name="hint_account_description">Deskripsi akun</string>
+  <string name="label_no_recent_accounts">Tidak ada akun terbaru</string>
+  <string name="label_no_favorite_accounts">Tidak ada akun favorit</string>
+  <string name="nav_menu_scheduled_actions">Tindakan yang Dijadwalkan</string>
+  <string name="label_scheduled_action_ended">"Telah berakhir, terakhir dieksekusi pada %1$s"</string>
+  <string name="btn_wizard_next">Berikutnya</string>
+  <string name="btn_wizard_finish">Selesai</string>
+  <string name="wizard_title_default_currency">Mata Uang Default</string>
+  <string name="wizard_title_account_setup">Pengaturan Akun</string>
+  <string name="wizard_title_select_currency">Pilih Mata Uang</string>
+  <string name="wizard_title_feedback_options">Pilihan umpan balik</string>
+  <string name="wizard_option_create_default_accounts">Buat akun default</string>
+  <string name="wizard_option_import_my_accounts">Impor akun-akun saya</string>
+  <string name="wizard_option_let_me_handle_it">Biar saya yang tangani</string>
+  <string name="wizard_option_currency_other">Lainnya&#8230;</string>
+  <string name="wizard_option_auto_send_crash_reports">Kirim laporan kerusakan secara otomatis</string>
+  <string name="wizard_option_disable_crash_reports">Nonaktifkan laporan kerusakan</string>
+  <string name="wizard_btn_back">Kembali</string>
+  <string name="title_setup_gnucash">Pengaturan GnuCash</string>
+  <string name="wizard_title_welcome_to_gnucash">Selamat datang di GnuCash</string>
   <string name="msg_wizard_welcome_page">Before you dive in, \nlet\'s setup a few things first\n\nTo continue, press Next</string>
   <string name="title_split_editor">Split Editor</string>
   <string name="toast_error_check_split_amounts">Check that all splits have valid amounts before saving!</string>
-  <string name="label_error_invalid_expression">Invalid expression!</string>
-  <string name="toast_scheduled_recurring_transaction">Scheduled recurring transaction</string>
-  <string name="title_transfer_funds">Transfer Funds</string>
-  <string name="nav_menu_help"><![CDATA[Help & Feedback]]></string>
-  <string name="label_select_pie_slice_to_see_details">Select a slice to see details</string>
-  <string name="label_report_period">Period:</string>
-  <string name="label_convert_from">From:</string>
-  <string name="label_convert_to">To:</string>
+  <string name="label_error_invalid_expression">Ekspresi yang tidak valid!</string>
+  <string name="toast_scheduled_recurring_transaction">Transaksi berulang yang dijadwalkan</string>
+  <string name="title_transfer_funds">Transfer Dana</string>
+  <string name="nav_menu_help"><![CDATA[Bantuan & Umpan Balik]]></string>
+  <string name="label_select_pie_slice_to_see_details">Pilih potongan untuk melihat rincian</string>
+  <string name="label_report_period">Periode:</string>
+  <string name="label_convert_from">Dari:</string>
+  <string name="label_convert_to">Ke:</string>
   <string name="msg_provide_exchange_rate">Provide either the converted amount or exchange rate in order to transfer funds</string>
   <string name="hint_exchange_rate">Exchange rate</string>
   <string name="btn_fetch_quote">Fetch quote</string>

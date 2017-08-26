@@ -19,7 +19,7 @@
   <string name="title_create_account">계정 만들기</string>
   <string name="title_edit_account">계정 편집</string>
   <string name="description_add_transaction_icon">계정에 새 거래 추가</string>
-  <string name="description_view_account_icon">View account details</string>
+  <string name="description_view_account_icon">계정 정보 보기</string>
   <string name="label_no_accounts">계정 없음</string>
   <string name="label_account_name">계정 이름</string>
   <string name="btn_cancel">취소</string>
@@ -56,10 +56,10 @@
   <string name="hint_delete_after_export">내보낸 모든 거래내역은 작업 완료후 삭제됩니다.</string>
   <string name="title_settings">설정</string>
   <string-array name="export_destinations">
-    <item>Save As&#8230;</item>
+    <item>다른 이름으로 저장...</item>
     <item>Dropbox</item>
     <item>ownCloud</item>
-    <item>Send to&#8230;</item>
+    <item>보내기...</item>
   </string-array>
   <string name="btn_move">이동</string>
   <string name="title_move_transactions">%1$d개 거래내역 이동</string>
@@ -77,7 +77,7 @@
   <string name="label_permission_record_transaction">GnuCash에서 거래를 기록</string>
   <string name="label_permission_create_account">GnuCash에서 계정 만들기</string>
   <string name="label_display_account">계정 표시</string>
-  <string name="label_hide_account_balance">Hide account balance in widget</string>
+  <string name="label_hide_account_balance">위젯에서 계정잔고 숨기기</string>
   <string name="btn_create_accounts">계정 만들기</string>
   <string name="error_no_accounts">GnuCash에 계정이 없습니다.\n위젯을 만들기 전에 계정을 생성하십시오</string>
   <string name="title_license">약관</string>
@@ -86,7 +86,7 @@
   <string name="label_widget_configuration">계정 선택</string>
   <string name="toast_no_transactions_to_export">내보낼 거래내역이 없습니다</string>
   <string name="title_passcode_preferences">암호 설정</string>
-  <string name="title_enable_passcode">Enable passcode</string>
+  <string name="title_enable_passcode">암호 활성화</string>
   <string name="title_change_passcode">암호 변경</string>
   <string name="title_about_gnucash">GnuCash 정보</string>
   <string name="title_export_email">안드로이드용 GnuCash %1$s 내보내기</string>
@@ -117,12 +117,11 @@
   <string name="summary_xml_ofx_header">데스크탑용 GnuCash 이외의 타 응용 프로그램에 내보낼 때에 사용하세요</string>
   <string name="title_whats_new">새로운 기능</string>
   <string name="whats_new">
-        - Added ability to export to any service which supports the Storage Access Framework \n
-        - Added option to set the location for regular automatic backups (See backup settings)\n
-        - Added Bitcoin currency support\n
-        - Added support for renaming books\n
-        - Multiple bug fixes and improvements\n
-	</string>
+- 저장소 접근 프레임워크(SAF, Storage Access Framework)를 지원하는 어떤 서비스로도 내보내기 가능\n
+- 주기적 자동백업 위치 지정 옵션 추가 (백업 설정 참조)\n
+- 비트코인 통화 지원 추가\n
+- 장부 이름변경 가능\n
+- 여러 버그 수정 및 개선사항\n</string>
   <string name="label_dismiss">닫기</string>
   <string name="toast_transanction_amount_required">거래기록에 저장할 금액을 입력해 주세요</string>
   <string name="toast_error_importing_accounts">GnuCash 계정을 가져오는 동안 오류가 발생했습니다.</string>
@@ -188,7 +187,7 @@
   <string name="title_all_accounts">모든 계정</string>
   <string name="summary_create_default_accounts">GnuCash에서 일반적으로 사용되는 기본 계정구조를 생성합니다.</string>
   <string name="title_create_default_accounts">기본 계정을 생성합니다</string>
-  <string name="msg_confirm_create_default_accounts_setting">A new book will be opened with the default accounts\n\nYour current accounts and transactions will not be modified!</string>
+  <string name="msg_confirm_create_default_accounts_setting">새 장부가 기본 계정으로 열립니다.\n\n현재 계정과 거래는 변경되지 않습니다!</string>
   <string name="title_scheduled_transactions">거래내역</string>
   <string name="title_select_export_destination">내보낼 곳 선택</string>
   <string name="hint_split_memo">메모</string>
@@ -251,8 +250,8 @@
   <string name="summary_owncloud_sync">ownCloud에 내보내기 사용</string>
   <string name="title_backup_prefs">백업 설정</string>
   <string name="title_create_backup_pref">백업 만들기</string>
-  <string name="summary_create_backup_pref">Create a backup of the active book</string>
-  <string name="summary_restore_backup_pref">Restore most recent backup of active book</string>
+  <string name="summary_create_backup_pref">현재 장부의 백업 생성</string>
+  <string name="summary_restore_backup_pref">현재 장부의 가장 마지막 백업 복원</string>
   <string name="toast_backup_successful">백업되었습니다</string>
   <string name="toast_backup_failed">백업에 실패했습니다</string>
   <string name="export_warning_xml">모든 계정 및 거래내역 내보내기</string>
@@ -331,7 +330,7 @@
   <string name="label_convert_to">끝:</string>
   <string name="msg_provide_exchange_rate">자금을 이동하려면 환전된 액수나 환율을 입력하세요.</string>
   <string name="hint_exchange_rate">환율</string>
-  <string name="btn_fetch_quote">Fetch quote</string>
+  <string name="btn_fetch_quote">시세 조회</string>
   <string name="hint_converted_amount">환전후 금액</string>
   <string name="title_report_sheet">표</string>
   <string name="label_last_3_months_expenses">최근 3개월간의 지출</string>
@@ -411,8 +410,8 @@
     <item quantity="other">%d transactions</item>
   </plurals>
   <string-array name="report_account_types">
-    <item>EXPENSE</item>
-    <item>INCOME</item>
+    <item>지출</item>
+    <item>소득</item>
   </string-array>
   <string name="toast_connected_to_google_drive">Connected to Google Drive</string>
   <string name="toast_unable_to_connect_to_google_drive">Unable to connect to Google Drive</string>

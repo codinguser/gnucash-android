@@ -19,161 +19,161 @@
   <string name="title_create_account">Hesap Oluştur</string>
   <string name="title_edit_account">Hesabı Düzenle</string>
   <string name="description_add_transaction_icon">Bir hesaba yeni bir işlem ekle</string>
-  <string name="description_view_account_icon">View account details</string>
-  <string name="label_no_accounts">No accounts to display</string>
+  <string name="description_view_account_icon">Hesap detaylarını görüntüle</string>
+  <string name="label_no_accounts">Gösterilecek hesap yok</string>
   <string name="label_account_name">Hesap adı</string>
   <string name="btn_cancel">İptal</string>
   <string name="btn_save">Kaydet</string>
   <string name="btn_test">Test</string>
-  <string name="label_passcode">Şifre girin</string>
-  <string name="toast_wrong_passcode">Yanlış şifre, lütfen tekrar deneyin</string>
-  <string name="toast_passcode_set">Şifre ayarla</string>
-  <string name="label_confirm_passcode">Lütfen, şifreyi onaylayın</string>
-  <string name="toast_invalid_passcode_confirmation">Invalid passcode confirmation. Please try again</string>
+  <string name="label_passcode">Giriş Kodu Girin</string>
+  <string name="toast_wrong_passcode">Yanlış giriş kodu, lütfen tekrar deneyin</string>
+  <string name="toast_passcode_set">Giriş kodu ayarla</string>
+  <string name="label_confirm_passcode">Lütfen, giriş kodunu onaylayın</string>
+  <string name="toast_invalid_passcode_confirmation">Geçersiz giriş kodu doğrulaması. Lütfen tekrar deneyiniz</string>
   <string name="label_transaction_name">Açıklama</string>
   <string name="label_transaction_amount">Tutar</string>
-  <string name="title_add_transaction">New transaction</string>
-  <string name="label_no_transactions">No transactions to display</string>
-  <string name="label_debit">DEBIT</string>
+  <string name="title_add_transaction">Yeni işlem</string>
+  <string name="label_no_transactions">Görüntülenecek işlem yok</string>
+  <string name="label_debit">BANKA</string>
   <string name="label_credit">KREDİ</string>
   <string name="title_accounts">Hesaplar</string>
   <string name="title_transactions">İşlemler</string>
   <string name="menu_delete">Sil</string>
   <string name="alert_dialog_ok_delete">Sil</string>
   <string name="alert_dialog_cancel">İptal</string>
-  <string name="toast_account_deleted">Silinmiş hesap</string>
-  <string name="title_confirm_delete">Confirm delete</string>
-  <string name="title_edit_transaction">Edit Transaction</string>
-  <string name="label_transaction_description">Add note</string>
+  <string name="toast_account_deleted">Hesap silindi</string>
+  <string name="title_confirm_delete">Silmeyi onaylayın</string>
+  <string name="title_edit_transaction">İşlemi Düzenle</string>
+  <string name="label_transaction_description">Not ekle</string>
   <string name="title_selected">%1$d seçildi</string>
   <string name="label_account_balance">Bakiye:</string>
-  <string name="label_export_destination">Export To:</string>
-  <string name="title_export_dialog">Export Transactions</string>
-  <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
-  <string name="toast_export_error">Error exporting %1$s file</string>
-  <string name="btn_export">Export</string>
-  <string name="option_delete_after_export">Delete transactions after export</string>
-  <string name="hint_delete_after_export">All exported transactions will be deleted when exporting is completed</string>
+  <string name="label_export_destination">Dışarı Aktar:</string>
+  <string name="title_export_dialog">İşlemleri Dışa Aktar</string>
+  <string name="hint_export_choice">Öntanımlı olarak sadece önceki dışa aktarmadan sonraki işlemler aktarılır. Tümünü aktarmak için burayı işaretleyin</string>
+  <string name="toast_export_error">%1$s dosyası aktarılamadı</string>
+  <string name="btn_export">Dışa Aktar</string>
+  <string name="option_delete_after_export">Dışa aktardıktan sonra işlemleri sil</string>
+  <string name="hint_delete_after_export">Dışa aktarma tamamlandığında tüm aktarılan işlemler silinir</string>
   <string name="title_settings">Ayarlar</string>
   <string-array name="export_destinations">
-    <item>Save As&#8230;</item>
+    <item>Farklı Kaydet&#8230;</item>
     <item>Dropbox</item>
     <item>ownCloud</item>
-    <item>Send to&#8230;</item>
+    <item>Şuna Gönder&#8230;</item>
   </string-array>
-  <string name="btn_move">Move</string>
-  <string name="title_move_transactions">Move %1$d transaction(s)</string>
-  <string name="label_move_destination">Destination Account</string>
-  <string name="toast_incompatible_currency">Cannot move transactions.\nThe destination account uses a different currency from origin account</string>
+  <string name="btn_move">Taşı</string>
+  <string name="title_move_transactions">%1$d işlemi taşı</string>
+  <string name="label_move_destination">Hedef Hesap</string>
+  <string name="toast_incompatible_currency">İşlemler taşınamıyor.\nHedef hesap ile kaynak hesabın para birimleri farklı</string>
   <string name="header_general_settings">Genel</string>
   <string name="header_about_gnucash">Hakkında</string>
   <string name="title_choose_currency">Varsayılan para birimini seçin</string>
   <string name="title_default_currency">Varsayılan para birimi</string>
-  <string name="summary_default_currency">Default currency to assign to new accounts</string>
-  <string name="label_permission_record_transactions">Enables recording transactions in GnuCash for Android</string>
-  <string name="label_permission_create_accounts">Enables creation of accounts in GnuCash for Android</string>
-  <string name="label_permission_group">Your GnuCash data</string>
-  <string name="description_permission_group">Read and modify GnuCash data</string>
-  <string name="label_permission_record_transaction">Record transactions in GnuCash</string>
-  <string name="label_permission_create_account">Create accounts in GnuCash</string>
-  <string name="label_display_account">Display account</string>
-  <string name="label_hide_account_balance">Hide account balance in widget</string>
+  <string name="summary_default_currency">Yeni hesaplar için öntanımlı para birimi</string>
+  <string name="label_permission_record_transactions">Android için GnuCash\'e işlemleri kaydetmeyi etkinleştirir</string>
+  <string name="label_permission_create_accounts">Android için GnuCash\'e hesap oluşturmayı etkinleştirir</string>
+  <string name="label_permission_group">GnuCash veriniz</string>
+  <string name="description_permission_group">GnuCash verisini oku ve değiştir</string>
+  <string name="label_permission_record_transaction">GnuCash\'te işlemleri kaydet</string>
+  <string name="label_permission_create_account">GnuCash\'te hesap oluştur</string>
+  <string name="label_display_account">Hesabı göster</string>
+  <string name="label_hide_account_balance">Widget\'te hesap bakiyesini gizle</string>
   <string name="btn_create_accounts">Hesap Oluştur</string>
-  <string name="error_no_accounts">No accounts exist in GnuCash.\nCreate an account before adding a widget</string>
+  <string name="error_no_accounts">GnuCash\'te mevcut hesap yok.\nWidget eklemeden önce hesap oluşturun</string>
   <string name="title_license">Lisans</string>
   <string name="summary_licence_details">Apache Lisansı v2.0. Detaylar için tıklayın</string>
   <string name="title_general_prefs">Genel Tercihler</string>
   <string name="label_widget_configuration">Hesap seçin</string>
-  <string name="toast_no_transactions_to_export">There are no transactions available to export</string>
-  <string name="title_passcode_preferences">Passcode Preferences</string>
-  <string name="title_enable_passcode">Enable passcode</string>
-  <string name="title_change_passcode">Change Passcode</string>
-  <string name="title_about_gnucash">About GnuCash</string>
-  <string name="title_export_email">GnuCash Android %1$s export</string>
-  <string name="description_export_email">GnuCash Android Export from </string>
-  <string name="header_transaction_settings">Transactions</string>
-  <string name="title_transaction_preferences">Transaction Preferences</string>
-  <string name="title_account_preferences">Account Preferences</string>
-  <string name="title_default_transaction_type">Default Transaction Type</string>
-  <string name="summary_default_transaction_type">The type of transaction to use by default, CREDIT or DEBIT</string>
+  <string name="toast_no_transactions_to_export">Dışa aktarmak için mevcut işlem yok</string>
+  <string name="title_passcode_preferences">Giriş Kodu Tercihleri</string>
+  <string name="title_enable_passcode">Giriş kodunu etkinleştir</string>
+  <string name="title_change_passcode">Giriş Kodunu Değiştir</string>
+  <string name="title_about_gnucash">GnuCash Hakkında</string>
+  <string name="title_export_email">GnuCash Android %1$s dışa aktar</string>
+  <string name="description_export_email">GnuCash Android Dışa Aktarma </string>
+  <string name="header_transaction_settings">İşlemler</string>
+  <string name="title_transaction_preferences">İşlem Tercihleri</string>
+  <string name="title_account_preferences">Hesap Tercihleri</string>
+  <string name="title_default_transaction_type">Öntanımlı İşlem Türü</string>
+  <string name="summary_default_transaction_type">Öntanımlı kullanmak üzere işlem türü, KREDİ veya BANKA</string>
   <string-array name="transaction_types">
     <item>KREDİ</item>
-    <item>DEBIT</item>
+    <item>BANKA</item>
   </string-array>
-  <string name="msg_delete_all_transactions_confirmation">Are you sure you want to delete ALL transactions?</string>
-  <string name="msg_delete_transaction_confirmation">Are you sure you want to delete this transaction?</string>
-  <string name="title_export_preference_category">Export</string>
-  <string name="title_export_all_transactions">Export all transactions</string>
-  <string name="title_always_delete_exported_transactions">Delete exported transactions</string>
-  <string name="title_default_export_email">Default export email</string>
-  <string name="summary_default_export_email">The default email address to send exports to. You can still change this when you export.</string>
-  <string name="summary_use_double_entry">All transactions will be a transfer from one account to another</string>
-  <string name="title_use_double_entry">Activate Double Entry</string>
+  <string name="msg_delete_all_transactions_confirmation">TÜM işlemleri silmek istediğinizden emin misiniz?</string>
+  <string name="msg_delete_transaction_confirmation">Bu işlemi silmek istediğinizden emin misiniz?</string>
+  <string name="title_export_preference_category">Dışa Aktar</string>
+  <string name="title_export_all_transactions">Tüm işlemleri dışa Aktar</string>
+  <string name="title_always_delete_exported_transactions">Dışa aktarılan işlemleri sil</string>
+  <string name="title_default_export_email">Öntanımlı dışa aktarma epostası</string>
+  <string name="summary_default_export_email">Dışa aktarılanları göndermek için eposta adresi. Dışa aktarırken bunu değiştirebilirsiniz.</string>
+  <string name="summary_use_double_entry">Tüm işlemler bir hesaptan diğerine transfer edilir</string>
+  <string name="title_use_double_entry">Çift Girişi Etkinleştir</string>
   <string name="account_balance">Bakiye</string>
-  <string name="toast_no_account_name_entered">Enter an account name to create an account</string>
+  <string name="toast_no_account_name_entered">Hesap oluşturmak için hesap adı girin</string>
   <string name="label_account_currency">Para birimi</string>
-  <string name="label_parent_account">Parent account</string>
-  <string name="title_xml_ofx_header">Use XML OFX header</string>
-  <string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>
+  <string name="label_parent_account">Üst hesap</string>
+  <string name="title_xml_ofx_header">XML OFX başlığı kullan</string>
+  <string name="summary_xml_ofx_header">Masaüstü için GnuCash dışındaki diğer uygulamalar için dışa aktarırken bu seçeneği etkenleştirin</string>
   <string name="title_whats_new">Yenilikler</string>
   <string name="whats_new">
-        - Added ability to export to any service which supports the Storage Access Framework \n
-        - Added option to set the location for regular automatic backups (See backup settings)\n
-        - Added Bitcoin currency support\n
-        - Added support for renaming books\n
-        - Multiple bug fixes and improvements\n
+        - Storage Access Framework hizmetini destekleyen yerlere dışa aktarma eklendi\n
+        - Düzenli otomatik yedeklemeler için konum ayarlama seçeneği eklendi (Yedekleme ayarlarına bakın)\n
+        - Bitcoin para birimi desteği eklendi\n
+        - Kitapları yeniden adlandırma özelliği eklendi\n
+        - Bazı hata düzeltmeleri ve iyileştirmeler\n
 	</string>
   <string name="label_dismiss">Yoksay</string>
-  <string name="toast_transanction_amount_required">Enter an amount to save the transaction</string>
-  <string name="toast_error_importing_accounts">An error occurred while importing the GnuCash accounts</string>
-  <string name="toast_success_importing_accounts">GnuCash Accounts successfully imported</string>
-  <string name="summary_import_accounts">Import account structure exported from GnuCash desktop</string>
-  <string name="title_import_accounts">Import GnuCash XML</string>
-  <string name="summary_delete_all_accounts">Delete all accounts in the database. All transactions will be deleted as
-        well.
+  <string name="toast_transanction_amount_required">İşlemi kaydetmek için tutar girin</string>
+  <string name="toast_error_importing_accounts">GnuCash hesapları içe aktarılırken bir hata oluştu</string>
+  <string name="toast_success_importing_accounts">GnuCash Hesapları başarıyla içe aktarıldı</string>
+  <string name="summary_import_accounts">GnuCash masaüstünden dışa aktarılan hesap yapısını içe aktar</string>
+  <string name="title_import_accounts">GnuCash XML İçe Aktar</string>
+  <string name="summary_delete_all_accounts">Veritabanındaki tüm hesapları sil. Tüm işlemler de
+         silinecek.
     </string>
-  <string name="title_delete_all_accounts">Delete all accounts</string>
+  <string name="title_delete_all_accounts">Tüm hesapları sil</string>
   <string name="header_account_settings">Hesaplar</string>
-  <string name="toast_all_accounts_deleted">All accounts have been successfully deleted</string>
-  <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions?\n\nThis
-        operation cannot be undone!
+  <string name="toast_all_accounts_deleted">Tüm hesaplar başarıyla silindi</string>
+  <string name="confirm_delete_all_accounts">Tüm hesapları ve işlemleri silmek istediğinizden emin misiniz?\n\nBu
+        işlem geri alınamaz!
     </string>
-  <string name="summary_delete_all_transactions">All transactions in all accounts will be deleted!</string>
-  <string name="title_delete_all_transactions">Delete all transactions</string>
-  <string name="toast_all_transactions_deleted">All transactions successfully deleted!</string>
-  <string name="title_progress_importing_accounts">Importing accounts</string>
-  <string name="section_header_transactions">Transactions</string>
-  <string name="section_header_subaccounts">Sub-Accounts</string>
+  <string name="summary_delete_all_transactions">Tüm hesaplardaki tüm işlemler silinecek!</string>
+  <string name="title_delete_all_transactions">Tüm işlemleri sil</string>
+  <string name="toast_all_transactions_deleted">Tüm işlemler başarıyla silindi!</string>
+  <string name="title_progress_importing_accounts">Hesaplar içe aktarılıyor</string>
+  <string name="section_header_transactions">İşlemler</string>
+  <string name="section_header_subaccounts">Alt-Hesaplar</string>
   <string name="menu_search_accounts">Arama</string>
-  <string name="title_default_export_format">Default Export Format</string>
-  <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
-  <string name="label_recurring_transaction">Recurrence</string>
+  <string name="title_default_export_format">Öntanımlı Dışa Aktarma Biçimi</string>
+  <string name="summary_default_export_format">İşlemler dışa aktarılırken kullanılacak öntanımlı dosya biçimi</string>
+  <string name="label_recurring_transaction">Yineleme</string>
   <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
-  <string name="imbalance_account_name">Imbalance</string>
-  <string name="title_progress_exporting_transactions">Exporting transactions</string>
-  <string name="label_no_recurring_transactions">No recurring transactions to display.</string>
-  <string name="toast_recurring_transaction_deleted">Successfully deleted recurring transaction</string>
-  <string name="label_placeholder_account">Placeholder account</string>
-  <string name="label_default_transfer_account">Default Transfer Account</string>
+  <string name="imbalance_account_name">Dengesizlik</string>
+  <string name="title_progress_exporting_transactions">İşlemler dışa aktarılıyor</string>
+  <string name="label_no_recurring_transactions">Gösterilecek yinelenen işlem yok.</string>
+  <string name="toast_recurring_transaction_deleted">İşlem yineleme başarıyla silindi</string>
+  <string name="label_placeholder_account">Yer tutucu hesap</string>
+  <string name="label_default_transfer_account">Öntanımlı Transfer Hesabı</string>
   <plurals name="label_sub_accounts">
-    <item quantity="one">%d sub-account</item>
-    <item quantity="other">%d sub-accounts</item>
+    <item quantity="one">%d alt-hesap</item>
+    <item quantity="other">%d alt-hesap</item>
   </plurals>
   <string-array name="account_type_entry_values">
-    <item>CASH</item>
-    <item>BANK</item>
-    <item>CREDIT CARD</item>
-    <item>ASSET</item>
-    <item>LIABILITY</item>
-    <item>INCOME</item>
-    <item>EXPENSE</item>
-    <item>PAYABLE</item>
-    <item>RECEIVABLE</item>
-    <item>EQUITY</item>
-    <item>CURRENCY</item>
-    <item>STOCK</item>
-    <item>MUTUAL FUND</item>
-    <item>TRADING</item>
+    <item>NAKİT</item>
+    <item>BANKA</item>
+    <item>KREDİ KARTI</item>
+    <item>VARLIK</item>
+    <item>BORÇ</item>
+    <item>GELİR</item>
+    <item>GİDER</item>
+    <item>ÖDENECEK</item>
+    <item>TAHSİL EDİLECEK</item>
+    <item>ÖZKAYNAK</item>
+    <item>PARA BİRİMİ</item>
+    <item>SERMAYE</item>
+    <item>YATIRIM FONU</item>
+    <item>TİCARİ</item>
   </string-array>
   <string-array name="export_formats">
     <item>QIF</item>
@@ -181,203 +181,203 @@
     <item>XML</item>
   </string-array>
   <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
-  <string name="color_picker_default_title">Select a Color</string>
+  <string name="color_picker_default_title">Renk Seçin</string>
   <!-- Content description for a color square. -->
   <!-- Content description for a selected color square. -->
-  <string name="label_account_color_and_type">Account Color &amp; Type</string>
-  <string name="label_delete_sub_accounts">Delete sub-accounts</string>
-  <string name="title_recent_accounts">Recent</string>
-  <string name="title_favorite_accounts">Favorites</string>
-  <string name="title_all_accounts">All</string>
-  <string name="summary_create_default_accounts">Creates default GnuCash commonly-used account structure</string>
-  <string name="title_create_default_accounts">Create default accounts</string>
-  <string name="msg_confirm_create_default_accounts_setting">A new book will be opened with the default accounts\n\nYour current accounts and transactions will not be modified!</string>
-  <string name="title_scheduled_transactions">Transactions</string>
-  <string name="title_select_export_destination">Select destination for export</string>
-  <string name="hint_split_memo">Memo</string>
-  <string name="label_spend">Spend</string>
-  <string name="label_receive">Receive</string>
-  <string name="label_withdrawal">Withdrawal</string>
-  <string name="label_deposit">Deposit</string>
-  <string name="label_payment">Payment</string>
-  <string name="label_charge">Charge</string>
-  <string name="label_decrease">Decrease</string>
-  <string name="label_increase">Increase</string>
-  <string name="label_income">Income</string>
-  <string name="label_rebate">Rebate</string>
-  <string name="label_expense">Expense</string>
-  <string name="label_bill">Bill</string>
-  <string name="label_invoice">Invoice</string>
-  <string name="label_buy">Buy</string>
-  <string name="label_sell">Sell</string>
-  <string name="account_name_opening_balances">Opening Balances</string>
-  <string name="account_name_equity">Equity</string>
-  <string name="summary_save_opening_balances">Enable to save the current account balance (before deleting transactions) as new opening balance after deleting transactions
+  <string name="label_account_color_and_type">Hesap Rengi &amp; Türü</string>
+  <string name="label_delete_sub_accounts">Alt-hesapları sil</string>
+  <string name="title_recent_accounts">Son</string>
+  <string name="title_favorite_accounts">Favori</string>
+  <string name="title_all_accounts">Tüm</string>
+  <string name="summary_create_default_accounts">Öntanımlı genelde kullanılan GnuCash hesap yapısı oluşturur</string>
+  <string name="title_create_default_accounts">Öntanımlı hesapları oluştur</string>
+  <string name="msg_confirm_create_default_accounts_setting">Öntanımlı hesaplarla yeni bir kitap açılacak\n\nMevcut hesaplarınız ve işlemleriniz değişmeyecek!</string>
+  <string name="title_scheduled_transactions">İşlemler</string>
+  <string name="title_select_export_destination">Dışa aktarmak için hedef seçin</string>
+  <string name="hint_split_memo">Not</string>
+  <string name="label_spend">Harcama</string>
+  <string name="label_receive">Alma</string>
+  <string name="label_withdrawal">Para çekme</string>
+  <string name="label_deposit">Mevduat</string>
+  <string name="label_payment">Ödeme</string>
+  <string name="label_charge">Tahsilat</string>
+  <string name="label_decrease">Azalt</string>
+  <string name="label_increase">Artır</string>
+  <string name="label_income">Gelir</string>
+  <string name="label_rebate">İndirim</string>
+  <string name="label_expense">Gider</string>
+  <string name="label_bill">Fatura</string>
+  <string name="label_invoice">Fatura</string>
+  <string name="label_buy">Alış</string>
+  <string name="label_sell">Satış</string>
+  <string name="account_name_opening_balances">Açılış Bakiyesi</string>
+  <string name="account_name_equity">Özkaynak</string>
+  <string name="summary_save_opening_balances">İşlemleri silerken mevcut hesabın bakiyesini (işlemleri silmeden önce) yeni açılış bakiyesi olarak kaydetmeyi etkinleştir
     </string>
-  <string name="title_save_opening_balances">Save account opening balances</string>
-  <string name="export_warning_ofx">OFX does not support double-entry transactions</string>
-  <string name="export_warning_qif">Generates separate QIF files per currency</string>
-  <string name="label_imbalance">Imbalance:</string>
-  <string name="btn_add_split">Add split</string>
-  <string name="menu_title_favorite">Favorite</string>
-  <string name="drawer_open">Navigation drawer opened</string>
-  <string name="drawer_close">Navigation drawer closed</string>
-  <string name="title_reports">Reports</string>
-  <string name="title_pie_chart">Pie Chart</string>
-  <string name="title_line_chart">Line Chart</string>
-  <string name="title_bar_chart">Bar Chart</string>
-  <string name="title_report_prefs">Report Preferences</string>
-  <string name="title_use_account_color">Account color in reports</string>
-  <string name="summary_use_account_color">Use account color in the bar/pie chart</string>
-  <string name="menu_order_by_size">Order by size</string>
-  <string name="menu_toggle_legend">Show legend</string>
-  <string name="menu_toggle_labels">Show labels</string>
-  <string name="menu_toggle_percentage_mode">Show percentage</string>
-  <string name="menu_toggle_average_lines">Show average lines</string>
-  <string name="menu_group_smaller_slices">Group Smaller Slices</string>
-  <string name="label_chart_no_data">No chart data available</string>
-  <string name="label_chart_total">Total</string>
-  <string name="label_other_slice">Other</string>
-  <string name="toast_chart_percentage_mode_total">The percentage of selected value calculated from the total amount</string>
-  <string name="toast_chart_percentage_mode_current_bar">The percentage of selected value calculated from the current stacked bar amount</string>
-  <string name="label_save_template">Save as template</string>
-  <string name="label_delete_account_transactions_description">This account contains transactions. \nWhat would you like to do with these transactions</string>
-  <string name="label_delete_account_subaccounts_description">This account contains sub-accounts. \nWhat would you like to do with these sub-accounts</string>
-  <string name="label_delete_transactions">Delete transactions</string>
-  <string name="toast_disable_double_entry_to_save_transaction">Create and specify a transfer account OR disable double-entry in settings to save the transaction</string>
-  <string name="label_tap_to_create_schedule">Tap to create schedule</string>
-  <string name="title_restore_backup">Restore Backup&#8230;</string>
-  <string name="header_backup_and_export_settings">Backup &amp; export</string>
-  <string name="title_dropbox_sync_preference">Enable DropBox</string>
-  <string name="title_owncloud_sync_preference">Enable ownCloud </string>
-  <string name="title_backup_preference_category">Backup</string>
-  <string name="summary_dropbox_sync">Enable exporting to DropBox</string>
-  <string name="summary_owncloud_sync">Enable exporting to ownCloud</string>
-  <string name="title_backup_prefs">Backup Preferences</string>
-  <string name="title_create_backup_pref">Create Backup</string>
-  <string name="summary_create_backup_pref">Create a backup of the active book</string>
-  <string name="summary_restore_backup_pref">Restore most recent backup of active book</string>
-  <string name="toast_backup_successful">Backup successful</string>
-  <string name="toast_backup_failed">Backup failed</string>
-  <string name="export_warning_xml">Exports all accounts and transactions</string>
-  <string name="toast_install_file_manager">Install a file manager to select files</string>
-  <string name="title_select_backup_to_restore">Select backup to restore</string>
-  <string name="nav_menu_favorites">Favorites</string>
-  <string name="nav_menu_open">Open&#8230;</string>
-  <string name="nav_menu_reports">Reports</string>
-  <string name="nav_menu_export">Export&#8230;</string>
-  <string name="nav_menu_settings">Settings</string>
-  <string name="username">User Name</string>
-  <string name="password">Password</string>
+  <string name="title_save_opening_balances">Hesap açılış bakiyelerini kaydet</string>
+  <string name="export_warning_ofx">OFX çift-giriş işlemleri desteklemiyor</string>
+  <string name="export_warning_qif">Para birimi başına ayrı QIF dosyaları oluşturur</string>
+  <string name="label_imbalance">Dengesizlik:</string>
+  <string name="btn_add_split">Bölme ekle</string>
+  <string name="menu_title_favorite">Favori</string>
+  <string name="drawer_open">Gezinti çekmecesi açıldı</string>
+  <string name="drawer_close">Gezinti çekmecesi kapandı</string>
+  <string name="title_reports">Raporlar</string>
+  <string name="title_pie_chart">Pasta Grafik</string>
+  <string name="title_line_chart">Çizgi Grafik</string>
+  <string name="title_bar_chart">Çubuk Grafik</string>
+  <string name="title_report_prefs">Rapor Tercihleri</string>
+  <string name="title_use_account_color">Raporlarda hesap rengi</string>
+  <string name="summary_use_account_color">Çubuk/pasta grafikte hesap renklerini kullan</string>
+  <string name="menu_order_by_size">Boyuta göre sırala</string>
+  <string name="menu_toggle_legend">Göstergeyi göster</string>
+  <string name="menu_toggle_labels">Etiketleri göster</string>
+  <string name="menu_toggle_percentage_mode">Yüzdeleri göster</string>
+  <string name="menu_toggle_average_lines">Ortalama satırlarını göster</string>
+  <string name="menu_group_smaller_slices">Küçük Dilimleri Grupla</string>
+  <string name="label_chart_no_data">Grafik verisi yok</string>
+  <string name="label_chart_total">Toplam</string>
+  <string name="label_other_slice">Diğer</string>
+  <string name="toast_chart_percentage_mode_total">Seçilen değerin toplam tutardan hesaplanan yüzdesi</string>
+  <string name="toast_chart_percentage_mode_current_bar">Seçilen değerin yığılmış çubuk tutarından hesaplanan yüzdesi</string>
+  <string name="label_save_template">Şablon olarak kaydet</string>
+  <string name="label_delete_account_transactions_description">Bu hesap işlemler içeriyor.\nBu işlemleri ne yapmak istersiniz</string>
+  <string name="label_delete_account_subaccounts_description">Bu hesap alt-hesaplar içeriyor.\nBu alt-hesapları ne yapmak istersiniz</string>
+  <string name="label_delete_transactions">İşlemleri sil</string>
+  <string name="toast_disable_double_entry_to_save_transaction">İşlemi kaydedebilmek için transfer hesabı oluşturup tanımlayın VEYA ayarlardan çift-girişi devre dışı bırakın</string>
+  <string name="label_tap_to_create_schedule">Zamanlama oluşturmak için dokunun</string>
+  <string name="title_restore_backup">Yedeği Geri Yükle&#8230;</string>
+  <string name="header_backup_and_export_settings">Yedekle &amp; dışa aktar</string>
+  <string name="title_dropbox_sync_preference">DropBox\'u etkinleştir</string>
+  <string name="title_owncloud_sync_preference">ownCloud\'u etkinleştir </string>
+  <string name="title_backup_preference_category">Yedekleme</string>
+  <string name="summary_dropbox_sync">DropBox\'a dışa aktarmayı etkinleştir</string>
+  <string name="summary_owncloud_sync">ownCloud\'a dışa aktarmayı etkinleştir</string>
+  <string name="title_backup_prefs">Yedekleme Tercihleri</string>
+  <string name="title_create_backup_pref">Yedek Oluştur</string>
+  <string name="summary_create_backup_pref">Etkin kitabın yedeğini oluştur</string>
+  <string name="summary_restore_backup_pref">Etkin kitabın son yedeğini geri yükle</string>
+  <string name="toast_backup_successful">Yedekleme başarılı</string>
+  <string name="toast_backup_failed">Yedekleme başarısız</string>
+  <string name="export_warning_xml">Tüm hesapları ve işlemleri dışa aktar</string>
+  <string name="toast_install_file_manager">Dosya seçimi için bir dosya yöneticisi kurun</string>
+  <string name="title_select_backup_to_restore">Geri yükleme için yedek seçin</string>
+  <string name="nav_menu_favorites">Favoriler</string>
+  <string name="nav_menu_open">Aç&#8230;</string>
+  <string name="nav_menu_reports">Raporlar</string>
+  <string name="nav_menu_export">Dışa Aktar&#8230;</string>
+  <string name="nav_menu_settings">Ayarlar</string>
+  <string name="username">Kullanıcı Adı</string>
+  <string name="password">Parola</string>
   <string name="owncloud_pref">owncloud</string>
   <string name="owncloud_server">https://</string>
-  <string name="owncloud_server_invalid">OC server not found</string>
-  <string name="owncloud_user_invalid">OC username/password invalid</string>
-  <string name="owncloud_dir_invalid">Invalid chars: \\ &lt; &gt; : \&quot; | * ? </string>
-  <string name="owncloud_server_ok">OC server OK</string>
-  <string name="owncloud_user_ok">OC username/password OK</string>
-  <string name="owncloud_dir_ok">Dir name OK</string>
+  <string name="owncloud_server_invalid">OC sunucusu bulanamadı</string>
+  <string name="owncloud_user_invalid">OC kullanıcı adı/parola geçersiz</string>
+  <string name="owncloud_dir_invalid">Geçersiz karakterler: \\ &lt; &gt; : \&quot; | * ? </string>
+  <string name="owncloud_server_ok">OC sunucu Tamam</string>
+  <string name="owncloud_user_ok">OC kullanıcı adı/parola Tamam</string>
+  <string name="owncloud_dir_ok">Dizin adı Tamam</string>
   <plurals name="label_every_x_hours">
-    <item quantity="one">Hourly</item>
-    <item quantity="other">Every %d hours</item>
+    <item quantity="one">Saatlik</item>
+    <item quantity="other">Her %d saatte</item>
   </plurals>
   <plurals name="label_every_x_days">
-    <item quantity="one">Daily</item>
-    <item quantity="other">Every %d days</item>
+    <item quantity="one">Günlük</item>
+    <item quantity="other">Her %d gün</item>
   </plurals>
   <plurals name="label_every_x_weeks">
-    <item quantity="one">Weekly</item>
-    <item quantity="other">Every %d weeks</item>
+    <item quantity="one">Haftalık</item>
+    <item quantity="other">Her %d hafta</item>
   </plurals>
   <plurals name="label_every_x_months">
-    <item quantity="one">Monthly</item>
-    <item quantity="other">Every %d months</item>
+    <item quantity="one">Aylık</item>
+    <item quantity="other">Her %d ay</item>
   </plurals>
   <plurals name="label_every_x_years">
-    <item quantity="one">Yearly</item>
-    <item quantity="other">Every %d years</item>
+    <item quantity="one">Yıllık</item>
+    <item quantity="other">Her %d yıl</item>
   </plurals>
-  <string name="title_enable_crashlytics">Enable Crash Logging</string>
-  <string name="msg_enable_crashlytics">Automatically send information about app malfunction to the developers.</string>
-  <string name="label_export_format"> Format</string>
-  <string name="label_old_passcode">Enter your old passcode</string>
-  <string name="label_new_passcode">Enter your new passcode</string>
-  <string name="title_scheduled_exports">Exports</string>
-  <string name="label_no_scheduled_exports_to_display">No scheduled exports to display</string>
-  <string name="title_create_export_schedule">Create export schedule</string>
-  <string name="toast_exported_to">Exported to: %1$s</string>
-  <string name="toast_legend_too_long">The legend is too long</string>
-  <string name="hint_account_description">Account description</string>
-  <string name="label_no_recent_accounts">No recent accounts</string>
-  <string name="label_no_favorite_accounts">No favorite accounts</string>
-  <string name="nav_menu_scheduled_actions">Scheduled Actions</string>
-  <string name="label_scheduled_action_ended">"Ended, last executed on %1$s"</string>
-  <string name="btn_wizard_next">Next</string>
-  <string name="btn_wizard_finish">Done</string>
-  <string name="wizard_title_default_currency">Default Currency</string>
-  <string name="wizard_title_account_setup">Account Setup</string>
-  <string name="wizard_title_select_currency">Select Currency</string>
-  <string name="wizard_title_feedback_options">Feedback Options</string>
-  <string name="wizard_option_create_default_accounts">Create default accounts</string>
-  <string name="wizard_option_import_my_accounts">Import my accounts</string>
-  <string name="wizard_option_let_me_handle_it">Let me handle it</string>
-  <string name="wizard_option_currency_other">Other&#8230;</string>
-  <string name="wizard_option_auto_send_crash_reports">Automatically send crash reports</string>
-  <string name="wizard_option_disable_crash_reports">Disable crash reports</string>
-  <string name="wizard_btn_back">Back</string>
-  <string name="title_setup_gnucash">Setup GnuCash</string>
-  <string name="wizard_title_welcome_to_gnucash">Welcome to GnuCash</string>
-  <string name="msg_wizard_welcome_page">Before you dive in, \nlet\'s setup a few things first\n\nTo continue, press Next</string>
-  <string name="title_split_editor">Split Editor</string>
-  <string name="toast_error_check_split_amounts">Check that all splits have valid amounts before saving!</string>
-  <string name="label_error_invalid_expression">Invalid expression!</string>
-  <string name="toast_scheduled_recurring_transaction">Scheduled recurring transaction</string>
-  <string name="title_transfer_funds">Transfer Funds</string>
-  <string name="nav_menu_help"><![CDATA[Help & Feedback]]></string>
-  <string name="label_select_pie_slice_to_see_details">Select a slice to see details</string>
-  <string name="label_report_period">Period:</string>
-  <string name="label_convert_from">From:</string>
-  <string name="label_convert_to">To:</string>
-  <string name="msg_provide_exchange_rate">Provide either the converted amount or exchange rate in order to transfer funds</string>
-  <string name="hint_exchange_rate">Exchange rate</string>
-  <string name="btn_fetch_quote">Fetch quote</string>
-  <string name="hint_converted_amount">Converted Amount</string>
-  <string name="title_report_sheet">Sheet</string>
-  <string name="label_last_3_months_expenses">Expenses for last 3 months</string>
-  <string name="label_total_assets">Total Assets</string>
-  <string name="label_total_liabilities">Total Liabilities</string>
-  <string name="label_net_worth">Net Worth</string>
-  <string name="label_assets">Assets</string>
-  <string name="label_liabilities">Liabilities</string>
-  <string name="label_equity">Equity</string>
-  <string name="label_move_to">Move to:</string>
-  <string name="menu_group_by">Group By</string>
-  <string name="menu_group_by_month">Month</string>
-  <string name="menu_group_by_quarter">Quarter</string>
-  <string name="menu_group_by_year">Year</string>
-  <string name="title_balance_sheet_report">Balance Sheet</string>
-  <string name="label_balance_sheet_total">Total:</string>
-  <string name="title_google_plus_community">Google+ Community</string>
-  <string name="title_translate_gnucash">Translate GnuCash</string>
-  <string name="summary_google_plus">Share ideas, discuss changes or report problems</string>
-  <string name="summary_translate_gnucash">Translate or proof-read on CrowdIn</string>
-  <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
-  <string name="menu_move_transaction">Move&#8230;</string>
-  <string name="menu_duplicate_transaction">Duplicate</string>
-  <string name="title_cash_flow_report">Cash Flow</string>
-  <string name="title_budgets">Budgets</string>
-  <string name="title_use_compact_list">Enable compact view</string>
-  <string name="summary_use_compact_list">Enable to always use compact view for transactions list</string>
-  <string name="error_invalid_exchange_rate">Invalid exchange rate</string>
-  <string name="sample_exchange_rate">e.g. 1 %1$s = x.xx %2$s</string>
-  <string name="error_invalid_amount">Invalid amount</string>
+  <string name="title_enable_crashlytics">Hata Kaydını Etkinleştir</string>
+  <string name="msg_enable_crashlytics">Uygulama arıza bilgilerini otomatik olarak geliştiricilere gönder.</string>
+  <string name="label_export_format"> Biçim</string>
+  <string name="label_old_passcode">Eski giriş kodunu girin</string>
+  <string name="label_new_passcode">Yeni giriş kodunu girin</string>
+  <string name="title_scheduled_exports">Dışa Aktarımlar</string>
+  <string name="label_no_scheduled_exports_to_display">Gösterilecek zamanlanmış dışa aktarım yok</string>
+  <string name="title_create_export_schedule">Dışa aktarım zamanlaması oluştur</string>
+  <string name="toast_exported_to">Dışa aktarıldı: %1$s</string>
+  <string name="toast_legend_too_long">Gösterge çok uzun</string>
+  <string name="hint_account_description">Hesap açıklaması</string>
+  <string name="label_no_recent_accounts">Son hesap yok</string>
+  <string name="label_no_favorite_accounts">Son favori hesap yok</string>
+  <string name="nav_menu_scheduled_actions">Zamanlanmış Eylemler</string>
+  <string name="label_scheduled_action_ended">"Sonlandı, son eylem zamanı %1$s"</string>
+  <string name="btn_wizard_next">İleri</string>
+  <string name="btn_wizard_finish">Tamamlandı</string>
+  <string name="wizard_title_default_currency">Öntanımlı Para Birimi</string>
+  <string name="wizard_title_account_setup">Hesap Kurulumu</string>
+  <string name="wizard_title_select_currency">Para Birimi Seçin</string>
+  <string name="wizard_title_feedback_options">Geribildirim Seçenekleri</string>
+  <string name="wizard_option_create_default_accounts">Öntanımlı hesapları oluştur</string>
+  <string name="wizard_option_import_my_accounts">Hesaplarımı içer aktar</string>
+  <string name="wizard_option_let_me_handle_it">Bırak ben halledeyim</string>
+  <string name="wizard_option_currency_other">Diğer&#8230;</string>
+  <string name="wizard_option_auto_send_crash_reports">Hata raporlarını otomatik gönder</string>
+  <string name="wizard_option_disable_crash_reports">Hata raporlarını devre dışı bırak</string>
+  <string name="wizard_btn_back">Geri</string>
+  <string name="title_setup_gnucash">GnuCash Kurulum</string>
+  <string name="wizard_title_welcome_to_gnucash">GnuCash\'a Hoş Geldiniz</string>
+  <string name="msg_wizard_welcome_page">Kullanmaya başlamadan \nönce bazı şeyleri kuralım\n\nDevam etmek için, İleri basın</string>
+  <string name="title_split_editor">Bölme Düzenleyici</string>
+  <string name="toast_error_check_split_amounts">Kaydetmeden tüm bölmelerin tutarının geçerliliğini kontrol edin!</string>
+  <string name="label_error_invalid_expression">Geçersiz ifade!</string>
+  <string name="toast_scheduled_recurring_transaction">Zamanlanmış yineleyen işlem</string>
+  <string name="title_transfer_funds">Para Transferi</string>
+  <string name="nav_menu_help"><![CDATA[Yardım & Geribildirim]]></string>
+  <string name="label_select_pie_slice_to_see_details">Ayrıntıları görmek için bir dilim seçin</string>
+  <string name="label_report_period">Dönem:</string>
+  <string name="label_convert_from">Kimden:</string>
+  <string name="label_convert_to">Kime:</string>
+  <string name="msg_provide_exchange_rate">Para transfer etmek için dönüştürülen miktarı veya döviz kuru verin</string>
+  <string name="hint_exchange_rate">Döviz Kuru</string>
+  <string name="btn_fetch_quote">Alıntı getir</string>
+  <string name="hint_converted_amount">Dönüştürülen Tutar</string>
+  <string name="title_report_sheet">Levha</string>
+  <string name="label_last_3_months_expenses">Son 3 aylık giderler</string>
+  <string name="label_total_assets">Toplam Varlıklar</string>
+  <string name="label_total_liabilities">Toplam Borçlar</string>
+  <string name="label_net_worth">Net Değer</string>
+  <string name="label_assets">Varlıklar</string>
+  <string name="label_liabilities">Borçlar</string>
+  <string name="label_equity">Özkaynak</string>
+  <string name="label_move_to">Taşı:</string>
+  <string name="menu_group_by">Grupla</string>
+  <string name="menu_group_by_month">Ay</string>
+  <string name="menu_group_by_quarter">Çeyrek</string>
+  <string name="menu_group_by_year">Yıl</string>
+  <string name="title_balance_sheet_report">Bilanço</string>
+  <string name="label_balance_sheet_total">Toplam:</string>
+  <string name="title_google_plus_community">Google + Topluluğu</string>
+  <string name="title_translate_gnucash">GnuCash\'i Çevir</string>
+  <string name="summary_google_plus">Fikir paylaş, değişiklikleri tartış veya sorun bildir</string>
+  <string name="summary_translate_gnucash">Crowdln üzerinde çevir veya denetle</string>
+  <string name="toast_no_compatible_apps_to_receive_export">Dışa aktarılan işlemleri almak için uyumlu uygulama yok!</string>
+  <string name="menu_move_transaction">Taşı&#8230;</string>
+  <string name="menu_duplicate_transaction">Çoğalt</string>
+  <string name="title_cash_flow_report">Nakit Akışı</string>
+  <string name="title_budgets">Bütçeler</string>
+  <string name="title_use_compact_list">Sıkı görünümü etkinleştir</string>
+  <string name="summary_use_compact_list">İşlemler listesi için daima sıkı görünümü etkinleştirmek için</string>
+  <string name="error_invalid_exchange_rate">Geçersiz döviz kuru</string>
+  <string name="sample_exchange_rate">1 %1$s = x.xx %2$s gibi</string>
+  <string name="error_invalid_amount">Geçersiz tutar</string>
   <string-array name="report_time_range">
-    <item>Current month</item>
-    <item>Last 3 months</item>
-    <item>Last 6 months</item>
-    <item>Last 12 months</item>
-    <item>All time</item>
-    <item>Custom range&#8230;</item>
+    <item>Bu ay</item>
+    <item>Son 3 ay</item>
+    <item>Son 6 ay</item>
+    <item>Son 12 ay</item>
+    <item>Tüm zaman</item>
+    <item>Özel aralık&#8230;</item>
   </string-array>
   <!-- Passcode lock -->
   <string name="digit_one">1</string>
@@ -401,57 +401,57 @@
   <string name="digit_nine_text">WXYZ</string>
   <string name="digit_zero">0</string>
   <string name="digit_zero_text">+</string>
-  <string name="title_manage_books">Manage Books</string>
-  <string name="menu_manage_books">Manage Books&#8230;</string>
-  <string name="select_chart_to_view_details">Select any part of the chart to view details</string>
-  <string name="title_confirm_delete_book">Confirm delete Book</string>
-  <string name="msg_all_book_data_will_be_deleted">All accounts and transactions in this book will be deleted!</string>
-  <string name="btn_delete_book">Delete Book</string>
-  <string name="label_last_export_time">Last Exported:</string>
-  <string name="menu_title_enable_sync">Enable Sync</string>
-  <string name="menu_title_new_book">New Book</string>
-  <string name="toast_transaction_has_no_splits_and_cannot_open">The selected transaction has no splits and cannot be opened</string>
-  <string name="label_split_count">%1$d splits</string>
-  <string name="label_inside_account_with_name">in %1$s</string>
+  <string name="title_manage_books">Kitapları Yönet</string>
+  <string name="menu_manage_books">Kitapları Yönet&#8230;</string>
+  <string name="select_chart_to_view_details">Ayrıntıları görüntülemek için grafiğin herhangi bir bölümünü seçin</string>
+  <string name="title_confirm_delete_book">Kitabı silmeyi onayla</string>
+  <string name="msg_all_book_data_will_be_deleted">Bu kitaptaki tüm hesaplar ve işlemler silinecek!</string>
+  <string name="btn_delete_book">Kitabı Sil</string>
+  <string name="label_last_export_time">Son Dışa Aktarım:</string>
+  <string name="menu_title_enable_sync">Eşitlemeyi Etkinleştir</string>
+  <string name="menu_title_new_book">Yeni Kitap</string>
+  <string name="toast_transaction_has_no_splits_and_cannot_open">Seçilen işlem bölmelere sahip değil ve açılamıyor</string>
+  <string name="label_split_count">%1$d bölme</string>
+  <string name="label_inside_account_with_name">%1$s içinde</string>
   <plurals name="book_account_stats">
-    <item quantity="one">%d account</item>
-    <item quantity="other">%d accounts</item>
+    <item quantity="one">%d hesap</item>
+    <item quantity="other">%d hesap</item>
   </plurals>
   <plurals name="book_transaction_stats">
-    <item quantity="one">%d transaction</item>
-    <item quantity="other">%d transactions</item>
+    <item quantity="one">%d işlem</item>
+    <item quantity="other">%d işlem</item>
   </plurals>
   <string-array name="report_account_types">
-    <item>EXPENSE</item>
-    <item>INCOME</item>
+    <item>GİDER</item>
+    <item>GELİR</item>
   </string-array>
-  <string name="toast_connected_to_google_drive">Connected to Google Drive</string>
-  <string name="toast_unable_to_connect_to_google_drive">Unable to connect to Google Drive</string>
-  <string name="toast_enter_amount_to_split">Please enter an amount to split</string>
-  <string name="label_export_target_external_service">external service</string>
-  <string name="toast_updated_transaction_recurring_schedule">Updated transaction recurring schedule</string>
-  <string name="label_export_transactions_since_date">Since</string>
-  <string name="switch_export_transactions_from_all_time">All time</string>
-  <string name="label_recommend_app">Recommend in Play Store</string>
-  <string name="repeat_until_date">until %1$s</string>
-  <string name="repeat_on_weekday">on %1$s</string>
-  <string name="repeat_x_times">for %1$d times</string>
-  <string name="menu_show_compact_view">Compact View</string>
-  <string name="book_default_name">Book %1$d</string>
-  <string name="last_export_time_never">never</string>
-  <string name="title_rename_book">Rename Book</string>
-  <string name="btn_rename">Rename</string>
-  <string name="menu_rename">Rename</string>
-  <string name="title_select_backup_file">Select backup file</string>
-  <string name="summary_select_backup_file">Select a file for automatic backups</string>
-  <string name="title_confirm_restore_backup">Confirm restore from backup</string>
-  <string name="msg_confirm_restore_backup_into_new_book">A new book will be opened with the contents of this backup. Do you wish to proceed?</string>
-  <string name="btn_restore">Restore</string>
-  <string name="title_no_backups_found">No backups found</string>
-  <string name="msg_no_backups_to_restore_from">There are no existing backup files to restore from</string>
+  <string name="toast_connected_to_google_drive">Google Drive\'a bağlandı</string>
+  <string name="toast_unable_to_connect_to_google_drive">Google Drive\'a bağlanılamadı</string>
+  <string name="toast_enter_amount_to_split">Lütfen bölme için bir tutar girin</string>
+  <string name="label_export_target_external_service">dış hizmet</string>
+  <string name="toast_updated_transaction_recurring_schedule">Zamanlanmış yinelenen işlem güncellendi</string>
+  <string name="label_export_transactions_since_date">Beri</string>
+  <string name="switch_export_transactions_from_all_time">Tüm zaman</string>
+  <string name="label_recommend_app">Play Store\'da Beğen</string>
+  <string name="repeat_until_date">%1$s kadar</string>
+  <string name="repeat_on_weekday">%1$s</string>
+  <string name="repeat_x_times">%1$d kere</string>
+  <string name="menu_show_compact_view">Sıkı Görünüm</string>
+  <string name="book_default_name">Kitap %1$d</string>
+  <string name="last_export_time_never">hiç</string>
+  <string name="title_rename_book">Kitabı Yeniden Adlandır</string>
+  <string name="btn_rename">Yeniden Adlandır</string>
+  <string name="menu_rename">Yeniden Adlandır</string>
+  <string name="title_select_backup_file">Yedek dosyası seçin</string>
+  <string name="summary_select_backup_file">Otomatik yedekleme için bir dosya seçin</string>
+  <string name="title_confirm_restore_backup">Yedekten geri yüklemeyi onaylayın</string>
+  <string name="msg_confirm_restore_backup_into_new_book">Bu yedeğin içeriğinden yeni bir kitap açılacak. Devam etmek istiyor musunuz?</string>
+  <string name="btn_restore">Geri Yükle</string>
+  <string name="title_no_backups_found">Yedek bulunamadı</string>
+  <string name="msg_no_backups_to_restore_from">Geri yükleme için yedek dosyası bulunamadı</string>
   <!-- This is the filename for default backups. So use only simple characters and no spaces. Do not change the extension -->
-  <string name="label_backup_filename">gnucash_android_backup.gnca</string>
-  <string name="label_select_destination_after_export">Select the destination after export is complete</string>
-  <string name="label_dropbox_export_destination">Export to \'/Apps/GnuCash Android/\' folder on Dropbox</string>
-  <string name="title_section_preferences">Preferences</string>
+  <string name="label_backup_filename">gnucash_android_yedek.gnca</string>
+  <string name="label_select_destination_after_export">Dışa aktarma tamamlandığında hedef seçin</string>
+  <string name="label_dropbox_export_destination">Dropbox\'ta \'/Apps/GnuCash Android/\' dizinine dışa aktar</string>
+  <string name="title_section_preferences">Tercihler</string>
 </resources>
