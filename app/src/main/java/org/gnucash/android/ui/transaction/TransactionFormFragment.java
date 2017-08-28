@@ -719,9 +719,24 @@ public class TransactionFormFragment extends Fragment implements
             }
         }
 
-        Split split1 = new Split(value, mAccountUID);
+        Split split1;
+        Split split2;
+        // Try to preserve the other split attributes.
+        if (mSplitsList.size() >= 2) {
+            split1 = mSplitsList.get(0);
+            split1.setValue(value);
+            split1.setQuantity(value);
+            split1.setAccountUID(mAccountUID);
+
+            split2 = mSplitsList.get(1);
+            split2.setValue(value);
+            split2.setQuantity(quantity);
+            split2.setAccountUID(transferAcctUID);
+        } else {
+            split1 = new Split(value, mAccountUID);
+            split2 = new Split(value, quantity, transferAcctUID);
+        }
         split1.setType(mTransactionTypeSwitch.getTransactionType());
-        Split split2 = new Split(value, quantity, transferAcctUID);
         split2.setType(mTransactionTypeSwitch.getTransactionType().invert());
 
         List<Split> splitList = new ArrayList<>();

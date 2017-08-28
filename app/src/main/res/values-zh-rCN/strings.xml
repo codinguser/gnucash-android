@@ -19,7 +19,7 @@
   <string name="title_create_account">创建科目</string>
   <string name="title_edit_account">编辑科目</string>
   <string name="description_add_transaction_icon">为科目增加交易</string>
-  <string name="description_view_account_icon">View account details</string>
+  <string name="description_view_account_icon">科目的详细资料</string>
   <string name="label_no_accounts">没有可以显示的科目</string>
   <string name="label_account_name">科目名称</string>
   <string name="btn_cancel">取消</string>
@@ -77,7 +77,7 @@
   <string name="label_permission_record_transaction">记录交易</string>
   <string name="label_permission_create_account">创建科目</string>
   <string name="label_display_account">显示科目</string>
-  <string name="label_hide_account_balance">Hide account balance in widget</string>
+  <string name="label_hide_account_balance">不显示科目余额</string>
   <string name="btn_create_accounts">创建科目</string>
   <string name="error_no_accounts">GnuCash里还没有科目信息。\n使用小部件前需要添加科目</string>
   <string name="title_license">授权许可</string>
@@ -117,12 +117,11 @@
   <string name="summary_xml_ofx_header">当导出数据到GnuCash桌面版以外的程序时需要开启这个选项。</string>
   <string name="title_whats_new">新功能</string>
   <string name="whats_new">
-        - Added ability to export to any service which supports the Storage Access Framework \n
-        - Added option to set the location for regular automatic backups (See backup settings)\n
-        - Added Bitcoin currency support\n
-        - Added support for renaming books\n
-        - Multiple bug fixes and improvements\n
-	</string>
+         - 导出到云端硬盘 \n
+        -  可以选择备份路径（见备份设置）\n
+        -  添加比特币支持\n
+        -  账簿改名\n
+        - 其他改进和bug修复和\n</string>
   <string name="label_dismiss">知道了</string>
   <string name="toast_transanction_amount_required">输入金额才能保存交易</string>
   <string name="toast_error_importing_accounts">导入 GnuCash 科目时发生错误。</string>
@@ -442,5 +441,5 @@
   <string name="label_backup_filename">gnucash_android_backup.gnca</string>
   <string name="label_select_destination_after_export">选择导出位置</string>
   <string name="label_dropbox_export_destination">导出到Dropbox的 \'/Apps/GnuCash Android/\' 文件夹</string>
-  <string name="title_section_preferences">Preferences</string>
+  <string name="title_section_preferences">首选项</string>
 </resources>

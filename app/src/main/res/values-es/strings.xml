@@ -16,7 +16,7 @@
  limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="title_create_account">Crear cuenta</string>
+  <string name="title_create_account">Crear Cuenta</string>
   <string name="title_edit_account">Editar cuenta</string>
   <string name="description_add_transaction_icon">Añadir una nueva transacción a una cuenta</string>
   <string name="description_view_account_icon">Ver detalles de la cuenta</string>
@@ -26,14 +26,14 @@
   <string name="btn_save">Guardar</string>
   <string name="btn_test">Probar</string>
   <string name="label_passcode">Introducir contraseña</string>
-  <string name="toast_wrong_passcode">Contraseña incorrecta, intentar otra vez</string>
+  <string name="toast_wrong_passcode">Contraseña incorrecta, inténtelo de nuevo</string>
   <string name="toast_passcode_set">Contraseña establecida</string>
   <string name="label_confirm_passcode">Confirme su contraseña</string>
   <string name="toast_invalid_passcode_confirmation">Confirmación de contraseña incorrecta. Inténtelo de nuevo</string>
   <string name="label_transaction_name">Descripción</string>
   <string name="label_transaction_amount">Importe</string>
   <string name="title_add_transaction">Nueva transacción</string>
-  <string name="label_no_transactions">No hay transacciones</string>
+  <string name="label_no_transactions">No hay transacciones que mostrar</string>
   <string name="label_debit">CARGO</string>
   <string name="label_credit">ABONO</string>
   <string name="title_accounts">Cuentas</string>
@@ -44,7 +44,7 @@
   <string name="toast_account_deleted">Cuenta borrada</string>
   <string name="title_confirm_delete">Confirmar borrado</string>
   <string name="title_edit_transaction">Editar Transacción</string>
-  <string name="label_transaction_description">Nota</string>
+  <string name="label_transaction_description">Añadir nota</string>
   <string name="title_selected">%1$d seleccionado</string>
   <string name="label_account_balance">Saldo:</string>
   <string name="label_export_destination">Exportar a:</string>
@@ -72,17 +72,17 @@
   <string name="summary_default_currency">Divisa por defecto para las nuevas cuentas</string>
   <string name="label_permission_record_transactions">Permite almacenar transacciones en Gnucash para Android</string>
   <string name="label_permission_create_accounts">Permite crear cuentas en Gnucash para Android</string>
-  <string name="label_permission_group">Sus datos GnuCash</string>
-  <string name="description_permission_group">Leer y modificar datos Gnucash</string>
+  <string name="label_permission_group">Sus datos de GnuCash</string>
+  <string name="description_permission_group">Leer y modificar datos de GnuCash</string>
   <string name="label_permission_record_transaction">Registrar transacciones en GnuCash</string>
   <string name="label_permission_create_account">Crear cuentas en GnuCash</string>
-  <string name="label_display_account">Mostrar cuentas</string>
+  <string name="label_display_account">Mostrar cuenta</string>
   <string name="label_hide_account_balance">Ocultar el saldo de la cuenta en widget</string>
   <string name="btn_create_accounts">Crear Cuentas</string>
   <string name="error_no_accounts">No hay cuentas en Gnucash.\nCree una cuenta antes de añadir un widget</string>
   <string name="title_license">Licencia</string>
   <string name="summary_licence_details">Apache License v2.0. Clic para más detalles</string>
-  <string name="title_general_prefs">General</string>
+  <string name="title_general_prefs">Preferencias generales</string>
   <string name="label_widget_configuration">Seleccionar Cuenta</string>
   <string name="toast_no_transactions_to_export">No hay transacciones disponibles para exportar</string>
   <string name="title_passcode_preferences">Ajustes de contraseña</string>
@@ -90,19 +90,19 @@
   <string name="title_change_passcode">Cambiar Contraseña</string>
   <string name="title_about_gnucash">Acerca de Gnucash</string>
   <string name="title_export_email">Exportación %1$s de Gnucash Android</string>
-  <string name="description_export_email">Exportación de Gnucash</string>
+  <string name="description_export_email">Exportación desde Gnucash Android </string>
   <string name="header_transaction_settings">Transacciones</string>
   <string name="title_transaction_preferences">Preferencias de transacciones</string>
-  <string name="title_account_preferences">Preferencias de cuentas</string>
+  <string name="title_account_preferences">Preferencias de cuenta</string>
   <string name="title_default_transaction_type">Tipo de transacción por defecto</string>
   <string name="summary_default_transaction_type">El tipo de transacción a utilizar por defecto: ABONO o CARGO</string>
   <string-array name="transaction_types">
     <item>ABONO</item>
     <item>CARGO</item>
   </string-array>
-  <string name="msg_delete_all_transactions_confirmation">¿Borrar TODAS las transacciones?</string>
+  <string name="msg_delete_all_transactions_confirmation">¿Estás seguro de Borrar TODAS las transacciones?</string>
   <string name="msg_delete_transaction_confirmation">¿Borrar esta transacción?</string>
-  <string name="title_export_preference_category">Exportación</string>
+  <string name="title_export_preference_category">Exportar</string>
   <string name="title_export_all_transactions">Exportar todas las transacciones</string>
   <string name="title_always_delete_exported_transactions">Borrar las transacciones exportadas</string>
   <string name="title_default_export_email">Correo electrónico para exportar por defecto</string>
@@ -174,7 +174,7 @@
     <item>XML</item>
   </string-array>
   <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
-  <string name="color_picker_default_title">Seleccionar un color</string>
+  <string name="color_picker_default_title">Seleccione un color</string>
   <!-- Content description for a color square. -->
   <!-- Content description for a selected color square. -->
   <string name="label_account_color_and_type">Color y tipo de cuenta</string>
@@ -185,7 +185,7 @@
   <string name="summary_create_default_accounts">Crea una estructura por defecto de cuentas GnuCash comúnmente usadas</string>
   <string name="title_create_default_accounts">Crear cuentas por defecto</string>
   <string name="msg_confirm_create_default_accounts_setting">Se abrirá un nuevo libro con las cuentas por defecto\n\nSus cuentas y transacciones actuales no se modificarán.</string>
-  <string name="title_scheduled_transactions">Transacciones Programadas</string>
+  <string name="title_scheduled_transactions">Transacciones</string>
   <string name="title_select_export_destination">Seleccionar destino para exportar</string>
   <string name="hint_split_memo">Memo</string>
   <string name="label_spend">Gastar</string>
@@ -290,7 +290,7 @@
     <item quantity="one">Anual</item>
     <item quantity="other">Cada %d años</item>
   </plurals>
-  <string name="title_enable_crashlytics">Activar registro de cuelgues</string>
+  <string name="title_enable_crashlytics">Activar log de errores</string>
   <string name="msg_enable_crashlytics">Activar para enviar información de errores a los desarolladores (recomendado).
 Este proceso solo recoge información que no permite identificar al usuario</string>
   <string name="label_export_format">Formato</string>
@@ -325,7 +325,7 @@ Este proceso solo recoge información que no permite identificar al usuario</str
   <string name="title_split_editor">Editor de desgloses</string>
   <string name="toast_error_check_split_amounts">Compruebe que los desgloses tengan cantidades válidas antes de guardar.</string>
   <string name="label_error_invalid_expression">Expresión inválida</string>
-  <string name="toast_scheduled_recurring_transaction">Programar una transacción recurrente</string>
+  <string name="toast_scheduled_recurring_transaction">Transacción recurrente programada</string>
   <string name="title_transfer_funds">Transferir Fondos</string>
   <string name="nav_menu_help"><![CDATA[Ayuda y Sugerencias]]></string>
   <string name="label_select_pie_slice_to_see_details">Seleccione una porción para ver los detalles</string>

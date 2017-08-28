@@ -86,6 +86,7 @@ public class QifExporter extends Exporter{
                             TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID + " AS trans_uid",
                             TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TIMESTAMP + " AS trans_time",
                             TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_DESCRIPTION + " AS trans_desc",
+                            TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_NOTES + " AS trans_notes",
                             SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_QUANTITY_NUM + " AS split_quantity_num",
                             SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_QUANTITY_DENOM + " AS split_quantity_denom",
                             SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_TYPE + " AS split_type",
@@ -155,8 +156,13 @@ public class QifExporter extends Exporter{
                         writer.append(QifHelper.DATE_PREFIX)
                                 .append(QifHelper.formatDate(cursor.getLong(cursor.getColumnIndexOrThrow("trans_time"))))
                                 .append(newLine);
-                        writer.append(QifHelper.MEMO_PREFIX)
+                        // Payee / description
+                        writer.append(QifHelper.PAYEE_PREFIX)
                                 .append(cursor.getString(cursor.getColumnIndexOrThrow("trans_desc")))
+                                .append(newLine);
+                        // Notes, memo
+                        writer.append(QifHelper.MEMO_PREFIX)
+                                .append(cursor.getString(cursor.getColumnIndexOrThrow("trans_notes")))
                                 .append(newLine);
                         // deal with imbalance first
                         double imbalance = cursor.getDouble(cursor.getColumnIndexOrThrow("trans_acct_balance"));
