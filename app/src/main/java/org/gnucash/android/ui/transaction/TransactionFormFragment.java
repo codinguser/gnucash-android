@@ -236,6 +236,13 @@ public class TransactionFormFragment extends Fragment implements
     private boolean mEditMode = false;
 
     /**
+     * Flag which is set if another action is triggered during a transaction save (which interrrupts the save process).
+     * Allows the fragment to check and resume the save operation.
+     * Primarily used for multicurrency transactions when the currency transfer dialog is opened during save
+     */
+    private boolean onSaveAttempt = false;
+
+    /**
      * Split quantity which will be set from the funds transfer dialog
      */
     private Money mSplitQuantity;
@@ -828,6 +835,7 @@ public class TransactionFormFragment extends Fragment implements
         //determine whether we need to do currency conversion
 
         if (isMultiCurrencyTransaction() && !splitEditorUsed() && !mCurrencyConversionDone){
+            onSaveAttempt = true;
             startTransferFunds();
             return;
         }
@@ -1034,6 +1042,11 @@ public class TransactionFormFragment extends Fragment implements
     public void transferComplete(Money amount) {
         mCurrencyConversionDone = true;
         mSplitQuantity = amount;
+
+        //The transfer dialog was called while attempting to save. So try saving again
+        if (onSaveAttempt)
+            saveNewTransaction();
+        onSaveAttempt = false;
     }
 
     @Override
