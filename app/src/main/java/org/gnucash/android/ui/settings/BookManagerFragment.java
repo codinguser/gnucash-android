@@ -38,6 +38,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -199,30 +201,8 @@ public class BookManagerFragment extends ListFragment implements
                                 case R.id.ctx_menu_sync_book:
                                     //TODO implement sync
                                     return false;
-                                case R.id.ctx_menu_delete_book: {
-                                    AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-                                    dialogBuilder.setTitle(getString(R.string.title_confirm_delete_book))
-                                            .setIcon(R.drawable.ic_close_black_24dp)
-                                            .setMessage(getString(R.string.msg_all_book_data_will_be_deleted));
-                                    dialogBuilder.setPositiveButton(getString(R.string.btn_delete_book), new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            BooksDbAdapter.getInstance().deleteBook(bookUID);
-                                            refresh();
-                                        }
-                                    });
-                                    dialogBuilder.setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                        }
-                                    });
-                                    AlertDialog dialog = dialogBuilder.create();
-                                    dialog.show(); //must be called before you can access buttons
-                                    dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                                            .setTextColor(ContextCompat.getColor(context, R.color.account_red));
-                                }
-                                return true;
+                                case R.id.ctx_menu_delete_book:
+                                    return handleMenuDeleteBook(bookUID);
                                 default:
                                     return true;
                             }
@@ -236,6 +216,38 @@ public class BookManagerFragment extends ListFragment implements
                     popupMenu.show();
                 }
             });
+        }
+
+        private boolean handleMenuDeleteBook(final String bookUID) {
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+            dialogBuilder.setTitle(getString(R.string.title_confirm_delete_book))
+                    .setIcon(R.drawable.ic_close_black_24dp)
+                    .setView(R.layout.dialog_double_confirm)
+                    .setMessage(getString(R.string.msg_all_book_data_will_be_deleted));
+            dialogBuilder.setPositiveButton(getString(R.string.btn_delete_book), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    BooksDbAdapter.getInstance().deleteBook(bookUID);
+                    refresh();
+                }
+            });
+            dialogBuilder.setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            final AlertDialog dialog = dialogBuilder.create();
+            dialog.show(); //must be called before you can access buttons
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+            CheckBox confirmCheckBox = dialog.findViewById(R.id.checkbox_confirm);
+            confirmCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(b);
+                }
+            });
+            return true;
         }
 
         /**
