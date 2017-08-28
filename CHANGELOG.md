@@ -2,7 +2,10 @@ Change Log
 ===============================================================================
 Version 2.3.0 *(2017-09-xx)*
 ----------------------------
+* Fixed #709: Upgrade Dropbox SDK
 * Improved #696: QIF files are now always zipped regardless of the export destination
+* Improved: Remove .zip extension from backup files and XML exports
+* Improved: Split handling and saving
 
 Version 2.2.1 *(2017-09-01)*
 ----------------------------
