@@ -4,7 +4,7 @@ Version 2.3.0 *(2017-09-xx)*
 ----------------------------
 * Improved #696: QIF files are now always zipped regardless of the export destination
 
-Version 2.2.1 *(2017-09-01)*
+Version 2.2.1 *(2017-08-31)*
 ----------------------------
 * Fixed #343: Transaction notes are not exported in QIF exports
 * Fixed #649: Commas in the account name cause errors in report generation
