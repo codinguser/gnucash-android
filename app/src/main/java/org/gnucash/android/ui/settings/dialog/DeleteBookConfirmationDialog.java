@@ -20,10 +20,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
@@ -34,8 +30,8 @@ import org.gnucash.android.ui.common.Refreshable;
  *
  * @author Àlex Magaz <alexandre.magaz@gmail.com>
  */
-public class DeleteBookConfirmationDialog extends DialogFragment {
-
+public class DeleteBookConfirmationDialog extends DoubleConfirmationDialog {
+    @NonNull
     public static DeleteBookConfirmationDialog newInstance(String bookUID) {
         DeleteBookConfirmationDialog frag = new DeleteBookConfirmationDialog();
         Bundle args = new Bundle();
@@ -47,43 +43,19 @@ public class DeleteBookConfirmationDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final String bookUID = getArguments().getString("bookUID");
-
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-        dialogBuilder.setTitle(getString(R.string.title_confirm_delete_book))
+        return getDialogBuilder()
+                .setTitle(R.string.title_confirm_delete_book)
                 .setIcon(R.drawable.ic_close_black_24dp)
-                .setView(R.layout.dialog_double_confirm)
-                .setMessage(getString(R.string.msg_all_book_data_will_be_deleted));
-        dialogBuilder.setPositiveButton(getString(R.string.btn_delete_book), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                BooksDbAdapter.getInstance().deleteBook(bookUID);
-                ((Refreshable) getTargetFragment()).refresh();
-            }
-        });
-        dialogBuilder.setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-
-        return dialogBuilder.create();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        final AlertDialog dialog = (AlertDialog) getDialog();
-        if (dialog != null) {
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-            CheckBox confirmCheckBox = dialog.findViewById(R.id.checkbox_confirm);
-            confirmCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(b);
-                }
-            });
-        }
+                .setMessage(R.string.msg_all_book_data_will_be_deleted)
+                .setPositiveButton(R.string.btn_delete_book, new DialogInterface.OnClickListener() {
+                    @SuppressWarnings("ConstantConditions")
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int which) {
+                        final String bookUID = getArguments().getString("bookUID");
+                        BooksDbAdapter.getInstance().deleteBook(bookUID);
+                        ((Refreshable) getTargetFragment()).refresh();
+                    }
+                })
+                .create();
     }
 }
