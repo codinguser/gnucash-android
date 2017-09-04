@@ -298,7 +298,8 @@ public class BookManagerFragment extends ListFragment implements
             statsText.setText(stats);
 
             if (bookUID.equals(BooksDbAdapter.getInstance().getActiveBookUID())){
-                ((TextView)view.findViewById(R.id.primary_text)).setTextColor(getResources().getColor(R.color.theme_primary));
+                ((TextView)view.findViewById(R.id.primary_text))
+                        .setTextColor(ContextCompat.getColor(getContext(), R.color.theme_primary));
             }
         }
     }

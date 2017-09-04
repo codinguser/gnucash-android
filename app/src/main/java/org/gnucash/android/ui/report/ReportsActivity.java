@@ -26,6 +26,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -230,7 +231,7 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
      * Sets the color Action Bar and Status bar (where applicable)
      */
     public void setAppBarColor(int color) {
-        int resolvedColor = getResources().getColor(color);
+        int resolvedColor = ContextCompat.getColor(this, color);
         if (getSupportActionBar() != null)
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(resolvedColor));
 

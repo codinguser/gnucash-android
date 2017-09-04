@@ -309,8 +309,6 @@ public class TransactionsActivityTest {
 		Espresso.closeSoftKeyboard();
 		onView(withId(R.id.btn_save)).perform(click());
 
-		onView(withId(R.id.menu_save)).perform(click());
-
 		List<Transaction> allTransactions = mTransactionsDbAdapter.getAllTransactionsForAccount(TRANSACTIONS_ACCOUNT_UID);
 		assertThat(allTransactions).hasSize(transactionCount+1);
 		Transaction multiTrans = allTransactions.get(0);

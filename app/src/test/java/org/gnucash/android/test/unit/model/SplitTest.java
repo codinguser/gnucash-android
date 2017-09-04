@@ -25,6 +25,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(GnucashTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
 public class SplitTest {
+    @Test
+    public void amounts_shouldBeStoredUnsigned() {
+        Split split = new Split(new Money("-1", "USD"), new Money("-2", "EUR"), "account-UID");
+        assertThat(split.getValue().isNegative()).isFalse();
+        assertThat(split.getQuantity().isNegative()).isFalse();
+
+        split.setValue(new Money("-3", "USD"));
+        split.setQuantity(new Money("-4", "EUR"));
+        assertThat(split.getValue().isNegative()).isFalse();
+        assertThat(split.getQuantity().isNegative()).isFalse();
+    }
 
     @Test
     public void testAddingSplitToTransaction(){

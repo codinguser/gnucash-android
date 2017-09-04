@@ -19,12 +19,14 @@ package org.gnucash.android.export.qif;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
 
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Commodity;
+import org.gnucash.android.util.FileUtils;
 import org.gnucash.android.util.PreferencesHelper;
 import org.gnucash.android.util.TimestampHelper;
 
@@ -38,6 +40,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -52,13 +55,14 @@ import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
  * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
 public class QifExporter extends Exporter{
+
     /**
      * Initialize the exporter
      * @param params Export options
      */
     public QifExporter(ExportParams params){
         super(params, null);
-        LOG_TAG = "OfxExporter";
+        LOG_TAG = "QifExporter";
     }
 
     /**
@@ -68,7 +72,7 @@ public class QifExporter extends Exporter{
      */
     public QifExporter(ExportParams params, SQLiteDatabase db){
         super(params, db);
-        LOG_TAG = "OfxExporter";
+        LOG_TAG = "QifExporter";
     }
 
     @Override
@@ -238,10 +242,21 @@ public class QifExporter extends Exporter{
 
             /// export successful
             PreferencesHelper.setLastExportTime(TimestampHelper.getTimestampFromNow());
-            return splitQIF(file);
+            List<String> exportedFiles = splitQIF(file);
+            if (exportedFiles.isEmpty())
+                return Collections.emptyList();
+            else
+                return zipQifs(exportedFiles);
         } catch (IOException e) {
             throw new ExporterException(mExportParams, e);
         }
+    }
+
+    @NonNull
+    private List<String> zipQifs(List<String> exportedFiles) throws IOException {
+        String zipFileName = getExportCacheFilePath() + ".zip";
+        FileUtils.zipFiles(exportedFiles, zipFileName);
+        return Collections.singletonList(zipFileName);
     }
 
     /**
@@ -251,7 +266,7 @@ public class QifExporter extends Exporter{
      * @return a list of paths of the newly created Qif files.
      * @throws IOException if something went wrong while splitting the file.
      */
-    public List<String> splitQIF(File file) throws IOException {
+    private List<String> splitQIF(File file) throws IOException {
         // split only at the last dot
         String[] pathParts = file.getPath().split("(?=\\.[^\\.]+$)");
         ArrayList<String> splitFiles = new ArrayList<>();
