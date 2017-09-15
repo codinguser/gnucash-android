@@ -44,7 +44,8 @@
     <Row>
         <Key android:codes="48" android:keyLabel="0" android:keyEdgeFlags="left" />
         <Key android:codes="46" android:keyLabel="." />
-        <Key android:codes="1001" android:keyLabel="=" android:horizontalGap="20%" />
+        <Key android:codes="1004" android:keyLabel="T" />
+        <Key android:codes="1001" android:keyLabel="=" />
         <Key android:codes="1002" android:keyIcon="@drawable/ic_chevron_right_white_24dp"
             android:keyEdgeFlags="right" />
     </Row>

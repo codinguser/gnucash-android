@@ -37,6 +37,11 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
+import org.gnucash.android.model.Account;
+import org.gnucash.android.ui.common.FormActivity;
+
 import java.text.DecimalFormatSymbols;
 
 
@@ -126,6 +131,11 @@ public class CalculatorKeyboard {
                 case 1002:
                     calculatorEditText.focusSearch(View.FOCUS_DOWN).requestFocus();
                     hideCustomKeyboard();
+                    break;
+                case 1004:
+                    FormActivity formActivity = (FormActivity) mContext;
+                    Account fromAccount = AccountsDbAdapter.getInstance().getRecord(formActivity.getCurrentAccountUID());
+                    editable.insert(start, fromAccount.getBalance().asString());
                     break;
             }
         }

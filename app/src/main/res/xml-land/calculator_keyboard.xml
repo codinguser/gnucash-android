@@ -32,9 +32,10 @@
         <Key android:codes="52" android:keyLabel="4" android:keyEdgeFlags="left" />
         <Key android:codes="53" android:keyLabel="5" />
         <Key android:codes="54" android:keyLabel="6" />
-        <Key android:codes="43" android:keyLabel="+" android:horizontalGap="14.2%p" />
+        <Key android:codes="1004" android:keyLabel="T" />
+        <Key android:codes="43" android:keyLabel="+" />
         <Key android:codes="45" android:keyLabel="-" />
-        <Key android:codes="-5" android:keyLabel="C" android:keyEdgeFlags="right" />
+        <Key android:codes="1003" android:keyLabel="C" android:keyEdgeFlags="right" />
     </Row>
     <Row>
         <Key android:codes="49" android:keyLabel="1" android:keyEdgeFlags="left"/>
