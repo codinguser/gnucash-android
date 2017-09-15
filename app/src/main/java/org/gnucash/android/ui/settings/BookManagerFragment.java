@@ -54,6 +54,7 @@ import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.common.Refreshable;
+import org.gnucash.android.ui.settings.dialog.DeleteBookConfirmationDialog;
 import org.gnucash.android.util.BookUtils;
 import org.gnucash.android.util.PreferencesHelper;
 
@@ -199,30 +200,8 @@ public class BookManagerFragment extends ListFragment implements
                                 case R.id.ctx_menu_sync_book:
                                     //TODO implement sync
                                     return false;
-                                case R.id.ctx_menu_delete_book: {
-                                    AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-                                    dialogBuilder.setTitle(getString(R.string.title_confirm_delete_book))
-                                            .setIcon(R.drawable.ic_close_black_24dp)
-                                            .setMessage(getString(R.string.msg_all_book_data_will_be_deleted));
-                                    dialogBuilder.setPositiveButton(getString(R.string.btn_delete_book), new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            BooksDbAdapter.getInstance().deleteBook(bookUID);
-                                            refresh();
-                                        }
-                                    });
-                                    dialogBuilder.setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                        }
-                                    });
-                                    AlertDialog dialog = dialogBuilder.create();
-                                    dialog.show(); //must be called before you can access buttons
-                                    dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                                            .setTextColor(ContextCompat.getColor(context, R.color.account_red));
-                                }
-                                return true;
+                                case R.id.ctx_menu_delete_book:
+                                    return handleMenuDeleteBook(bookUID);
                                 default:
                                     return true;
                             }
@@ -236,6 +215,13 @@ public class BookManagerFragment extends ListFragment implements
                     popupMenu.show();
                 }
             });
+        }
+
+        private boolean handleMenuDeleteBook(final String bookUID) {
+            DeleteBookConfirmationDialog dialog = DeleteBookConfirmationDialog.newInstance(bookUID);
+            dialog.show(getFragmentManager(), "delete_book");
+            dialog.setTargetFragment(BookManagerFragment.this, 0);
+            return true;
         }
 
         /**
