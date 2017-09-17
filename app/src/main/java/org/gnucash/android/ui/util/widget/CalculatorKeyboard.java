@@ -134,7 +134,7 @@ public class CalculatorKeyboard {
                 case 1004:
                     FormActivity formActivity = (FormActivity) mContext;
                     Account fromAccount = AccountsDbAdapter.getInstance().getRecord(formActivity.getCurrentAccountUID());
-                    editable.insert(start, fromAccount.getBalance().toPlainStringStripTrailingZeros());
+                    editable.insert(start, fromAccount.getBalance().abs().toPlainStringStripTrailingZeros());
                     break;
             }
         }
