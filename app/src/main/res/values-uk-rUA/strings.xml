@@ -17,19 +17,19 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="title_create_account">Створити рахунок</string>
-  <string name="title_edit_account">Редагувати рахунок</string>
-  <string name="description_add_transaction_icon">Додати до рахунку нову транзакцію</string>
-  <string name="description_view_account_icon">View account details</string>
+  <string name="title_edit_account">Редагування</string>
+  <string name="description_add_transaction_icon">Додати нову транзакцію до рахунку</string>
+  <string name="description_view_account_icon">Докладно про рахунок</string>
   <string name="label_no_accounts">Немає рахунків</string>
-  <string name="label_account_name">Ім\'я рахунку</string>
+  <string name="label_account_name">Назва рахунку</string>
   <string name="btn_cancel">Скасувати</string>
   <string name="btn_save">Зберегти</string>
-  <string name="btn_test">Test</string>
-  <string name="label_passcode">Введіть пароль</string>
-  <string name="toast_wrong_passcode">Невірний пароль, спробуйте ще раз</string>
-  <string name="toast_passcode_set">Пароль встановлений</string>
-  <string name="label_confirm_passcode">Підтвердіть пароль</string>
-  <string name="toast_invalid_passcode_confirmation">Паролі не збіглися. Повторіть заново.</string>
+  <string name="btn_test">Тест</string>
+  <string name="label_passcode">Введіть PIN</string>
+  <string name="toast_wrong_passcode">Невірний PIN, спробуйте ще</string>
+  <string name="toast_passcode_set">PIN встановлено</string>
+  <string name="label_confirm_passcode">Підтвердіть PIN</string>
+  <string name="toast_invalid_passcode_confirmation">PIN-коди не збіглися, спробуйте ще.</string>
   <string name="label_transaction_name">Опис</string>
   <string name="label_transaction_amount">Сума</string>
   <string name="title_add_transaction">Нова транзакція</string>
@@ -38,28 +38,28 @@
   <string name="label_credit">КРЕДИТ</string>
   <string name="title_accounts">Рахунки</string>
   <string name="title_transactions">Транзакції</string>
-  <string name="menu_delete">ВИДАЛИТИ</string>
+  <string name="menu_delete">Видалити</string>
   <string name="alert_dialog_ok_delete">Видалити</string>
   <string name="alert_dialog_cancel">Скасувати</string>
-  <string name="toast_account_deleted">Рахунок видалений</string>
+  <string name="toast_account_deleted">Рахунок видалено</string>
   <string name="title_confirm_delete">Підтвердіть видалення</string>
-  <string name="title_edit_transaction">Редагувати транзакцію</string>
-  <string name="label_transaction_description">Опис</string>
+  <string name="title_edit_transaction">Редагування</string>
+  <string name="label_transaction_description">Додати нотатку</string>
   <string name="title_selected">%1$d обрано</string>
   <string name="label_account_balance">Баланс:</string>
-  <string name="label_export_destination">Export To:</string>
-  <string name="title_export_dialog">Експорт транзакцій</string>
+  <string name="label_export_destination">Експортувати до:</string>
+  <string name="title_export_dialog">Експортування транзакцій</string>
   <string name="hint_export_choice">Експортувати всі транзакції, а не тільки нові.</string>
-  <string name="toast_export_error">Помилка при експорті %1$s</string>
+  <string name="toast_export_error">Помилка при експорті файлу %1$s</string>
   <string name="btn_export">Експорт</string>
-  <string name="option_delete_after_export">Delete transactions after export</string>
+  <string name="option_delete_after_export">Видалити транзакцій після експорту</string>
   <string name="hint_delete_after_export">Всі експортовані транзакції будуть видалені по завершенні.</string>
   <string name="title_settings">Налаштування</string>
   <string-array name="export_destinations">
-    <item>Save As&#8230;</item>
+    <item>Зберегти як...</item>
     <item>Dropbox</item>
     <item>ownCloud</item>
-    <item>Send to&#8230;</item>
+    <item>Надіслати до...</item>
   </string-array>
   <string name="btn_move">Перенести</string>
   <string name="title_move_transactions">Перенести %1$d транзакц(ію,ії,ій)</string>
@@ -68,8 +68,8 @@
   <string name="header_general_settings">Загальні</string>
   <string name="header_about_gnucash">Про програму</string>
   <string name="title_choose_currency">Оберіть валюту за замовчуванням</string>
-  <string name="title_default_currency">Валюта за замовчуванням</string>
-  <string name="summary_default_currency">Валюта для нових рахунків</string>
+  <string name="title_default_currency">Звичайна валюта</string>
+  <string name="summary_default_currency">Валюта нових рахунків</string>
   <string name="label_permission_record_transactions">Дозволяє запис транзакцій в Gnucash Android</string>
   <string name="label_permission_create_accounts">Дозволяє створення рахунків в Gnucash Android</string>
   <string name="label_permission_group">Ваші Gnucash дані</string>
@@ -77,63 +77,63 @@
   <string name="label_permission_record_transaction">Запис операції в GnuCash</string>
   <string name="label_permission_create_account">Створення рахунків в GnuCash</string>
   <string name="label_display_account">Показати рахунок</string>
-  <string name="label_hide_account_balance">Hide account balance in widget</string>
+  <string name="label_hide_account_balance">Не показувати баланс у віджеті</string>
   <string name="btn_create_accounts">Створити рахунки</string>
   <string name="error_no_accounts">Немає рахунків в Gnucash.\nСтворіть рахунки перед додаваням віджета.</string>
   <string name="title_license">Ліцензія</string>
   <string name="summary_licence_details">Apache License v2.0. Натисніть, щоб переглянути.</string>
-  <string name="title_general_prefs">Загальні налаштування</string>
+  <string name="title_general_prefs">Загальні</string>
   <string name="label_widget_configuration">Оберіть рахунок</string>
   <string name="toast_no_transactions_to_export">Немає транзакцій для експорту</string>
-  <string name="title_passcode_preferences">Захист паролем</string>
-  <string name="title_enable_passcode">Enable passcode</string>
-  <string name="title_change_passcode">Змінити пароль</string>
+  <string name="title_passcode_preferences">Захист PIN-кодом</string>
+  <string name="title_enable_passcode">Увімкнути PIN-код</string>
+  <string name="title_change_passcode">Змінити PIN-код</string>
   <string name="title_about_gnucash">Про Gnucash</string>
   <string name="title_export_email">Експорт %1$s-файлу із Gnucash Android</string>
-  <string name="description_export_email">GnuCash Android експорт з </string>
+  <string name="description_export_email">Экспорт даних GnuCash Android від </string>
   <string name="header_transaction_settings">Транзакції</string>
-  <string name="title_transaction_preferences">Властивості транзакції</string>
-  <string name="title_account_preferences">Властивості рахунку</string>
-  <string name="title_default_transaction_type">Тип транзакції за замовчуванням</string>
-  <string name="summary_default_transaction_type">Тип транзакції за замовчуванням: ДЕБЕТ або КРЕДИТ</string>
+  <string name="title_transaction_preferences">Транзакції</string>
+  <string name="title_account_preferences">Рахунки</string>
+  <string name="title_default_transaction_type">Початковий тип транзакції</string>
+  <string name="summary_default_transaction_type">Початковий тип транзакції: КРЕДИТ або ДЕБЕТ</string>
   <string-array name="transaction_types">
     <item>КРЕДИТ</item>
     <item>ДЕБЕТ</item>
   </string-array>
-  <string name="msg_delete_all_transactions_confirmation">Ви дійсно хочете видалити ВСІ транзакції?</string>
-  <string name="msg_delete_transaction_confirmation">Ви дійсно хочете видалити цю транзакцію?</string>
+  <string name="msg_delete_all_transactions_confirmation">Бажаєте видалити ВСІ транзакції?</string>
+  <string name="msg_delete_transaction_confirmation">Бажаєте видалити цю транзакцію?</string>
   <string name="title_export_preference_category">Експорт</string>
   <string name="title_export_all_transactions">Експорт всіх транзакцій</string>
-  <string name="title_always_delete_exported_transactions">Завжди видаляти експортоване</string>
+  <string name="title_always_delete_exported_transactions">Видаляти експортоване</string>
   <string name="title_default_export_email">Електронна пошта для експорту</string>
-  <string name="summary_default_export_email">Поштова скринька за замовчуванням для експорту. Можете змінювати її в процесі.</string>
+  <string name="summary_default_export_email">На цю скриньку буде відправлено експортовані файли. Її можна змінити під час експортування.</string>
   <string name="summary_use_double_entry">Всі транзакції будуть переказами з одного рахунку на інший.</string>
-  <string name="title_use_double_entry">Активувати подвійний запис</string>
+  <string name="title_use_double_entry">Подвійний запис</string>
   <string name="account_balance">Баланс</string>
-  <string name="toast_no_account_name_entered">Введіть ім\'я створюваного рахунку</string>
+  <string name="toast_no_account_name_entered">Введіть назву рахунку</string>
   <string name="label_account_currency">Валюта</string>
-  <string name="label_parent_account">Батьківський рахунок</string>
+  <string name="label_parent_account">Головний рахунок</string>
   <string name="title_xml_ofx_header">Використовувати XML-заголовок OFX</string>
   <string name="summary_xml_ofx_header">Ввімкніть цю опцію, якщо експортуєте в програми відмінні від GnuCash для ПК</string>
   <string name="title_whats_new">Що нового</string>
   <string name="whats_new">
-        - Added ability to export to any service which supports the Storage Access Framework \n
-        - Added option to set the location for regular automatic backups (See backup settings)\n
-        - Added Bitcoin currency support\n
-        - Added support for renaming books\n
-        - Multiple bug fixes and improvements\n
+        - Дані можна експортувати до будь-якого сервісу, що підтримує Платформу доступу до сховища (Storage Access Framework)\n
+        - Можна вказати місце для автоматичного резервного копіювання за розкладом (див. розділ параметрів «Резервне копіювання»)\n
+        - Додано Bitcoin до списку валют\n
+        - Книги можна перейменовувати\n
+        - Кілька виправлень та покращень\n
 	</string>
   <string name="label_dismiss">Відмовитися</string>
   <string name="toast_transanction_amount_required">Введіть суму, щоб зберегти транзакцію</string>
   <string name="toast_error_importing_accounts">Сталася помилка при імпорті рахунків із GnuCash</string>
   <string name="toast_success_importing_accounts">Рахунки із GnuCash успішно імпортовані</string>
   <string name="summary_import_accounts"> Імпорт структури рахунків із GnuCash для ПК</string>
-  <string name="title_import_accounts">Імпортувати рахунки із GnuCash</string>
+  <string name="title_import_accounts">Імпортувати файл GnuCash XML</string>
   <string name="summary_delete_all_accounts">Видалити всі рахунки з бази. Усі транзакції теж видаляться.</string>
   <string name="title_delete_all_accounts">Видалити всі рахунки</string>
   <string name="header_account_settings">Рахунки</string>
   <string name="toast_all_accounts_deleted">Всі рахунки видалено</string>
-  <string name="confirm_delete_all_accounts">Ви дійсно хочете видалити всі рахунки та транзакції?\nЦе не можна буде скасувати!</string>
+  <string name="confirm_delete_all_accounts">Ви дійсно хочете видалити всі рахунки та транзакції?\n\nЦе не можна буде скасувати!    </string>
   <string name="summary_delete_all_transactions">Усі транзакції в усіх рахунках будуть видалені!</string>
   <string name="title_delete_all_transactions">Видалити всі транзакції</string>
   <string name="toast_all_transactions_deleted">Всі транзакції видалені</string>
@@ -143,12 +143,12 @@
   <string name="menu_search_accounts">Пошук</string>
   <string name="title_default_export_format">Формат експорту за замовчуванням</string>
   <string name="summary_default_export_format">Формат файлу, який використовується за умовчанням при експорті</string>
-  <string name="label_recurring_transaction">Запланована транзакція</string>
+  <string name="label_recurring_transaction">За розкладом</string>
   <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
-  <string name="imbalance_account_name">Дисбаланс</string>
+  <string name="imbalance_account_name">Нерівновага</string>
   <string name="title_progress_exporting_transactions">Транзакції експортуються</string>
   <string name="label_no_recurring_transactions">Немає запланований транзакцій.</string>
-  <string name="toast_recurring_transaction_deleted">Запланована транзакція успішно видалена</string>
+  <string name="toast_recurring_transaction_deleted">Заплановану транзакцію успішно видалено</string>
   <string name="label_placeholder_account">Віртуальний рахунок</string>
   <string name="label_default_transfer_account">Трансфертний рахунок за замовчуванням</string>
   <plurals name="label_sub_accounts">
@@ -181,17 +181,17 @@
   <string name="color_picker_default_title">Оберіть колір</string>
   <!-- Content description for a color square. -->
   <!-- Content description for a selected color square. -->
-  <string name="label_account_color_and_type">Колір &amp; Тип рахунку</string>
-  <string name="label_delete_sub_accounts">Видалити дочірні рахунки</string>
+  <string name="label_account_color_and_type">Колір і тип рахунку</string>
+  <string name="label_delete_sub_accounts">Видалити субрахунки</string>
   <string name="title_recent_accounts">Нещодавні</string>
   <string name="title_favorite_accounts">Вибрані</string>
   <string name="title_all_accounts">Всі</string>
   <string name="summary_create_default_accounts">Створення стандартної структури рахунків GnuCash</string>
   <string name="title_create_default_accounts">Створення стандартних рахунків</string>
-  <string name="msg_confirm_create_default_accounts_setting">A new book will be opened with the default accounts\n\nYour current accounts and transactions will not be modified!</string>
-  <string name="title_scheduled_transactions">Заплановані транзакції</string>
+  <string name="msg_confirm_create_default_accounts_setting">Буде створено нову книгу з типовими рахунками\n\nЗмін до наявних рахунків та транзакцій не буде.</string>
+  <string name="title_scheduled_transactions">Транзакції</string>
   <string name="title_select_export_destination">Оберіть місце призначення експорту</string>
-  <string name="hint_split_memo">Пам\'ятка</string>
+  <string name="hint_split_memo">Примітка</string>
   <string name="label_spend">Трата</string>
   <string name="label_receive">Прихід</string>
   <string name="label_withdrawal">Повернення</string>
@@ -223,7 +223,7 @@
   <string name="title_pie_chart">Кругова діаграма</string>
   <string name="title_line_chart">Лінійний графік</string>
   <string name="title_bar_chart">Гістограма</string>
-  <string name="title_report_prefs">Налаштування звітів</string>
+  <string name="title_report_prefs">Звіти</string>
   <string name="title_use_account_color">Колір рахунку в звіті</string>
   <string name="summary_use_account_color">Використовувати колір рахунку в звітах</string>
   <string name="menu_order_by_size">Відсортувати за розміром</string>
@@ -239,23 +239,23 @@
   <string name="toast_chart_percentage_mode_current_bar">Відсотки рахуються від вибраного стовпчика</string>
   <string name="label_save_template">Зберегти як шаблон</string>
   <string name="label_delete_account_transactions_description">Рахунок містить транзакції.\nЩо з ними робити?</string>
-  <string name="label_delete_account_subaccounts_description">Наявні дочірні рахунки.\nЩо з ними робити?</string>
+  <string name="label_delete_account_subaccounts_description">Цей рахунок має субрахунки. \nОберіть, що з ними робити</string>
   <string name="label_delete_transactions">Видалити транзакції</string>
   <string name="toast_disable_double_entry_to_save_transaction">Створіть і вкажіть трансферний рахунок або вимкніть подвійний запис в налаштуваннях.</string>
-  <string name="label_tap_to_create_schedule">Натисніть, щоб створити розклад</string>
+  <string name="label_tap_to_create_schedule">Торкніться, щоб створити розклад</string>
   <string name="title_restore_backup">Відновити з резервної копії&#8230;</string>
-  <string name="header_backup_and_export_settings">Резервне копіювання &amp; експорт</string>
-  <string name="title_dropbox_sync_preference">Enable DropBox</string>
-  <string name="title_owncloud_sync_preference">Enable ownCloud </string>
+  <string name="header_backup_and_export_settings">Резервне копіювання й експорт</string>
+  <string name="title_dropbox_sync_preference">Під’єднати Dropbox</string>
+  <string name="title_owncloud_sync_preference">Під’єднати до ownCloud </string>
   <string name="title_backup_preference_category">Резервне копіюванняе</string>
-  <string name="summary_dropbox_sync">Enable exporting to DropBox</string>
-  <string name="summary_owncloud_sync">Enable exporting to ownCloud</string>
-  <string name="title_backup_prefs">Налаштування резервного копіювання</string>
+  <string name="summary_dropbox_sync">Увімкнути експорт до Dropbox</string>
+  <string name="summary_owncloud_sync">Увімкнути експорт у ownCloud</string>
+  <string name="title_backup_prefs">Резервне копіювання</string>
   <string name="title_create_backup_pref">Створити резервну копію</string>
-  <string name="summary_create_backup_pref">Create a backup of the active book</string>
-  <string name="summary_restore_backup_pref">Restore most recent backup of active book</string>
+  <string name="summary_create_backup_pref">Створити резервну копію активної книги</string>
+  <string name="summary_restore_backup_pref">Відновити найновішу резервну копію активної книги</string>
   <string name="toast_backup_successful">Резервна копія створена</string>
-  <string name="toast_backup_failed">Не вийшло створити резервну копію</string>
+  <string name="toast_backup_failed">Помилка, спробуйте ще</string>
   <string name="export_warning_xml">Будуть експортовані всі рахунки і транзакції</string>
   <string name="toast_install_file_manager">Встановіть програму для перегляду файлової системи</string>
   <string name="title_select_backup_to_restore">Оберіть резервну копію для відновлення</string>
@@ -264,40 +264,40 @@
   <string name="nav_menu_reports">Звіти</string>
   <string name="nav_menu_export">Експорт&#8230;</string>
   <string name="nav_menu_settings">Налаштування</string>
-  <string name="username">User Name</string>
-  <string name="password">Password</string>
+  <string name="username">Ім’я користувача</string>
+  <string name="password">Пароль</string>
   <string name="owncloud_pref">owncloud</string>
   <string name="owncloud_server">https://</string>
-  <string name="owncloud_server_invalid">OC server not found</string>
-  <string name="owncloud_user_invalid">OC username/password invalid</string>
-  <string name="owncloud_dir_invalid">Invalid chars: \\ &lt; &gt; : \&quot; | * ? </string>
-  <string name="owncloud_server_ok">OC server OK</string>
-  <string name="owncloud_user_ok">OC username/password OK</string>
-  <string name="owncloud_dir_ok">Dir name OK</string>
+  <string name="owncloud_server_invalid">Сервер не знайдено</string>
+  <string name="owncloud_user_invalid">Невірне ім’я користувача або пароль</string>
+  <string name="owncloud_dir_invalid">Використовуйте лише букви, цифри, дефіси, символи підкреслення, апострофи й крапки</string>
+  <string name="owncloud_server_ok">Сервер знайдено</string>
+  <string name="owncloud_user_ok">Ім’я користувача та пароль вірні</string>
+  <string name="owncloud_dir_ok">Ім’я папки підходить</string>
   <plurals name="label_every_x_hours">
-    <item quantity="one">Hourly</item>
-    <item quantity="few">Every %d hours</item>
-    <item quantity="other">Every %d hours</item>
+    <item quantity="one">Щогодини</item>
+    <item quantity="few">Кожних %d годин</item>
+    <item quantity="other">Кожних %d годин</item>
   </plurals>
   <plurals name="label_every_x_days">
     <item quantity="one">Щодня</item>
-    <item quantity="few">Кожні %d дні</item>
-    <item quantity="other">Every %d days</item>
+    <item quantity="few">Раз на %d дні</item>
+    <item quantity="other">Раз на %d днів</item>
   </plurals>
   <plurals name="label_every_x_weeks">
     <item quantity="one">Щотижня</item>
-    <item quantity="few">Кожні %d тижні</item>
-    <item quantity="other">Every %d weeks</item>
+    <item quantity="few">Раз на %d тижні</item>
+    <item quantity="other">Раз на %d тижнів</item>
   </plurals>
   <plurals name="label_every_x_months">
     <item quantity="one">Щомісяця</item>
-    <item quantity="few">Кожні %d місяці</item>
-    <item quantity="other">Every %d months</item>
+    <item quantity="few">Раз на %d місяці</item>
+    <item quantity="other">Раз на %d місяців</item>
   </plurals>
   <plurals name="label_every_x_years">
     <item quantity="one">Щороку</item>
-    <item quantity="few">Кожні %d роки</item>
-    <item quantity="other">Every %d years</item>
+    <item quantity="few">Раз на %d роки</item>
+    <item quantity="other">Раз на %d років</item>
   </plurals>
   <string name="title_enable_crashlytics">Вести журнал відмов програми</string>
   <string name="msg_enable_crashlytics">Вести журнал відмов програми (рекомендуємо). Обіцяємо не збирати приватну інформацію.</string>
@@ -306,36 +306,36 @@
   <string name="label_new_passcode">Введіть новий пароль</string>
   <string name="title_scheduled_exports">Запланований експорт</string>
   <string name="label_no_scheduled_exports_to_display">Ви ще не планували експорт даних</string>
-  <string name="title_create_export_schedule">Створити розклад експорту </string>
+  <string name="title_create_export_schedule">Запланувати експортування</string>
   <string name="toast_exported_to">Експортовано в: %1$s</string>
   <string name="toast_legend_too_long">Легенда задовга</string>
   <string name="hint_account_description">Опис рахунку</string>
   <string name="label_no_recent_accounts">Немає нещодавніх рахунків</string>
   <string name="label_no_favorite_accounts">Немає закладок рахунків</string>
-  <string name="nav_menu_scheduled_actions">Заплановані заходи</string>
+  <string name="nav_menu_scheduled_actions">Планування</string>
   <string name="label_scheduled_action_ended">"Закінчений, останнє виконання "</string>
-  <string name="btn_wizard_next">Наступне</string>
-  <string name="btn_wizard_finish">Завершити</string>
-  <string name="wizard_title_default_currency">Валюта по замовчуванню</string>
-  <string name="wizard_title_account_setup">Налаштування облікового запису</string>
+  <string name="btn_wizard_next">Далі</string>
+  <string name="btn_wizard_finish">Готово</string>
+  <string name="wizard_title_default_currency">Ваша звичайна валюта</string>
+  <string name="wizard_title_account_setup">Створення рахунків</string>
   <string name="wizard_title_select_currency">Виберіть валюту</string>
-  <string name="wizard_title_feedback_options">Опції зворотнього зв\'язоку</string>
-  <string name="wizard_option_create_default_accounts">Створити рахунки по замовчуванню</string>
-  <string name="wizard_option_import_my_accounts">Імпортувати мої рахунки</string>
+  <string name="wizard_title_feedback_options">Зворотній зв’язок</string>
+  <string name="wizard_option_create_default_accounts">Створити типові рахунки</string>
+  <string name="wizard_option_import_my_accounts">Імпортувати рахунки</string>
   <string name="wizard_option_let_me_handle_it">Я вирішу пізніше</string>
   <string name="wizard_option_currency_other">Інше&#8230;</string>
-  <string name="wizard_option_auto_send_crash_reports">Автоматично відправляти звіти про помилки</string>
-  <string name="wizard_option_disable_crash_reports">Відключити звіти про помилки</string>
+  <string name="wizard_option_auto_send_crash_reports">Автоматично звітувати про помилки</string>
+  <string name="wizard_option_disable_crash_reports">Не звітувати про помилки</string>
   <string name="wizard_btn_back">Назад</string>
   <string name="title_setup_gnucash">Налаштування GnuCash</string>
   <string name="wizard_title_welcome_to_gnucash">Ласкаво просимо до GnuCash</string>
-  <string name="msg_wizard_welcome_page">Перед початком роботи, \nдавайте зробимо деякі налаштування\n\nЩоб продовжити натисніть Наступне</string>
-  <string name="title_split_editor">Едітор частинок транзакцій</string>
+  <string name="msg_wizard_welcome_page">Перш ніж починати, \nдавайте налаштуємо застосунок.\n\nЩоб продовжити, натисніть «Далі»</string>
+  <string name="title_split_editor">Розділення</string>
   <string name="toast_error_check_split_amounts">Перевірте щоб всі частинки мали допустимі суми перед збереженням!</string>
   <string name="label_error_invalid_expression">Недопустимий вираз!</string>
-  <string name="toast_scheduled_recurring_transaction">Запланувати повторюванні транзакції</string>
+  <string name="toast_scheduled_recurring_transaction">Повторювані транзакції заплановано</string>
   <string name="title_transfer_funds">Переведення грошей</string>
-  <string name="nav_menu_help"><![CDATA[Допомога & Зворотній зв\'язок]]></string>
+  <string name="nav_menu_help"><![CDATA[Довідка і допомога]]></string>
   <string name="label_select_pie_slice_to_see_details">Виберіть частинку, щоб побачити деталі</string>
   <string name="label_report_period">Період:</string>
   <string name="label_convert_from">З:</string>
@@ -354,25 +354,25 @@
   <string name="label_equity">Акції</string>
   <string name="label_move_to">Перемістити в:</string>
   <string name="menu_group_by">Групувати за</string>
-  <string name="menu_group_by_month">Місяцями</string>
-  <string name="menu_group_by_quarter">Кварталами</string>
-  <string name="menu_group_by_year">Роками</string>
+  <string name="menu_group_by_month">По місяцях</string>
+  <string name="menu_group_by_quarter">За кварталами</string>
+  <string name="menu_group_by_year">За роками</string>
   <string name="title_balance_sheet_report">Зведений баланс</string>
   <string name="label_balance_sheet_total">Всього:</string>
   <string name="title_google_plus_community">Google+ спільнота</string>
   <string name="title_translate_gnucash">Перекласти GnuCash</string>
   <string name="summary_google_plus">Поділитися ідеями, обговорити зміни або повідомити про проблеми</string>
   <string name="summary_translate_gnucash">Перекласти або вичитати на CrowdIn</string>
-  <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
-  <string name="menu_move_transaction">Move&#8230;</string>
-  <string name="menu_duplicate_transaction">Duplicate</string>
-  <string name="title_cash_flow_report">Cash Flow</string>
-  <string name="title_budgets">Budgets</string>
-  <string name="title_use_compact_list">Enable compact view</string>
-  <string name="summary_use_compact_list">Enable to always use compact view for transactions list</string>
-  <string name="error_invalid_exchange_rate">Invalid exchange rate</string>
-  <string name="sample_exchange_rate">e.g. 1 %1$s = x.xx %2$s</string>
-  <string name="error_invalid_amount">Invalid amount</string>
+  <string name="toast_no_compatible_apps_to_receive_export">Нема сумісних застосунків для експортування!</string>
+  <string name="menu_move_transaction">Перемістити&#8230;</string>
+  <string name="menu_duplicate_transaction">Дублювати</string>
+  <string name="title_cash_flow_report">Грошовий потік</string>
+  <string name="title_budgets">Бюджети</string>
+  <string name="title_use_compact_list">Увімкнути компактне подання</string>
+  <string name="summary_use_compact_list">Увімкнути компактне подання для всіх списків транзакцій</string>
+  <string name="error_invalid_exchange_rate">Неправильний формат курсу обміну</string>
+  <string name="sample_exchange_rate">наприклад, 1 %1$s = x,xx %2$s</string>
+  <string name="error_invalid_amount">Неправильний формат суми</string>
   <string-array name="report_time_range">
     <item>Поточний місяць</item>
     <item>Останній квартал</item>
@@ -403,59 +403,59 @@
   <string name="digit_nine_text">WXYZ</string>
   <string name="digit_zero">0</string>
   <string name="digit_zero_text">+</string>
-  <string name="title_manage_books">Manage Books</string>
-  <string name="menu_manage_books">Manage Books&#8230;</string>
-  <string name="select_chart_to_view_details">Select any part of the chart to view details</string>
-  <string name="title_confirm_delete_book">Confirm delete Book</string>
-  <string name="msg_all_book_data_will_be_deleted">All accounts and transactions in this book will be deleted!</string>
-  <string name="btn_delete_book">Delete Book</string>
-  <string name="label_last_export_time">Last Exported:</string>
-  <string name="menu_title_enable_sync">Enable Sync</string>
-  <string name="menu_title_new_book">New Book</string>
-  <string name="toast_transaction_has_no_splits_and_cannot_open">The selected transaction has no splits and cannot be opened</string>
-  <string name="label_split_count">%1$d splits</string>
-  <string name="label_inside_account_with_name">in %1$s</string>
+  <string name="title_manage_books">Робота з книгами</string>
+  <string name="menu_manage_books">Керування книгами</string>
+  <string name="select_chart_to_view_details">Торкніться елемента діаграми, шоб отримати докладну інформацію</string>
+  <string name="title_confirm_delete_book">Видалити книгу?</string>
+  <string name="msg_all_book_data_will_be_deleted">Всі рахунки та транзакції у цій книзі буде втрачено!</string>
+  <string name="btn_delete_book">Видалити</string>
+  <string name="label_last_export_time">Востаннє експортовано:</string>
+  <string name="menu_title_enable_sync">Увімкнути синхронізацію</string>
+  <string name="menu_title_new_book">Нова книга</string>
+  <string name="toast_transaction_has_no_splits_and_cannot_open">Це не розділена транзакція, її неможливо відкрити</string>
+  <string name="label_split_count">%1$d частин</string>
+  <string name="label_inside_account_with_name">у %1$s</string>
   <plurals name="book_account_stats">
-    <item quantity="one">%d account</item>
-    <item quantity="few">%d accounts</item>
-    <item quantity="other">%d accounts</item>
+    <item quantity="one">%d рахунок</item>
+    <item quantity="few">%d рахунки</item>
+    <item quantity="other">%d рахунків</item>
   </plurals>
   <plurals name="book_transaction_stats">
-    <item quantity="one">%d transaction</item>
-    <item quantity="few">%d transactions</item>
-    <item quantity="other">%d transactions</item>
+    <item quantity="one">%d транзакція</item>
+    <item quantity="few">%d транзакції</item>
+    <item quantity="other">%d транзакцій</item>
   </plurals>
   <string-array name="report_account_types">
-    <item>EXPENSE</item>
-    <item>INCOME</item>
+    <item>ВИТРАТИ</item>
+    <item>ДОХОДИ</item>
   </string-array>
-  <string name="toast_connected_to_google_drive">Connected to Google Drive</string>
-  <string name="toast_unable_to_connect_to_google_drive">Unable to connect to Google Drive</string>
-  <string name="toast_enter_amount_to_split">Please enter an amount to split</string>
-  <string name="label_export_target_external_service">external service</string>
-  <string name="toast_updated_transaction_recurring_schedule">Updated transaction recurring schedule</string>
-  <string name="label_export_transactions_since_date">Since</string>
-  <string name="switch_export_transactions_from_all_time">All time</string>
-  <string name="label_recommend_app">Recommend in Play Store</string>
-  <string name="repeat_until_date">until %1$s</string>
-  <string name="repeat_on_weekday">on %1$s</string>
-  <string name="repeat_x_times">for %1$d times</string>
-  <string name="menu_show_compact_view">Compact View</string>
-  <string name="book_default_name">Book %1$d</string>
-  <string name="last_export_time_never">never</string>
-  <string name="title_rename_book">Rename Book</string>
-  <string name="btn_rename">Rename</string>
-  <string name="menu_rename">Rename</string>
-  <string name="title_select_backup_file">Select backup file</string>
-  <string name="summary_select_backup_file">Select a file for automatic backups</string>
-  <string name="title_confirm_restore_backup">Confirm restore from backup</string>
-  <string name="msg_confirm_restore_backup_into_new_book">A new book will be opened with the contents of this backup. Do you wish to proceed?</string>
-  <string name="btn_restore">Restore</string>
-  <string name="title_no_backups_found">No backups found</string>
-  <string name="msg_no_backups_to_restore_from">There are no existing backup files to restore from</string>
+  <string name="toast_connected_to_google_drive">З’єднання з Google Drive встановленно</string>
+  <string name="toast_unable_to_connect_to_google_drive">Не вдалося з’єднатися з Google Drive</string>
+  <string name="toast_enter_amount_to_split">Введіть суму</string>
+  <string name="label_export_target_external_service">інші застосунки</string>
+  <string name="toast_updated_transaction_recurring_schedule">Розклад повторюваної транзакції оновлено</string>
+  <string name="label_export_transactions_since_date">З</string>
+  <string name="switch_export_transactions_from_all_time">Весь час</string>
+  <string name="label_recommend_app">Напишіть відгук у Play Маркеті</string>
+  <string name="repeat_until_date">до %1$s</string>
+  <string name="repeat_on_weekday">%1$s</string>
+  <string name="repeat_x_times">%1$d разів</string>
+  <string name="menu_show_compact_view">Компактне подання</string>
+  <string name="book_default_name">Книга %1$d</string>
+  <string name="last_export_time_never">ніколи</string>
+  <string name="title_rename_book">Вкажіть назву книги</string>
+  <string name="btn_rename">Перейменувати</string>
+  <string name="menu_rename">Перейменувати</string>
+  <string name="title_select_backup_file">Оберіть файл резервної копії</string>
+  <string name="summary_select_backup_file">Оберіть файл для автоматичного резервного копіювання</string>
+  <string name="title_confirm_restore_backup">Підтвердіть відновлення з резервної копії</string>
+  <string name="msg_confirm_restore_backup_into_new_book">Буде створено нову книгу із вмістом цього файлу резервної копії. Продовжити?</string>
+  <string name="btn_restore">Відновити</string>
+  <string name="title_no_backups_found">Резервних копій не знайдено</string>
+  <string name="msg_no_backups_to_restore_from">Немає резервних копій для відновлення</string>
   <!-- This is the filename for default backups. So use only simple characters and no spaces. Do not change the extension -->
   <string name="label_backup_filename">gnucash_android_backup.gnca</string>
-  <string name="label_select_destination_after_export">Select the destination after export is complete</string>
-  <string name="label_dropbox_export_destination">Export to \'/Apps/GnuCash Android/\' folder on Dropbox</string>
-  <string name="title_section_preferences">Preferences</string>
+  <string name="label_select_destination_after_export">Обрати місце після завершення експорту</string>
+  <string name="label_dropbox_export_destination">Експортувати до папки /Apps/GnuCash Android/ у Dropbox</string>
+  <string name="title_section_preferences">Параметри</string>
 </resources>

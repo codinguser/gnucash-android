@@ -16,19 +16,19 @@
  limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="title_create_account">Create Account</string>
-  <string name="title_edit_account">Edit Account</string>
-  <string name="description_add_transaction_icon">Add a new transaction to an account</string>
-  <string name="description_view_account_icon">View account details</string>
-  <string name="label_no_accounts">No accounts to display</string>
-  <string name="label_account_name">Account name</string>
-  <string name="btn_cancel">Cancel</string>
-  <string name="btn_save">Save</string>
-  <string name="btn_test">Test</string>
-  <string name="label_passcode">Enter Passcode</string>
-  <string name="toast_wrong_passcode">Wrong passcode, please try again</string>
-  <string name="toast_passcode_set">Passcode set</string>
-  <string name="label_confirm_passcode">Please confirm your passcode</string>
+  <string name="title_create_account">Skep Rekening</string>
+  <string name="title_edit_account">Wysig Rekening</string>
+  <string name="description_add_transaction_icon">Voeg \'n nuwe transaksie by \'n rekening</string>
+  <string name="description_view_account_icon">Bekyk rekening besonderhede</string>
+  <string name="label_no_accounts">Geen rekeninge om te wys</string>
+  <string name="label_account_name">Rekeningnaam</string>
+  <string name="btn_cancel">Kanselleer</string>
+  <string name="btn_save">Stoor</string>
+  <string name="btn_test">Toets</string>
+  <string name="label_passcode">Voer Wagwoord in</string>
+  <string name="toast_wrong_passcode">Verkeerde wagwoord, probeer asseblief weer</string>
+  <string name="toast_passcode_set">Wagwoord ingestel</string>
+  <string name="label_confirm_passcode">Bevestig asseblief jou wagwoord</string>
   <string name="toast_invalid_passcode_confirmation">Invalid passcode confirmation. Please try again</string>
   <string name="label_transaction_name">Description</string>
   <string name="label_transaction_amount">Amount</string>

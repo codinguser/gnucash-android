@@ -1,5 +1,20 @@
 Change Log
 ===============================================================================
+Version 2.3.0 *(2017-09-xx)*
+----------------------------
+* Improved #696: QIF files are now always zipped regardless of the export destination
+
+Version 2.2.1 *(2017-08-31)*
+----------------------------
+* Fixed #343: Transaction notes are not exported in QIF exports
+* Fixed #649: Commas in the account name cause errors in report generation
+* Fixed #689: Long press on the transaction amount brings up QWERTY keyboard
+* Fixed #695: Long list of splits not fully visible in transaction detail view
+* Fixed #699: Transaction detail screen footer disappears after editing transaction
+* Fixed #701: Split memos disappear after transaction edit
+* Fixed: Imported weekly scheduled actions no having the days of the week set
+* Updated translations - new language Turkish
+
 Version 2.2.0 *(2017-05-05)*
 ----------------------------
 * Feature #646: Option to select backup file using Storage Access Framework
