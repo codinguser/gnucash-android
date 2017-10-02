@@ -30,6 +30,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
@@ -245,14 +246,15 @@ public class FirstRunWizardActivity extends AppCompatActivity implements
         if (position == mCurrentPageSequence.size()) {
             mNextButton.setText(R.string.btn_wizard_finish);
 
-            mNextButton.setBackgroundDrawable(new ColorDrawable(res.getColor(R.color.theme_accent)));
-            mNextButton.setTextColor(res.getColor(android.R.color.white));
+            mNextButton.setBackgroundDrawable(
+                    new ColorDrawable(ContextCompat.getColor(this, R.color.theme_accent)));
+            mNextButton.setTextColor(ContextCompat.getColor(this, android.R.color.white));
         } else {
             mNextButton.setText(mEditingAfterReview ? R.string.review
                     : R.string.btn_wizard_next);
-            mNextButton
-                    .setBackgroundDrawable(new ColorDrawable(res.getColor(android.R.color.transparent)));
-            mNextButton.setTextColor(res.getColor(R.color.theme_accent));
+            mNextButton.setBackgroundDrawable(
+                    new ColorDrawable(ContextCompat.getColor(this, android.R.color.transparent)));
+            mNextButton.setTextColor(ContextCompat.getColor(this, R.color.theme_accent));
             mNextButton.setEnabled(position != mPagerAdapter.getCutOffPage());
         }
 

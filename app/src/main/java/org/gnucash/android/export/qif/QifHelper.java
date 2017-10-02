@@ -29,6 +29,7 @@ public class QifHelper {
     /*
     Prefixes for the QIF file
      */
+    public static final String PAYEE_PREFIX         = "P";
     public static final String DATE_PREFIX          = "D";
     public static final String AMOUNT_PREFIX        = "T";
     public static final String MEMO_PREFIX          = "M";

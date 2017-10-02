@@ -84,7 +84,7 @@
   <string name="summary_licence_details">Apache License v2.0. Clique para obter detalhes</string>
   <string name="title_general_prefs">Preferências</string>
   <string name="label_widget_configuration">Escolha uma conta</string>
-  <string name="toast_no_transactions_to_export">Não existem transações para exportar</string>
+  <string name="toast_no_transactions_to_export">Não existem transações disponíveis para exportar</string>
   <string name="title_passcode_preferences">Preferências de Senha</string>
   <string name="title_enable_passcode">Habilitar senha</string>
   <string name="title_change_passcode">Alterar senha</string>
@@ -108,11 +108,11 @@
   <string name="title_default_export_email">Email de exportação padrão</string>
   <string name="summary_default_export_email">O endereço de email padrão para onde serão enviadas as exportações. Pode ser alterado no momento da exportação.</string>
   <string name="summary_use_double_entry">Todas as transações serão uma transferência de uma conta para a outra</string>
-  <string name="title_use_double_entry">Activar a entrada dupla</string>
+  <string name="title_use_double_entry">Ativar Partidas Dobradas</string>
   <string name="account_balance">Saldo</string>
   <string name="toast_no_account_name_entered">Introduza o nome da conta a criar</string>
   <string name="label_account_currency">Moeda</string>
-  <string name="label_parent_account">Conta progenitora</string>
+  <string name="label_parent_account">Conta superior</string>
   <string name="title_xml_ofx_header">Usar cabeçalho XML OFX</string>
   <string name="summary_xml_ofx_header">Active esta opção quando fizer exportações para outras aplicações que não seja o GnuCash para Desktop</string>
   <string name="title_whats_new">O que há de novo</string>
@@ -179,7 +179,7 @@
   <string name="color_picker_default_title">Selecione uma Cor</string>
   <!-- Content description for a color square. -->
   <!-- Content description for a selected color square. -->
-  <string name="label_account_color_and_type">Côr da Conta &amp; Tipo</string>
+  <string name="label_account_color_and_type">Cor de conta &amp; Tipo</string>
   <string name="label_delete_sub_accounts">Apagar sub-contas</string>
   <string name="title_recent_accounts">Recentes</string>
   <string name="title_favorite_accounts">Favoritos</string>
@@ -327,7 +327,7 @@ Neste processo não serão recolhidas informações do utilizador!</string>
   <string name="title_split_editor">Editor de contrapartidas</string>
   <string name="toast_error_check_split_amounts">Confirme que todas as contrapartidas têm montantes válidos antes de gravar!</string>
   <string name="label_error_invalid_expression">Expressão inválida!</string>
-  <string name="toast_scheduled_recurring_transaction">Transação agendade recorrente</string>
+  <string name="toast_scheduled_recurring_transaction">Transação recorrente agendada</string>
   <string name="title_transfer_funds">Transferências</string>
   <string name="nav_menu_help"><![CDATA[Ajuda & Feedback]]></string>
   <string name="label_select_pie_slice_to_see_details">Escolha uma seção para ver os detalhes</string>
@@ -448,6 +448,6 @@ Neste processo não serão recolhidas informações do utilizador!</string>
   <!-- This is the filename for default backups. So use only simple characters and no spaces. Do not change the extension -->
   <string name="label_backup_filename">gnucash_android_backup.gnca</string>
   <string name="label_select_destination_after_export">Selecione o destino após finalizar a exportação</string>
-  <string name="label_dropbox_export_destination">Exportar para a pasta \' / Apps/GnuCash Android /\' no Dropbox</string>
+  <string name="label_dropbox_export_destination">Exportar para pasta \'/Apps/GnuCash Android/\' no Dropbox</string>
   <string name="title_section_preferences">Preferências</string>
 </resources>

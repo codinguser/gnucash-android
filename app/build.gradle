@@ -2,32 +2,31 @@ import java.text.SimpleDateFormat
 
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
-apply plugin: 'android-apt'
 
 def versionMajor = 2
 def versionMinor = 2
-def versionPatch = 0
-def versionBuild = 4
+def versionPatch = 1
+def versionBuild = 2
 
-def buildTime() {
+static def buildTime() {
     def df = new SimpleDateFormat("yyyyMMdd HH:mm 'UTC'")
     df.setTimeZone(TimeZone.getTimeZone("UTC"))
     return df.format(new Date())
 }
 
-def gitSha() {
+static def gitSha() {
     return 'git rev-parse --short HEAD'.execute().text.trim()
 }
 
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion '25.0.0'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.1'
     defaultConfig {
         applicationId "org.gnucash.android"
         testApplicationId 'org.gnucash.android.test'
         minSdkVersion 19
-        targetSdkVersion 23
+        targetSdkVersion 26
         versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         resValue "string", "app_version_name", "${versionName}"
@@ -192,9 +191,9 @@ android.productFlavors.all { flavour ->
 }
 
 
-def androidSupportVersion       = "25.3.1"
-def androidEspressoVersion      = "2.2.2"
-def androidSupportTestVersion   = "0.5"
+def androidSupportVersion       = "26.0.1"
+def androidEspressoVersion      = "3.0.0"
+def androidSupportTestVersion   = "1.0.0"
 
 repositories{
     flatDir{
@@ -221,16 +220,16 @@ dependencies {
             'com.github.techfreak:wizardpager:1.0.3',
             'net.objecthunter:exp4j:0.4.7',
             'org.apache.jackrabbit:jackrabbit-webdav:2.13.3',
-            'com.dropbox.core:dropbox-core-sdk:2.1.2',
+            'com.dropbox.core:dropbox-core-sdk:3.0.3',
             'com.android.support:multidex:1.0.1'
     )
 
-    debugCompile 'com.facebook.stetho:stetho:1.4.2'
+    debugCompile 'com.facebook.stetho:stetho:1.5.0'
 
-    compile 'com.jakewharton:butterknife:8.5.1'
-    apt 'com.jakewharton:butterknife-compiler:8.5.1'
+    compile 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
-    compile ('com.uservoice:uservoice-android-sdk:1.2.5') {
+    compile ('com.uservoice:uservoice-android-sdk:1.2.6') {
         exclude module: 'commons-logging'
         exclude module: 'httpcore'
         exclude module: 'httpclient'

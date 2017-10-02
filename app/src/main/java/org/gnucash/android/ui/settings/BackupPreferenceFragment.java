@@ -175,7 +175,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 
 		if (key.equals(getString(R.string.key_backup_location))){
 			Intent createIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-			createIntent.setType("application/zip");
+			createIntent.setType("*/*");
 			createIntent.addCategory(Intent.CATEGORY_OPENABLE);
 			String bookName = BooksDbAdapter.getInstance().getActiveBookDisplayName();
 			createIntent.putExtra(Intent.EXTRA_TITLE, Exporter.sanitizeFilename(bookName)+ "_" + getString(R.string.label_backup_filename));

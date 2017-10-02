@@ -15,10 +15,10 @@
  */
 package org.gnucash.android.ui.util.widget;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.inputmethodservice.KeyboardView;
+import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.XmlRes;
 import android.support.v7.widget.AppCompatEditText;
@@ -29,7 +29,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -37,7 +36,6 @@ import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
 import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.util.AmountParser;
@@ -148,18 +146,12 @@ public class CalculatorEditText extends AppCompatEditText {
         // Disable spell check (hex strings look like words to Android)
         setInputType(getInputType() | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 
-        // FIXME: for some reason, this prevents the text selection from working
-        setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (v != null && !isInEditMode())
-                    ((InputMethodManager) GnuCashApplication.getAppContext()
-                            .getSystemService(Activity.INPUT_METHOD_SERVICE))
-                            .hideSoftInputFromWindow(v.getWindowToken(), 0);
-
-                return false;
-            }
-        });
+        // Disable system keyboard appearing on long-press, but for some reason, this prevents the text selection from working.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setShowSoftInputOnFocus(false);
+        } else {
+            setRawInputType(InputType.TYPE_CLASS_NUMBER);
+        }
 
         // Although this handler doesn't make sense, if removed, the standard keyboard
         // shows up in addition to the calculator one when the EditText gets a touch event.

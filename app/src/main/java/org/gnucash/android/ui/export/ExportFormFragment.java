@@ -23,6 +23,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
@@ -437,8 +438,8 @@ public class ExportFormFragment extends Fragment implements
 				mExportStartDate.setEnabled(!isChecked);
 				mExportStartTime.setEnabled(!isChecked);
 				int color = isChecked ? android.R.color.darker_gray : android.R.color.black;
-				mExportStartDate.setTextColor(getResources().getColor(color));
-				mExportStartTime.setTextColor(getResources().getColor(color));
+				mExportStartDate.setTextColor(ContextCompat.getColor(getContext(), color));
+				mExportStartTime.setTextColor(ContextCompat.getColor(getContext(), color));
 			}
 		});
 
@@ -499,15 +500,12 @@ public class ExportFormFragment extends Fragment implements
 	 */
 	private void selectExportFile() {
 		Intent createIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-		createIntent.setType("text/*").addCategory(Intent.CATEGORY_OPENABLE);
+		createIntent.setType("*/*").addCategory(Intent.CATEGORY_OPENABLE);
 		String bookName = BooksDbAdapter.getInstance().getActiveBookDisplayName();
 
-		if (mExportFormat == ExportFormat.XML || mExportFormat == ExportFormat.QIF) {
-			createIntent.setType("application/zip");
-		}
-
 		String filename = Exporter.buildExportFilename(mExportFormat, bookName);
-		if (mExportTarget == ExportParams.ExportTarget.URI && mExportFormat == ExportFormat.QIF){
+		if (mExportFormat == ExportFormat.QIF) {
+			createIntent.setType("application/zip");
 			filename += ".zip";
 		}
 

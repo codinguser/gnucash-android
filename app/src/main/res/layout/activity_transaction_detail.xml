@@ -18,11 +18,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-
 
     <LinearLayout
         android:orientation="vertical"
@@ -65,6 +62,9 @@
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
         <TableLayout android:id="@+id/fragment_transaction_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -146,6 +146,7 @@
             </TableRow>
 
         </TableLayout>
+        </ScrollView>
     </LinearLayout>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_edit_transaction"
