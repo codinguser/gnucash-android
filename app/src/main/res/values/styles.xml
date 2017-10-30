@@ -19,7 +19,7 @@
     <style name="ListItemContainerBase">
         <item name="android:minHeight">?android:attr/listPreferredItemHeight</item>
     </style>
-    <style name="ListItem" parent="style/ListItemContainerBase">
+    <style name="ListItem" parent="ListItemContainerBase">
         <item name="android:paddingLeft">@dimen/dialog_padding</item>
         <item name="android:paddingRight">@dimen/dialog_padding</item>
         <item name="android:paddingTop">8dp</item>
