@@ -462,4 +462,5 @@
     <string name="label_select_destination_after_export">Select the destination after export is complete</string>
     <string name="label_dropbox_export_destination">Export to \'/Apps/GnuCash Android/\' folder on Dropbox</string>
     <string name="title_section_preferences">Preferences</string>
+    <string name="yes_sure">Yes, I\'m sure</string>
 </resources>

@@ -80,6 +80,7 @@ public class TransactionTest {
 	@Test
 	public void testCreateAutoBalanceSplit() {
 		Transaction transactionCredit = new Transaction("Transaction with more credit");
+        transactionCredit.setCommodity(Commodity.getInstance("EUR"));
 		Split creditSplit = new Split(new Money("1", "EUR"), "test-account");
 		creditSplit.setType(TransactionType.CREDIT);
 		transactionCredit.addSplit(creditSplit);
@@ -93,6 +94,7 @@ public class TransactionTest {
 
 
 		Transaction transactionDebit = new Transaction("Transaction with more debit");
+		transactionDebit.setCommodity(Commodity.getInstance("EUR"));
 		Split debitSplit = new Split(new Money("1", "EUR"), "test-account");
 		debitSplit.setType(TransactionType.DEBIT);
 		transactionDebit.addSplit(debitSplit);

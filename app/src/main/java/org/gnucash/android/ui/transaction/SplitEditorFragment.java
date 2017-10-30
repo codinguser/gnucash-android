@@ -140,7 +140,7 @@ public class SplitEditorFragment extends Fragment {
             mImbalanceWatcher.afterTextChanged(null);
         } else {
             final String currencyCode = mAccountsDbAdapter.getAccountCurrencyCode(mAccountUID);
-            Split split = new Split(new Money(mBaseAmount.abs(), Commodity.getInstance(currencyCode)), mAccountUID);
+            Split split = new Split(new Money(mBaseAmount, Commodity.getInstance(currencyCode)), mAccountUID);
             AccountType accountType = mAccountsDbAdapter.getAccountType(mAccountUID);
             TransactionType transactionType = Transaction.getTypeForBalance(accountType, mBaseAmount.signum() < 0);
             split.setType(transactionType);

@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
@@ -151,7 +152,8 @@ public class ScheduledActionsListFragment extends ListFragment implements
 
     private void setDefaultStatusBarColor() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getActivity().getWindow().setStatusBarColor(getResources().getColor(R.color.theme_primary_dark));
+            getActivity().getWindow().setStatusBarColor(
+                    ContextCompat.getColor(getContext(), R.color.theme_primary_dark));
         }
     }
 
@@ -211,7 +213,8 @@ public class ScheduledActionsListFragment extends ListFragment implements
 
         setHasOptionsMenu(true);
         getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        ((TextView)getListView().getEmptyView()).setTextColor(getResources().getColor(R.color.theme_accent));
+        ((TextView)getListView().getEmptyView())
+                .setTextColor(ContextCompat.getColor(getContext(), R.color.theme_accent));
         if (mActionType == ScheduledAction.ActionType.TRANSACTION){
             ((TextView)getListView().getEmptyView()).setText(R.string.label_no_recurring_transactions);
         } else if (mActionType == ScheduledAction.ActionType.BACKUP){
@@ -363,7 +366,8 @@ public class ScheduledActionsListFragment extends ListFragment implements
         mActionMode = ((AppCompatActivity) getActivity())
                 .startSupportActionMode(mActionModeCallbacks);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-            getActivity().getWindow().setStatusBarColor(getResources().getColor(android.R.color.darker_gray));
+            getActivity().getWindow().setStatusBarColor(
+                    ContextCompat.getColor(getContext(), android.R.color.darker_gray));
         }
     }
 
@@ -426,11 +430,12 @@ public class ScheduledActionsListFragment extends ListFragment implements
 
             ListView listView = (ListView) parent;
             if (mInEditMode && listView.isItemChecked(position)){
-                view.setBackgroundColor(getResources().getColor(R.color.abs__holo_blue_light));
-                secondaryText.setTextColor(getResources().getColor(android.R.color.white));
+                view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.abs__holo_blue_light));
+                secondaryText.setTextColor(ContextCompat.getColor(getContext(), android.R.color.white));
             } else {
-                view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                secondaryText.setTextColor(getResources().getColor(android.R.color.secondary_text_light_nodisable));
+                view.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+                secondaryText.setTextColor(ContextCompat.getColor(getContext(),
+                                            android.R.color.secondary_text_light_nodisable));
                 checkbox.setChecked(false);
             }
 
@@ -477,7 +482,8 @@ public class ScheduledActionsListFragment extends ListFragment implements
             ScheduledAction scheduledAction = scheduledActionDbAdapter.getRecord(scheduledActionUID);
             long endTime = scheduledAction.getEndTime();
             if (endTime > 0 && endTime < System.currentTimeMillis()){
-                ((TextView)view.findViewById(R.id.primary_text)).setTextColor(getResources().getColor(android.R.color.darker_gray));
+                ((TextView)view.findViewById(R.id.primary_text)).setTextColor(
+                        ContextCompat.getColor(getContext(), android.R.color.darker_gray));
                 descriptionTextView.setText(getString(R.string.label_scheduled_action_ended,
                         DateFormat.getInstance().format(new Date(scheduledAction.getLastRunTime()))));
             } else {
@@ -525,11 +531,12 @@ public class ScheduledActionsListFragment extends ListFragment implements
 
             ListView listView = (ListView) parent;
             if (mInEditMode && listView.isItemChecked(position)){
-                view.setBackgroundColor(getResources().getColor(R.color.abs__holo_blue_light));
-                secondaryText.setTextColor(getResources().getColor(android.R.color.white));
+                view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.abs__holo_blue_light));
+                secondaryText.setTextColor(ContextCompat.getColor(getContext(), android.R.color.white));
             } else {
-                view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                secondaryText.setTextColor(getResources().getColor(android.R.color.secondary_text_light_nodisable));
+                view.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+                secondaryText.setTextColor(
+                    ContextCompat.getColor(getContext(), android.R.color.secondary_text_light_nodisable));
                 checkbox.setChecked(false);
             }
 
@@ -576,7 +583,8 @@ public class ScheduledActionsListFragment extends ListFragment implements
             descriptionTextView.setText(scheduledAction.getRepeatString());
             long endTime = scheduledAction.getEndTime();
             if (endTime > 0 && endTime < System.currentTimeMillis()){
-                ((TextView)view.findViewById(R.id.primary_text)).setTextColor(getResources().getColor(android.R.color.darker_gray));
+                ((TextView)view.findViewById(R.id.primary_text))
+                    .setTextColor(ContextCompat.getColor(getContext(), android.R.color.darker_gray));
                 descriptionTextView.setText(getString(R.string.label_scheduled_action_ended,
                         DateFormat.getInstance().format(new Date(scheduledAction.getLastRunTime()))));
             } else {

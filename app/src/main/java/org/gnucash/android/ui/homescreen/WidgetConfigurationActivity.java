@@ -27,6 +27,7 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
@@ -298,7 +299,7 @@ public class WidgetConfigurationActivity extends Activity {
 			views.setTextViewText(R.id.transactions_summary,
 					accountBalance.formattedString(Locale.getDefault()));
 			int color = accountBalance.isNegative() ? R.color.debit_red : R.color.credit_green;
-			views.setTextColor(R.id.transactions_summary, context.getResources().getColor(color));
+			views.setTextColor(R.id.transactions_summary, ContextCompat.getColor(context, color));
 		}
 
 
