@@ -50,7 +50,6 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
-            //output.outputFile = new File(output.outputFile.parent, "GnucashAndroid_v${variant.versionName}.apk")
             outputFileName = "GnucashAndroid_v${variant.versionName}.apk"
         }
     }
@@ -106,8 +105,6 @@ android {
             resValue "string", "dropbox_app_key", "dhjh8ke9wf05948"
             resValue "string", "dropbox_app_secret", "h2t9fphj3nr4wkw"
             resValue "string", "manifest_dropbox_app_key", "db-dhjh8ke9wf05948"
-
-            dimension "stability"
         }
 
         beta {
@@ -124,8 +121,6 @@ android {
                 resValue "string", "dropbox_app_secret", "h2t9fphj3nr4wkw"
                 resValue "string", "manifest_dropbox_app_key", "db-dhjh8ke9wf05948"
             }
-
-            dimension "stability"
         }
 
         production {
@@ -141,10 +136,7 @@ android {
                 resValue "string", "dropbox_app_secret", "h2t9fphj3nr4wkw"
                 resValue "string", "manifest_dropbox_app_key", "db-dhjh8ke9wf05948"
             }
-
-            dimension "stability"
         }
-
     }
 
 
