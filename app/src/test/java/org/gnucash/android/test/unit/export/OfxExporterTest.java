@@ -15,35 +15,28 @@
  */
 package org.gnucash.android.test.unit.export;
 
-import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import org.gnucash.android.BuildConfig;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.BookDbHelper;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
-import org.gnucash.android.db.adapter.SplitsDbAdapter;
-import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
-import org.gnucash.android.export.Exporter;
 import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Book;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.test.unit.testutil.GnucashTestRunner;
 import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
 import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
 import org.gnucash.android.util.TimestampHelper;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.io.File;
@@ -52,9 +45,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@RunWith(GnucashTestRunner.class) //package is required so that resources can be found in dev mode
-@Config(constants = BuildConfig.class,
-        sdk = 21,
+@RunWith(RobolectricTestRunner.class) //package is required so that resources can be found in dev mode
+@Config(sdk = 21,
         packageName = "org.gnucash.android",
         shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
 public class OfxExporterTest {

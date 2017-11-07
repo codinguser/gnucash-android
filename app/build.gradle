@@ -145,6 +145,12 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 /**
@@ -240,7 +246,9 @@ dependencies {
     }
 
 
-    testCompile('org.robolectric:robolectric:3.1.2',
+    testImplementation 'org.robolectric:robolectric:3.5.1'
+
+    testCompile(
             'junit:junit:4.12',
             'joda-time:joda-time:2.9.4',
             'org.assertj:assertj-core:1.7.1'

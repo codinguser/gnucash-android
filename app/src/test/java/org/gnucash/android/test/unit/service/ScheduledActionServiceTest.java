@@ -18,7 +18,6 @@ package org.gnucash.android.test.unit.service;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 
-import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
@@ -42,7 +41,6 @@ import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.service.ScheduledActionService;
-import org.gnucash.android.test.unit.testutil.GnucashTestRunner;
 import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
 import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
 import org.gnucash.android.util.BookUtils;
@@ -56,6 +54,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.xml.sax.SAXException;
 
@@ -75,8 +74,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Test the the scheduled actions service runs as expected
  */
-@RunWith(GnucashTestRunner.class) //package is required so that resources can be found in dev mode
-@Config(constants = BuildConfig.class, sdk = 21, packageName = "org.gnucash.android",
+@RunWith(RobolectricTestRunner.class) //package is required so that resources can be found in dev mode
+@Config(sdk = 21, packageName = "org.gnucash.android",
         shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
 public class ScheduledActionServiceTest {
 
