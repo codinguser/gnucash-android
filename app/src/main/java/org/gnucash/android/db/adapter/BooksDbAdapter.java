@@ -24,6 +24,8 @@ import android.database.sqlite.SQLiteStatement;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema.BookEntry;
@@ -155,13 +157,30 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
         Cursor cursor = mDb.query(mTableName, new String[]{BookEntry.COLUMN_UID},
                 BookEntry.COLUMN_ACTIVE + "= 1", null, null, null, null, "1");
         try{
-            if (cursor.getCount() == 0)
-                throw new NoActiveBookFoundException("There is no active book in the app. This should NEVER happen, fix your bugs!");
+            if (cursor.getCount() == 0) {
+                NoActiveBookFoundException e = new NoActiveBookFoundException(
+                                                        "There is no active book in the app."
+                                                      + "This should NEVER happen, fix your bugs!\n"
+                                                      + getNoActiveBookFoundExceptionInfo());
+                Crashlytics.logException(e);
+                throw e;
+            }
             cursor.moveToFirst();
             return cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_UID));
         } finally {
             cursor.close();
         }
+    }
+
+    private String getNoActiveBookFoundExceptionInfo() {
+        StringBuilder info = new StringBuilder("UID, created, source\n");
+        for (Book book : getAllRecords()) {
+            info.append(String.format("%s, %s, %s\n",
+                                      book.getUID(),
+                                      book.getCreatedTimestamp(),
+                                      book.getSourceUri()));
+        }
+        return info.toString();
     }
 
     public class NoActiveBookFoundException extends RuntimeException {
