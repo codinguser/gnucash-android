@@ -154,21 +154,24 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
      * @return GUID of the active book
      */
     public @NonNull String getActiveBookUID(){
-        Cursor cursor = mDb.query(mTableName, new String[]{BookEntry.COLUMN_UID},
-                BookEntry.COLUMN_ACTIVE + "= 1", null, null, null, null, "1");
-        try{
+        try (Cursor cursor = mDb.query(mTableName,
+                                       new String[]{BookEntry.COLUMN_UID},
+                                       BookEntry.COLUMN_ACTIVE + "= 1",
+                                       null,
+                                       null,
+                                       null,
+                                       null,
+                                       "1")) {
             if (cursor.getCount() == 0) {
                 NoActiveBookFoundException e = new NoActiveBookFoundException(
-                                                        "There is no active book in the app."
-                                                      + "This should NEVER happen, fix your bugs!\n"
-                                                      + getNoActiveBookFoundExceptionInfo());
+                        "There is no active book in the app."
+                        + "This should NEVER happen, fix your bugs!\n"
+                        + getNoActiveBookFoundExceptionInfo());
                 Crashlytics.logException(e);
                 throw e;
             }
             cursor.moveToFirst();
             return cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_UID));
-        } finally {
-            cursor.close();
         }
     }
 
