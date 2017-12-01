@@ -156,11 +156,17 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
                 BookEntry.COLUMN_ACTIVE + "= 1", null, null, null, null, "1");
         try{
             if (cursor.getCount() == 0)
-                throw new RuntimeException("There is no active book in the app. This should NEVER happen, fix your bugs!");
+                throw new NoActiveBookFoundException("There is no active book in the app. This should NEVER happen, fix your bugs!");
             cursor.moveToFirst();
             return cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_UID));
         } finally {
             cursor.close();
+        }
+    }
+
+    public class NoActiveBookFoundException extends RuntimeException {
+        public NoActiveBookFoundException(String message) {
+            super(message);
         }
     }
 

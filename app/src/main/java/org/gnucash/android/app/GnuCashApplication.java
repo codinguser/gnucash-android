@@ -50,6 +50,7 @@ import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
+import org.gnucash.android.model.Book;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.service.ScheduledActionService;
@@ -145,8 +146,14 @@ public class GnuCashApplication extends MultiDexApplication {
             mDbHelper.getReadableDatabase().close();
         }
 
-        mDbHelper = new DatabaseHelper(getAppContext(),
-                mBooksDbAdapter.getActiveBookUID());
+        try {
+            mDbHelper = new DatabaseHelper(getAppContext(),
+                                           mBooksDbAdapter.getActiveBookUID());
+        } catch (BooksDbAdapter.NoActiveBookFoundException e) {
+            fixBooksDatabase();
+            mDbHelper = new DatabaseHelper(getAppContext(),
+                                           mBooksDbAdapter.getActiveBookUID());
+        }
         SQLiteDatabase mainDb;
         try {
             mainDb = mDbHelper.getWritableDatabase();
@@ -165,6 +172,13 @@ public class GnuCashApplication extends MultiDexApplication {
         mCommoditiesDbAdapter       = new CommoditiesDbAdapter(mainDb);
         mBudgetAmountsDbAdapter     = new BudgetAmountsDbAdapter(mainDb);
         mBudgetsDbAdapter           = new BudgetsDbAdapter(mainDb, mBudgetAmountsDbAdapter, mRecurrenceDbAdapter);
+    }
+
+    /** Sets the first book in the database as active. */
+    private static void fixBooksDatabase() {
+        Book firstBook = BooksDbAdapter.getInstance().getAllRecords().get(0);
+        firstBook.setActive(true);
+        BooksDbAdapter.getInstance().addRecord(firstBook);
     }
 
     public static AccountsDbAdapter getAccountsDbAdapter() {
