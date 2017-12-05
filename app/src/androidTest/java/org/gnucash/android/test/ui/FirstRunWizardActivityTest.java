@@ -101,7 +101,8 @@ public class FirstRunWizardActivityTest extends ActivityInstrumentationTestCase2
         onView(withId(R.id.btn_save)).perform(click());
 
         //default accounts should be created
-        assertThat(mAccountsDbAdapter.getRecordsCount()).isGreaterThan(60);
+        long actualCount = GnuCashApplication.getAccountsDbAdapter().getRecordsCount();
+        assertThat(actualCount).isGreaterThan(60L);
 
         boolean enableCrashlytics = GnuCashApplication.isCrashlyticsEnabled();
         assertThat(enableCrashlytics).isTrue();

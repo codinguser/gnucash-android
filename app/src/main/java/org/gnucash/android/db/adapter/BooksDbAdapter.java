@@ -24,8 +24,6 @@ import android.database.sqlite.SQLiteStatement;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import com.crashlytics.android.Crashlytics;
-
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema.BookEntry;
@@ -167,7 +165,7 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
                         "There is no active book in the app."
                         + "This should NEVER happen, fix your bugs!\n"
                         + getNoActiveBookFoundExceptionInfo());
-                Crashlytics.logException(e);
+                e.printStackTrace();
                 throw e;
             }
             cursor.moveToFirst();
