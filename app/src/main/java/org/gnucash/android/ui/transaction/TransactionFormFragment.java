@@ -329,9 +329,7 @@ public class TransactionFormFragment extends Fragment implements
 
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                // Remove the favorite star from the view to avoid visual clutter.
-                TextView qualifiedAccountName = (TextView) view;
-                qualifiedAccountName.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
+                removeFavoriteIconFromSelectedView((TextView) view);
 
                 if (mSplitsList.size() == 2) { //when handling simple transfer to one account
                     for (Split split : mSplitsList) {
@@ -346,6 +344,13 @@ public class TransactionFormFragment extends Fragment implements
                     return;
                 }
                 startTransferFunds();
+            }
+
+            // Removes the icon from view to avoid visual clutter
+            private void removeFavoriteIconFromSelectedView(TextView view) {
+                if (view != null) {
+                    view.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                }
             }
 
             @Override
