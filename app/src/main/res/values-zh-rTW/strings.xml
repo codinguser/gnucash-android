@@ -59,7 +59,7 @@
     <item>另存為&#8230;</item>
     <item>Dropbox</item>
     <item>ownCloud</item>
-    <item>Send to&#8230;</item>
+    <item>傳送到&#8230;</item>
   </string-array>
   <string name="btn_move">移動</string>
   <string name="title_move_transactions">移動 %1$d 交易</string>
@@ -267,14 +267,14 @@
   <string name="password">密碼</string>
   <string name="owncloud_pref">ownCloud</string>
   <string name="owncloud_server">https://</string>
-  <string name="owncloud_server_invalid">伺服器找不到。</string>
+  <string name="owncloud_server_invalid">沒有找到 ownCloud 伺服器</string>
   <string name="owncloud_user_invalid">帳號/密碼無效</string>
   <string name="owncloud_dir_invalid">無效字元: \\ &lt; &gt; : \&quot; | * ? </string>
   <string name="owncloud_server_ok">OC server OK</string>
   <string name="owncloud_user_ok">OC username/password OK</string>
   <string name="owncloud_dir_ok">Dir name OK</string>
   <plurals name="label_every_x_hours">
-    <item quantity="other">Every %d hours</item>
+    <item quantity="other">每 %d 個小時</item>
   </plurals>
   <plurals name="label_every_x_days">
     <item quantity="other">每 %d 天</item>
@@ -426,23 +426,23 @@ No user-identifiable information will be collected as part of this process!
   <string name="label_recommend_app">在 Play Store 推薦</string>
   <string name="repeat_until_date">直到%1$s</string>
   <string name="repeat_on_weekday">在%1$s</string>
-  <string name="repeat_x_times">for %1$d times</string>
+  <string name="repeat_x_times">%1$d 次</string>
   <string name="menu_show_compact_view">紧凑视图</string>
   <string name="book_default_name">账簿 %1$d</string>
-  <string name="last_export_time_never">never</string>
+  <string name="last_export_time_never">從未</string>
   <string name="title_rename_book">Rename Book</string>
-  <string name="btn_rename">Rename</string>
-  <string name="menu_rename">Rename</string>
-  <string name="title_select_backup_file">Select backup file</string>
-  <string name="summary_select_backup_file">Select a file for automatic backups</string>
-  <string name="title_confirm_restore_backup">Confirm restore from backup</string>
+  <string name="btn_rename">重新命名</string>
+  <string name="menu_rename">重新命名</string>
+  <string name="title_select_backup_file">選擇備份檔</string>
+  <string name="summary_select_backup_file">選擇自動備份時用的檔案</string>
+  <string name="title_confirm_restore_backup">確認恢復備份</string>
   <string name="msg_confirm_restore_backup_into_new_book">A new book will be opened with the contents of this backup. Do you wish to proceed?</string>
-  <string name="btn_restore">Restore</string>
-  <string name="title_no_backups_found">No backups found</string>
-  <string name="msg_no_backups_to_restore_from">There are no existing backup files to restore from</string>
+  <string name="btn_restore">恢復</string>
+  <string name="title_no_backups_found">沒有找到備份</string>
+  <string name="msg_no_backups_to_restore_from">沒有能恢復的備份</string>
   <!-- This is the filename for default backups. So use only simple characters and no spaces. Do not change the extension -->
-  <string name="label_backup_filename">gnucash_android_backup.gnca</string>
-  <string name="label_select_destination_after_export">Select the destination after export is complete</string>
-  <string name="label_dropbox_export_destination">Export to \'/Apps/GnuCash Android/\' folder on Dropbox</string>
-  <string name="title_section_preferences">Preferences</string>
+  <string name="label_backup_filename">gnucash_android_備份.gnca</string>
+  <string name="label_select_destination_after_export">匯出後再選擇目的地</string>
+  <string name="label_dropbox_export_destination">匯出到 Dropbox 上的 \'/Apps/GnuCash Android/\' 資料夾</string>
+  <string name="title_section_preferences">偏好設定</string>
 </resources>
