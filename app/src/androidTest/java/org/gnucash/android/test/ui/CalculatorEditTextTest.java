@@ -16,10 +16,12 @@
 
 package org.gnucash.android.test.ui;
 
+import android.Manifest;
 import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.test.rule.ActivityTestRule;
+import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
@@ -71,6 +73,9 @@ public class CalculatorEditTextTest {
 
 	public CalculatorEditTextTest() {
 	}
+
+
+    @Rule public GrantPermissionRule animationPermissionsRule = GrantPermissionRule.grant(Manifest.permission.SET_ANIMATION_SCALE);
 
     @ClassRule
     public static DisableAnimationsRule disableAnimationsRule = new DisableAnimationsRule();

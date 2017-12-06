@@ -16,6 +16,7 @@
 
 package org.gnucash.android.test.ui;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +28,7 @@ import android.preference.PreferenceManager;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
+import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -115,6 +117,9 @@ public class AccountsActivityTest {
     public AccountsActivityTest() {
 //        super(AccountsActivity.class);
     }
+
+
+    @Rule public GrantPermissionRule animationPermissionsRule = GrantPermissionRule.grant(Manifest.permission.SET_ANIMATION_SCALE);
 
     @ClassRule public static DisableAnimationsRule disableAnimationsRule = new DisableAnimationsRule();
 

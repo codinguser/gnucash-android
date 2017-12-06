@@ -16,6 +16,7 @@
 
 package org.gnucash.android.test.ui;
 
+import android.Manifest;
 import android.content.Context;
 import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.action.CoordinatesProvider;
@@ -23,6 +24,7 @@ import android.support.test.espresso.action.GeneralClickAction;
 import android.support.test.espresso.action.Press;
 import android.support.test.espresso.action.Tap;
 import android.support.test.rule.ActivityTestRule;
+import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.view.View;
 
@@ -100,6 +102,8 @@ public class PieChartReportTest {
 
     @Rule
     public ActivityTestRule<ReportsActivity> mActivityRule = new ActivityTestRule<>(ReportsActivity.class);
+
+    @Rule public GrantPermissionRule animationPermissionsRule = GrantPermissionRule.grant(Manifest.permission.SET_ANIMATION_SCALE);
 
     @ClassRule
     public static DisableAnimationsRule disableAnimationsRule = new DisableAnimationsRule();

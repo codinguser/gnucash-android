@@ -16,6 +16,7 @@
 
 package org.gnucash.android.test.ui;
 
+import android.Manifest;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -23,6 +24,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.support.test.espresso.Espresso;
 import android.support.test.rule.ActivityTestRule;
+import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import org.gnucash.android.R;
@@ -96,6 +98,8 @@ public class TransactionsActivityTest {
     private static TransactionsDbAdapter mTransactionsDbAdapter;
     private static SplitsDbAdapter mSplitsDbAdapter;
 	private TransactionsActivity mTransactionsActivity;
+
+	@Rule public GrantPermissionRule animationPermissionsRule = GrantPermissionRule.grant(Manifest.permission.SET_ANIMATION_SCALE);
 
 	@ClassRule
 	public static DisableAnimationsRule disableAnimationsRule = new DisableAnimationsRule();

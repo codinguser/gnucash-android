@@ -16,6 +16,7 @@
 
 package org.gnucash.android.test.ui;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.SQLException;
@@ -25,6 +26,7 @@ import android.net.NetworkInfo;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.rule.ActivityTestRule;
+import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
@@ -96,6 +98,8 @@ public class OwnCloudExportTest {
     public ActivityTestRule<AccountsActivity> mActivityRule = new ActivityTestRule<>(
             AccountsActivity.class);
 
+
+    @Rule public GrantPermissionRule animationPermissionsRule = GrantPermissionRule.grant(Manifest.permission.SET_ANIMATION_SCALE);
 
     @Before
     public void setUp() throws Exception {
