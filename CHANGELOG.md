@@ -7,6 +7,7 @@ Version 2.3.0 *(2017-09-xx)*
 * Fixed #686: Google Drive XML export broken
 * Fixed #750: Double-minus sign in QIF export
 * Fixed #709: Upgrade Dropbox SDK
+* Fixed #651: NextCloud login not working
 * Fixed: Sometimes crash might occur because an active book is not set
 * Improved #696: QIF files are now always zipped regardless of the export destination
 * Improved: Remove .zip extension from backup files and XML exports
