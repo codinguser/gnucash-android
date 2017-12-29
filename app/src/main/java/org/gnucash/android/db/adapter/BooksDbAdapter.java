@@ -190,6 +190,13 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
         }
     }
 
+    /** Sets the first book in the database as active. */
+    public void fixBooksDatabase() {
+        Book firstBook = getAllRecords().get(0);
+        firstBook.setActive(true);
+        BooksDbAdapter.getInstance().addRecord(firstBook);
+    }
+
     public @NonNull List<String> getAllBookUIDs(){
         List<String> bookUIDs = new ArrayList<>();
         try (Cursor cursor = mDb.query(true, mTableName, new String[]{BookEntry.COLUMN_UID},

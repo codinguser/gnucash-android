@@ -150,7 +150,7 @@ public class GnuCashApplication extends MultiDexApplication {
             mDbHelper = new DatabaseHelper(getAppContext(),
                                            mBooksDbAdapter.getActiveBookUID());
         } catch (BooksDbAdapter.NoActiveBookFoundException e) {
-            fixBooksDatabase();
+            mBooksDbAdapter.fixBooksDatabase();
             mDbHelper = new DatabaseHelper(getAppContext(),
                                            mBooksDbAdapter.getActiveBookUID());
         }
@@ -172,13 +172,6 @@ public class GnuCashApplication extends MultiDexApplication {
         mCommoditiesDbAdapter       = new CommoditiesDbAdapter(mainDb);
         mBudgetAmountsDbAdapter     = new BudgetAmountsDbAdapter(mainDb);
         mBudgetsDbAdapter           = new BudgetsDbAdapter(mainDb, mBudgetAmountsDbAdapter, mRecurrenceDbAdapter);
-    }
-
-    /** Sets the first book in the database as active. */
-    private static void fixBooksDatabase() {
-        Book firstBook = BooksDbAdapter.getInstance().getAllRecords().get(0);
-        firstBook.setActive(true);
-        BooksDbAdapter.getInstance().addRecord(firstBook);
     }
 
     public static AccountsDbAdapter getAccountsDbAdapter() {
