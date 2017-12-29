@@ -180,6 +180,22 @@ public class BooksDbAdapterTest {
     }
 
     /**
+     * Tests the recovery from an empty books database.
+     */
+    @Test
+    public void recoverFromEmptyDatabase() {
+        createNewBookWithDefaultAccounts();
+        mBooksDbAdapter.deleteAllRecords();
+        assertThat(mBooksDbAdapter.getRecordsCount()).isZero();
+
+        mBooksDbAdapter.fixBooksDatabase();
+
+        // Should've recovered the one from setUp() plus the one created above
+        assertThat(mBooksDbAdapter.getRecordsCount()).isEqualTo(2);
+        mBooksDbAdapter.getActiveBookUID(); // should not throw exception
+    }
+
+    /**
      * Creates a new database with default accounts
      * @return The book UID for the new database
      * @throws RuntimeException if the new books could not be created
