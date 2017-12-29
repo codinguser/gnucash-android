@@ -36,6 +36,7 @@ import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -156,6 +157,26 @@ public class BooksDbAdapterTest {
         String generatedName = mBooksDbAdapter.generateDefaultBookName();
         assertThat(generatedName).isNotEqualTo(book3.getDisplayName());
         assertThat(generatedName).isEqualTo("Book 4");
+    }
+
+    @Test
+    public void recoverFromNoActiveBookFound() {
+        Book book1 = new Book(BaseModel.generateUID());
+        book1.setActive(false);
+        mBooksDbAdapter.addRecord(book1);
+
+        Book book2 = new Book(BaseModel.generateUID());
+        book2.setActive(false);
+        mBooksDbAdapter.addRecord(book2);
+
+        try {
+            mBooksDbAdapter.getActiveBookUID();
+            fail("There shouldn't be any active book.");
+        } catch (BooksDbAdapter.NoActiveBookFoundException e) {
+            mBooksDbAdapter.fixBooksDatabase();
+        }
+
+        assertThat(mBooksDbAdapter.getActiveBookUID()).isEqualTo(book1.getUID());
     }
 
     /**
