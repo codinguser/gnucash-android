@@ -45,9 +45,6 @@
     <uses-permission android:name="android.permission.INTERNET"
                      android:label="Export and backup to 3rd party hosting services" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:label="Import books and backup files into GnuCash"
-        android:maxSdkVersion="18" />
 
     <application android:name="org.gnucash.android.app.GnuCashApplication"
         android:icon="@drawable/ic_launcher"
