@@ -23,9 +23,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.DatabaseSchema.BookEntry;
 import org.gnucash.android.model.Book;
 import org.gnucash.android.ui.settings.PreferenceActivity;
@@ -188,6 +190,72 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
         public NoActiveBookFoundException(String message) {
             super(message);
         }
+    }
+
+    /** Tries to fix the books database. */
+    public void fixBooksDatabase() {
+        Log.w(LOG_TAG, "Looking for books to set as active...");
+        if (getRecordsCount() <= 0) {
+            Log.w(LOG_TAG, "No books found in the database. Recovering books records...");
+            recoverBookRecords();
+        }
+        setFirstBookAsActive();
+    }
+
+    /**
+     * Restores the records in the book database.
+     *
+     * Does so by looking for database files from books.
+     */
+    private void recoverBookRecords() {
+        for (String dbName : getBookDatabases()) {
+            Book book = new Book(getRootAccountUID(dbName));
+            book.setUID(dbName);
+            book.setDisplayName(generateDefaultBookName());
+            addRecord(book);
+            Log.w(LOG_TAG, "Recovered book record: " + book.getUID());
+        }
+    }
+
+    /**
+     * Returns the root account UID from the database with name dbName.
+     */
+    private String getRootAccountUID(String dbName) {
+        Context context = GnuCashApplication.getAppContext();
+        DatabaseHelper databaseHelper = new DatabaseHelper(context, dbName);
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(db,
+                new TransactionsDbAdapter(db, new SplitsDbAdapter(db)));
+        String uid = accountsDbAdapter.getOrCreateGnuCashRootAccountUID();
+        db.close();
+        return uid;
+    }
+
+    /**
+     * Sets the first book in the database as active.
+     */
+    private void setFirstBookAsActive() {
+        Book firstBook = getAllRecords().get(0);
+        firstBook.setActive(true);
+        addRecord(firstBook);
+        Log.w(LOG_TAG, "Book " + firstBook.getUID() + " set as active.");
+    }
+
+    /**
+     * Returns a list of database names corresponding to book databases.
+     */
+    private List<String> getBookDatabases() {
+        List<String> bookDatabases = new ArrayList<>();
+        for (String database : GnuCashApplication.getAppContext().databaseList()) {
+            if (isBookDatabase(database)) {
+                bookDatabases.add(database);
+            }
+        }
+        return bookDatabases;
+    }
+
+    private boolean isBookDatabase(String databaseName) {
+        return databaseName.matches("[a-z0-9]{32}"); // UID regex
     }
 
     public @NonNull List<String> getAllBookUIDs(){
