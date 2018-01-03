@@ -391,8 +391,8 @@
   <string name="digit_nine_text">WXYZ</string>
   <string name="digit_zero">0</string>
   <string name="digit_zero_text">+</string>
-  <string name="title_manage_books">Hantera böcker</string>
-  <string name="menu_manage_books">Hantera böcker&#8230;</string>
+  <string name="title_manage_books">Hantera bokföringar</string>
+  <string name="menu_manage_books">Hantera bokföringar&#8230;</string>
   <string name="select_chart_to_view_details">Välj någon del av diagrammet för att visa detaljer</string>
   <string name="title_confirm_delete_book">Bekräfta radera bokföring</string>
   <string name="msg_all_book_data_will_be_deleted">Alla konton och transaktioner i denna bokföring kommer att raderas!</string>

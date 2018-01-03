@@ -187,8 +187,7 @@
   <string name="title_all_accounts">所有</string>
   <string name="summary_create_default_accounts">建立通用的科目結構</string>
   <string name="title_create_default_accounts">建立預設科目</string>
-  <string name="msg_confirm_create_default_accounts_setting">将会创建新的账簿附带默认的科目
-现在这个账簿不会受到影响</string>
+  <string name="msg_confirm_create_default_accounts_setting">這將用預設科目來創建新的帳簿\n\n目前擁有的科目與交易不會受影響</string>
   <string name="title_scheduled_transactions">交易</string>
   <string name="title_select_export_destination">選擇儲存的位置</string>
   <string name="hint_split_memo">描述</string>
@@ -407,10 +406,10 @@ No user-identifiable information will be collected as part of this process!
   <string name="label_split_count">%1$d 项分割</string>
   <string name="label_inside_account_with_name">于 %1$s</string>
   <plurals name="book_account_stats">
-    <item quantity="other">%d个科目</item>
+    <item quantity="other">%d 個科目</item>
   </plurals>
   <plurals name="book_transaction_stats">
-    <item quantity="other">%d个交易</item>
+    <item quantity="other">%d 個交易</item>
   </plurals>
   <string-array name="report_account_types">
     <item>費用</item>
@@ -430,13 +429,13 @@ No user-identifiable information will be collected as part of this process!
   <string name="menu_show_compact_view">紧凑视图</string>
   <string name="book_default_name">账簿 %1$d</string>
   <string name="last_export_time_never">從未</string>
-  <string name="title_rename_book">Rename Book</string>
+  <string name="title_rename_book">重新命名帳簿</string>
   <string name="btn_rename">重新命名</string>
   <string name="menu_rename">重新命名</string>
   <string name="title_select_backup_file">選擇備份檔</string>
   <string name="summary_select_backup_file">選擇自動備份時用的檔案</string>
   <string name="title_confirm_restore_backup">確認恢復備份</string>
-  <string name="msg_confirm_restore_backup_into_new_book">A new book will be opened with the contents of this backup. Do you wish to proceed?</string>
+  <string name="msg_confirm_restore_backup_into_new_book">將以這個備份的內容新建一本帳簿。確定要繼續？</string>
   <string name="btn_restore">恢復</string>
   <string name="title_no_backups_found">沒有找到備份</string>
   <string name="msg_no_backups_to_restore_from">沒有能恢復的備份</string>
