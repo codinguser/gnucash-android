@@ -91,7 +91,13 @@
                 <RadioButton android:id="@+id/radio_xml_format"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
                     android:text="XML"/>
+                <RadioButton android:id="@+id/radio_csv_format"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:text="CSV"/>
             </RadioGroup>
         </LinearLayout>
         <TextView android:id="@+id/export_warning"
