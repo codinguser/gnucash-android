@@ -137,6 +137,7 @@ public class ExportFormFragment extends Fragment implements
 	@BindView(R.id.radio_ofx_format) RadioButton mOfxRadioButton;
 	@BindView(R.id.radio_qif_format) RadioButton mQifRadioButton;
 	@BindView(R.id.radio_xml_format) RadioButton mXmlRadioButton;
+	@BindView(R.id.radio_csv_format) RadioButton mCsVRadioButton;
 
 	@BindView(R.id.recurrence_options) View mRecurrenceOptionsView;
 	/**
@@ -203,6 +204,12 @@ public class ExportFormFragment extends Fragment implements
 				mExportFormat = ExportFormat.XML;
 				mExportWarningTextView.setText(R.string.export_warning_xml);
 				mExportDateLayout.setVisibility(View.GONE);
+				break;
+
+			case R.id.radio_csv_format:
+				mExportFormat = ExportFormat.CSV;
+				mExportWarningTextView.setText("");
+				mExportDateLayout.setVisibility(View.INVISIBLE);
 				break;
         }
     }
@@ -464,12 +471,14 @@ public class ExportFormFragment extends Fragment implements
 		mOfxRadioButton.setOnClickListener(radioClickListener);
 		mQifRadioButton.setOnClickListener(radioClickListener);
 		mXmlRadioButton.setOnClickListener(radioClickListener);
+		mCsVRadioButton.setOnClickListener(radioClickListener);
 
 		ExportFormat defaultFormat = ExportFormat.valueOf(defaultExportFormat.toUpperCase());
 		switch (defaultFormat){
 			case QIF: mQifRadioButton.performClick(); break;
 			case OFX: mOfxRadioButton.performClick(); break;
 			case XML: mXmlRadioButton.performClick(); break;
+			case CSV: mCsVRadioButton.performClick(); break;
 		}
 
 		if (GnuCashApplication.isDoubleEntryEnabled()){
