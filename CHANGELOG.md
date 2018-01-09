@@ -1,6 +1,6 @@
 Change Log
 ===============================================================================
-Version 2.3.0 *(2017-09-xx)*
+Version 2.3.0 *(2018-01-10)*
 ----------------------------
 * Feature #544: Use double confirmation dialog boxes before irreversible actions
 * Fixed #723, #743: Split transactions saved with incorrect sign
