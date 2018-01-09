@@ -223,6 +223,8 @@ public class ExportFormFragment extends Fragment implements
 
 		bindViewListeners();
 
+		mCsVRadioButton.setText(getResources().getStringArray(R.array.export_formats)[3]);
+
 		return view;
 	}
 	@Override
