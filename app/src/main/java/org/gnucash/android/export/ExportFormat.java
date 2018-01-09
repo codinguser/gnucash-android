@@ -23,7 +23,8 @@ public enum ExportFormat {
     QIF("Quicken Interchange Format"),
     OFX("Open Financial eXchange"),
     XML("GnuCash XML"),
-    CSV("GnuCash CSV");
+    CSVA("GnuCash accounts CSV"),
+    CSVT("GnuCash transactions CSV");
 
     /**
      * Full name of the export format acronym
@@ -46,7 +47,9 @@ public enum ExportFormat {
                 return ".ofx";
             case XML:
                 return ".gnca";
-            case CSV:
+            case CSVA:
+                return ".csv";
+            case CSVT:
                 return ".csv";
             default:
                 return ".txt";

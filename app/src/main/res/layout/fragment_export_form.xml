@@ -105,6 +105,48 @@
                     android:text="CSV-trans"/>
             </RadioGroup>
         </LinearLayout>
+        <LinearLayout android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="-8dp">
+            <TextView
+                android:id="@+id/label_separator_format"
+                android:text="Separator"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="8dp"
+                android:layout_height="?android:attr/listPreferredItemHeight"
+                android:layout_width="wrap_content"
+                style="@style/TextAppearance.EditTransaction_Small" />
+            <RadioGroup
+                android:id="@+id/export_separator_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="35dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <RadioButton android:id="@+id/radio_separator_comma_format"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:checked="true"
+                    android:text="," />
+                <RadioButton android:id="@+id/radio_separator_colon_format"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:checked="true"
+                    android:text=":" />
+                <RadioButton android:id="@+id/radio_separator_semicolon_format"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:checked="true"
+                    android:text=";" />
+            </RadioGroup>
+        </LinearLayout>
+
         <TextView android:id="@+id/export_warning"
             tools:text="Some format-based export warning"
             android:textColor="@color/title_green"

@@ -133,12 +133,17 @@ public class ExportFormFragment extends Fragment implements
 	@BindView(R.id.switch_export_all) SwitchCompat mExportAllSwitch;
 
 	@BindView(R.id.export_date_layout) LinearLayout mExportDateLayout;
+	@BindView(R.id.export_separator_layout) LinearLayout mExportSeparatorLayout;
 
 	@BindView(R.id.radio_ofx_format) RadioButton mOfxRadioButton;
 	@BindView(R.id.radio_qif_format) RadioButton mQifRadioButton;
 	@BindView(R.id.radio_xml_format) RadioButton mXmlRadioButton;
 	@BindView(R.id.radio_csv_accounts_format) RadioButton mCsvAccountsRadioButton;
 	@BindView(R.id.radio_csv_transactions_format) RadioButton mCsvTransactionsRadioButton;
+
+	@BindView(R.id.radio_separator_comma_format) RadioButton mSeparatorCommaButton;
+	@BindView(R.id.radio_separator_colon_format) RadioButton mSeparatorColonButton;
+	@BindView(R.id.radio_separator_semicolon_format) RadioButton mSeparatorSemicolonButton;
 
 	@BindView(R.id.recurrence_options) View mRecurrenceOptionsView;
 	/**
@@ -170,6 +175,8 @@ public class ExportFormFragment extends Fragment implements
 	 */
 	private Uri mExportUri;
 
+	private char mExportCsvSeparator = ',';
+
 	/**
 	 * Flag to determine if export has been started.
 	 * Used to continue export after user has picked a destination file
@@ -187,6 +194,7 @@ public class ExportFormFragment extends Fragment implements
                     mExportWarningTextView.setVisibility(View.GONE);
                 }
 				mExportDateLayout.setVisibility(View.VISIBLE);
+				mExportSeparatorLayout.setVisibility(View.GONE);
                 break;
 
             case R.id.radio_qif_format:
@@ -199,18 +207,37 @@ public class ExportFormFragment extends Fragment implements
                     mExportWarningTextView.setVisibility(View.GONE);
                 }
 				mExportDateLayout.setVisibility(View.VISIBLE);
+				mExportSeparatorLayout.setVisibility(View.GONE);
 				break;
 
 			case R.id.radio_xml_format:
 				mExportFormat = ExportFormat.XML;
 				mExportWarningTextView.setText(R.string.export_warning_xml);
 				mExportDateLayout.setVisibility(View.GONE);
+				mExportSeparatorLayout.setVisibility(View.GONE);
 				break;
 
 			case R.id.radio_csv_accounts_format:
-				mExportFormat = ExportFormat.CSV;
+				mExportFormat = ExportFormat.CSVA;
 				mExportWarningTextView.setText("");
-				mExportDateLayout.setVisibility(View.INVISIBLE);
+				mExportDateLayout.setVisibility(View.GONE);
+				mExportSeparatorLayout.setVisibility(View.VISIBLE);
+				break;
+			case R.id.radio_csv_transactions_format:
+				mExportFormat = ExportFormat.CSVT;
+				mExportWarningTextView.setText("");
+				mExportDateLayout.setVisibility(View.GONE);
+				mExportSeparatorLayout.setVisibility(View.VISIBLE);
+				break;
+
+			case R.id.radio_separator_comma_format:
+				mExportCsvSeparator = ',';
+				break;
+			case R.id.radio_separator_colon_format:
+				mExportCsvSeparator = ':';
+				break;
+			case R.id.radio_separator_semicolon_format:
+				mExportCsvSeparator = ';';
 				break;
         }
     }
@@ -300,6 +327,7 @@ public class ExportFormFragment extends Fragment implements
 		exportParameters.setExportTarget(mExportTarget);
 		exportParameters.setExportLocation(mExportUri != null ? mExportUri.toString() : null);
 		exportParameters.setDeleteTransactionsAfterExport(mDeleteAllCheckBox.isChecked());
+		exportParameters.setCsvSeparator(mExportCsvSeparator);
 
 		Log.i(TAG, "Commencing async export of transactions");
 		new ExportAsyncTask(getActivity(), GnuCashApplication.getActiveDb()).execute(exportParameters);
@@ -477,13 +505,19 @@ public class ExportFormFragment extends Fragment implements
 		mQifRadioButton.setOnClickListener(radioClickListener);
 		mXmlRadioButton.setOnClickListener(radioClickListener);
 		mCsvAccountsRadioButton.setOnClickListener(radioClickListener);
+		mCsvTransactionsRadioButton.setOnClickListener(radioClickListener);
+
+		mSeparatorCommaButton.setOnClickListener(radioClickListener);
+		mSeparatorColonButton.setOnClickListener(radioClickListener);
+		mSeparatorSemicolonButton.setOnClickListener(radioClickListener);
 
 		ExportFormat defaultFormat = ExportFormat.valueOf(defaultExportFormat.toUpperCase());
 		switch (defaultFormat){
 			case QIF: mQifRadioButton.performClick(); break;
 			case OFX: mOfxRadioButton.performClick(); break;
 			case XML: mXmlRadioButton.performClick(); break;
-			case CSV: mCsvAccountsRadioButton.performClick(); break;
+			case CSVA: mCsvAccountsRadioButton.performClick(); break;
+			case CSVT: mCsvTransactionsRadioButton.performClick(); break;
 		}
 
 		if (GnuCashApplication.isDoubleEntryEnabled()){

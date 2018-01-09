@@ -57,7 +57,8 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
-import org.gnucash.android.export.csv.CsvExporter;
+import org.gnucash.android.export.csv.CsvAccountExporter;
+import org.gnucash.android.export.csv.CsvTransactionsExporter;
 import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.export.qif.QifExporter;
 import org.gnucash.android.export.xml.GncXmlExporter;
@@ -218,7 +219,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
     /**
      * Returns an exporter corresponding to the user settings.
-     * @return Object of one of {@link QifExporter}, {@link OfxExporter} or {@link GncXmlExporter} or {@Link CsvExporter}
+     * @return Object of one of {@link QifExporter}, {@link OfxExporter} or {@link GncXmlExporter} or {@Link CsvAccountExporter}
      */
     private Exporter getExporter() {
         switch (mExportParams.getExportFormat()) {
@@ -230,8 +231,10 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
             case XML:
                 return new GncXmlExporter(mExportParams, mDb);
+            case CSVA:
+                return new CsvAccountExporter(mExportParams, mDb);
             default:
-                return new CsvExporter(mExportParams, mDb);
+                return new CsvTransactionsExporter(mExportParams, mDb);
         }
     }
 

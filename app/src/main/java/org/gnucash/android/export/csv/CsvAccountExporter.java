@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2014 - 2015 Ngewi Fet <ngewif@gmail.com>
- * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
+ * Copyright (c) 2018 Semyannikov Gleb <nightdevgame@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,25 +74,26 @@ import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
 import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
 
 /**
- * Creates a GnuCash XML representation of the accounts and transactions
+ * Creates a GnuCash CSV account representation of the accounts and transactions
  *
- * @author Ngewi Fet <ngewif@gmail.com>
- * @author Yongxin Wang <fefe.wyx@gmail.com>
+ * @author Semyannikov Gleb <nightdevgame@gmail.com>
  */
-public class CsvExporter extends Exporter{
+public class CsvAccountExporter extends Exporter{
 
     /**
      * Root account for template accounts
      */
     private Account mRootTemplateAccount;
     private Map<String, Account> mTransactionToTemplateAccountMap = new TreeMap<>();
+    private char mCsvSeparator;
 
     /**
      * Construct a new exporter with export parameters
      * @param params Parameters for the export
      */
-    public CsvExporter(ExportParams params) {
+    public CsvAccountExporter(ExportParams params) {
         super(params, null);
+        mCsvSeparator = params.getCsvSeparator();
         LOG_TAG = "GncXmlExporter";
     }
 
@@ -103,28 +103,30 @@ public class CsvExporter extends Exporter{
      * @param params Parameters for the export
      * @param db SQLite database
      */
-    public CsvExporter(ExportParams params, SQLiteDatabase db) {
+    public CsvAccountExporter(ExportParams params, SQLiteDatabase db) {
         super(params, db);
+        mCsvSeparator = params.getCsvSeparator();
         LOG_TAG = "GncXmlExporter";
     }
 
     @Override
     public List<String> generateExport() throws ExporterException {
-        OutputStreamWriter writer = null;
+        OutputStreamWriter writerStream = null;
+        CsvWriter writer = null;
         String outputFile = getExportCacheFilePath();
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-            writer = new OutputStreamWriter(bufferedOutputStream);
-
+            writerStream = new OutputStreamWriter(bufferedOutputStream);
+            writer = new CsvWriter(writerStream);
             generateExport(writer);
         } catch (IOException ex){
-            Crashlytics.log("Error exporting XML");
+            Crashlytics.log("Error exporting CSV");
             Crashlytics.logException(ex);
         } finally {
-            if (writer != null) {
+            if (writerStream != null) {
                 try {
-                    writer.close();
+                    writerStream.close();
                 } catch (IOException e) {
                     throw new ExporterException(mExportParams, e);
                 }
@@ -137,9 +139,9 @@ public class CsvExporter extends Exporter{
         return exportedFiles;
     }
 
-    public void generateExport(final Writer writer) throws ExporterException {
+    public void generateExport(final CsvWriter writer) throws ExporterException {
         try {
-            String separator = ",";
+            String separator = mCsvSeparator + "";
             List<String> names = new ArrayList<String>();
             names.add("type");
             names.add("full_name");
@@ -167,7 +169,7 @@ public class CsvExporter extends Exporter{
             for(int i = 0; i < names.size(); i++) {
                 writer.write(names.get(i) + separator);
             }
-            writer.write('\n');
+            writer.write("\n");
             for(int i = 0; i < accounts.size(); i++) {
                 Account account = accounts.get(i);
 
@@ -196,7 +198,7 @@ public class CsvExporter extends Exporter{
 
                 //writer.write();
 
-                writer.write('\n');
+                writer.write("\n");
             }
         } catch (Exception e) {
             Crashlytics.logException(e);
