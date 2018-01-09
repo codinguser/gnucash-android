@@ -137,7 +137,8 @@ public class ExportFormFragment extends Fragment implements
 	@BindView(R.id.radio_ofx_format) RadioButton mOfxRadioButton;
 	@BindView(R.id.radio_qif_format) RadioButton mQifRadioButton;
 	@BindView(R.id.radio_xml_format) RadioButton mXmlRadioButton;
-	@BindView(R.id.radio_csv_format) RadioButton mCsVRadioButton;
+	@BindView(R.id.radio_csv_accounts_format) RadioButton mCsvAccountsRadioButton;
+	@BindView(R.id.radio_csv_transactions_format) RadioButton mCsvTransactionsRadioButton;
 
 	@BindView(R.id.recurrence_options) View mRecurrenceOptionsView;
 	/**
@@ -206,7 +207,7 @@ public class ExportFormFragment extends Fragment implements
 				mExportDateLayout.setVisibility(View.GONE);
 				break;
 
-			case R.id.radio_csv_format:
+			case R.id.radio_csv_accounts_format:
 				mExportFormat = ExportFormat.CSV;
 				mExportWarningTextView.setText("");
 				mExportDateLayout.setVisibility(View.INVISIBLE);
@@ -223,7 +224,9 @@ public class ExportFormFragment extends Fragment implements
 
 		bindViewListeners();
 
-		mCsVRadioButton.setText(getResources().getStringArray(R.array.export_formats)[3]);
+		String[] export_format_strings = getResources().getStringArray(R.array.export_formats);
+		mCsvAccountsRadioButton.setText(export_format_strings[3]);
+		mCsvTransactionsRadioButton.setText(export_format_strings[4]);
 
 		return view;
 	}
@@ -473,14 +476,14 @@ public class ExportFormFragment extends Fragment implements
 		mOfxRadioButton.setOnClickListener(radioClickListener);
 		mQifRadioButton.setOnClickListener(radioClickListener);
 		mXmlRadioButton.setOnClickListener(radioClickListener);
-		mCsVRadioButton.setOnClickListener(radioClickListener);
+		mCsvAccountsRadioButton.setOnClickListener(radioClickListener);
 
 		ExportFormat defaultFormat = ExportFormat.valueOf(defaultExportFormat.toUpperCase());
 		switch (defaultFormat){
 			case QIF: mQifRadioButton.performClick(); break;
 			case OFX: mOfxRadioButton.performClick(); break;
 			case XML: mXmlRadioButton.performClick(); break;
-			case CSV: mCsVRadioButton.performClick(); break;
+			case CSV: mCsvAccountsRadioButton.performClick(); break;
 		}
 
 		if (GnuCashApplication.isDoubleEntryEnabled()){
