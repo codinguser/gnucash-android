@@ -16,66 +16,23 @@
 
 package org.gnucash.android.export.csv;
 
-import org.gnucash.android.export.xml.*;
-
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
-import android.util.Log;
-
 import com.crashlytics.android.Crashlytics;
 
-import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.adapter.BooksDbAdapter;
-import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
-import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
-import org.gnucash.android.db.adapter.TransactionsDbAdapter;
-import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
-import org.gnucash.android.model.AccountType;
-import org.gnucash.android.model.BaseModel;
-import org.gnucash.android.model.Book;
-import org.gnucash.android.model.Budget;
-import org.gnucash.android.model.BudgetAmount;
-import org.gnucash.android.model.Commodity;
-import org.gnucash.android.model.Money;
-import org.gnucash.android.model.PeriodType;
-import org.gnucash.android.model.Price;
-import org.gnucash.android.model.Recurrence;
-import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.model.TransactionType;
-import org.gnucash.android.util.BookUtils;
-import org.gnucash.android.util.TimestampHelper;
-import org.xmlpull.v1.XmlPullParserFactory;
-import org.xmlpull.v1.XmlSerializer;
-
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.zip.GZIPOutputStream;
-
-import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
-import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
-import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
 
 /**
  * Creates a GnuCash CSV transactions representation of the accounts and transactions
@@ -84,11 +41,6 @@ import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
  */
 public class CsvTransactionsExporter extends Exporter{
 
-    /**
-     * Root account for template accounts
-     */
-    private Account mRootTemplateAccount;
-    private Map<String, Account> mTransactionToTemplateAccountMap = new TreeMap<>();
     private char mCsvSeparator;
 
     /**
@@ -164,15 +116,7 @@ public class CsvTransactionsExporter extends Exporter{
             names.add("To Rate/Price");
             names.add("From Rate/Price");
 
-
             List<Transaction> transactions = mTransactionsDbAdapter.getAllTransactions();
-            //List<Budget> budgets = mBudgetsDbAdapter.getAllRecords();
-            //List<Account> accounts = mAccountsDbAdapter.getAllRecords();
-            //List<Commodity> commodities = mCommoditiesDbAdapter.getAllRecords();
-            //List<Price> prices =  mPricesDbAdapter.getAllRecords();
-            //List<ScheduledAction> scheduledActions = mScheduledActionDbAdapter.getAllRecords();
-            //List<Split> splits = mSplitsDbAdapter.getAllRecords();
-
 
             for(int i = 0; i < names.size(); i++) {
                 writer.write(names.get(i) + separator);
@@ -206,13 +150,9 @@ public class CsvTransactionsExporter extends Exporter{
                     writer.write(separator);
 
                     writer.write(transaction.getDescription() + separator);
-
                     writer.write(transaction.getNote() + separator);
-
                     writer.write((split.getMemo()==null?"":split.getMemo()) + separator);
-
                     writer.write((account_pair.getName()==null?"":account_pair.getName()) + separator);
-
                     writer.write((split.getType().name()) + separator);
 
                     //Action

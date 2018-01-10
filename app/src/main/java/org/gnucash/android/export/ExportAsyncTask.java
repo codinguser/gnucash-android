@@ -219,7 +219,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
     /**
      * Returns an exporter corresponding to the user settings.
-     * @return Object of one of {@link QifExporter}, {@link OfxExporter} or {@link GncXmlExporter} or {@Link CsvAccountExporter}
+     * @return Object of one of {@link QifExporter}, {@link OfxExporter} or {@link GncXmlExporter}, {@Link CsvAccountExporter} or {@Link CsvTransactionsExporter}
      */
     private Exporter getExporter() {
         switch (mExportParams.getExportFormat()) {
