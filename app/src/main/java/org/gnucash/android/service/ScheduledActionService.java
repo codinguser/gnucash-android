@@ -274,7 +274,7 @@ public class ScheduledActionService extends IntentService {
         for (String bookUID : bookUIDs) {
             String backupFile = BookUtils.getBookBackupFileUri(bookUID);
             if (backupFile == null){
-                GncXmlExporter.createBackup();
+                GncXmlExporter.createBackup(bookUID);
                 continue;
             }
 
