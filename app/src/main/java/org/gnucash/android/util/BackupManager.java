@@ -1,7 +1,9 @@
 package org.gnucash.android.util;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -13,6 +15,7 @@ import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.model.Book;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -25,6 +28,7 @@ import java.util.zip.GZIPOutputStream;
 
 public class BackupManager {
     private static final String LOG_TAG = "BackupManager";
+    public static final String KEY_BACKUP_FILE = "book_backup_file_key";
 
     /**
      * Perform an automatic backup of all books in the database.
@@ -36,7 +40,7 @@ public class BackupManager {
         Context context = GnuCashApplication.getAppContext();
 
         for (String bookUID : bookUIDs) {
-            String backupFile = BookUtils.getBookBackupFileUri(bookUID);
+            String backupFile = getBookBackupFileUri(bookUID);
             if (backupFile == null){
                 backupBook(bookUID);
                 continue;
@@ -76,7 +80,7 @@ public class BackupManager {
     public static boolean backupBook(String bookUID){
         OutputStream outputStream;
         try {
-            String backupFile = BookUtils.getBookBackupFileUri(bookUID);
+            String backupFile = getBookBackupFileUri(bookUID);
             if (backupFile != null){
                 outputStream = GnuCashApplication.getAppContext().getContentResolver().openOutputStream(Uri.parse(backupFile));
             } else { //no Uri set by user, use default location on SD card
@@ -128,5 +132,16 @@ public class BackupManager {
         if (!file.exists())
             file.mkdirs();
         return path;
+    }
+
+    /**
+     * Return the user-set backup file URI for the book with UID {@code bookUID}.
+     * @param bookUID Unique ID of the book
+     * @return DocumentFile for book backups, or null if the user hasn't set any.
+     */
+    @Nullable
+    public static String getBookBackupFileUri(String bookUID){
+        SharedPreferences sharedPreferences = PreferenceActivity.getBookSharedPreferences(bookUID);
+        return sharedPreferences.getString(KEY_BACKUP_FILE, null);
     }
 }

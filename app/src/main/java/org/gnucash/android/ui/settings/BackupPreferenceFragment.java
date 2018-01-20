@@ -51,7 +51,6 @@ import org.gnucash.android.export.Exporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.ui.settings.dialog.OwnCloudDialogFragment;
 import org.gnucash.android.util.BackupManager;
-import org.gnucash.android.util.BookUtils;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -151,7 +150,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 
 		pref = findPreference(getString(R.string.key_backup_location));
 		pref.setOnPreferenceClickListener(this);
-		String defaultBackupLocation = BookUtils.getBookBackupFileUri(BooksDbAdapter.getInstance().getActiveBookUID());
+		String defaultBackupLocation = BackupManager.getBookBackupFileUri(BooksDbAdapter.getInstance().getActiveBookUID());
 		if (defaultBackupLocation != null){
 			pref.setSummary(Uri.parse(defaultBackupLocation).getAuthority());
 		}
@@ -371,7 +370,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 		Log.i("Settings", "Opening GnuCash XML backups for restore");
 		String bookUID = BooksDbAdapter.getInstance().getActiveBookUID();
 
-		final String defaultBackupFile = BookUtils.getBookBackupFileUri(bookUID);
+		final String defaultBackupFile = BackupManager.getBookBackupFileUri(bookUID);
 		if (defaultBackupFile != null){
 			android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity())
 					.setTitle(R.string.title_confirm_restore_backup)
@@ -477,7 +476,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 
 					PreferenceActivity.getActiveBookSharedPreferences()
 							.edit()
-							.putString(BookUtils.KEY_BACKUP_FILE, backupFileUri.toString())
+							.putString(BackupManager.KEY_BACKUP_FILE, backupFileUri.toString())
 							.apply();
 
 					Preference pref = findPreference(getString(R.string.key_backup_location));
