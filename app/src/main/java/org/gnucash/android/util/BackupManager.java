@@ -37,7 +37,7 @@ public class BackupManager {
         for (String bookUID : bookUIDs) {
             String backupFile = BookUtils.getBookBackupFileUri(bookUID);
             if (backupFile == null){
-                createBackup(bookUID);
+                backupBook(bookUID);
                 continue;
             }
 
@@ -57,19 +57,22 @@ public class BackupManager {
     }
 
     /**
-     * Creates a backup of current database contents to the directory {@link Exporter#getBackupFolderPath(String)}
+     * Backs up the active book to the directory {@link Exporter#getBackupFolderPath(String)}.
+     *
      * @return {@code true} if backup was successful, {@code false} otherwise
      */
-    public static boolean createBackup(){
-        return createBackup(BooksDbAdapter.getInstance().getActiveBookUID());
+    public static boolean backupActiveBook() {
+        return backupBook(BooksDbAdapter.getInstance().getActiveBookUID());
     }
 
     /**
-     * Create a backup of the book in the default backup location
+     * Backs up the book with UID {@code bookUID} to the directory
+     * {@link Exporter#getBackupFolderPath(String)}.
+     *
      * @param bookUID Unique ID of the book
      * @return {@code true} if backup was successful, {@code false} otherwise
      */
-    public static boolean createBackup(String bookUID){
+    public static boolean backupBook(String bookUID){
         OutputStream outputStream;
         try {
             String backupFile = BookUtils.getBookBackupFileUri(bookUID);

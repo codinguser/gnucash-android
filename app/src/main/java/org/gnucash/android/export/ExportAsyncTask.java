@@ -454,7 +454,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     private void backupAndDeleteTransactions(){
         Log.i(TAG, "Backup and deleting transactions after export");
-        BackupManager.createBackup(); //create backup before deleting everything
+        BackupManager.backupActiveBook(); //create backup before deleting everything
         List<Transaction> openingBalances = new ArrayList<>();
         boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
 

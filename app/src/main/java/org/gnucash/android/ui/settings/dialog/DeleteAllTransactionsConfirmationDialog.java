@@ -57,7 +57,7 @@ public class DeleteAllTransactionsConfirmationDialog extends DoubleConfirmationD
                 .setPositiveButton(R.string.alert_dialog_ok_delete,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                BackupManager.createBackup();
+                                BackupManager.backupActiveBook();
 
                                 Context context = getActivity();
                                 AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
