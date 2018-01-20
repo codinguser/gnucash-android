@@ -15,6 +15,7 @@ import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.model.Book;
 
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -57,7 +58,7 @@ public class BackupManager {
     }
 
     /**
-     * Backs up the active book to the directory {@link Exporter#getBackupFolderPath(String)}.
+     * Backs up the active book to the directory {@link #getBackupFolderPath(String)}.
      *
      * @return {@code true} if backup was successful, {@code false} otherwise
      */
@@ -67,7 +68,7 @@ public class BackupManager {
 
     /**
      * Backs up the book with UID {@code bookUID} to the directory
-     * {@link Exporter#getBackupFolderPath(String)}.
+     * {@link #getBackupFolderPath(String)}.
      *
      * @param bookUID Unique ID of the book
      * @return {@code true} if backup was successful, {@code false} otherwise
@@ -103,11 +104,29 @@ public class BackupManager {
      * Backups are done in XML format and are Gzipped (with ".gnca" extension).
      * @param bookUID GUID of the book
      * @return the file path for backups of the database.
-     * @see Exporter#getBackupFolderPath(String)
+     * @see #getBackupFolderPath(String)
      */
     private static String getBackupFilePath(String bookUID){
         Book book = BooksDbAdapter.getInstance().getRecord(bookUID);
-        return Exporter.getBackupFolderPath(book.getUID())
+        return getBackupFolderPath(book.getUID())
                + Exporter.buildExportFilename(ExportFormat.XML, book.getDisplayName());
+    }
+
+    /**
+     * Returns the path to the backups folder for the book with GUID {@code bookUID}.
+     *
+     * <p>Each book has its own backup folder.</p>
+     *
+     * @return Absolute path to backup folder for the book
+     */
+    public static String getBackupFolderPath(String bookUID){
+        String baseFolderPath = GnuCashApplication.getAppContext()
+                                                  .getExternalFilesDir(null)
+                                                  .getAbsolutePath();
+        String path = baseFolderPath + "/" + bookUID + "/backups/";
+        File file = new File(path);
+        if (!file.exists())
+            file.mkdirs();
+        return path;
     }
 }

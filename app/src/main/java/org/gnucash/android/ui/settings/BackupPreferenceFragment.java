@@ -393,7 +393,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 		}
 
 		//If no default location was set, look in the internal SD card location
-		File[] backupFiles = new File(Exporter.getBackupFolderPath(bookUID)).listFiles();
+		File[] backupFiles = new File(BackupManager.getBackupFolderPath(bookUID)).listFiles();
 		if (backupFiles == null || backupFiles.length == 0){
 			android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity())
 					.setTitle(R.string.title_no_backups_found)

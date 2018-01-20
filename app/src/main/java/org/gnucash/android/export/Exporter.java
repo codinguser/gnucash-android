@@ -237,20 +237,6 @@ public abstract class Exporter {
         return path;
     }
 
-    /**
-     * Returns the path to the backups folder for the book with GUID {@code bookUID}
-     * Each book has its own backup path
-     *
-     * @return Absolute path to backup folder for the book
-     */
-    public static String getBackupFolderPath(String bookUID){
-        String path = BASE_FOLDER_PATH + "/" + bookUID + "/backups/";
-        File file = new File(path);
-        if (!file.exists())
-            file.mkdirs();
-        return path;
-    }
-
 
     /**
      * Returns the MIME type for this exporter.
