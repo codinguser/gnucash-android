@@ -24,8 +24,8 @@ import android.widget.Toast;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
-import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
+import org.gnucash.android.util.BackupManager;
 
 /**
  * Confirmation dialog for deleting all accounts from the system.
@@ -49,7 +49,7 @@ public class DeleteAllAccountsConfirmationDialog extends DoubleConfirmationDialo
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 Context context = getDialog().getContext();
-                                GncXmlExporter.createBackup();
+                                BackupManager.createBackup();
                                 AccountsDbAdapter.getInstance().deleteAllRecords();
                                 Toast.makeText(context, R.string.toast_all_accounts_deleted, Toast.LENGTH_SHORT).show();
                                 WidgetConfigurationActivity.updateAllWidgets(context);

@@ -17,8 +17,6 @@
 
 package org.gnucash.android.ui.account;
 
-import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -28,15 +26,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -62,7 +57,6 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
-import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.ui.common.BaseDrawerActivity;
 import org.gnucash.android.ui.common.FormActivity;
@@ -71,6 +65,7 @@ import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.TaskDelegate;
 import org.gnucash.android.ui.wizard.FirstRunWizardActivity;
+import org.gnucash.android.util.BackupManager;
 
 import butterknife.BindView;
 
@@ -292,7 +287,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
         //when someone launches the app to view a (.gnucash or .gnca) file
         Uri data = intent.getData();
         if (data != null){
-            GncXmlExporter.createBackup();
+            BackupManager.createBackup();
             intent.setData(null);
             new ImportAsyncTask(this).execute(data);
             removeFirstRunFlag();
@@ -504,7 +499,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
      * @param onFinishTask Task to be executed when import is complete
      */
     public static void importXmlFileFromIntent(Activity context, Intent data, TaskDelegate onFinishTask) {
-        GncXmlExporter.createBackup();
+        BackupManager.createBackup();
         new ImportAsyncTask(context, onFinishTask).execute(data.getData());
     }
 

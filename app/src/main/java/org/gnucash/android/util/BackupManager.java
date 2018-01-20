@@ -10,10 +10,14 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
+import org.gnucash.android.export.Exporter;
 import org.gnucash.android.export.xml.GncXmlExporter;
+import org.gnucash.android.model.Book;
 
 import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
@@ -33,7 +37,7 @@ public class BackupManager {
         for (String bookUID : bookUIDs) {
             String backupFile = BookUtils.getBookBackupFileUri(bookUID);
             if (backupFile == null){
-                GncXmlExporter.createBackup(bookUID);
+                createBackup(bookUID);
                 continue;
             }
 
@@ -50,5 +54,57 @@ public class BackupManager {
                 Crashlytics.logException(ex);
             }
         }
+    }
+
+    /**
+     * Creates a backup of current database contents to the directory {@link Exporter#getBackupFolderPath(String)}
+     * @return {@code true} if backup was successful, {@code false} otherwise
+     */
+    public static boolean createBackup(){
+        return createBackup(BooksDbAdapter.getInstance().getActiveBookUID());
+    }
+
+    /**
+     * Create a backup of the book in the default backup location
+     * @param bookUID Unique ID of the book
+     * @return {@code true} if backup was successful, {@code false} otherwise
+     */
+    public static boolean createBackup(String bookUID){
+        OutputStream outputStream;
+        try {
+            String backupFile = BookUtils.getBookBackupFileUri(bookUID);
+            if (backupFile != null){
+                outputStream = GnuCashApplication.getAppContext().getContentResolver().openOutputStream(Uri.parse(backupFile));
+            } else { //no Uri set by user, use default location on SD card
+                backupFile = getBackupFilePath(bookUID);
+                outputStream = new FileOutputStream(backupFile);
+            }
+
+            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
+            GZIPOutputStream gzipOutputStream = new GZIPOutputStream(bufferedOutputStream);
+            OutputStreamWriter writer = new OutputStreamWriter(gzipOutputStream);
+
+            ExportParams params = new ExportParams(ExportFormat.XML);
+            new GncXmlExporter(params).generateExport(writer);
+            writer.close();
+            return true;
+        } catch (IOException | Exporter.ExporterException e) {
+            Crashlytics.logException(e);
+            Log.e("GncXmlExporter", "Error creating XML  backup", e);
+            return false;
+        }
+    }
+
+    /**
+     * Returns the full path of a file to make database backup of the specified book.
+     * Backups are done in XML format and are Gzipped (with ".gnca" extension).
+     * @param bookUID GUID of the book
+     * @return the file path for backups of the database.
+     * @see Exporter#getBackupFolderPath(String)
+     */
+    private static String getBackupFilePath(String bookUID){
+        Book book = BooksDbAdapter.getInstance().getRecord(bookUID);
+        return Exporter.getBackupFolderPath(book.getUID())
+               + Exporter.buildExportFilename(ExportFormat.XML, book.getDisplayName());
     }
 }

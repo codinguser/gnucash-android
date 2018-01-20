@@ -27,11 +27,11 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
-import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
+import org.gnucash.android.util.BackupManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +65,7 @@ public class TransactionsDeleteConfirmationDialogFragment extends DialogFragment
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
                                 if (rowId == 0) {
-                                    GncXmlExporter.createBackup(); //create backup before deleting everything
+                                    BackupManager.createBackup(); //create backup before deleting everything
                                     List<Transaction> openingBalances = new ArrayList<Transaction>();
                                     boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
                                     if (preserveOpeningBalances) {

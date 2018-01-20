@@ -48,9 +48,9 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.export.Exporter;
-import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.ui.settings.dialog.OwnCloudDialogFragment;
+import org.gnucash.android.util.BackupManager;
 import org.gnucash.android.util.BookUtils;
 
 import java.io.File;
@@ -193,7 +193,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 		}
 
 		if (key.equals(getString(R.string.key_create_backup))){
-			boolean result = GncXmlExporter.createBackup();
+			boolean result = BackupManager.createBackup();
 			int msg = result ? R.string.toast_backup_successful : R.string.toast_backup_failed;
 			Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
 		}

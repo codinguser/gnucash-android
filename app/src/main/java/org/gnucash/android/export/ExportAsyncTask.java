@@ -64,6 +64,7 @@ import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.account.AccountsListFragment;
 import org.gnucash.android.ui.settings.BackupPreferenceFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
+import org.gnucash.android.util.BackupManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -453,7 +454,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     private void backupAndDeleteTransactions(){
         Log.i(TAG, "Backup and deleting transactions after export");
-        GncXmlExporter.createBackup(); //create backup before deleting everything
+        BackupManager.createBackup(); //create backup before deleting everything
         List<Transaction> openingBalances = new ArrayList<>();
         boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
 
