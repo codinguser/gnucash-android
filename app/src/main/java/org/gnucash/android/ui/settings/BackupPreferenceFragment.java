@@ -368,7 +368,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 	 */
 	private void restoreBackup() {
 		Log.i("Settings", "Opening GnuCash XML backups for restore");
-		String bookUID = BooksDbAdapter.getInstance().getActiveBookUID();
+		final String bookUID = BooksDbAdapter.getInstance().getActiveBookUID();
 
 		final String defaultBackupFile = BackupManager.getBookBackupFileUri(bookUID);
 		if (defaultBackupFile != null){
@@ -392,8 +392,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 		}
 
 		//If no default location was set, look in the internal SD card location
-		File[] backupFiles = new File(BackupManager.getBackupFolderPath(bookUID)).listFiles();
-		if (backupFiles == null || backupFiles.length == 0){
+		if (BackupManager.getBackupList(bookUID).isEmpty()){
 			android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity())
 					.setTitle(R.string.title_no_backups_found)
 					.setMessage(R.string.msg_no_backups_to_restore_from)
@@ -407,14 +406,10 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 			return;
 		}
 
-		Arrays.sort(backupFiles);
-		List<File> backupFilesList = Arrays.asList(backupFiles);
-		Collections.reverse(backupFilesList);
-		final File[] sortedBackupFiles = (File[]) backupFilesList.toArray();
 
 		final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.select_dialog_singlechoice);
 		final DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance();
-		for (File backupFile : sortedBackupFiles) {
+		for (File backupFile : BackupManager.getBackupList(bookUID)) {
 			long time = Exporter.getExportTime(backupFile.getName());
 			if (time > 0)
 				arrayAdapter.add(dateFormatter.format(new Date(time)));
@@ -434,7 +429,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 		restoreDialogBuilder.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				File backupFile = sortedBackupFiles[which];
+				File backupFile = BackupManager.getBackupList(bookUID).get(which);
 				new ImportAsyncTask(getActivity()).execute(Uri.fromFile(backupFile));
 			}
 		});

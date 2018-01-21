@@ -43,9 +43,28 @@ public class BackupManagerTest {
         BackupManager.backupAllBooks();
 
         for (String bookUID : mBooksDbAdapter.getAllBookUIDs()) {
-            File backupFolder = new File(BackupManager.getBackupFolderPath(bookUID));
-            assertThat(backupFolder.list().length).isEqualTo(1);
+            assertThat(BackupManager.getBackupList(bookUID).size()).isEqualTo(1);
         }
+    }
+
+    @Test
+    public void getBackupList() throws Exception {
+        String bookUID = createNewBookWithDefaultAccounts();
+        BookUtils.activateBook(bookUID);
+
+        BackupManager.backupActiveBook();
+        Thread.sleep(1000); // FIXME: Use Mockito to get a different date in Exporter.buildExportFilename
+        BackupManager.backupActiveBook();
+
+        assertThat(BackupManager.getBackupList(bookUID).size()).isEqualTo(2);
+    }
+
+    @Test
+    public void whenNoBackupsHaveBeenDone_shouldReturnEmptyBackupList() {
+        String bookUID = createNewBookWithDefaultAccounts();
+        BookUtils.activateBook(bookUID);
+
+        assertThat(BackupManager.getBackupList(bookUID)).isEmpty();
     }
 
     /**

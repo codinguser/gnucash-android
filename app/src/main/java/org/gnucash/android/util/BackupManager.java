@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -23,6 +24,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
@@ -123,7 +126,7 @@ public class BackupManager {
      *
      * @return Absolute path to backup folder for the book
      */
-    public static String getBackupFolderPath(String bookUID){
+    private static String getBackupFolderPath(String bookUID){
         String baseFolderPath = GnuCashApplication.getAppContext()
                                                   .getExternalFilesDir(null)
                                                   .getAbsolutePath();
@@ -143,5 +146,13 @@ public class BackupManager {
     public static String getBookBackupFileUri(String bookUID){
         SharedPreferences sharedPreferences = PreferenceActivity.getBookSharedPreferences(bookUID);
         return sharedPreferences.getString(KEY_BACKUP_FILE, null);
+    }
+
+    public static List<File> getBackupList(String bookUID) {
+        File[] backupFiles = new File(getBackupFolderPath(bookUID)).listFiles();
+        Arrays.sort(backupFiles);
+        List<File> backupFilesList = Arrays.asList(backupFiles);
+        Collections.reverse(backupFilesList);
+        return  backupFilesList;
     }
 }
