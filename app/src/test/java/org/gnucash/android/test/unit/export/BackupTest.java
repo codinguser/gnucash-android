@@ -25,6 +25,7 @@ import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.GncXmlImporter;
 import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
 import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
+import org.gnucash.android.util.BackupManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,12 +51,6 @@ public class BackupTest {
     @Before
     public void setUp(){
         loadDefaultAccounts();
-    }
-
-    @Test
-    public void shouldCreateBackup(){
-        boolean backupResult = GncXmlExporter.createBackup();
-        assertThat(backupResult).isTrue();
     }
 
     @Test
