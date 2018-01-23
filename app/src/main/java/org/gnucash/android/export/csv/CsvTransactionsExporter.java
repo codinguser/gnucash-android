@@ -17,13 +17,18 @@
 package org.gnucash.android.export.csv;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.database.Cursor;
 import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Commodity;
+import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.model.TransactionType;
+
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,6 +36,8 @@ import java.io.OutputStreamWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -42,6 +49,21 @@ import java.util.List;
 public class CsvTransactionsExporter extends Exporter{
 
     private char mCsvSeparator;
+
+    private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+    private Comparator<Split> splitComparator = new Comparator<Split>() {
+        @Override
+        public int compare(Split o1, Split o2) {
+            if(o1.getType() == TransactionType.DEBIT
+                    && o2.getType() == TransactionType.CREDIT)
+                return -1;
+            if (o1.getType() == TransactionType.CREDIT
+                    && o2.getType() == TransactionType.DEBIT)
+                return 1;
+            return 0;
+        }
+    };
 
     /**
      * Construct a new exporter with export parameters
@@ -95,6 +117,57 @@ public class CsvTransactionsExporter extends Exporter{
         return exportedFiles;
     }
 
+    private void write_split(final Transaction transaction, final Split split, final CsvWriter writer) throws IOException
+    {
+        String separator = mCsvSeparator + "";
+        Account account = mAccountsDbAdapter.getRecord(split.getAccountUID());
+
+        // Date
+        Date date = new Date(transaction.getTimeMillis());
+        writer.write(dateFormat.format(date) + separator);
+        // Account name
+        writer.write(account.getName() + separator);
+        // TODO:Number is not defined yet?
+        writer.write( separator);
+        // Description
+        writer.write(transaction.getDescription() + separator);
+        // Notes of transaction
+        writer.write(transaction.getNote() + separator);
+        // Memo
+        writer.write(
+                (split.getMemo()==null?
+                "":split.getMemo()) + separator);
+        // TODO:Category is not defined yet?
+        writer.write(separator);
+        // Type
+        writer.write(split.getType().name() + separator);
+        // TODO:Action is not defined yet?
+        writer.write(separator);
+        // Reconcile
+        writer.write(split.getReconcileState() + separator);
+
+        // Changes
+        Money change = split.getFormattedQuantity().withCurrency(transaction.getCommodity());
+        Money zero = Money.getZeroInstance().withCurrency(transaction.getCommodity());
+        // To currency; From currency; To; From
+        if (change.isNegative()) {
+            writer.write(zero.toPlainString() + separator);
+            writer.write(change.abs().toPlainString() + separator);
+            writer.write(Money.getZeroInstance().toPlainString() + separator);
+            writer.write(split.getFormattedQuantity().abs().toPlainString() + separator);
+        }
+        else {
+            writer.write(change.abs().toPlainString() + separator);
+            writer.write(zero.toPlainString() + separator);
+            writer.write(split.getFormattedQuantity().abs().toPlainString() + separator);
+            writer.write(Money.getZeroInstance().toPlainString() + separator);
+        }
+
+        // TODO: What is price?
+        writer.write(separator);
+        writer.write(separator);
+    }
+
     public void generateExport(final CsvWriter writer) throws ExporterException {
         try {
             String separator = mCsvSeparator + "";
@@ -122,9 +195,14 @@ public class CsvTransactionsExporter extends Exporter{
                 writer.write(names.get(i) + separator);
             }
             writer.write("\n");
-            for(int i = 0; i < transactions.size(); i++) {
-                Transaction transaction = transactions.get(i);
+
+
+            Cursor cursor = mTransactionsDbAdapter.fetchAllRecords();
+            while (cursor.moveToNext())
+            {
+                Transaction transaction = mTransactionsDbAdapter.buildModelInstance(cursor);
                 List<Split> splits = transaction.getSplits();
+                Collections.sort(splits,splitComparator);
                 for (int j = 0; j < splits.size()/2; j++) {
                     Split split = splits.get(j);
                     Split pair = null;
@@ -134,38 +212,12 @@ public class CsvTransactionsExporter extends Exporter{
                         }
                     }
 
-                    Account account = mAccountsDbAdapter.getRecord(split.getAccountUID());
-                    Account account_pair = null;
-                    if (pair != null) {
-                        account_pair = mAccountsDbAdapter.getRecord(pair.getAccountUID());
-                    }
-
-                    Date date = new Date(transaction.getTimeMillis());
-                    DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-                    writer.write(df.format(date) + separator);
-
-                    writer.write(account.getName() + separator);
-
-                    //Number
-                    writer.write(separator);
-
-                    writer.write(transaction.getDescription() + separator);
-                    writer.write(transaction.getNote() + separator);
-                    writer.write((split.getMemo()==null?"":split.getMemo()) + separator);
-                    writer.write((account_pair.getName()==null?"":account_pair.getName()) + separator);
-                    writer.write((split.getType().name()) + separator);
-
-                    //Action
-                    writer.write(separator);
-
-                    writer.write(split.getReconcileState() + separator);
-
-                    writer.write(split.getFormattedQuantity().toPlainString() + separator);
-                    writer.write(separator);
-                    writer.write(split.getFormattedQuantity().toPlainString() + separator);
-                    writer.write(separator);
-                    writer.write(separator);
+                    write_split(transaction, split, writer);
                     writer.write("\n");
+                    if (pair != null) {
+                        write_split(transaction, pair, writer);
+                        writer.write("\n");
+                    }
                 }
             }
 
