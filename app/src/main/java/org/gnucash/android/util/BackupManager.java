@@ -1,11 +1,29 @@
+/* Copyright (c) 2018 Àlex Magaz Graça <alexandre.magaz@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.gnucash.android.util;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -16,6 +34,7 @@ import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.model.Book;
+import org.gnucash.android.receivers.PeriodicJobReceiver;
 import org.gnucash.android.ui.settings.PreferenceActivity;
 
 import java.io.BufferedOutputStream;
@@ -29,15 +48,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
+
+/**
+ * Deals with all backup-related tasks.
+ */
 public class BackupManager {
     private static final String LOG_TAG = "BackupManager";
     public static final String KEY_BACKUP_FILE = "book_backup_file_key";
 
     /**
      * Perform an automatic backup of all books in the database.
-     * This method is run everytime the service is executed
+     * This method is run every time the service is executed
      */
-    public static void backupAllBooks() {
+    static void backupAllBooks() {
         BooksDbAdapter booksDbAdapter = BooksDbAdapter.getInstance();
         List<String> bookUIDs = booksDbAdapter.getAllBookUIDs();
         Context context = GnuCashApplication.getAppContext();
@@ -154,5 +177,17 @@ public class BackupManager {
         List<File> backupFilesList = Arrays.asList(backupFiles);
         Collections.reverse(backupFilesList);
         return  backupFilesList;
+    }
+
+    public static void schedulePeriodicBackups(Context context) {
+        Log.i(LOG_TAG, "Scheduling backup job");
+        Intent intent = new Intent(context, PeriodicJobReceiver.class);
+        intent.setAction(PeriodicJobReceiver.ACTION_BACKUP);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context,0, intent,
+                                                               PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                SystemClock.elapsedRealtime() + AlarmManager.INTERVAL_FIFTEEN_MINUTES,
+                AlarmManager.INTERVAL_DAY, alarmIntent);
     }
 }

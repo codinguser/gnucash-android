@@ -342,6 +342,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
             showWhatsNewDialog(this);
         }
         GnuCashApplication.startScheduledActionExecutionService(this);
+        BackupManager.schedulePeriodicBackups(this);
     }
 
     @Override

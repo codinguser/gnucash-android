@@ -20,13 +20,13 @@ static def gitSha() {
 
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '27.0.0'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "org.gnucash.android"
         testApplicationId 'org.gnucash.android.test'
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         resValue "string", "app_version_name", "${versionName}"
@@ -179,7 +179,7 @@ afterEvaluate {
 }
 
 
-def androidSupportVersion       = "26.0.1"
+def androidSupportVersion       = "27.0.2"
 def androidEspressoVersion      = "3.0.0"
 def androidSupportTestVersion   = "1.0.0"
 

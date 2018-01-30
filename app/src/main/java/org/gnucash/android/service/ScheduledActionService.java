@@ -71,7 +71,6 @@ public class ScheduledActionService extends IntentService {
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, LOG_TAG);
         wakeLock.acquire();
 
-        BackupManager.backupAllBooks(); //First run automatic backup of all books before doing anything else
         try {
             BooksDbAdapter booksDbAdapter = BooksDbAdapter.getInstance();
             List<Book> books = booksDbAdapter.getAllRecords();

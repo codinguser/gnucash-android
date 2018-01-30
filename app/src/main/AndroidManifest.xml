@@ -121,6 +121,8 @@
         <service android:name=".service.ScheduledActionService"
             android:exported="false"
             android:label="GnuCash Android Scheduler Execution Service"/>
+        <service android:name=".util.BackupJob"
+              android:permission="android.permission.BIND_JOB_SERVICE" />
         <receiver android:name=".receivers.TransactionRecorder"
             android:label="Records transactions received through intents"
             android:permission="org.gnucash.android.permission.RECORD_TRANSACTION">
@@ -152,6 +154,12 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".receivers.PeriodicJobReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="org.gnucash.android.action_backup" />
             </intent-filter>
         </receiver>
         <provider
