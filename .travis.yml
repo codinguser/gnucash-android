@@ -21,6 +21,9 @@ android:
     # if you need to run emulator(s) during your tests
     #- sys-img-armeabi-v7a-android-23
 
+# XXX: Temporary workaround. Remove once fixed
+before_install:
+    - yes | sdkmanager "platforms;android-27"
 
 # Emulator Management: Create, Start and Wait
 # Re-enable this when we figure out how to reliably build on Travis
