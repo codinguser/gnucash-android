@@ -188,6 +188,7 @@ public class ScheduledActionService extends JobIntentService {
      * @param scheduledAction Scheduled action
      * @return {@code true} if execution is due, {@code false} otherwise
      */
+    @SuppressWarnings("RedundantIfStatement")
     private static boolean shouldExecuteScheduledBackup(ScheduledAction scheduledAction) {
         long now = System.currentTimeMillis();
         long endTime = scheduledAction.getEndTime();
@@ -213,7 +214,7 @@ public class ScheduledActionService extends JobIntentService {
         int executionCount = 0;
         String actionUID = scheduledAction.getActionUID();
         TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
-        Transaction trxnTemplate = null;
+        Transaction trxnTemplate;
         try {
             trxnTemplate = transactionsDbAdapter.getRecord(actionUID);
         } catch (IllegalArgumentException ex){ //if the record could not be found, abort
