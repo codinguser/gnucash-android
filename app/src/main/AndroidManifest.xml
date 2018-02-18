@@ -120,6 +120,7 @@
         </activity>
         <service android:name=".service.ScheduledActionService"
             android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE"
             android:label="GnuCash Android Scheduler Execution Service"/>
         <service android:name=".util.BackupJob"
               android:permission="android.permission.BIND_JOB_SERVICE" />
@@ -160,6 +161,7 @@
             android:name=".receivers.PeriodicJobReceiver" android:exported="false">
             <intent-filter>
                 <action android:name="org.gnucash.android.action_backup" />
+                <action android:name="org.gnucash.android.action_scheduled_actions" />
             </intent-filter>
         </receiver>
         <provider

@@ -20,10 +20,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import org.gnucash.android.service.ScheduledActionService;
 import org.gnucash.android.util.BackupJob;
 
 /**
  * Receiver to run periodic jobs.
+ *
+ * <p>For now, backups and scheduled actions.</p>
  *
  * @author Àlex Magaz Graça <alexandre.magaz@gmail.com>
  */
@@ -31,6 +34,7 @@ public class PeriodicJobReceiver extends BroadcastReceiver {
     private static final String LOG_TAG = "PeriodicJobReceiver";
 
     public static final String ACTION_BACKUP = "org.gnucash.android.action_backup";
+    public static final String ACTION_SCHEDULED_ACTIONS = "org.gnucash.android.action_scheduled_actions";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -41,6 +45,8 @@ public class PeriodicJobReceiver extends BroadcastReceiver {
 
         if (intent.getAction().equals(ACTION_BACKUP)) {
             BackupJob.enqueueWork(context);
+        } else if (intent.getAction().equals(ACTION_SCHEDULED_ACTIONS)) {
+            ScheduledActionService.enqueueWork(context);
         }
     }
 }

@@ -16,12 +16,13 @@
 
 package org.gnucash.android.service;
 
-import android.app.IntentService;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.PowerManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.app.JobIntentService;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -40,7 +41,6 @@ import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.model.Book;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.util.BackupManager;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -50,51 +50,50 @@ import java.util.concurrent.ExecutionException;
 
 /**
  * Service for running scheduled events.
- * <p>The service is started and goes through all scheduled event entries in the the database and executes them.
- * Then it is stopped until the next time it is run. <br>
- * Scheduled runs of the service should be achieved using an {@link android.app.AlarmManager}</p>
+ *
+ * <p>It's run every time the <code>enqueueWork</code> is called. It goes
+ * through all scheduled event entries in the the database and executes them.</p>
+ *
+ * <p>Scheduled runs of the service should be achieved using an
+ * {@link android.app.AlarmManager}, with
+ * {@link org.gnucash.android.receivers.PeriodicJobReceiver} as an intermediary.</p>
+ *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class ScheduledActionService extends IntentService {
+public class ScheduledActionService extends JobIntentService {
 
-    public static final String LOG_TAG = "ScheduledActionService";
+    private static final String LOG_TAG = "ScheduledActionService";
+    private static final int JOB_ID = 1001;
 
-    public ScheduledActionService() {
-        super(LOG_TAG);
+
+    public static void enqueueWork(Context context) {
+        Intent intent = new Intent(context, ScheduledActionService.class);
+        enqueueWork(context, ScheduledActionService.class, JOB_ID, intent);
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    protected void onHandleWork(@NonNull Intent intent) {
         Log.i(LOG_TAG, "Starting scheduled action service");
 
-        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, LOG_TAG);
-        wakeLock.acquire();
+        BooksDbAdapter booksDbAdapter = BooksDbAdapter.getInstance();
+        List<Book> books = booksDbAdapter.getAllRecords();
+        for (Book book : books) { //// TODO: 20.04.2017 Retrieve only the book UIDs with new method
+            DatabaseHelper dbHelper = new DatabaseHelper(GnuCashApplication.getAppContext(), book.getUID());
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            RecurrenceDbAdapter recurrenceDbAdapter = new RecurrenceDbAdapter(db);
+            ScheduledActionDbAdapter scheduledActionDbAdapter = new ScheduledActionDbAdapter(db, recurrenceDbAdapter);
 
-        try {
-            BooksDbAdapter booksDbAdapter = BooksDbAdapter.getInstance();
-            List<Book> books = booksDbAdapter.getAllRecords();
-            for (Book book : books) { //// TODO: 20.04.2017 Retrieve only the book UIDs with new method
-                DatabaseHelper dbHelper = new DatabaseHelper(GnuCashApplication.getAppContext(), book.getUID());
-                SQLiteDatabase db = dbHelper.getWritableDatabase();
-                RecurrenceDbAdapter recurrenceDbAdapter = new RecurrenceDbAdapter(db);
-                ScheduledActionDbAdapter scheduledActionDbAdapter = new ScheduledActionDbAdapter(db, recurrenceDbAdapter);
+            List<ScheduledAction> scheduledActions = scheduledActionDbAdapter.getAllEnabledScheduledActions();
+            Log.i(LOG_TAG, String.format("Processing %d total scheduled actions for Book: %s",
+                    scheduledActions.size(), book.getDisplayName()));
+            processScheduledActions(scheduledActions, db);
 
-                List<ScheduledAction> scheduledActions = scheduledActionDbAdapter.getAllEnabledScheduledActions();
-                Log.i(LOG_TAG, String.format("Processing %d total scheduled actions for Book: %s",
-                        scheduledActions.size(), book.getDisplayName()));
-                processScheduledActions(scheduledActions, db);
-
-                //close all databases except the currently active database
-                if (!db.getPath().equals(GnuCashApplication.getActiveDb().getPath()))
-                    db.close();
-            }
-
-            Log.i(LOG_TAG, "Completed service @ " + java.text.DateFormat.getDateTimeInstance().format(new Date()));
-
-        } finally { //release the lock either way
-            wakeLock.release();
+            //close all databases except the currently active database
+            if (!db.getPath().equals(GnuCashApplication.getActiveDb().getPath()))
+                db.close();
         }
+
+        Log.i(LOG_TAG, "Completed service @ " + java.text.DateFormat.getDateTimeInstance().format(new Date()));
     }
 
     /**
