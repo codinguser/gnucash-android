@@ -381,8 +381,8 @@ public class ScheduledActionServiceTest {
     }
 
     /**
-     * Tests that an scheduled backup doesn't include transactions added or modified
-     * previous to the last run.
+     * Tests that a scheduled QIF backup isn't done when no transactions have
+     * been added or modified after the last run.
      */
     @Test
     public void scheduledBackups_shouldNotIncludeTransactionsPreviousToTheLastRun() {
@@ -422,8 +422,8 @@ public class ScheduledActionServiceTest {
         actions.add(scheduledBackup);
         ScheduledActionService.processScheduledActions(actions, mDb);
 
-        assertThat(scheduledBackup.getExecutionCount()).isEqualTo(2);
-        assertThat(scheduledBackup.getLastRunTime()).isGreaterThan(previousLastRun);
+        assertThat(scheduledBackup.getExecutionCount()).isEqualTo(1);
+        assertThat(scheduledBackup.getLastRunTime()).isEqualTo(previousLastRun);
         assertThat(backupFolder.listFiles()).hasSize(0);
     }
 

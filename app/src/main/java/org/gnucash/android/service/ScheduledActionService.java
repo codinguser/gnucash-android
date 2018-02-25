@@ -179,7 +179,14 @@ public class ScheduledActionService extends JobIntentService {
             Crashlytics.logException(e);
             Log.e(LOG_TAG, e.getMessage());
         }
-        Log.i(LOG_TAG, "Backup/export did not occur. There might have beeen no new transactions to export or it might have crashed");
+        if (!result) {
+            Log.i(LOG_TAG, "Backup/export did not occur. There might have been no"
+                    + " new transactions to export or it might have crashed");
+            // We don't know if something failed or there weren't transactions to export,
+            // so fall on the safe side and return as if something had failed.
+            // FIXME: Change ExportAsyncTask to distinguish between the two cases
+            return 0;
+        }
         return 1;
     }
 
