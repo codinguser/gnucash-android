@@ -190,69 +190,70 @@ repositories{
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.github.nextcloud:android-library:1.0.31'
-    compile('com.android.support:support-v4:'       + androidSupportVersion,
-            'com.android.support:appcompat-v7:'     + androidSupportVersion,
-            'com.android.support:design:'           + androidSupportVersion,
-            'com.android.support:cardview-v7:'      + androidSupportVersion,
-            'com.android.support:preference-v7:'    + androidSupportVersion,
-            'com.android.support:recyclerview-v7:'  + androidSupportVersion,
-            'com.code-troopers.betterpickers:library:3.1.0',
-            'org.jraf:android-switch-backport:2.0.1@aar',
-            'com.github.PhilJay:MPAndroidChart:v2.1.3',
-            'joda-time:joda-time:2.9.4',
-            'com.google.android.gms:play-services-drive:9.6.1',
-            'io.github.kobakei:ratethisapp:1.1.3',
-            'com.squareup:android-times-square:1.6.5@aar',
-            'com.github.techfreak:wizardpager:1.0.3',
-            'net.objecthunter:exp4j:0.4.7',
-            'org.apache.jackrabbit:jackrabbit-webdav:2.13.3',
-            'com.dropbox.core:dropbox-core-sdk:3.0.3',
-            'com.android.support:multidex:1.0.1'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.github.nextcloud:android-library:1.0.31'
+    implementation('com.android.support:support-v4:'       + androidSupportVersion,
+                   'com.android.support:appcompat-v7:'     + androidSupportVersion,
+                   'com.android.support:design:'           + androidSupportVersion,
+                   'com.android.support:cardview-v7:'      + androidSupportVersion,
+                   'com.android.support:preference-v7:'    + androidSupportVersion,
+                   'com.android.support:recyclerview-v7:'  + androidSupportVersion,
+                   'com.code-troopers.betterpickers:library:3.1.0',
+                   'org.jraf:android-switch-backport:2.0.1@aar',
+                   'com.github.PhilJay:MPAndroidChart:v2.1.3',
+                   'joda-time:joda-time:2.9.4',
+                   'com.google.android.gms:play-services-drive:9.6.1',
+                   'io.github.kobakei:ratethisapp:1.1.3',
+                   'com.squareup:android-times-square:1.6.5@aar',
+                   'com.github.techfreak:wizardpager:1.0.3',
+                   'net.objecthunter:exp4j:0.4.7',
+                   'org.apache.jackrabbit:jackrabbit-webdav:2.13.3',
+                   'com.dropbox.core:dropbox-core-sdk:3.0.3',
+                   'com.android.support:multidex:1.0.1'
     )
 
-    debugCompile 'com.facebook.stetho:stetho:1.5.0'
+    debugImplementation 'com.facebook.stetho:stetho:1.5.0'
 
-    compile 'com.jakewharton:butterknife:8.8.1'
+    implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
-    compile ('com.uservoice:uservoice-android-sdk:1.2.6') {
+    implementation ('com.uservoice:uservoice-android-sdk:1.2.6') {
         exclude module: 'commons-logging'
         exclude module: 'httpcore'
         exclude module: 'httpclient'
     }
 
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.7@aar') {
+    implementation('com.crashlytics.sdk.android:crashlytics:2.6.7@aar') {
         transitive = true;
     }
 
 
     testImplementation 'org.robolectric:robolectric:3.5.1'
 
-    testCompile(
+    testImplementation(
             'junit:junit:4.12',
             'joda-time:joda-time:2.9.4',
             'org.assertj:assertj-core:1.7.1'
     )
-    testCompile 'org.robolectric:shadows-multidex:3.0'
+    testImplementation 'org.robolectric:shadows-multidex:3.0'
 
-    androidTestCompile ('com.android.support:support-annotations:'  + androidSupportVersion,
-                        'com.android.support.test:runner:'          + androidSupportTestVersion,
-                        'com.android.support.test:rules:'           + androidSupportTestVersion,
-                        'com.android.support.test.espresso:espresso-core:'      + androidEspressoVersion,
-                        'com.android.support.test.espresso:espresso-intents:'   + androidEspressoVersion,
+    androidTestImplementation (
+            'com.android.support:support-annotations:'  + androidSupportVersion,
+            'com.android.support.test:runner:'          + androidSupportTestVersion,
+            'com.android.support.test:rules:'           + androidSupportTestVersion,
+            'com.android.support.test.espresso:espresso-core:'      + androidEspressoVersion,
+            'com.android.support.test.espresso:espresso-intents:'   + androidEspressoVersion,
             //the following are only added so that the app and test version both us the same versions
-                        'com.android.support:appcompat-v7:'     + androidSupportVersion,
-                        'com.android.support:design:'           + androidSupportVersion)
-    androidTestCompile ('com.android.support.test.espresso:espresso-contrib:'   + androidEspressoVersion) {
+            'com.android.support:appcompat-v7:'     + androidSupportVersion,
+            'com.android.support:design:'           + androidSupportVersion)
+    androidTestImplementation ('com.android.support.test.espresso:espresso-contrib:'   + androidEspressoVersion) {
         exclude group: 'com.android.support', module: 'support-v4'
         exclude module: 'recyclerview-v7'
     }
 
-    androidTestCompile('com.squareup.assertj:assertj-android:1.1.1'){
+    androidTestImplementation('com.squareup.assertj:assertj-android:1.1.1'){
         exclude group: 'com.android.support', module:'support-annotations'
     }
 
-    androidTestCompile 'com.squareup.spoon:spoon-client:1.6.4'
+    androidTestImplementation 'com.squareup.spoon:spoon-client:1.6.4'
 }
