@@ -481,6 +481,7 @@ public class ScheduledActionServiceTest {
         assertThat(scheduledBackup.getExecutionCount()).isEqualTo(2);
         assertThat(scheduledBackup.getLastRunTime()).isGreaterThan(previousLastRun);
         assertThat(backupFolder.listFiles()).hasSize(1);
+        assertThat(backupFolder.listFiles()[0].getName()).endsWith(".qif");
     }
 
     @After
