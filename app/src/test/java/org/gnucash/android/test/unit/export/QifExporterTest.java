@@ -16,6 +16,7 @@
 package org.gnucash.android.test.unit.export;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.BookDbHelper;
@@ -45,6 +46,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
+import java.util.zip.ZipFile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -83,7 +85,7 @@ public class QifExporterTest {
     /**
      * Test that QIF files are generated
      */
-    //// FIXME: 20.04.2017 Test failing with NPE
+    @Test
     public void testGenerateQIFExport(){
         AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(mDb);
 
@@ -109,10 +111,11 @@ public class QifExporterTest {
     }
 
     /**
-     * Test that when more than one currency is in use, multiple QIF files will be generated
+     * Test that when more than one currency is in use, a zip with multiple QIF files
+     * will be generated
      */
-    //// FIXME: 20.04.2017 test failing with NPE
-    public void multiCurrencyTransactions_shouldResultInMultipleQifFiles(){
+    // @Test Fails randomly. Sometimes it doesn't split the QIF.
+    public void multiCurrencyTransactions_shouldResultInMultipleZippedQifFiles() throws IOException {
         AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(mDb);
 
         Account account = new Account("Basic Account", Commodity.getInstance("EUR"));
@@ -139,25 +142,29 @@ public class QifExporterTest {
         QifExporter qifExporter = new QifExporter(exportParameters, mDb);
         List<String> exportedFiles = qifExporter.generateExport();
 
-        assertThat(exportedFiles).hasSize(2);
+        assertThat(exportedFiles).hasSize(1);
         File file = new File(exportedFiles.get(0));
-        assertThat(file).exists().hasExtension("qif");
-        assertThat(file.length()).isGreaterThan(0L);
+        assertThat(file).exists().hasExtension("zip");
+        assertThat(new ZipFile(file).size()).isEqualTo(2);
     }
 
-    //@Test
-    public void description_and_memo_field_test() {
-        // arrange
-
+    /**
+     * Test that the memo and description fields of transactions are exported.
+     */
+    @Test
+    public void memoAndDescription_shouldBeExported() throws IOException {
         String expectedDescription = "my description";
         String expectedMemo = "my memo";
 
         AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(mDb);
+
         Account account = new Account("Basic Account");
         Transaction transaction = new Transaction("One transaction");
+        transaction.addSplit(new Split(Money.createZeroInstance("EUR"), account.getUID()));
         transaction.setDescription(expectedDescription);
         transaction.setNote(expectedMemo);
         account.addTransaction(transaction);
+
         accountsDbAdapter.addRecord(account);
 
         ExportParams exportParameters = new ExportParams(ExportFormat.QIF);
@@ -165,26 +172,26 @@ public class QifExporterTest {
         exportParameters.setExportTarget(ExportParams.ExportTarget.SD_CARD);
         exportParameters.setDeleteTransactionsAfterExport(false);
 
-        // act
-
         QifExporter qifExporter = new QifExporter(exportParameters, mDb);
         List<String> exportedFiles = qifExporter.generateExport();
 
-        // assert
-
         assertThat(exportedFiles).hasSize(1);
         File file = new File(exportedFiles.get(0));
+        String fileContent = readFileContent(file);
         assertThat(file).exists().hasExtension("qif");
-        StringBuilder fileContentsBuilder = new StringBuilder();
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            fileContentsBuilder.append(reader.readLine());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // todo: check the description & memo fields.
-        String fileContent = fileContentsBuilder.toString();
         assertThat(fileContent.contains(expectedDescription));
         assertThat(fileContent.contains(expectedMemo));
+    }
+
+    @NonNull
+    public String readFileContent(File file) throws IOException {
+        StringBuilder fileContentsBuilder = new StringBuilder();
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            fileContentsBuilder.append(line).append('\n');
+        }
+
+        return fileContentsBuilder.toString();
     }
 }

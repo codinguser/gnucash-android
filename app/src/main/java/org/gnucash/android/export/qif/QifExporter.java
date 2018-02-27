@@ -242,11 +242,14 @@ public class QifExporter extends Exporter{
 
             /// export successful
             PreferencesHelper.setLastExportTime(TimestampHelper.getTimestampFromNow());
+
             List<String> exportedFiles = splitQIF(file);
             if (exportedFiles.isEmpty())
                 return Collections.emptyList();
-            else
+            else if (exportedFiles.size() > 1)
                 return zipQifs(exportedFiles);
+            else
+                return exportedFiles;
         } catch (IOException e) {
             throw new ExporterException(mExportParams, e);
         }
