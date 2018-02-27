@@ -144,6 +144,7 @@ public class ExportFormFragment extends Fragment implements
 	@BindView(R.id.radio_separator_comma_format) RadioButton mSeparatorCommaButton;
 	@BindView(R.id.radio_separator_colon_format) RadioButton mSeparatorColonButton;
 	@BindView(R.id.radio_separator_semicolon_format) RadioButton mSeparatorSemicolonButton;
+	@BindView(R.id.layout_csv_options) LinearLayout mCsvOptionsLayout;
 
 	@BindView(R.id.recurrence_options) View mRecurrenceOptionsView;
 	/**
@@ -207,27 +208,27 @@ public class ExportFormFragment extends Fragment implements
                     mExportWarningTextView.setVisibility(View.GONE);
                 }
 				mExportDateLayout.setVisibility(View.VISIBLE);
-				mExportSeparatorLayout.setVisibility(View.GONE);
+				mCsvOptionsLayout.setVisibility(View.GONE);
 				break;
 
 			case R.id.radio_xml_format:
 				mExportFormat = ExportFormat.XML;
 				mExportWarningTextView.setText(R.string.export_warning_xml);
 				mExportDateLayout.setVisibility(View.GONE);
-				mExportSeparatorLayout.setVisibility(View.GONE);
+				mCsvOptionsLayout.setVisibility(View.GONE);
 				break;
 
 			case R.id.radio_csv_accounts_format:
 				mExportFormat = ExportFormat.CSVA;
 				mExportWarningTextView.setText("");
 				mExportDateLayout.setVisibility(View.GONE);
-				mExportSeparatorLayout.setVisibility(View.VISIBLE);
+				mCsvOptionsLayout.setVisibility(View.VISIBLE);
 				break;
 			case R.id.radio_csv_transactions_format:
 				mExportFormat = ExportFormat.CSVT;
 				mExportWarningTextView.setText("");
 				mExportDateLayout.setVisibility(View.GONE);
-				mExportSeparatorLayout.setVisibility(View.VISIBLE);
+				mCsvOptionsLayout.setVisibility(View.VISIBLE);
 				break;
 
 			case R.id.radio_separator_comma_format:

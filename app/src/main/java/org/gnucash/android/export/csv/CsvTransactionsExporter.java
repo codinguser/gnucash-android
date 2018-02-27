@@ -16,14 +16,14 @@
 
 package org.gnucash.android.export.csv;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
 import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
-import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Creates a GnuCash CSV transactions representation of the accounts and transactions
@@ -50,7 +51,7 @@ public class CsvTransactionsExporter extends Exporter{
 
     private char mCsvSeparator;
 
-    private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
 
     private Comparator<Split> splitComparator = new Comparator<Split>() {
         @Override
