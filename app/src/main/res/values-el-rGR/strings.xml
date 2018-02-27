@@ -188,6 +188,8 @@
     <item>QIF</item>
     <item>OFX</item>
     <item>XML</item>
+    <item>CSV-λογαριασμούς</item>
+    <item>CSV-συναλλαγών</item>
   </string-array>
   <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
   <string name="color_picker_default_title">Επιλογή χρώματος</string>

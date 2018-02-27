@@ -79,6 +79,11 @@ public class ExportParams {
     private String mExportLocation;
 
     /**
+     * CSV-separator char
+     */
+    private char mCsvSeparator = ',';
+
+    /**
      * Creates a new set of paramters and specifies the export format
      * @param format Format to use when exporting the transactions
      */
@@ -167,6 +172,22 @@ public class ExportParams {
      */
     public void setExportLocation(String exportLocation){
         mExportLocation = exportLocation;
+    }
+
+    /**
+     * Get the CSV-separator char
+     * @return CSV-separator char
+     */
+    public char getCsvSeparator(){
+        return mCsvSeparator;
+    }
+
+    /**
+     * Set the CSV-separator char
+     * @param separator CSV-separator char
+     */
+    public void setCsvSeparator(char separator) {
+        mCsvSeparator = separator;
     }
 
     @Override

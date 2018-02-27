@@ -27,6 +27,7 @@ The following people (in alphabetical order) contributed (commits on GitHub) to 
 * Falk Brockmann
 * Felipe Morato
 * Geert Janssens
+* Gleb Semyannikov
 * Jörg Möller
 * Israel Buitron
 * Jesse Shieh
@@ -54,6 +55,8 @@ The following people (in alphabetical order) contributed (commits on GitHub) to 
 * Stephan Windmüller
 * Terry Chung
 * thesebas thesebas@thesebas.net
+* Timur Badretdinov
+* Timur Khuzin
 * Vladimir Rutsky
 * Weslly Oliveira
 * windwarrior lennartbuit@gmail.com

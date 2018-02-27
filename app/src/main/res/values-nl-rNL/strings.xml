@@ -179,6 +179,8 @@
     <item>QIF</item>
     <item>OFX</item>
     <item>XML</item>
+    <item>CSV-rekeningen</item>
+    <item>CSV-transacties</item>
   </string-array>
   <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
   <string name="color_picker_default_title">Kies een kleur</string>
