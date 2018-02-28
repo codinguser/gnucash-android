@@ -130,13 +130,13 @@ public class BalanceSheetFragment extends BaseReportFragment {
     private void loadAccountViews(List<AccountType> accountTypes, TableLayout tableLayout){
         LayoutInflater inflater = LayoutInflater.from(getActivity());
 
-        Cursor cursor = mAccountsDbAdapter.fetchAccounts(DatabaseSchema.AccountEntry.COLUMN_TYPE
+        Cursor cursor = mAccountsDbAdapter.fetchAccounts(DatabaseSchema.AccountEntry.COLUMN_ACCOUNT_TYPE
                         + " IN ( '" + TextUtils.join("' , '", accountTypes) + "' ) AND "
                         + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0",
                 null, DatabaseSchema.AccountEntry.COLUMN_FULL_NAME + " ASC");
 
         while (cursor.moveToNext()){
-            String accountUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
+            String accountUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_GUID));
             String name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_NAME));
             Money balance = mAccountsDbAdapter.getAccountBalance(accountUID);
             View view = inflater.inflate(R.layout.row_balance_sheet, tableLayout, false);

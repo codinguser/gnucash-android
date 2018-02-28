@@ -163,7 +163,7 @@ public class BookManagerFragment extends ListFragment implements
         public void bindView(View view, final Context context, Cursor cursor) {
             super.bindView(view, context, cursor);
 
-            final String bookUID = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_UID));
+            final String bookUID = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_GUID));
 
             setLastExportedText(view, bookUID);
             setStatisticsText(view, bookUID);

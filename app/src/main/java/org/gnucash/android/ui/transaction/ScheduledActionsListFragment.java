@@ -633,7 +633,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
             mDatabaseAdapter = ScheduledActionDbAdapter.getInstance();
 
             Cursor c = mDatabaseAdapter.fetchAllRecords(
-                    DatabaseSchema.ScheduledActionEntry.COLUMN_TYPE + "=?",
+                    DatabaseSchema.ScheduledExportEntry.COLUMN_TYPE + "=?",
                     new String[]{ScheduledAction.ActionType.BACKUP.name()}, null);
 
             registerContentObserver(c);

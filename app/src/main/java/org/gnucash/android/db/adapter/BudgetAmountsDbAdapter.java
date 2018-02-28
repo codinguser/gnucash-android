@@ -42,8 +42,8 @@ public class BudgetAmountsDbAdapter extends DatabaseAdapter<BudgetAmount> {
      */
     public BudgetAmountsDbAdapter(SQLiteDatabase db) {
         super(db, BudgetAmountEntry.TABLE_NAME, new String[] {
-                BudgetAmountEntry.COLUMN_BUDGET_UID   ,
-                BudgetAmountEntry.COLUMN_ACCOUNT_UID  ,
+                BudgetAmountEntry.COLUMN_BUDGET_GUID,
+                BudgetAmountEntry.COLUMN_ACCOUNT_GUID,
                 BudgetAmountEntry.COLUMN_AMOUNT_NUM   ,
                 BudgetAmountEntry.COLUMN_AMOUNT_DENOM ,
                 BudgetAmountEntry.COLUMN_PERIOD_NUM
@@ -56,8 +56,8 @@ public class BudgetAmountsDbAdapter extends DatabaseAdapter<BudgetAmount> {
 
     @Override
     public BudgetAmount buildModelInstance(@NonNull Cursor cursor) {
-        String budgetUID = cursor.getString(cursor.getColumnIndexOrThrow(BudgetAmountEntry.COLUMN_BUDGET_UID));
-        String accountUID = cursor.getString(cursor.getColumnIndexOrThrow(BudgetAmountEntry.COLUMN_ACCOUNT_UID));
+        String budgetUID = cursor.getString(cursor.getColumnIndexOrThrow(BudgetAmountEntry.COLUMN_BUDGET_GUID));
+        String accountUID = cursor.getString(cursor.getColumnIndexOrThrow(BudgetAmountEntry.COLUMN_ACCOUNT_GUID));
         long amountNum  = cursor.getLong(cursor.getColumnIndexOrThrow(BudgetAmountEntry.COLUMN_AMOUNT_NUM));
         long amountDenom = cursor.getLong(cursor.getColumnIndexOrThrow(BudgetAmountEntry.COLUMN_AMOUNT_DENOM));
         long periodNum  = cursor.getLong(cursor.getColumnIndexOrThrow(BudgetAmountEntry.COLUMN_PERIOD_NUM));
@@ -89,7 +89,7 @@ public class BudgetAmountsDbAdapter extends DatabaseAdapter<BudgetAmount> {
      * @return List of budget amounts
      */
     public List<BudgetAmount> getBudgetAmountsForBudget(String budgetUID){
-        Cursor cursor = fetchAllRecords(BudgetAmountEntry.COLUMN_BUDGET_UID + "=?",
+        Cursor cursor = fetchAllRecords(BudgetAmountEntry.COLUMN_BUDGET_GUID + "=?",
                 new String[]{budgetUID}, null);
 
         List<BudgetAmount> budgetAmounts = new ArrayList<>();
@@ -106,7 +106,7 @@ public class BudgetAmountsDbAdapter extends DatabaseAdapter<BudgetAmount> {
      * @return Number of records deleted
      */
     public int deleteBudgetAmountsForBudget(String budgetUID){
-        return mDb.delete(mTableName, BudgetAmountEntry.COLUMN_BUDGET_UID + "=?",
+        return mDb.delete(mTableName, BudgetAmountEntry.COLUMN_BUDGET_GUID + "=?",
                 new String[]{budgetUID});
     }
 
@@ -116,7 +116,7 @@ public class BudgetAmountsDbAdapter extends DatabaseAdapter<BudgetAmount> {
      * @return List of {@link BudgetAmount}s for the account
      */
     public List<BudgetAmount> getBudgetAmounts(String accountUID) {
-        Cursor cursor = fetchAllRecords(BudgetAmountEntry.COLUMN_ACCOUNT_UID + " = ?", new String[]{accountUID}, null);
+        Cursor cursor = fetchAllRecords(BudgetAmountEntry.COLUMN_ACCOUNT_GUID + " = ?", new String[]{accountUID}, null);
         List<BudgetAmount> budgetAmounts = new ArrayList<>();
         while(cursor.moveToNext()){
             budgetAmounts.add(buildModelInstance(cursor));

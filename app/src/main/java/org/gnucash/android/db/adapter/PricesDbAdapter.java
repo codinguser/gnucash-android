@@ -22,8 +22,8 @@ public class PricesDbAdapter extends DatabaseAdapter<Price> {
      */
     public PricesDbAdapter(SQLiteDatabase db) {
         super(db, PriceEntry.TABLE_NAME, new String[]{
-                PriceEntry.COLUMN_COMMODITY_UID,
-                PriceEntry.COLUMN_CURRENCY_UID,
+                PriceEntry.COLUMN_COMMODITY_GUID,
+                PriceEntry.COLUMN_CURRENCY_GUID,
                 PriceEntry.COLUMN_DATE,
                 PriceEntry.COLUMN_SOURCE,
                 PriceEntry.COLUMN_TYPE,
@@ -57,8 +57,8 @@ public class PricesDbAdapter extends DatabaseAdapter<Price> {
 
     @Override
     public Price buildModelInstance(@NonNull final Cursor cursor) {
-        String commodityUID = cursor.getString(cursor.getColumnIndexOrThrow(PriceEntry.COLUMN_COMMODITY_UID));
-        String currencyUID  = cursor.getString(cursor.getColumnIndexOrThrow(PriceEntry.COLUMN_CURRENCY_UID));
+        String commodityUID = cursor.getString(cursor.getColumnIndexOrThrow(PriceEntry.COLUMN_COMMODITY_GUID));
+        String currencyUID  = cursor.getString(cursor.getColumnIndexOrThrow(PriceEntry.COLUMN_CURRENCY_GUID));
         String dateString   = cursor.getString(cursor.getColumnIndexOrThrow(PriceEntry.COLUMN_DATE));
         String source       = cursor.getString(cursor.getColumnIndexOrThrow(PriceEntry.COLUMN_SOURCE));
         String type         = cursor.getString(cursor.getColumnIndexOrThrow(PriceEntry.COLUMN_TYPE));
@@ -96,14 +96,14 @@ public class PricesDbAdapter extends DatabaseAdapter<Price> {
         }
         Cursor cursor = mDb.query(PriceEntry.TABLE_NAME, null,
                 // the commodity and currency can be swapped
-                "( " + PriceEntry.COLUMN_COMMODITY_UID + " = ? AND " + PriceEntry.COLUMN_CURRENCY_UID + " = ? ) OR ( "
-                + PriceEntry.COLUMN_COMMODITY_UID + " = ? AND " + PriceEntry.COLUMN_CURRENCY_UID + " = ? )",
+                "( " + PriceEntry.COLUMN_COMMODITY_GUID + " = ? AND " + PriceEntry.COLUMN_CURRENCY_GUID + " = ? ) OR ( "
+                + PriceEntry.COLUMN_COMMODITY_GUID + " = ? AND " + PriceEntry.COLUMN_CURRENCY_GUID + " = ? )",
                 new String[]{commodityUID, currencyUID, currencyUID, commodityUID}, null, null,
                 // only get the latest price
                 PriceEntry.COLUMN_DATE + " DESC", "1");
         try {
             if (cursor.moveToNext()) {
-                String commodityUIDdb = cursor.getString(cursor.getColumnIndexOrThrow(PriceEntry.COLUMN_COMMODITY_UID));
+                String commodityUIDdb = cursor.getString(cursor.getColumnIndexOrThrow(PriceEntry.COLUMN_COMMODITY_GUID));
                 long valueNum     = cursor.getLong(cursor.getColumnIndexOrThrow(PriceEntry.COLUMN_VALUE_NUM));
                 long valueDenom   = cursor.getLong(cursor.getColumnIndexOrThrow(PriceEntry.COLUMN_VALUE_DENOM));
                 if (valueNum < 0 || valueDenom < 0) {

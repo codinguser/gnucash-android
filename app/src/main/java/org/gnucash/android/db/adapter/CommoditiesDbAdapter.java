@@ -124,7 +124,7 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
 
     public String getCurrencyCode(@NonNull String guid) {
         Cursor cursor = mDb.query(mTableName, new String[]{CommodityEntry.COLUMN_MNEMONIC},
-                DatabaseSchema.CommonColumns.COLUMN_UID + " = ?", new String[]{guid},
+                DatabaseSchema.CommonColumns.COLUMN_GUID + " = ?", new String[]{guid},
                 null, null, null);
         try {
             if (cursor.moveToNext()) {

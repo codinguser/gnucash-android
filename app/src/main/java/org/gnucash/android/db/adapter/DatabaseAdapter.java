@@ -100,24 +100,24 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         mDb.execSQL("CREATE TEMP VIEW IF NOT EXISTS trans_split_acct AS SELECT "
                         + TransactionEntry.TABLE_NAME + "." + CommonColumns.COLUMN_MODIFIED_AT + " AS "
                         + TransactionEntry.TABLE_NAME + "_" + CommonColumns.COLUMN_MODIFIED_AT + " , "
-                        + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " AS "
-                        + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID + " , "
+                        + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_GUID + " AS "
+                        + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_GUID + " , "
                         + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_DESCRIPTION + " AS "
                         + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_DESCRIPTION + " , "
                         + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_NOTES + " AS "
                         + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_NOTES + " , "
                         + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_CURRENCY + " AS "
                         + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_CURRENCY + " , "
-                        + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " AS "
-                        + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TIMESTAMP + " , "
-                        + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_EXPORTED + " AS "
-                        + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_EXPORTED + " , "
-                        + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TEMPLATE + " AS "
-                        + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TEMPLATE + " , "
-                        + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_UID + " AS "
-                        + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_UID + " , "
-                        + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TYPE + " AS "
-                        + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_TYPE + " , "
+                        + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_POST_DATE + " AS "
+                        + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_POST_DATE + " , "
+                        + TransactionEntry.TABLE_NAME + "." + DatabaseSchema.SlotEntry.Transaction.COLUMN_EXPORTED + " AS "
+                        + TransactionEntry.TABLE_NAME + "_" + DatabaseSchema.SlotEntry.Transaction.COLUMN_EXPORTED + " , "
+                        + TransactionEntry.TABLE_NAME + "." + DatabaseSchema.SlotEntry.Transaction.COLUMN_TEMPLATE + " AS "
+                        + TransactionEntry.TABLE_NAME + "_" + DatabaseSchema.SlotEntry.Transaction.COLUMN_TEMPLATE + " , "
+                        + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_GUID + " AS "
+                        + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_GUID + " , "
+                        + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACTION + " AS "
+                        + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_ACTION + " , "
                         + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_NUM + " AS "
                         + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_VALUE_NUM + " , "
                         + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_DENOM + " AS "
@@ -128,14 +128,14 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
                         + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_QUANTITY_DENOM + " , "
                         + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_MEMO + " AS "
                         + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_MEMO + " , "
-                        + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID + " AS "
-                        + AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_UID + " , "
+                        + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_GUID + " AS "
+                        + AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_GUID + " , "
                         + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_NAME + " AS "
                         + AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_NAME + " , "
-                        + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_CURRENCY + " AS "
-                        + AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_CURRENCY + " , "
-                        + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " AS "
-                        + AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " , "
+                        + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_CURRENCY_CODE + " AS "
+                        + AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_CURRENCY_CODE + " , "
+                        + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_PARENT_GUID + " AS "
+                        + AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_PARENT_GUID + " , "
                         + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_PLACEHOLDER + " AS "
                         + AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_PLACEHOLDER + " , "
                         + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_COLOR_CODE + " AS "
@@ -144,14 +144,14 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
                         + AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_FAVORITE + " , "
                         + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_FULL_NAME + " AS "
                         + AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_FULL_NAME + " , "
-                        + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_TYPE + " AS "
-                        + AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_TYPE + " , "
+                        + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_ACCOUNT_TYPE + " AS "
+                        + AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_ACCOUNT_TYPE + " , "
                         + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID + " AS "
                         + AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID
                         + " FROM " + TransactionEntry.TABLE_NAME + " , " + SplitEntry.TABLE_NAME + " ON "
-                        + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + "=" + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID
+                        + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_GUID + "=" + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_GUID
                         + " , " + AccountEntry.TABLE_NAME + " ON "
-                        + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID + "=" + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID
+                        + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_GUID + "=" + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_GUID
         );
 
         // SELECT transactions_uid AS trans_acct_t_uid ,
@@ -179,18 +179,18 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         //   pick the minimal value of the modified account uid (one of the ones begins with 'a', if exists)
         //   use substr to get account uid
 
-        mDb.execSQL("CREATE TEMP VIEW IF NOT EXISTS trans_extra_info AS SELECT " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID +
+        mDb.execSQL("CREATE TEMP VIEW IF NOT EXISTS trans_extra_info AS SELECT " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_GUID +
                 " AS trans_acct_t_uid , SUBSTR ( MIN ( ( CASE WHEN IFNULL ( " + SplitEntry.TABLE_NAME + "_" +
                 SplitEntry.COLUMN_MEMO + " , '' ) == '' THEN 'a' ELSE 'b' END ) || " +
-                AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_UID +
+                AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_GUID +
                 " ) , 2 ) AS trans_acct_a_uid , TOTAL ( CASE WHEN " + SplitEntry.TABLE_NAME + "_" +
-                SplitEntry.COLUMN_TYPE + " = 'DEBIT' THEN "+ SplitEntry.TABLE_NAME + "_" +
+                SplitEntry.COLUMN_ACTION + " = 'DEBIT' THEN "+ SplitEntry.TABLE_NAME + "_" +
                 SplitEntry.COLUMN_VALUE_NUM + " ELSE - " + SplitEntry.TABLE_NAME + "_" +
                 SplitEntry.COLUMN_VALUE_NUM + " END ) * 1.0 / " + SplitEntry.TABLE_NAME + "_" +
                 SplitEntry.COLUMN_VALUE_DENOM + " AS trans_acct_balance , COUNT ( DISTINCT " +
-                AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_CURRENCY +
+                AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_CURRENCY_CODE +
                 " ) AS trans_currency_count , COUNT (*) AS trans_split_count FROM trans_split_acct " +
-                " GROUP BY " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID
+                " GROUP BY " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_GUID
         );
     }
 
@@ -331,7 +331,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
                     mReplaceStatement = stmt
                             = mDb.compileStatement("REPLACE INTO " + mTableName + " ( "
                             + TextUtils.join(" , ", mColumns) + " , "
-                            + CommonColumns.COLUMN_UID
+                            + CommonColumns.COLUMN_GUID
                             + " ) VALUES ( "
                             + (new String(new char[mColumns.length]).replace("\0", "? , "))
                             + "?)");
@@ -350,7 +350,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
                     mUpdateStatement = stmt
                             = mDb.compileStatement("UPDATE " + mTableName + " SET "
                             + TextUtils.join(" = ? , ", mColumns) + " = ? WHERE "
-                            + CommonColumns.COLUMN_UID
+                            + CommonColumns.COLUMN_GUID
                             + " = ?");
                 }
             }
@@ -367,7 +367,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
                     mInsertStatement = stmt
                             = mDb.compileStatement("INSERT INTO " + mTableName + " ( "
                             + TextUtils.join(" , ", mColumns) + " , "
-                            + CommonColumns.COLUMN_UID
+                            + CommonColumns.COLUMN_GUID
                             + " ) VALUES ( "
                             + (new String(new char[mColumns.length]).replace("\0", "? , "))
                             + "?)");
@@ -442,7 +442,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      * @return {@link android.content.ContentValues} with the data to be inserted into the db
      */
     protected ContentValues extractBaseModelAttributes(@NonNull ContentValues contentValues, @NonNull Model model){
-        contentValues.put(CommonColumns.COLUMN_UID, model.getUID());
+        contentValues.put(CommonColumns.COLUMN_GUID, model.getUID());
         contentValues.put(CommonColumns.COLUMN_CREATED_AT, TimestampHelper.getUtcStringFromTimestamp(model.getCreatedTimestamp()));
         //there is a trigger in the database for updated the modified_at column
         /* Due to the use of SQL REPLACE syntax, we insert the created_at values each time
@@ -458,7 +458,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      * @param model Model instance to be initialized
      */
     protected void populateBaseModelAttributes(Cursor cursor, BaseModel model){
-        String uid = cursor.getString(cursor.getColumnIndexOrThrow(CommonColumns.COLUMN_UID));
+        String uid = cursor.getString(cursor.getColumnIndexOrThrow(CommonColumns.COLUMN_GUID));
         String created = cursor.getString(cursor.getColumnIndexOrThrow(CommonColumns.COLUMN_CREATED_AT));
         String modified= cursor.getString(cursor.getColumnIndexOrThrow(CommonColumns.COLUMN_MODIFIED_AT));
 
@@ -483,7 +483,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      * @return {@link Cursor} to record retrieved
      */
     public Cursor fetchRecord(@NonNull String uid){
-        return mDb.query(mTableName, null, CommonColumns.COLUMN_UID + "=?" ,
+        return mDb.query(mTableName, null, CommonColumns.COLUMN_GUID + "=?" ,
                 new String[]{uid}, null, null, null);
     }
 
@@ -533,7 +533,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
     public long getID(@NonNull String uid){
         Cursor cursor = mDb.query(mTableName,
                 new String[] {DatabaseSchema.CommonColumns._ID},
-                DatabaseSchema.CommonColumns.COLUMN_UID + " = ?",
+                DatabaseSchema.CommonColumns.COLUMN_GUID + " = ?",
                 new String[]{uid},
                 null, null, null);
         long result = -1;
@@ -557,14 +557,14 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      */
     public String getUID(long id){
         Cursor cursor = mDb.query(mTableName,
-                new String[]{DatabaseSchema.CommonColumns.COLUMN_UID},
+                new String[]{DatabaseSchema.CommonColumns.COLUMN_GUID},
                 DatabaseSchema.CommonColumns._ID + " = " + id,
                 null, null, null, null);
 
         String uid = null;
         try {
             if (cursor.moveToFirst()) {
-                uid = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommonColumns.COLUMN_UID));
+                uid = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommonColumns.COLUMN_GUID));
             } else {
                 throw new IllegalArgumentException(mTableName + " Record ID " + id + " does not exist in the db");
             }
@@ -583,8 +583,8 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      */
     public String getAccountCurrencyCode(@NonNull String accountUID) {
         Cursor cursor = mDb.query(DatabaseSchema.AccountEntry.TABLE_NAME,
-                new String[] {DatabaseSchema.AccountEntry.COLUMN_CURRENCY},
-                DatabaseSchema.AccountEntry.COLUMN_UID + "= ?",
+                new String[] {DatabaseSchema.AccountEntry.COLUMN_CURRENCY_CODE},
+                DatabaseSchema.AccountEntry.COLUMN_GUID + "= ?",
                 new String[]{accountUID}, null, null, null);
         try {
             if (cursor.moveToFirst()) {
@@ -608,11 +608,11 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         String[] whereArgs = new String[]{currencyCode};
 
         Cursor cursor = mDb.query(DatabaseSchema.CommodityEntry.TABLE_NAME,
-                new String[]{DatabaseSchema.CommodityEntry.COLUMN_UID},
+                new String[]{DatabaseSchema.CommodityEntry.COLUMN_GUID},
                 where, whereArgs, null, null, null);
         try {
             if (cursor.moveToNext()) {
-                return cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommodityEntry.COLUMN_UID));
+                return cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommodityEntry.COLUMN_GUID));
             } else {
                 throw new IllegalArgumentException("Currency code not found in commodities");
             }
@@ -630,12 +630,12 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
     public AccountType getAccountType(@NonNull String accountUID){
         String type = "";
         Cursor c = mDb.query(DatabaseSchema.AccountEntry.TABLE_NAME,
-                new String[]{DatabaseSchema.AccountEntry.COLUMN_TYPE},
-                DatabaseSchema.AccountEntry.COLUMN_UID + "=?",
+                new String[]{DatabaseSchema.AccountEntry.COLUMN_ACCOUNT_TYPE},
+                DatabaseSchema.AccountEntry.COLUMN_GUID + "=?",
                 new String[]{accountUID}, null, null, null);
         try {
             if (c.moveToFirst()) {
-                type = c.getString(c.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_TYPE));
+                type = c.getString(c.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_ACCOUNT_TYPE));
             } else {
                 throw new IllegalArgumentException("account " + accountUID + " does not exist in DB");
             }
@@ -671,7 +671,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      * @return Number of records affected
      */
     public int updateRecord(@NonNull String uid, @NonNull String columnKey, String newValue) {
-        return updateRecords(CommonColumns.COLUMN_UID + "= ?", new String[]{uid}, columnKey, newValue);
+        return updateRecords(CommonColumns.COLUMN_GUID + "= ?", new String[]{uid}, columnKey, newValue);
     }
 
     /**
@@ -681,7 +681,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      * @return Number of records updated
      */
     public int updateRecord(@NonNull String uid, @NonNull ContentValues contentValues){
-        return mDb.update(mTableName, contentValues, CommonColumns.COLUMN_UID + "=?", new String[]{uid});
+        return mDb.update(mTableName, contentValues, CommonColumns.COLUMN_GUID + "=?", new String[]{uid});
     }
 
     /**
@@ -742,7 +742,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
     protected String getAttribute(@NonNull String tableName, @NonNull String recordUID, @NonNull String columnName){
         Cursor cursor = mDb.query(tableName,
                 new String[]{columnName},
-                AccountEntry.COLUMN_UID + " = ?",
+                AccountEntry.COLUMN_GUID + " = ?",
                 new String[]{recordUID}, null, null, null);
 
         try {

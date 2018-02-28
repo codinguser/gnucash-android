@@ -144,12 +144,12 @@ public class BudgetsDbAdapter extends DatabaseAdapter<Budget>{
     public Cursor fetchBudgetsForAccount(String accountUID){
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         queryBuilder.setTables(BudgetEntry.TABLE_NAME + "," + BudgetAmountEntry.TABLE_NAME
-                + " ON " + BudgetEntry.TABLE_NAME + "." + BudgetEntry.COLUMN_UID + " = "
-                + BudgetAmountEntry.TABLE_NAME + "." + BudgetAmountEntry.COLUMN_BUDGET_UID);
+                + " ON " + BudgetEntry.TABLE_NAME + "." + BudgetEntry.COLUMN_GUID + " = "
+                + BudgetAmountEntry.TABLE_NAME + "." + BudgetAmountEntry.COLUMN_BUDGET_GUID);
 
         queryBuilder.setDistinct(true);
         String[] projectionIn = new String[]{BudgetEntry.TABLE_NAME + ".*"};
-        String selection = BudgetAmountEntry.TABLE_NAME + "." + BudgetAmountEntry.COLUMN_ACCOUNT_UID + " = ?";
+        String selection = BudgetAmountEntry.TABLE_NAME + "." + BudgetAmountEntry.COLUMN_ACCOUNT_GUID + " = ?";
         String[] selectionArgs = new String[]{accountUID};
         String sortOrder = BudgetEntry.TABLE_NAME + "." + BudgetEntry.COLUMN_NAME + " ASC";
 

@@ -55,7 +55,7 @@ public class DatabaseSchema {
     private DatabaseSchema(){}
 
     public interface CommonColumns extends BaseColumns {
-        public static final String COLUMN_UID           = "uid";
+        public static final String COLUMN_GUID = "guid";
         public static final String COLUMN_CREATED_AT    = "created_at";
         public static final String COLUMN_MODIFIED_AT   = "modified_at";
     }
@@ -79,19 +79,16 @@ public class DatabaseSchema {
         public static final String TABLE_NAME                   = "accounts";
 
         public static final String COLUMN_NAME                  = "name";
-        public static final String COLUMN_CURRENCY              = "currency_code";
-        public static final String COLUMN_COMMODITY_UID         = "commodity_uid";
+        public static final String COLUMN_CURRENCY_CODE = "code";
+        public static final String COLUMN_COMMODITY_GUID        = "commodity_guid";
+        public static final String COLUMN_COMMODITY_SCU         = "commodity_scu";
+        public static final String COLUMN_NON_STD_SCU           = "non_std_scu";
         public static final String COLUMN_DESCRIPTION           = "description";
-        public static final String COLUMN_PARENT_ACCOUNT_UID    = "parent_account_uid";
-        public static final String COLUMN_PLACEHOLDER           = "is_placeholder";
-        public static final String COLUMN_COLOR_CODE            = "color_code";
-        public static final String COLUMN_FAVORITE              = "favorite";
-        public static final String COLUMN_FULL_NAME             = "full_name";
-        public static final String COLUMN_TYPE                  = "type";
-        public static final String COLUMN_HIDDEN                = "is_hidden";
-        public static final String COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID = "default_transfer_account_uid";
+        public static final String COLUMN_PARENT_GUID = "parent_guid";
+        public static final String COLUMN_ACCOUNT_TYPE = "account_type";
 
         public static final String INDEX_UID                    = "account_uid_index";
+
     }
 
     /**
@@ -102,20 +99,13 @@ public class DatabaseSchema {
         public static final String TABLE_NAME                   = "transactions";
         //The actual names of columns for description and notes are unlike the variable names because of legacy
         //We will not change them now for backwards compatibility reasons. But the variable names make sense
-        public static final String COLUMN_DESCRIPTION           = "name";
-        public static final String COLUMN_NOTES                 = "description";
-        public static final String COLUMN_CURRENCY              = "currency_code";
-        public static final String COLUMN_COMMODITY_UID         = "commodity_uid";
-        public static final String COLUMN_TIMESTAMP             = "timestamp";
+        //public static final String COLUMN_DESCRIPTION           = "name";
+        public static final String COLUMN_DESCRIPTION           = "description";
+        public static final String COLUMN_NUM                   = "num";
+        public static final String COLUMN_COMMODITY_GUID        = "currency_guid";
+        public static final String COLUMN_POST_DATE             = "post_date";
+        public static final String COLUMN_ENTER_DATE            = "enter_date";
 
-        /**
-         * Flag for marking transactions which have been exported
-         * @deprecated Transactions are exported based on last modified timestamp
-         */
-        @Deprecated
-        public static final String COLUMN_EXPORTED              = "is_exported";
-        public static final String COLUMN_TEMPLATE              = "is_template";
-        public static final String COLUMN_SCHEDX_ACTION_UID     = "scheduled_action_uid";
 
         public static final String INDEX_UID                    = "transaction_uid_index";
     }
@@ -127,7 +117,8 @@ public class DatabaseSchema {
 
         public static final String TABLE_NAME                   = "splits";
 
-        public static final String COLUMN_TYPE                  = "type";
+        public static final String COLUMN_ACTION                = "action";
+        public static final String COLUMN_MEMO                  = "memo";
 
         /**
          * The value columns are in the currency of the transaction containing the split
@@ -139,46 +130,66 @@ public class DatabaseSchema {
          */
         public static final String COLUMN_QUANTITY_NUM          = "quantity_num";
         public static final String COLUMN_QUANTITY_DENOM        = "quantity_denom";
-        public static final String COLUMN_MEMO                  = "memo";
-        public static final String COLUMN_ACCOUNT_UID           = "account_uid";
-        public static final String COLUMN_TRANSACTION_UID       = "transaction_uid";
+
+        public static final String COLUMN_ACCOUNT_GUID          = "account_guid";
+        public static final String COLUMN_TRANSACTION_GUID      = "tx_guid";
 
         public static final String COLUMN_RECONCILE_STATE       = "reconcile_state";
         public static final String COLUMN_RECONCILE_DATE        = "reconcile_date";
+        public static final String COLUMN_LOT_GUID              = "lot_guid";
 
         public static final String INDEX_UID                    = "split_uid_index";
     }
 
-    public static abstract class ScheduledActionEntry implements CommonColumns {
+
+    public static abstract class LotEntry implements CommonColumns {
+
+        public static final String TABLE_NAME = "lots";
+
+        public static final String COLUMN_ACCOUNT_GUID  = "account_guid";
+        public static final String COLUMN_IS_CLOSED     = "is_closed";
+    }
+
+    public static abstract class ScheduledTransactionEntry implements CommonColumns {
+        public static final String TABLE_NAME                   = "schedxactions";
+
+        public static final String COLUMN_NAME                  = "name";
+        public static final String COLUMN_ENABLED               = "enabled";
+        public static final String COLUMN_START_DATE            = "start_date";
+        public static final String COLUMN_END_DATE              = "end_date";
+        public static final String COLUMN_LAST_OCCURRENCE       = "last_occur";
+        public static final String COLUMN_NUM_OCCURRENCES       = "num_occur";
+        public static final String COLUMN_REMAINING_OCCURRENCES = "num_occur";
+        public static final String COLUMN_AUTO_CREATE           = "auto_create";
+        public static final String COLUMN_AUTO_NOTIFY           = "auto_notify";
+        public static final String COLUMN_ADVANCE_CREATION      = "adv_creation";
+        public static final String COLUMN_ADVANCE_NOTIFY        = "adv_notify";
+        public static final String COLUMN_INSTANCE_COUNT        = "instance_count";
+
+        public static final String COLUMN_TEMPLATE_ACCT_UID     = "template_act_uid";
+
+        public static final String INDEX_UID                = "scheduled_transaction_uid_index";
+    }
+
+    public static abstract class ScheduledExportEntry implements CommonColumns {
         public static final String TABLE_NAME               = "scheduled_actions";
 
-        public static final String COLUMN_TYPE              = "type";
-        public static final String COLUMN_ACTION_UID        = "action_uid";
         public static final String COLUMN_START_TIME        = "start_time";
         public static final String COLUMN_END_TIME          = "end_time";
-        public static final String COLUMN_LAST_RUN          = "last_run";
+        public static final String COLUMN_LAST_RUN_TIME = "last_run";
+        public static final String COLUMN_RECURRENCE_RULE   = "rrule";
 
         /**
          * Tag for scheduledAction-specific information e.g. backup parameters for backup
          */
-        public static final String COLUMN_TAG               = "tag";
-        public static final String COLUMN_ENABLED           = "is_enabled";
-        public static final String COLUMN_TOTAL_FREQUENCY   = "total_frequency";
+        public static final String COLUMN_EXPORT_PARAMS     = "export_params";
+        public static final String COLUMN_ENABLED           = "enabled";
 
         /**
-         * Number of times this scheduledAction has been run. Analogous to instance_count in GnuCash desktop SQL
+         * Number of times this scheduledAction has been run.
+         * Analogous to instance_count in GnuCash desktop SQL
          */
         public static final String COLUMN_EXECUTION_COUNT   = "execution_count";
-
-        public static final String COLUMN_RECURRENCE_UID    = "recurrence_uid";
-        public static final String COLUMN_AUTO_CREATE       = "auto_create";
-        public static final String COLUMN_AUTO_NOTIFY       = "auto_notify";
-        public static final String COLUMN_ADVANCE_CREATION  = "adv_creation";
-        public static final String COLUMN_ADVANCE_NOTIFY    = "adv_notify";
-        public static final String COLUMN_TEMPLATE_ACCT_UID = "template_act_uid";
-
-
-        public static final String INDEX_UID            = "scheduled_action_uid_index";
     }
 
     public static abstract class CommodityEntry implements CommonColumns {
@@ -217,6 +228,8 @@ public class DatabaseSchema {
          * TRUE if prices are to be downloaded for this commodity from a quote source
          */
         public static final String COLUMN_QUOTE_FLAG    = "quote_flag";
+        public static final String COLUMN_QUOTE_SOURCE    = "quote_source";
+        public static final String COLUMN_QUOTE_TZ    = "quote_tz";
 
         public static final String INDEX_UID = "commodities_uid_index";
     }
@@ -225,8 +238,8 @@ public class DatabaseSchema {
     public static abstract class PriceEntry implements CommonColumns {
         public static final String TABLE_NAME = "prices";
 
-        public static final String COLUMN_COMMODITY_UID = "commodity_guid";
-        public static final String COLUMN_CURRENCY_UID  = "currency_guid";
+        public static final String COLUMN_COMMODITY_GUID = "commodity_guid";
+        public static final String COLUMN_CURRENCY_GUID = "currency_guid";
         public static final String COLUMN_DATE          = "date";
         public static final String COLUMN_SOURCE        = "source";
         public static final String COLUMN_TYPE          = "type";
@@ -244,7 +257,6 @@ public class DatabaseSchema {
         public static final String COLUMN_NAME          = "name";
         public static final String COLUMN_DESCRIPTION   = "description";
         public static final String COLUMN_NUM_PERIODS   = "num_periods";
-        public static final String COLUMN_RECURRENCE_UID = "recurrence_uid";
 
         public static final String INDEX_UID = "budgets_uid_index";
     }
@@ -253,8 +265,8 @@ public class DatabaseSchema {
     public static abstract class BudgetAmountEntry implements CommonColumns {
         public static final String TABLE_NAME           = "budget_amounts";
 
-        public static final String COLUMN_BUDGET_UID    = "budget_uid";
-        public static final String COLUMN_ACCOUNT_UID   = "account_uid";
+        public static final String COLUMN_BUDGET_GUID = "budget_guid";
+        public static final String COLUMN_ACCOUNT_GUID = "account_guid";
         public static final String COLUMN_PERIOD_NUM    = "period_num";
         public static final String COLUMN_AMOUNT_NUM    = "amount_num";
         public static final String COLUMN_AMOUNT_DENOM  = "amount_denom";
@@ -266,12 +278,75 @@ public class DatabaseSchema {
     public static abstract class RecurrenceEntry implements CommonColumns {
         public static final String TABLE_NAME           = "recurrences";
 
+        public static final String COLUMN_OBJECT_GUID   = "obj_guid";
         public static final String COLUMN_MULTIPLIER    = "recurrence_mult";
         public static final String COLUMN_PERIOD_TYPE   = "recurrence_period_type";
         public static final String COLUMN_PERIOD_START  = "recurrence_period_start";
-        public static final String COLUMN_PERIOD_END    = "recurrence_period_end";
-        public static final String COLUMN_BYDAY         = "recurrence_byday";
+//        public static final String COLUMN_PERIOD_END    = "recurrence_period_end";
+//        public static final String COLUMN_BYDAY         = "recurrence_byday";
 
         public static final String INDEX_UID = "recurrence_uid_index";
     }
+
+    public static abstract class SlotEntry implements CommonColumns {
+
+        public static class Account {
+            public static final String COLUMN_PLACEHOLDER           = "is_placeholder";
+            public static final String COLUMN_COLOR_CODE            = "color_code";
+            public static final String COLUMN_FAVORITE              = "favorite";
+            public static final String COLUMN_FULL_NAME             = "full_name";
+            public static final String COLUMN_HIDDEN                = "is_hidden";
+            public static final String COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID = "default_transfer_account_uid";
+
+        }
+
+        public static class Transaction {
+
+            /**
+             * Flag for marking transactions which have been exported
+             * @deprecated Transactions are exported based on last modified timestamp
+             */
+            @Deprecated
+            public static final String COLUMN_EXPORTED              = "is_exported";
+            public static final String COLUMN_TEMPLATE              = "is_template";
+            public static final String COLUMN_SCHEDX_ACTION_UID     = "scheduled_action_uid";
+        }
+    }
 }
+
+
+/*
+ TODO: Migration plan
+ General:
+    - There are no _ids anymore (if we absolutely need them, we can alias _ROWID_ and keep going.
+    - Long term, migrate to ViewModel for loading data from the database.
+
+ Accounts:
+    - Lots of attributes moved to slots table. Join them and create view when accessing accounts
+
+ Transactions:
+    - There is no "name" entry in the transactions table. Only description. Previously we had both.
+    - Migration name and description. Concatenate them if necessary
+
+Splits
+    - split "type" is now known as "action"
+    - splits should use the sign of the amount to denote if CREDIT or DEBIT
+
+Lots
+    - Create new table. Do nothing with it for now
+
+SchedXactions:
+    - New table for scheduled transactions matching GnuCash SQL
+    - New table for backup schedules
+    - Migrate by going through all entries in existing table and converting them to new entries in
+      the respective new tables.
+
+Commodities:
+    - Added some new options columns for quote-src and quote-tz
+    - Local symbol column might not exist in desktop database
+
+Budgets:
+    - Recurrences period_end removed. Handle that differently
+    - Rename of GUID columns from uid to guid
+    - Removed recurrence UID. Now saved in slots table
+ **/

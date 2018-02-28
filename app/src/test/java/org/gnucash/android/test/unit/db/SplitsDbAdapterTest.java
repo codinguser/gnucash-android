@@ -115,7 +115,7 @@ public class SplitsDbAdapterTest {
         mSplitsDbAdapter.addRecord(split);
 
         String isExported = mTransactionsDbAdapter.getAttribute(transaction.getUID(),
-                DatabaseSchema.TransactionEntry.COLUMN_EXPORTED);
+                DatabaseSchema.SlotEntry.Transaction.COLUMN_EXPORTED);
         assertThat(Boolean.parseBoolean(isExported)).isFalse();
     }
 

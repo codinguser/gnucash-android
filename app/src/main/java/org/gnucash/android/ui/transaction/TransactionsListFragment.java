@@ -273,11 +273,11 @@ public class TransactionsListFragment extends Fragment implements
 			String description = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_DESCRIPTION));
 			holder.primaryText.setText(description);
 
-			final String transactionUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_UID));
+			final String transactionUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_GUID));
 			Money amount = mTransactionsDbAdapter.getBalance(transactionUID, mAccountUID);
 			TransactionsActivity.displayBalance(holder.transactionAmount, amount);
 
-			long dateMillis = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_TIMESTAMP));
+			long dateMillis = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_POST_DATE));
 			String dateText = TransactionsActivity.getPrettyDateFormat(getActivity(), dateMillis);
 
 			final long id = holder.transactionId;

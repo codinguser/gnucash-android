@@ -120,8 +120,8 @@ public class BulkMoveDialogFragment extends DialogFragment {
 		getDialog().setTitle(title);
 
         AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
-        String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID    + " != ? AND "
-                + DatabaseSchema.AccountEntry.COLUMN_CURRENCY               + " = ? AND "
+        String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_GUID + " != ? AND "
+                + DatabaseSchema.AccountEntry.COLUMN_CURRENCY_CODE + " = ? AND "
                 + DatabaseSchema.AccountEntry.COLUMN_HIDDEN         + " = 0 AND "
                 + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
                 + ")";

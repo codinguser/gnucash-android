@@ -52,7 +52,7 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
                 BookEntry.COLUMN_TEMPLATE_GUID,
                 BookEntry.COLUMN_SOURCE_URI,
                 BookEntry.COLUMN_ACTIVE,
-                BookEntry.COLUMN_UID,
+                BookEntry.COLUMN_GUID,
                 BookEntry.COLUMN_LAST_SYNC
         });
     }
@@ -134,7 +134,7 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
 
         contentValues.clear();
         contentValues.put(BookEntry.COLUMN_ACTIVE, 1);
-        mDb.update(mTableName, contentValues, BookEntry.COLUMN_UID + " = ?", new String[]{bookUID});
+        mDb.update(mTableName, contentValues, BookEntry.COLUMN_GUID + " = ?", new String[]{bookUID});
 
         return bookUID;
     }
@@ -155,7 +155,7 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
      */
     public @NonNull String getActiveBookUID(){
         try (Cursor cursor = mDb.query(mTableName,
-                                       new String[]{BookEntry.COLUMN_UID},
+                                       new String[]{BookEntry.COLUMN_GUID},
                                        BookEntry.COLUMN_ACTIVE + "= 1",
                                        null,
                                        null,
@@ -171,7 +171,7 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
                 throw e;
             }
             cursor.moveToFirst();
-            return cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_UID));
+            return cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_GUID));
         }
     }
 
@@ -260,10 +260,10 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
 
     public @NonNull List<String> getAllBookUIDs(){
         List<String> bookUIDs = new ArrayList<>();
-        try (Cursor cursor = mDb.query(true, mTableName, new String[]{BookEntry.COLUMN_UID},
+        try (Cursor cursor = mDb.query(true, mTableName, new String[]{BookEntry.COLUMN_GUID},
                 null, null, null, null, null, null)) {
             while (cursor.moveToNext()) {
-                bookUIDs.add(cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_UID)));
+                bookUIDs.add(cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_GUID)));
             }
         }
 

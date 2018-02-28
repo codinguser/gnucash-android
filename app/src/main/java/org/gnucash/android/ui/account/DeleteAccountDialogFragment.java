@@ -142,11 +142,11 @@ public class DeleteAccountDialogFragment extends DialogFragment {
         String currencyCode = accountsDbAdapter.getCurrencyCode(mOriginAccountUID);
         AccountType accountType = accountsDbAdapter.getAccountType(mOriginAccountUID);
 
-        String transactionDeleteConditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID + " != ? AND "
-                + DatabaseSchema.AccountEntry.COLUMN_CURRENCY               + " = ? AND "
-                + DatabaseSchema.AccountEntry.COLUMN_TYPE         + " = ? AND "
+        String transactionDeleteConditions = "(" + DatabaseSchema.AccountEntry.COLUMN_GUID + " != ? AND "
+                + DatabaseSchema.AccountEntry.COLUMN_CURRENCY_CODE + " = ? AND "
+                + DatabaseSchema.AccountEntry.COLUMN_ACCOUNT_TYPE + " = ? AND "
                 + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0 AND "
-                + DatabaseSchema.AccountEntry.COLUMN_UID + " NOT IN ('" + TextUtils.join("','", descendantAccountUIDs) + "')"
+                + DatabaseSchema.AccountEntry.COLUMN_GUID + " NOT IN ('" + TextUtils.join("','", descendantAccountUIDs) + "')"
                 + ")";
         Cursor cursor = accountsDbAdapter.fetchAccountsOrderedByFullName(transactionDeleteConditions,
                 new String[]{mOriginAccountUID, currencyCode, accountType.name()});
@@ -155,10 +155,10 @@ public class DeleteAccountDialogFragment extends DialogFragment {
         mTransactionsDestinationAccountSpinner.setAdapter(mCursorAdapter);
 
         //target accounts for transactions and accounts have different conditions
-        String accountMoveConditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID + " != ? AND "
-                + DatabaseSchema.AccountEntry.COLUMN_CURRENCY               + " = ? AND "
-                + DatabaseSchema.AccountEntry.COLUMN_TYPE         + " = ? AND "
-                + DatabaseSchema.AccountEntry.COLUMN_UID + " NOT IN ('" + TextUtils.join("','", descendantAccountUIDs) + "')"
+        String accountMoveConditions = "(" + DatabaseSchema.AccountEntry.COLUMN_GUID + " != ? AND "
+                + DatabaseSchema.AccountEntry.COLUMN_CURRENCY_CODE + " = ? AND "
+                + DatabaseSchema.AccountEntry.COLUMN_ACCOUNT_TYPE + " = ? AND "
+                + DatabaseSchema.AccountEntry.COLUMN_GUID + " NOT IN ('" + TextUtils.join("','", descendantAccountUIDs) + "')"
                 + ")";
         cursor = accountsDbAdapter.fetchAccountsOrderedByFullName(accountMoveConditions,
                 new String[]{mOriginAccountUID, currencyCode, accountType.name()});
@@ -217,8 +217,8 @@ public class DeleteAccountDialogFragment extends DialogFragment {
                 if ((mTransactionCount > 0) && mMoveTransactionsRadioButton.isChecked()){
                     long targetAccountId = mTransactionsDestinationAccountSpinner.getSelectedItemId();
                     //move all the splits
-                    SplitsDbAdapter.getInstance().updateRecords(DatabaseSchema.SplitEntry.COLUMN_ACCOUNT_UID + " = ?",
-                            new String[]{mOriginAccountUID}, DatabaseSchema.SplitEntry.COLUMN_ACCOUNT_UID, accountsDbAdapter.getUID(targetAccountId));
+                    SplitsDbAdapter.getInstance().updateRecords(DatabaseSchema.SplitEntry.COLUMN_ACCOUNT_GUID + " = ?",
+                            new String[]{mOriginAccountUID}, DatabaseSchema.SplitEntry.COLUMN_ACCOUNT_GUID, accountsDbAdapter.getUID(targetAccountId));
                 }
 
                 if ((mSubAccountCount > 0) && mMoveAccountsRadioButton.isChecked()){

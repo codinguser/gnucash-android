@@ -53,7 +53,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
     public SplitsDbAdapter(SQLiteDatabase db) {
         super(db, SplitEntry.TABLE_NAME, new String[]{
                 SplitEntry.COLUMN_MEMO,
-                SplitEntry.COLUMN_TYPE,
+                SplitEntry.COLUMN_ACTION,
                 SplitEntry.COLUMN_VALUE_NUM,
                 SplitEntry.COLUMN_VALUE_DENOM,
                 SplitEntry.COLUMN_QUANTITY_NUM,
@@ -61,8 +61,8 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
                 SplitEntry.COLUMN_CREATED_AT,
                 SplitEntry.COLUMN_RECONCILE_STATE,
                 SplitEntry.COLUMN_RECONCILE_DATE,
-                SplitEntry.COLUMN_ACCOUNT_UID,
-                SplitEntry.COLUMN_TRANSACTION_UID
+                SplitEntry.COLUMN_ACCOUNT_GUID,
+                SplitEntry.COLUMN_TRANSACTION_GUID
         });
     }
 
@@ -86,7 +86,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
         long transactionId = getTransactionID(split.getTransactionUID());
         //when a split is updated, we want mark the transaction as not exported
         updateRecord(TransactionEntry.TABLE_NAME, transactionId,
-                TransactionEntry.COLUMN_EXPORTED, String.valueOf(0));
+                DatabaseSchema.SlotEntry.Transaction.COLUMN_EXPORTED, String.valueOf(0));
 
         //modifying a split means modifying the accompanying transaction as well
         updateRecord(TransactionEntry.TABLE_NAME, transactionId,
@@ -124,9 +124,9 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
         long valueDenom     = cursor.getLong(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_VALUE_DENOM));
         long quantityNum    = cursor.getLong(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_QUANTITY_NUM));
         long quantityDenom  = cursor.getLong(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_QUANTITY_DENOM));
-        String typeName     = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_TYPE));
-        String accountUID   = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_ACCOUNT_UID));
-        String transxUID    = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_TRANSACTION_UID));
+        String typeName     = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_ACTION));
+        String accountUID   = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_ACCOUNT_GUID));
+        String transxUID    = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_TRANSACTION_GUID));
         String memo         = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_MEMO));
         String reconcileState = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_RECONCILE_STATE));
         String reconcileDate  = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_RECONCILE_DATE));
@@ -187,27 +187,27 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
 
         Cursor cursor;
         String[] selectionArgs = null;
-        String selection = DatabaseSchema.AccountEntry.TABLE_NAME + "_" + DatabaseSchema.CommonColumns.COLUMN_UID + " in ( '" + TextUtils.join("' , '", accountUIDList) + "' ) AND " +
-                TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TEMPLATE + " = 0";
+        String selection = DatabaseSchema.AccountEntry.TABLE_NAME + "_" + DatabaseSchema.CommonColumns.COLUMN_GUID + " in ( '" + TextUtils.join("' , '", accountUIDList) + "' ) AND " +
+                TransactionEntry.TABLE_NAME + "_" + DatabaseSchema.SlotEntry.Transaction.COLUMN_TEMPLATE + " = 0";
 
         if (startTimestamp != -1 && endTimestamp != -1) {
-            selection += " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TIMESTAMP + " BETWEEN ? AND ? ";
+            selection += " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_POST_DATE + " BETWEEN ? AND ? ";
             selectionArgs = new String[]{String.valueOf(startTimestamp), String.valueOf(endTimestamp)};
         } else if (startTimestamp == -1 && endTimestamp != -1) {
-            selection += " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TIMESTAMP + " <= ?";
+            selection += " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_POST_DATE + " <= ?";
             selectionArgs = new String[]{String.valueOf(endTimestamp)};
         } else if (startTimestamp != -1/* && endTimestamp == -1*/) {
-            selection += " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TIMESTAMP + " >= ?";
+            selection += " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_POST_DATE + " >= ?";
             selectionArgs = new String[]{String.valueOf(startTimestamp)};
         }
 
         cursor = mDb.query("trans_split_acct",
-                new String[]{"TOTAL ( CASE WHEN " + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_TYPE + " = 'DEBIT' THEN " +
+                new String[]{"TOTAL ( CASE WHEN " + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_ACTION + " = 'DEBIT' THEN " +
                         SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_QUANTITY_NUM + " ELSE - " +
                         SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_QUANTITY_NUM + " END )",
                         SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_QUANTITY_DENOM,
-                        DatabaseSchema.AccountEntry.TABLE_NAME + "_" + DatabaseSchema.AccountEntry.COLUMN_CURRENCY},
-                selection, selectionArgs, DatabaseSchema.AccountEntry.TABLE_NAME + "_" + DatabaseSchema.AccountEntry.COLUMN_CURRENCY, null, null);
+                        DatabaseSchema.AccountEntry.TABLE_NAME + "_" + DatabaseSchema.AccountEntry.COLUMN_CURRENCY_CODE},
+                selection, selectionArgs, DatabaseSchema.AccountEntry.TABLE_NAME + "_" + DatabaseSchema.AccountEntry.COLUMN_CURRENCY_CODE, null, null);
 
         try {
             Money total = Money.createZeroInstance(currencyCode);
@@ -326,7 +326,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
     public Cursor fetchSplitsForTransaction(String transactionUID){
         Log.v(LOG_TAG, "Fetching all splits for transaction UID " + transactionUID);
         return mDb.query(SplitEntry.TABLE_NAME,
-                null, SplitEntry.COLUMN_TRANSACTION_UID + " = ?",
+                null, SplitEntry.COLUMN_TRANSACTION_GUID + " = ?",
                 new String[]{transactionUID},
                 null, null, null);
     }
@@ -344,14 +344,14 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         queryBuilder.setTables(TransactionEntry.TABLE_NAME
                 + " INNER JOIN " +  SplitEntry.TABLE_NAME + " ON "
-                + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " = "
-                + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID);
+                + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_GUID + " = "
+                + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_GUID);
         queryBuilder.setDistinct(true);
         String[] projectionIn = new String[]{SplitEntry.TABLE_NAME + ".*"};
-        String selection = SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID + " = ?"
-                + " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TEMPLATE + " = 0";
+        String selection = SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_GUID + " = ?"
+                + " AND " + TransactionEntry.TABLE_NAME + "." + DatabaseSchema.SlotEntry.Transaction.COLUMN_TEMPLATE + " = 0";
         String[] selectionArgs = new String[]{accountUID};
-        String sortOrder = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " DESC";
+        String sortOrder = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_POST_DATE + " DESC";
 
         return queryBuilder.query(mDb, projectionIn, selection, selectionArgs, null, null, sortOrder);
 
@@ -370,8 +370,8 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
         Log.v(LOG_TAG, "Fetching all splits for transaction ID " + transactionUID
                 + "and account ID " + accountUID);
         return mDb.query(SplitEntry.TABLE_NAME,
-                null, SplitEntry.COLUMN_TRANSACTION_UID + " = ? AND "
-                        + SplitEntry.COLUMN_ACCOUNT_UID + " = ?",
+                null, SplitEntry.COLUMN_TRANSACTION_GUID + " = ? AND "
+                        + SplitEntry.COLUMN_ACCOUNT_GUID + " = ?",
                 new String[]{transactionUID, accountUID},
                 null, null, SplitEntry.COLUMN_VALUE_NUM + " ASC");
     }
@@ -383,13 +383,13 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
      */
     public String getTransactionUID(long transactionId){
         Cursor cursor = mDb.query(TransactionEntry.TABLE_NAME,
-                new String[]{TransactionEntry.COLUMN_UID},
+                new String[]{TransactionEntry.COLUMN_GUID},
                 TransactionEntry._ID + " = " + transactionId,
                 null, null, null, null);
 
         try {
             if (cursor.moveToFirst()) {
-                return cursor.getString(cursor.getColumnIndexOrThrow(TransactionEntry.COLUMN_UID));
+                return cursor.getString(cursor.getColumnIndexOrThrow(TransactionEntry.COLUMN_GUID));
             } else {
                 throw new IllegalArgumentException("transaction " + transactionId + " does not exist");
             }
@@ -429,7 +429,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
     public long getTransactionID(String transactionUID) {
         Cursor c = mDb.query(TransactionEntry.TABLE_NAME,
                 new String[]{TransactionEntry._ID},
-                TransactionEntry.COLUMN_UID + "=?",
+                TransactionEntry.COLUMN_GUID + "=?",
                 new String[]{transactionUID}, null, null, null);
         try {
             if (c.moveToFirst()) {

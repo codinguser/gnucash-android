@@ -399,7 +399,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 		int i = 0;
 		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
         while (accountsCursor.moveToNext()) {
-            String uid = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
+            String uid = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_GUID));
             if (mAccountUID.equals(uid)) {
                 mToolbarSpinner.setSelection(i);
                 break;

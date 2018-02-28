@@ -55,7 +55,7 @@ public class BookDbHelper extends SQLiteOpenHelper {
      */
     private static final String BOOKS_TABLE_CREATE = "CREATE TABLE " + BookEntry.TABLE_NAME + " ("
             + BookEntry._ID 		         + " integer primary key autoincrement, "
-            + BookEntry.COLUMN_UID 		     + " varchar(255) not null UNIQUE, "
+            + BookEntry.COLUMN_GUID + " varchar(255) not null UNIQUE, "
             + BookEntry.COLUMN_DISPLAY_NAME  + " varchar(255) not null, "
             + BookEntry.COLUMN_ROOT_GUID     + " varchar(255) not null, "
             + BookEntry.COLUMN_TEMPLATE_GUID + " varchar(255), "
@@ -141,7 +141,7 @@ public class BookDbHelper extends SQLiteOpenHelper {
      */
     private void insertBook(SQLiteDatabase db, Book book) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(BookEntry.COLUMN_UID, book.getUID());
+        contentValues.put(BookEntry.COLUMN_GUID, book.getUID());
         contentValues.put(BookEntry.COLUMN_ROOT_GUID, book.getRootAccountUID());
         contentValues.put(BookEntry.COLUMN_TEMPLATE_GUID, Book.generateUID());
         contentValues.put(BookEntry.COLUMN_DISPLAY_NAME, new BooksDbAdapter(db).generateDefaultBookName());

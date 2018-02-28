@@ -25,7 +25,6 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -484,7 +483,7 @@ public class AccountsListFragment extends Fragment implements
 
         @Override
         public void onBindViewHolderCursor(final AccountViewHolder holder, final Cursor cursor) {
-            final String accountUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
+            final String accountUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_GUID));
             mAccountsDbAdapter = AccountsDbAdapter.getInstance();
             holder.accoundId = mAccountsDbAdapter.getID(accountUID);
 

@@ -21,6 +21,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportParams;
@@ -83,26 +84,26 @@ public class QifExporter extends Exporter{
             String lastExportTimeStamp = TimestampHelper.getUtcStringFromTimestamp(mExportParams.getExportStartTime());
             Cursor cursor = transactionsDbAdapter.fetchTransactionsWithSplitsWithTransactionAccount(
                     new String[]{
-                            TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID + " AS trans_uid",
-                            TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TIMESTAMP + " AS trans_time",
+                            TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_GUID + " AS trans_uid",
+                            TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_POST_DATE + " AS trans_time",
                             TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_DESCRIPTION + " AS trans_desc",
                             TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_NOTES + " AS trans_notes",
                             SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_QUANTITY_NUM + " AS split_quantity_num",
                             SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_QUANTITY_DENOM + " AS split_quantity_denom",
-                            SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_TYPE + " AS split_type",
+                            SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_ACTION + " AS split_type",
                             SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_MEMO + " AS split_memo",
                             "trans_extra_info.trans_acct_balance AS trans_acct_balance",
                             "trans_extra_info.trans_split_count AS trans_split_count",
-                            "account1." + AccountEntry.COLUMN_UID + " AS acct1_uid",
+                            "account1." + AccountEntry.COLUMN_GUID + " AS acct1_uid",
                             "account1." + AccountEntry.COLUMN_FULL_NAME + " AS acct1_full_name",
-                            "account1." + AccountEntry.COLUMN_CURRENCY + " AS acct1_currency",
-                            "account1." + AccountEntry.COLUMN_TYPE + " AS acct1_type",
+                            "account1." + AccountEntry.COLUMN_CURRENCY_CODE + " AS acct1_currency",
+                            "account1." + AccountEntry.COLUMN_ACCOUNT_TYPE + " AS acct1_type",
                             AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_FULL_NAME + " AS acct2_full_name"
                     },
                     // no recurrence transactions
-                    TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TEMPLATE + " == 0 AND " +
+                    TransactionEntry.TABLE_NAME + "_" + DatabaseSchema.SlotEntry.Transaction.COLUMN_TEMPLATE + " == 0 AND " +
                             // in qif, split from the one account entry is not recorded (will be auto balanced)
-                            "( " + AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_UID + " != account1." + AccountEntry.COLUMN_UID + " OR " +
+                            "( " + AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_GUID + " != account1." + AccountEntry.COLUMN_GUID + " OR " +
                             // or if the transaction has only one split (the whole transaction would be lost if it is not selected)
                             "trans_split_count == 1 )" +
                             (
@@ -237,7 +238,7 @@ public class QifExporter extends Exporter{
             }
 
             ContentValues contentValues = new ContentValues();
-            contentValues.put(TransactionEntry.COLUMN_EXPORTED, 1);
+            contentValues.put(DatabaseSchema.SlotEntry.Transaction.COLUMN_EXPORTED, 1);
             transactionsDbAdapter.updateTransaction(contentValues, null, null);
 
             /// export successful

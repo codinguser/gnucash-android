@@ -570,10 +570,10 @@ public class AccountFormFragment extends Fragment {
      * Initializes the default transfer account spinner with eligible accounts
      */
     private void loadDefaultTransferAccountList(){
-        String condition = DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountUID + "' " //when creating a new account mAccountUID is null, so don't use whereArgs
+        String condition = DatabaseSchema.AccountEntry.COLUMN_GUID + " != '" + mAccountUID + "' " //when creating a new account mAccountUID is null, so don't use whereArgs
                 + " AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + "=0"
                 + " AND " + DatabaseSchema.AccountEntry.COLUMN_HIDDEN + "=0"
-                + " AND " + DatabaseSchema.AccountEntry.COLUMN_TYPE + " != ?";
+                + " AND " + DatabaseSchema.AccountEntry.COLUMN_ACCOUNT_TYPE + " != ?";
 
         Cursor defaultTransferAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition,
                 new String[]{AccountType.ROOT.name()});
@@ -593,7 +593,7 @@ public class AccountFormFragment extends Fragment {
      * @param accountType AccountType of account whose allowed parent list is to be loaded
      */
 	private void loadParentAccountList(AccountType accountType){
-        String condition = DatabaseSchema.SplitEntry.COLUMN_TYPE + " IN ("
+        String condition = DatabaseSchema.SplitEntry.COLUMN_ACTION + " IN ("
                 + getAllowedParentAccountTypes(accountType) + ") AND " + DatabaseSchema.AccountEntry.COLUMN_HIDDEN + "!=1 ";
 
         if (mAccount != null){  //if editing an account
@@ -603,7 +603,7 @@ public class AccountFormFragment extends Fragment {
             if (rootAccountUID != null)
                 descendantAccountUIDs.add(rootAccountUID);
             // limit cyclic account hierarchies.
-            condition += " AND (" + DatabaseSchema.AccountEntry.COLUMN_UID + " NOT IN ( '"
+            condition += " AND (" + DatabaseSchema.AccountEntry.COLUMN_GUID + " NOT IN ( '"
                     + TextUtils.join("','", descendantAccountUIDs) + "','" + mAccountUID + "' ) )";
         }
 
@@ -801,7 +801,7 @@ public class AccountFormFragment extends Fragment {
                 if ((nameChanged || parentAccountId != newParentAccountId) && mDescendantAccountUIDs.size() > 0) {
                     // parent change, update all full names of descent accounts
                     accountsToUpdate.addAll(mAccountsDbAdapter.getSimpleAccountList(
-                            DatabaseSchema.AccountEntry.COLUMN_UID + " IN ('" +
+                            DatabaseSchema.AccountEntry.COLUMN_GUID + " IN ('" +
                                     TextUtils.join("','", mDescendantAccountUIDs) + "')", null, null
                     ));
                 }

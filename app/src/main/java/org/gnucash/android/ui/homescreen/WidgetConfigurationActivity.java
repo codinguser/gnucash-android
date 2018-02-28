@@ -35,7 +35,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ImageButton;
 import android.widget.RemoteViews;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -58,7 +57,6 @@ import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.util.Locale;
-import java.util.prefs.Preferences;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -97,7 +95,7 @@ public class WidgetConfigurationActivity extends Activity {
 		//determine the position of the currently active book in the cursor
 		int position = 0;
 		while (booksCursor.moveToNext()){
-			String bookUID = booksCursor.getString(booksCursor.getColumnIndexOrThrow(DatabaseSchema.BookEntry.COLUMN_UID));
+			String bookUID = booksCursor.getString(booksCursor.getColumnIndexOrThrow(DatabaseSchema.BookEntry.COLUMN_GUID));
 			if (bookUID.equals(currentBookUID))
 				break;
 			++position;

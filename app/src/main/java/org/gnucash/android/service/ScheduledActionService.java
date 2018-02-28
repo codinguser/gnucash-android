@@ -148,12 +148,12 @@ public class ScheduledActionService extends JobIntentService {
             scheduledAction.setExecutionCount(scheduledAction.getExecutionCount() + executionCount);
             // Update the last run time and execution count
             ContentValues contentValues = new ContentValues();
-            contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_LAST_RUN,
+            contentValues.put(DatabaseSchema.ScheduledExportEntry.COLUMN_LAST_RUN_TIME,
                     scheduledAction.getLastRunTime());
-            contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_EXECUTION_COUNT,
+            contentValues.put(DatabaseSchema.ScheduledExportEntry.COLUMN_EXECUTION_COUNT,
                     scheduledAction.getExecutionCount());
-            db.update(DatabaseSchema.ScheduledActionEntry.TABLE_NAME, contentValues,
-                    DatabaseSchema.ScheduledActionEntry.COLUMN_UID + "=?", new String[]{scheduledAction.getUID()});
+            db.update(DatabaseSchema.ScheduledExportEntry.TABLE_NAME, contentValues,
+                    DatabaseSchema.ScheduledExportEntry.COLUMN_GUID + "=?", new String[]{scheduledAction.getUID()});
         }
     }
 
