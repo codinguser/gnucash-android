@@ -45,6 +45,7 @@ import static org.gnucash.android.db.DatabaseSchema.PriceEntry;
 import static org.gnucash.android.db.DatabaseSchema.RecurrenceEntry;
 import static org.gnucash.android.db.DatabaseSchema.ScheduledExportEntry;
 import static org.gnucash.android.db.DatabaseSchema.ScheduledTransactionEntry;
+import static org.gnucash.android.db.DatabaseSchema.SlotEntry;
 import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
 import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
 /**
@@ -92,7 +93,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + TransactionEntry.COLUMN_COMMODITY_GUID + " varchar(255) not null, "
             + TransactionEntry.COLUMN_CREATED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + TransactionEntry.COLUMN_MODIFIED_AT   + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-            + "FOREIGN KEY (" 	+ DatabaseSchema.SlotEntry.Transaction.COLUMN_SCHEDX_ACTION_UID + ") REFERENCES " + ScheduledExportEntry.TABLE_NAME + " (" + ScheduledExportEntry.COLUMN_GUID + ") ON DELETE SET NULL, "
             + "FOREIGN KEY (" 	+ TransactionEntry.COLUMN_COMMODITY_GUID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_GUID + ") "
 			+ ");" + createUpdatedAtTrigger(TransactionEntry.TABLE_NAME);
 
@@ -237,7 +237,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + RecurrenceEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP); "
             + createUpdatedAtTrigger(RecurrenceEntry.TABLE_NAME);
 
-
+    private static final String SLOTS_TABLE_CREATE = "CREATE TABLE " + SlotEntry.TABLE_NAME + " ("
+            + BudgetAmountEntry._ID                + " integer primary key autoincrement, "
+            + SlotEntry.COLUMN_OBJ_GUID            + " varchar(255) not null, "
+            + SlotEntry.COLUMN_NAME                + " text NOT NULL, "
+            + SlotEntry.COLUMN_SLOT_TYPE           + " integer NOT NULL, "
+            + SlotEntry.COLUMN_INT64_VAL           + " integer, "
+            + SlotEntry.COLUMN_STRING_VAL          + " text, "
+            + SlotEntry.COLUMN_DOUBLE_VAL          + " real, "
+            + SlotEntry.COLUMN_TIMESPEC_VAL        + " CHAR(14),"
+            + SlotEntry.COLUMN_GUID_VAL            + " CHAR(32),"
+            + SlotEntry.COLUMN_NUMERIC_VAL_NUM     + " integer,"
+            + SlotEntry.COLUMN_NUMERIC_VAL_DENOM   + " integer); "
+            + SlotEntry.COLUMN_CREATED_AT          + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + SlotEntry.COLUMN_MODIFIED_AT         + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP); "
+            + createUpdatedAtTrigger(RecurrenceEntry.TABLE_NAME);
     /**
 	 * Constructor
 	 * @param context Application context
@@ -334,6 +348,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(RECURRENCE_TABLE_CREATE);
         db.execSQL(BUDGETS_TABLE_CREATE);
         db.execSQL(BUDGET_AMOUNTS_TABLE_CREATE);
+        db.execSQL(SLOTS_TABLE_CREATE);
 
 
         String createAccountUidIndex = "CREATE UNIQUE INDEX '" + AccountEntry.INDEX_UID + "' ON "

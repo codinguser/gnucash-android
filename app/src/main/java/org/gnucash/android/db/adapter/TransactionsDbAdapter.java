@@ -74,7 +74,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
                 TransactionEntry.COLUMN_COMMODITY_GUID,
                 TransactionEntry.COLUMN_CREATED_AT,
                 DatabaseSchema.SlotEntry.Transaction.COLUMN_SCHEDX_ACTION_UID,
-                DatabaseSchema.SlotEntry.Transaction.COLUMN_TEMPLATE
+                DatabaseSchema.TransactionView.COLUMN_TEMPLATE
         });
         mSplitsDbAdapter = splitsDbAdapter;
         mCommoditiesDbAdapter = new CommoditiesDbAdapter(db);
@@ -213,7 +213,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
         queryBuilder.setDistinct(true);
         String[] projectionIn = new String[]{TransactionEntry.TABLE_NAME + ".*"};
         String selection = SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_GUID + " = ?"
-                + " AND " + TransactionEntry.TABLE_NAME + "." + DatabaseSchema.SlotEntry.Transaction.COLUMN_TEMPLATE + " = 0";
+                + " AND " + TransactionEntry.TABLE_NAME + "." + DatabaseSchema.TransactionView.COLUMN_TEMPLATE + " = 0";
         String[] selectionArgs = new String[]{accountUID};
         String sortOrder = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_POST_DATE + " DESC";
 
@@ -235,7 +235,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
         queryBuilder.setDistinct(true);
         String[] projectionIn = new String[]{TransactionEntry.TABLE_NAME + ".*"};
         String selection = SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_GUID + " = ?"
-                + " AND " + TransactionEntry.TABLE_NAME + "." + DatabaseSchema.SlotEntry.Transaction.COLUMN_TEMPLATE + " = 1";
+                + " AND " + TransactionEntry.TABLE_NAME + "." + DatabaseSchema.TransactionView.COLUMN_TEMPLATE + " = 1";
         String[] selectionArgs = new String[]{accountUID};
         String sortOrder = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_POST_DATE + " DESC";
 
@@ -357,7 +357,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
      */
     public long getRecordsCount() {
         String queryCount = "SELECT COUNT(*) FROM " + TransactionEntry.TABLE_NAME +
-                " WHERE " + DatabaseSchema.SlotEntry.Transaction.COLUMN_TEMPLATE + " =0";
+                " WHERE " + DatabaseSchema.TransactionView.COLUMN_TEMPLATE + " =0";
         Cursor cursor = mDb.rawQuery(queryCount, null);
         try {
             cursor.moveToFirst();
@@ -407,7 +407,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
 		transaction.setTime(c.getLong(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_POST_DATE)));
 		transaction.setNote(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_NOTES)));
 		transaction.setExported(c.getInt(c.getColumnIndexOrThrow(DatabaseSchema.SlotEntry.Transaction.COLUMN_EXPORTED)) == 1);
-		transaction.setTemplate(c.getInt(c.getColumnIndexOrThrow(DatabaseSchema.SlotEntry.Transaction.COLUMN_TEMPLATE)) == 1);
+		transaction.setTemplate(c.getInt(c.getColumnIndexOrThrow(DatabaseSchema.TransactionView.COLUMN_TEMPLATE)) == 1);
         String currencyCode = c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_CURRENCY));
         transaction.setCommodity(mCommoditiesDbAdapter.getCommodity(currencyCode));
         transaction.setScheduledActionUID(c.getString(c.getColumnIndexOrThrow(DatabaseSchema.SlotEntry.Transaction.COLUMN_SCHEDX_ACTION_UID)));
@@ -473,7 +473,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
      */
     public long getTemplateTransactionsCount(){
         String sql = "SELECT COUNT(*) FROM " + TransactionEntry.TABLE_NAME
-                + " WHERE " + DatabaseSchema.SlotEntry.Transaction.COLUMN_TEMPLATE + "=1";
+                + " WHERE " + DatabaseSchema.TransactionView.COLUMN_TEMPLATE + "=1";
         SQLiteStatement statement = mDb.compileStatement(sql);
         return statement.simpleQueryForLong();
     }
@@ -526,7 +526,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
         queryBuilder.setDistinct(true);
         String[] projectionIn = new String[]{TransactionEntry.TABLE_NAME + ".*"};
         String selection = "(" + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_GUID + " = ?"
-                + " OR " + TransactionEntry.TABLE_NAME + "." + DatabaseSchema.SlotEntry.Transaction.COLUMN_TEMPLATE + "=1 )"
+                + " OR " + TransactionEntry.TABLE_NAME + "." + DatabaseSchema.TransactionView.COLUMN_TEMPLATE + "=1 )"
                 + " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_DESCRIPTION + " LIKE '" + prefix + "%'";
         String[] selectionArgs = new String[]{accountUID};
         String sortOrder = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_POST_DATE + " DESC";
@@ -577,7 +577,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
      * @return Number of records deleted
      */
     public int deleteAllNonTemplateTransactions(){
-        String where = DatabaseSchema.SlotEntry.Transaction.COLUMN_TEMPLATE + "=0";
+        String where = DatabaseSchema.TransactionView.COLUMN_TEMPLATE + "=0";
         return mDb.delete(mTableName, where, null);
     }
 
@@ -641,7 +641,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
                 + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_GUID
                 + " WHERE " + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_ACCOUNT_TYPE + " = ? AND "
                 + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_CURRENCY + " = ? AND "
-                + TransactionEntry.TABLE_NAME + "." + DatabaseSchema.SlotEntry.Transaction.COLUMN_TEMPLATE + " = 0";
+                + TransactionEntry.TABLE_NAME + "." + DatabaseSchema.TransactionView.COLUMN_TEMPLATE + " = 0";
         Cursor cursor = mDb.rawQuery(sql, new String[]{ type.name(), currencyCode });
         long timestamp= 0;
         if (cursor != null) {

@@ -188,7 +188,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
         Cursor cursor;
         String[] selectionArgs = null;
         String selection = DatabaseSchema.AccountEntry.TABLE_NAME + "_" + DatabaseSchema.CommonColumns.COLUMN_GUID + " in ( '" + TextUtils.join("' , '", accountUIDList) + "' ) AND " +
-                TransactionEntry.TABLE_NAME + "_" + DatabaseSchema.SlotEntry.Transaction.COLUMN_TEMPLATE + " = 0";
+                TransactionEntry.TABLE_NAME + "_" + DatabaseSchema.TransactionView.COLUMN_TEMPLATE + " = 0";
 
         if (startTimestamp != -1 && endTimestamp != -1) {
             selection += " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_POST_DATE + " BETWEEN ? AND ? ";
@@ -349,7 +349,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
         queryBuilder.setDistinct(true);
         String[] projectionIn = new String[]{SplitEntry.TABLE_NAME + ".*"};
         String selection = SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_GUID + " = ?"
-                + " AND " + TransactionEntry.TABLE_NAME + "." + DatabaseSchema.SlotEntry.Transaction.COLUMN_TEMPLATE + " = 0";
+                + " AND " + TransactionEntry.TABLE_NAME + "." + DatabaseSchema.TransactionView.COLUMN_TEMPLATE + " = 0";
         String[] selectionArgs = new String[]{accountUID};
         String sortOrder = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_POST_DATE + " DESC";
 

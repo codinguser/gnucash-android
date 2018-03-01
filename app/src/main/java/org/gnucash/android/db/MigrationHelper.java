@@ -588,7 +588,7 @@ public class MigrationHelper {
                     + TransactionEntry.COLUMN_NOTES + " text, "
                     + TransactionEntry.COLUMN_POST_DATE + " integer not null, "
                     + DatabaseSchema.SlotEntry.Transaction.COLUMN_EXPORTED + " tinyint default 0, "
-                    + DatabaseSchema.SlotEntry.Transaction.COLUMN_TEMPLATE + " tinyint default 0, "
+                    + DatabaseSchema.TransactionView.COLUMN_TEMPLATE + " tinyint default 0, "
                     + TransactionEntry.COLUMN_CURRENCY + " varchar(255) not null, "
                     + DatabaseSchema.SlotEntry.Transaction.COLUMN_SCHEDX_ACTION_UID + " varchar(255), "
                     + TransactionEntry.COLUMN_CREATED_AT + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
@@ -605,7 +605,7 @@ public class MigrationHelper {
                             + TransactionEntry.COLUMN_POST_DATE + " , "
                             + DatabaseSchema.SlotEntry.Transaction.COLUMN_EXPORTED + " , "
                             + TransactionEntry.COLUMN_CURRENCY + " , "
-                            + DatabaseSchema.SlotEntry.Transaction.COLUMN_TEMPLATE
+                            + DatabaseSchema.TransactionView.COLUMN_TEMPLATE
                             + ")  SELECT "
                             + TransactionEntry.TABLE_NAME + "_bak." + TransactionEntry._ID + " , "
                             + TransactionEntry.TABLE_NAME + "_bak." + TransactionEntry.COLUMN_GUID + " , "
@@ -770,7 +770,7 @@ public class MigrationHelper {
                                     AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_CURRENCY_CODE +
                                     " ) AS trans_currency_count"
                     },
-                    TransactionEntry.TABLE_NAME + "." + DatabaseSchema.SlotEntry.Transaction.COLUMN_TEMPLATE + " == 0",
+                    TransactionEntry.TABLE_NAME + "." + DatabaseSchema.TransactionView.COLUMN_TEMPLATE + " == 0",
                     null,
                     TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_GUID,
                     "trans_acct_balance != 0 AND trans_currency_count = 1",

@@ -262,9 +262,9 @@ public class GncXmlExporter extends Exporter{
      * @throws IOException if the XML serializer cannot be written to
      */
     private void exportTransactions(XmlSerializer xmlSerializer, boolean exportTemplates) throws IOException {
-        String where = TransactionEntry.TABLE_NAME + "." + DatabaseSchema.SlotEntry.Transaction.COLUMN_TEMPLATE + "=0";
+        String where = TransactionEntry.TABLE_NAME + "." + DatabaseSchema.TransactionView.COLUMN_TEMPLATE + "=0";
         if (exportTemplates) {
-            where = TransactionEntry.TABLE_NAME + "." + DatabaseSchema.SlotEntry.Transaction.COLUMN_TEMPLATE + "=1";
+            where = TransactionEntry.TABLE_NAME + "." + DatabaseSchema.TransactionView.COLUMN_TEMPLATE + "=1";
         }
         Cursor cursor = mTransactionsDbAdapter.fetchTransactionsWithSplits(
                 new String[]{

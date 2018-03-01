@@ -101,7 +101,7 @@ public class QifExporter extends Exporter{
                             AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_FULL_NAME + " AS acct2_full_name"
                     },
                     // no recurrence transactions
-                    TransactionEntry.TABLE_NAME + "_" + DatabaseSchema.SlotEntry.Transaction.COLUMN_TEMPLATE + " == 0 AND " +
+                    TransactionEntry.TABLE_NAME + "_" + DatabaseSchema.TransactionView.COLUMN_TEMPLATE + " == 0 AND " +
                             // in qif, split from the one account entry is not recorded (will be auto balanced)
                             "( " + AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_GUID + " != account1." + AccountEntry.COLUMN_GUID + " OR " +
                             // or if the transaction has only one split (the whole transaction would be lost if it is not selected)

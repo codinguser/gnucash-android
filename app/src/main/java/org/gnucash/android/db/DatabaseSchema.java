@@ -92,6 +92,21 @@ public class DatabaseSchema {
     }
 
     /**
+     * Collection of fields in the account view
+     */
+    public static abstract class AccountView {
+        public static final String VIEW_NAME = "accounts_view";
+
+        public static final String COLUMN_PLACEHOLDER           = "is_placeholder";
+        public static final String COLUMN_COLOR_CODE            = "color_code";
+        public static final String COLUMN_FAVORITE              = "favorite";
+        public static final String COLUMN_FULL_NAME             = "full_name";
+        public static final String COLUMN_HIDDEN                = "is_hidden";
+        public static final String COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID = "default_transfer_account_uid";
+
+    }
+
+    /**
      * Column schema for the transaction table in the database
      */
     public static abstract class TransactionEntry implements CommonColumns {
@@ -108,6 +123,15 @@ public class DatabaseSchema {
 
 
         public static final String INDEX_UID                    = "transaction_uid_index";
+    }
+
+    public static abstract class TransactionView {
+        public static final String VIEW_NAME = "accounts_view";
+
+        /**
+         * Flag if this transaction is a template
+         */
+        public static final String COLUMN_TEMPLATE              = "is_template";
     }
 
     /**
@@ -289,28 +313,19 @@ public class DatabaseSchema {
     }
 
     public static abstract class SlotEntry implements CommonColumns {
+        public static final String TABLE_NAME               = "slots";
 
-        public static class Account {
-            public static final String COLUMN_PLACEHOLDER           = "is_placeholder";
-            public static final String COLUMN_COLOR_CODE            = "color_code";
-            public static final String COLUMN_FAVORITE              = "favorite";
-            public static final String COLUMN_FULL_NAME             = "full_name";
-            public static final String COLUMN_HIDDEN                = "is_hidden";
-            public static final String COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID = "default_transfer_account_uid";
+        public static final String COLUMN_OBJ_GUID          = "obj_guid";
+        public static final String COLUMN_NAME              = "name";
+        public static final String COLUMN_SLOT_TYPE         = "slot_type";
+        public static final String COLUMN_INT64_VAL         = "int64_val";
+        public static final String COLUMN_STRING_VAL        = "string_val";
+        public static final String COLUMN_DOUBLE_VAL        = "double_val";
+        public static final String COLUMN_TIMESPEC_VAL      = "timespec_val";
+        public static final String COLUMN_GUID_VAL          = "guid_val";
+        public static final String COLUMN_NUMERIC_VAL_NUM   = "numeric_val_num";
+        public static final String COLUMN_NUMERIC_VAL_DENOM = "numeric_val_denom";
 
-        }
-
-        public static class Transaction {
-
-            /**
-             * Flag for marking transactions which have been exported
-             * @deprecated Transactions are exported based on last modified timestamp
-             */
-            @Deprecated
-            public static final String COLUMN_EXPORTED              = "is_exported";
-            public static final String COLUMN_TEMPLATE              = "is_template";
-            public static final String COLUMN_SCHEDX_ACTION_UID     = "scheduled_action_uid";
-        }
     }
 }
 
@@ -320,6 +335,7 @@ public class DatabaseSchema {
  General:
     - There are no _ids anymore (if we absolutely need them, we can alias _ROWID_ and keep going.
     - Long term, migrate to ViewModel for loading data from the database.
+    - Create views for the different tables which perform the necessary joins
 
  Accounts:
     - Lots of attributes moved to slots table. Join them and create view when accessing accounts
