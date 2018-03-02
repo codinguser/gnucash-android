@@ -16,7 +16,7 @@
  limitations under the License.
 -->
 
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<resources>
     <style name="Theme.GnucashTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Set AppCompat’s actionBarStyle
         <item name="actionBarStyle">@style/MyActionBarStyle</item>
@@ -35,7 +35,7 @@
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
 
-    <style name="Theme.GnucashTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.GnucashTheme.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
         <!-- Set AppCompat’s color theming attrs -->
         <item name="colorPrimary">@color/theme_primary</item>
         <item name="colorPrimaryDark">@color/theme_primary_dark</item>

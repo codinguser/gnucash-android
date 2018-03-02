@@ -28,6 +28,7 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
@@ -67,6 +68,10 @@ import io.fabric.sdk.android.Fabric;
  *
  */
 public class GnuCashApplication extends MultiDexApplication {
+
+    static {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO);
+    }
 
     /**
      * Authority (domain) for the file provider. Also used in the app manifest
