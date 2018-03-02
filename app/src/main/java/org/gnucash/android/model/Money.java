@@ -330,7 +330,7 @@ public final class Money implements Comparable<Money>{
     public Money add(Money addend){
 		if (!mCommodity.equals(addend.mCommodity))
 			throw new CurrencyMismatchException();
-		
+
 		BigDecimal bigD = mAmount.add(addend.mAmount);
 		return new Money(bigD, mCommodity);
 	}
@@ -432,6 +432,16 @@ public final class Money implements Comparable<Money>{
 	 */
 	public String toPlainString(){
 		return mAmount.setScale(mCommodity.getSmallestFractionDigits(), ROUNDING_MODE).toPlainString();
+	}
+
+	/**
+	 * Returns the string representation of the amount (without currency) of the Money object.
+	 * <p>This string is not locale-formatted. The decimal operator is a period (.) and trailing zeros are stripped.</p>
+	 * @return String representation of the amount (without currency) of the Money object
+	 */
+	public String toPlainStringStripTrailingZeros(){
+		return mAmount.setScale(mCommodity.getSmallestFractionDigits(), ROUNDING_MODE)
+				.stripTrailingZeros().toPlainString();
 	}
 
 	/**
