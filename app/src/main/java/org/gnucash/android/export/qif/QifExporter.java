@@ -213,6 +213,15 @@ public class QifExporter extends Exporter{
                         case 1000:
                             precision = 3;
                             break;
+                        case 10000:
+                            precision = 4;
+                            break;
+                        case 100000:
+                            precision = 5;
+                            break;
+                        case 1000000:
+                            precision = 6;
+                            break;
                         default:
                             throw new ExporterException(mExportParams, "split quantity has illegal denominator: "+ quantity_denom);
                     }
