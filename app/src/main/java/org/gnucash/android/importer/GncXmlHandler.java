@@ -432,7 +432,7 @@ public class GncXmlHandler extends DefaultHandler {
                 mAccount.setHidden(accountType == AccountType.ROOT); //flag root account as hidden
                 break;
             case GncXmlHelper.TAG_COMMODITY_SPACE:
-                if (characterString.equals("ISO4217")) {
+                if (characterString.equals("ISO4217") || characterString.equals("CURRENCY") ) {
                     mISO4217Currency = true;
                 } else {
                     // price of non-ISO4217 commodities cannot be handled
