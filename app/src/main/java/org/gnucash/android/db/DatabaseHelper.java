@@ -326,7 +326,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(COMMODITIES_TABLE_CREATE);
         db.execSQL(COMMODITIES_TABLE_TRIGGER);
         db.execSQL(PRICES_TABLE_CREATE);
-        db.execSQL(PRICES_TABLE_TRIGGER;
+        db.execSQL(PRICES_TABLE_TRIGGER);
         db.execSQL(RECURRENCE_TABLE_CREATE);
         db.execSQL(BUDGETS_TABLE_CREATE);
         db.execSQL(BUDGETS_TABLE_TRIGGER);
