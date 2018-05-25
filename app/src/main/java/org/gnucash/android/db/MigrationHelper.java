@@ -521,7 +521,8 @@ public class MigrationHelper {
                     + ScheduledActionEntry.COLUMN_EXECUTION_COUNT+ " integer default 0, "
                     + ScheduledActionEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     + ScheduledActionEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
-                    + ");" + DatabaseHelper.createUpdatedAtTrigger(ScheduledActionEntry.TABLE_NAME));
+                    + ");");
+            db.execSQL(DatabaseHelper.createUpdatedAtTrigger(ScheduledActionEntry.TABLE_NAME));
 
 
             //==============================BEGIN TABLE MIGRATIONS ========================================
@@ -545,7 +546,8 @@ public class MigrationHelper {
                     + AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID + " varchar(255), "
                     + AccountEntry.COLUMN_CREATED_AT + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     + AccountEntry.COLUMN_MODIFIED_AT + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
-                    + ");" + DatabaseHelper.createUpdatedAtTrigger(AccountEntry.TABLE_NAME));
+                    + ");");
+            db.execSQL(DatabaseHelper.createUpdatedAtTrigger(AccountEntry.TABLE_NAME));
 
             // initialize new account table with data from old table
             db.execSQL("INSERT INTO " + AccountEntry.TABLE_NAME + " ( "
@@ -594,7 +596,8 @@ public class MigrationHelper {
                     + TransactionEntry.COLUMN_CREATED_AT + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     + TransactionEntry.COLUMN_MODIFIED_AT + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     + "FOREIGN KEY (" + TransactionEntry.COLUMN_SCHEDX_ACTION_UID + ") REFERENCES " + ScheduledActionEntry.TABLE_NAME + " (" + ScheduledActionEntry.COLUMN_UID + ") ON DELETE SET NULL "
-                    + ");" + DatabaseHelper.createUpdatedAtTrigger(TransactionEntry.TABLE_NAME));
+                    + ");");
+            db.execSQL(DatabaseHelper.createUpdatedAtTrigger(TransactionEntry.TABLE_NAME));
 
             // initialize new transaction table with data from old table
             db.execSQL("INSERT INTO " + TransactionEntry.TABLE_NAME + " ( "
@@ -634,7 +637,8 @@ public class MigrationHelper {
                     + SplitEntry.COLUMN_MODIFIED_AT + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     + "FOREIGN KEY (" + SplitEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + ") ON DELETE CASCADE, "
                     + "FOREIGN KEY (" + SplitEntry.COLUMN_TRANSACTION_UID + ") REFERENCES " + TransactionEntry.TABLE_NAME + " (" + TransactionEntry.COLUMN_UID + ") ON DELETE CASCADE "
-                    + ");" + DatabaseHelper.createUpdatedAtTrigger(SplitEntry.TABLE_NAME));
+                    + ");");
+            db.execSQL(DatabaseHelper.createUpdatedAtTrigger(SplitEntry.TABLE_NAME));
 
             // initialize new split table with data from old table
             db.execSQL("INSERT INTO " + SplitEntry.TABLE_NAME + " ( "
@@ -878,7 +882,8 @@ public class MigrationHelper {
                     + CommodityEntry.COLUMN_QUOTE_FLAG  + " integer not null, "
                     + CommodityEntry.COLUMN_CREATED_AT  + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     + CommodityEntry.COLUMN_MODIFIED_AT + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
-                    + ");" + DatabaseHelper.createUpdatedAtTrigger(CommodityEntry.TABLE_NAME));
+                    + ");");
+            db.execSQL(DatabaseHelper.createUpdatedAtTrigger(CommodityEntry.TABLE_NAME));
             db.execSQL("CREATE UNIQUE INDEX '" + CommodityEntry.INDEX_UID
                     + "' ON " + CommodityEntry.TABLE_NAME + "(" + CommodityEntry.COLUMN_UID + ")");
 
@@ -925,7 +930,8 @@ public class MigrationHelper {
                     + "UNIQUE (" + PriceEntry.COLUMN_COMMODITY_UID + ", " + PriceEntry.COLUMN_CURRENCY_UID + ") ON CONFLICT REPLACE, "
                     + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_COMMODITY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ON DELETE CASCADE, "
                     + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_CURRENCY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ON DELETE CASCADE "
-                    + ");" + DatabaseHelper.createUpdatedAtTrigger(PriceEntry.TABLE_NAME));
+                    + ");");
+            db.execSQL(DatabaseHelper.createUpdatedAtTrigger(PriceEntry.TABLE_NAME));
             db.execSQL("CREATE UNIQUE INDEX '" + PriceEntry.INDEX_UID
                     + "' ON " + PriceEntry.TABLE_NAME + "(" + PriceEntry.COLUMN_UID + ")");
 
@@ -949,7 +955,8 @@ public class MigrationHelper {
                     + SplitEntry.COLUMN_MODIFIED_AT      + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     + "FOREIGN KEY (" 	+ SplitEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + ") ON DELETE CASCADE, "
                     + "FOREIGN KEY (" 	+ SplitEntry.COLUMN_TRANSACTION_UID + ") REFERENCES " + TransactionEntry.TABLE_NAME + " (" + TransactionEntry.COLUMN_UID + ") ON DELETE CASCADE "
-                    + ");" + DatabaseHelper.createUpdatedAtTrigger(SplitEntry.TABLE_NAME));
+                    + ");");
+            db.execSQL(DatabaseHelper.createUpdatedAtTrigger(SplitEntry.TABLE_NAME));
 
             // initialize new split table with data from old table
             db.execSQL("INSERT INTO " + SplitEntry.TABLE_NAME + " ( "
@@ -1255,8 +1262,8 @@ public class MigrationHelper {
                     + RecurrenceEntry.COLUMN_PERIOD_START   + " timestamp not null, "
                     + RecurrenceEntry.COLUMN_PERIOD_END   + " timestamp, "
                     + RecurrenceEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-                    + RecurrenceEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP); "
-                    + DatabaseHelper.createUpdatedAtTrigger(RecurrenceEntry.TABLE_NAME));
+                    + RecurrenceEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP); ");
+            db.execSQL(DatabaseHelper.createUpdatedAtTrigger(RecurrenceEntry.TABLE_NAME));
 
             db.execSQL("CREATE TABLE " + BudgetEntry.TABLE_NAME + " ("
                     + BudgetEntry._ID                   + " integer primary key autoincrement, "
@@ -1268,7 +1275,8 @@ public class MigrationHelper {
                     + BudgetEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     + BudgetEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     + "FOREIGN KEY (" 	+ BudgetEntry.COLUMN_RECURRENCE_UID + ") REFERENCES " + RecurrenceEntry.TABLE_NAME + " (" + RecurrenceEntry.COLUMN_UID + ") "
-                    + ");" + DatabaseHelper.createUpdatedAtTrigger(BudgetEntry.TABLE_NAME));
+                    + ");");
+            db.execSQL(DatabaseHelper.createUpdatedAtTrigger(BudgetEntry.TABLE_NAME));
 
             db.execSQL("CREATE UNIQUE INDEX '" + BudgetEntry.INDEX_UID
                     + "' ON " + BudgetEntry.TABLE_NAME + "(" + BudgetEntry.COLUMN_UID + ")");
@@ -1285,7 +1293,8 @@ public class MigrationHelper {
                     + BudgetAmountEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     + "FOREIGN KEY (" 	+ BudgetAmountEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + ") ON DELETE CASCADE, "
                     + "FOREIGN KEY (" 	+ BudgetAmountEntry.COLUMN_BUDGET_UID + ") REFERENCES " + BudgetEntry.TABLE_NAME + " (" + BudgetEntry.COLUMN_UID + ") ON DELETE CASCADE "
-                    + ");" + DatabaseHelper.createUpdatedAtTrigger(BudgetAmountEntry.TABLE_NAME));
+                    + ");");
+            db.execSQL(DatabaseHelper.createUpdatedAtTrigger(BudgetAmountEntry.TABLE_NAME));
 
             db.execSQL("CREATE UNIQUE INDEX '" + BudgetAmountEntry.INDEX_UID
                     + "' ON " + BudgetAmountEntry.TABLE_NAME + "(" + BudgetAmountEntry.COLUMN_UID + ")");
@@ -1315,7 +1324,8 @@ public class MigrationHelper {
                     + ScheduledActionEntry.COLUMN_CREATED_AT        + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     + ScheduledActionEntry.COLUMN_MODIFIED_AT       + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     + "FOREIGN KEY (" 	+ ScheduledActionEntry.COLUMN_RECURRENCE_UID + ") REFERENCES " + RecurrenceEntry.TABLE_NAME + " (" + RecurrenceEntry.COLUMN_UID + ") "
-                    + ");" + DatabaseHelper.createUpdatedAtTrigger(ScheduledActionEntry.TABLE_NAME));
+                    + ");");
+            db.execSQL(DatabaseHelper.createUpdatedAtTrigger(ScheduledActionEntry.TABLE_NAME));
 
 
             // initialize new transaction table with data from old table
@@ -1408,7 +1418,8 @@ public class MigrationHelper {
                     + SplitEntry.COLUMN_MODIFIED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     + "FOREIGN KEY (" 	+ SplitEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + ") ON DELETE CASCADE, "
                     + "FOREIGN KEY (" 	+ SplitEntry.COLUMN_TRANSACTION_UID + ") REFERENCES " + TransactionEntry.TABLE_NAME + " (" + TransactionEntry.COLUMN_UID + ") ON DELETE CASCADE "
-                    + ");" + DatabaseHelper.createUpdatedAtTrigger(SplitEntry.TABLE_NAME));
+                    + ");");
+            db.execSQL(DatabaseHelper.createUpdatedAtTrigger(SplitEntry.TABLE_NAME));
 
             db.execSQL("INSERT INTO " + SplitEntry.TABLE_NAME + " ( "
                     + SplitEntry._ID                    + " , "

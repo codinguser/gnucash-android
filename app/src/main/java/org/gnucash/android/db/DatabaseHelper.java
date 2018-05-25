@@ -79,7 +79,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + AccountEntry.COLUMN_MODIFIED_AT      + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
 //            + "FOREIGN KEY (" 	+ AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + ") ON DELETE SET NULL, "
             + "FOREIGN KEY (" 	+ AccountEntry.COLUMN_COMMODITY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") "
-			+ ");" + createUpdatedAtTrigger(AccountEntry.TABLE_NAME);
+			+ ");";
+        private static final String ACCOUNTS_TABLE_TRIGGER = createUpdatedAtTrigger(AccountEntry.TABLE_NAME);
 	
 	/**
 	 * SQL statement to create the transactions table in the database
@@ -99,7 +100,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + TransactionEntry.COLUMN_MODIFIED_AT   + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + "FOREIGN KEY (" 	+ TransactionEntry.COLUMN_SCHEDX_ACTION_UID + ") REFERENCES " + ScheduledActionEntry.TABLE_NAME + " (" + ScheduledActionEntry.COLUMN_UID + ") ON DELETE SET NULL, "
             + "FOREIGN KEY (" 	+ TransactionEntry.COLUMN_COMMODITY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") "
-			+ ");" + createUpdatedAtTrigger(TransactionEntry.TABLE_NAME);
+			+ ");";
+         private static final String TRANSACTIONS_TABLE_TRIGGER = createUpdatedAtTrigger(TransactionEntry.TABLE_NAME);
 
     /**
      * SQL statement to create the transaction splits table
@@ -121,7 +123,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + SplitEntry.COLUMN_MODIFIED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + "FOREIGN KEY (" 	+ SplitEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + ") ON DELETE CASCADE, "
             + "FOREIGN KEY (" 	+ SplitEntry.COLUMN_TRANSACTION_UID + ") REFERENCES " + TransactionEntry.TABLE_NAME + " (" + TransactionEntry.COLUMN_UID + ") ON DELETE CASCADE "
-            + ");" + createUpdatedAtTrigger(SplitEntry.TABLE_NAME);
+            + ");";
+    private static final String SPLITS_TABLE_TRIGGER = createUpdatedAtTrigger(SplitEntry.TABLE_NAME);
 
 
     public static final String SCHEDULED_ACTIONS_TABLE_CREATE = "CREATE TABLE " + ScheduledActionEntry.TABLE_NAME + " ("
@@ -145,7 +148,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + ScheduledActionEntry.COLUMN_CREATED_AT        + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + ScheduledActionEntry.COLUMN_MODIFIED_AT       + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + "FOREIGN KEY (" 	+ ScheduledActionEntry.COLUMN_RECURRENCE_UID + ") REFERENCES " + RecurrenceEntry.TABLE_NAME + " (" + RecurrenceEntry.COLUMN_UID + ") "
-            + ");" + createUpdatedAtTrigger(ScheduledActionEntry.TABLE_NAME);
+            + ");";
+    public static final String SCHEDULED_ACTIONS_TABLE_TRIGGER = createUpdatedAtTrigger(ScheduledActionEntry.TABLE_NAME);
 
     public static final String COMMODITIES_TABLE_CREATE = "CREATE TABLE " + DatabaseSchema.CommodityEntry.TABLE_NAME + " ("
             + CommodityEntry._ID                + " integer primary key autoincrement, "
@@ -159,7 +163,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + CommodityEntry.COLUMN_QUOTE_FLAG  + " integer not null, "
             + CommodityEntry.COLUMN_CREATED_AT  + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + CommodityEntry.COLUMN_MODIFIED_AT + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
-            + ");" + createUpdatedAtTrigger(CommodityEntry.TABLE_NAME);
+            + ");";
+    public static final String COMMODITIES_TABLE_TRIGGER = createUpdatedAtTrigger(CommodityEntry.TABLE_NAME);
 
     /**
      * SQL statement to create the commodity prices table
@@ -179,7 +184,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + "UNIQUE (" + PriceEntry.COLUMN_COMMODITY_UID + ", " + PriceEntry.COLUMN_CURRENCY_UID + ") ON CONFLICT REPLACE, "
             + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_COMMODITY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ON DELETE CASCADE, "
             + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_CURRENCY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ON DELETE CASCADE "
-            + ");" + createUpdatedAtTrigger(PriceEntry.TABLE_NAME);
+            + ");";
+    private static final String PRICES_TABLE_TRIGGER = createUpdatedAtTrigger(PriceEntry.TABLE_NAME);
 
 
     private static final String BUDGETS_TABLE_CREATE = "CREATE TABLE " + BudgetEntry.TABLE_NAME + " ("
@@ -192,7 +198,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + BudgetEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + BudgetEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + "FOREIGN KEY (" 	+ BudgetEntry.COLUMN_RECURRENCE_UID + ") REFERENCES " + RecurrenceEntry.TABLE_NAME + " (" + RecurrenceEntry.COLUMN_UID + ") "
-            + ");" + createUpdatedAtTrigger(BudgetEntry.TABLE_NAME);
+            + ");";
+    private static final String BUDGETS_TABLE_TRIGGER = createUpdatedAtTrigger(BudgetEntry.TABLE_NAME);
 
     private static final String BUDGET_AMOUNTS_TABLE_CREATE = "CREATE TABLE " + BudgetAmountEntry.TABLE_NAME + " ("
             + BudgetAmountEntry._ID                   + " integer primary key autoincrement, "
@@ -206,7 +213,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + BudgetAmountEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + "FOREIGN KEY (" 	+ BudgetAmountEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + ") ON DELETE CASCADE, "
             + "FOREIGN KEY (" 	+ BudgetAmountEntry.COLUMN_BUDGET_UID + ") REFERENCES " + BudgetEntry.TABLE_NAME + " (" + BudgetEntry.COLUMN_UID + ") ON DELETE CASCADE "
-            + ");" + createUpdatedAtTrigger(BudgetAmountEntry.TABLE_NAME);
+            + ");";
+    private static final String BUDGET_AMOUNTS_TABLE_TRIGGER = createUpdatedAtTrigger(BudgetAmountEntry.TABLE_NAME);
 
 
     private static final String RECURRENCE_TABLE_CREATE = "CREATE TABLE " + RecurrenceEntry.TABLE_NAME + " ("
@@ -308,14 +316,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private void createDatabaseTables(SQLiteDatabase db) {
         Log.i(LOG_TAG, "Creating database tables");
         db.execSQL(ACCOUNTS_TABLE_CREATE);
+        db.execSQL(ACCOUNTS_TABLE_TRIGGER);
         db.execSQL(TRANSACTIONS_TABLE_CREATE);
+        db.execSQL(TRANSACTIONS_TABLE_TRIGGER);
         db.execSQL(SPLITS_TABLE_CREATE);
+        db.execSQL(SPLITS_TABLE_TRIGGER);
         db.execSQL(SCHEDULED_ACTIONS_TABLE_CREATE);
+        db.execSQL(SCHEDULED_ACTIONS_TABLE_TRIGGER);
         db.execSQL(COMMODITIES_TABLE_CREATE);
+        db.execSQL(COMMODITIES_TABLE_TRIGGER);
         db.execSQL(PRICES_TABLE_CREATE);
+        db.execSQL(PRICES_TABLE_TRIGGER;
         db.execSQL(RECURRENCE_TABLE_CREATE);
         db.execSQL(BUDGETS_TABLE_CREATE);
+        db.execSQL(BUDGETS_TABLE_TRIGGER);
         db.execSQL(BUDGET_AMOUNTS_TABLE_CREATE);
+	db.execSQL(BUDGET_AMOUNTS_TABLE_TRIGGER);
 
 
         String createAccountUidIndex = "CREATE UNIQUE INDEX '" + AccountEntry.INDEX_UID + "' ON "

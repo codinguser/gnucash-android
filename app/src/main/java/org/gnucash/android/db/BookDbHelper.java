@@ -64,7 +64,8 @@ public class BookDbHelper extends SQLiteOpenHelper {
             + BookEntry.COLUMN_LAST_SYNC     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + BookEntry.COLUMN_CREATED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + BookEntry.COLUMN_MODIFIED_AT   + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
-            + ");" + DatabaseHelper.createUpdatedAtTrigger(BookEntry.TABLE_NAME);
+            + ");";
+    private static final String BOOKS_TABLE_TRIGGER = DatabaseHelper.createUpdatedAtTrigger(BookEntry.TABLE_NAME);
 
     public BookDbHelper(Context context) {
         super(context, DatabaseSchema.BOOK_DATABASE_NAME, null, DatabaseSchema.BOOK_DATABASE_VERSION);
@@ -74,6 +75,7 @@ public class BookDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(BOOKS_TABLE_CREATE);
+        db.execSQL(BOOKS_TABLE_TRIGGER);
 
         if (mContext.getDatabasePath(DatabaseSchema.LEGACY_DATABASE_NAME).exists()){
             Log.d(LOG_TAG, "Legacy database found. Migrating to multibook format");
