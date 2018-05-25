@@ -331,7 +331,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(BUDGETS_TABLE_CREATE);
         db.execSQL(BUDGETS_TABLE_TRIGGER);
         db.execSQL(BUDGET_AMOUNTS_TABLE_CREATE);
-	db.execSQL(BUDGET_AMOUNTS_TABLE_TRIGGER);
+        db.execSQL(BUDGET_AMOUNTS_TABLE_TRIGGER);
 
 
         String createAccountUidIndex = "CREATE UNIQUE INDEX '" + AccountEntry.INDEX_UID + "' ON "
