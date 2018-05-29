@@ -16,13 +16,11 @@
  */
 package org.gnucash.android.ui.settings.dialog;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -31,9 +29,9 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
-import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
+import org.gnucash.android.util.BackupManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +42,7 @@ import java.util.List;
  * @author ngewif <ngewif@gmail.com>
  * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
-public class DeleteAllTransactionsConfirmationDialog extends DialogFragment {
+public class DeleteAllTransactionsConfirmationDialog extends DoubleConfirmationDialog {
 
     public static DeleteAllTransactionsConfirmationDialog newInstance() {
         DeleteAllTransactionsConfirmationDialog frag = new DeleteAllTransactionsConfirmationDialog();
@@ -53,13 +51,13 @@ public class DeleteAllTransactionsConfirmationDialog extends DialogFragment {
 
     @Override
     @NonNull public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new AlertDialog.Builder(getActivity())
+        return getDialogBuilder()
                 .setIcon(android.R.drawable.ic_delete)
                 .setTitle(R.string.title_confirm_delete).setMessage(R.string.msg_delete_all_transactions_confirmation)
                 .setPositiveButton(R.string.alert_dialog_ok_delete,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                GncXmlExporter.createBackup();
+                                BackupManager.backupActiveBook();
 
                                 Context context = getActivity();
                                 AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
@@ -80,19 +78,6 @@ public class DeleteAllTransactionsConfirmationDialog extends DialogFragment {
                             }
                         }
 
-                )
-                .
-
-                        setNegativeButton(R.string.alert_dialog_cancel,
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int whichButton) {
-                                        dismiss();
-                                    }
-                                }
-
-                        )
-                .
-
-                        create();
+                ).create();
     }
 }

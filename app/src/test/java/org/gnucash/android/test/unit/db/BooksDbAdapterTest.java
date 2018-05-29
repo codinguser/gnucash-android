@@ -15,21 +15,19 @@
  */
 package org.gnucash.android.test.unit.db;
 
-import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.importer.GncXmlImporter;
 import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Book;
-import org.gnucash.android.test.unit.testutil.GnucashTestRunner;
 import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
 import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.xml.sax.SAXException;
 
@@ -38,13 +36,14 @@ import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test the book database adapter
  */
-@RunWith(GnucashTestRunner.class) //package is required so that resources can be found in dev mode
-@Config(constants = BuildConfig.class, sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
+@RunWith(RobolectricTestRunner.class) //package is required so that resources can be found in dev mode
+@Config(sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
 public class BooksDbAdapterTest {
 
     private BooksDbAdapter mBooksDbAdapter;
@@ -158,6 +157,42 @@ public class BooksDbAdapterTest {
         String generatedName = mBooksDbAdapter.generateDefaultBookName();
         assertThat(generatedName).isNotEqualTo(book3.getDisplayName());
         assertThat(generatedName).isEqualTo("Book 4");
+    }
+
+    @Test
+    public void recoverFromNoActiveBookFound() {
+        Book book1 = new Book(BaseModel.generateUID());
+        book1.setActive(false);
+        mBooksDbAdapter.addRecord(book1);
+
+        Book book2 = new Book(BaseModel.generateUID());
+        book2.setActive(false);
+        mBooksDbAdapter.addRecord(book2);
+
+        try {
+            mBooksDbAdapter.getActiveBookUID();
+            fail("There shouldn't be any active book.");
+        } catch (BooksDbAdapter.NoActiveBookFoundException e) {
+            mBooksDbAdapter.fixBooksDatabase();
+        }
+
+        assertThat(mBooksDbAdapter.getActiveBookUID()).isEqualTo(book1.getUID());
+    }
+
+    /**
+     * Tests the recovery from an empty books database.
+     */
+    @Test
+    public void recoverFromEmptyDatabase() {
+        createNewBookWithDefaultAccounts();
+        mBooksDbAdapter.deleteAllRecords();
+        assertThat(mBooksDbAdapter.getRecordsCount()).isZero();
+
+        mBooksDbAdapter.fixBooksDatabase();
+
+        // Should've recovered the one from setUp() plus the one created above
+        assertThat(mBooksDbAdapter.getRecordsCount()).isEqualTo(2);
+        mBooksDbAdapter.getActiveBookUID(); // should not throw exception
     }
 
     /**

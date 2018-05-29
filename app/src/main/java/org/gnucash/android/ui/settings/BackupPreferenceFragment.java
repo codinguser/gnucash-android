@@ -48,10 +48,9 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.export.Exporter;
-import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.ui.settings.dialog.OwnCloudDialogFragment;
-import org.gnucash.android.util.BookUtils;
+import org.gnucash.android.util.BackupManager;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -151,7 +150,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 
 		pref = findPreference(getString(R.string.key_backup_location));
 		pref.setOnPreferenceClickListener(this);
-		String defaultBackupLocation = BookUtils.getBookBackupFileUri(BooksDbAdapter.getInstance().getActiveBookUID());
+		String defaultBackupLocation = BackupManager.getBookBackupFileUri(BooksDbAdapter.getInstance().getActiveBookUID());
 		if (defaultBackupLocation != null){
 			pref.setSummary(Uri.parse(defaultBackupLocation).getAuthority());
 		}
@@ -175,7 +174,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 
 		if (key.equals(getString(R.string.key_backup_location))){
 			Intent createIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-			createIntent.setType("application/zip");
+			createIntent.setType("*/*");
 			createIntent.addCategory(Intent.CATEGORY_OPENABLE);
 			String bookName = BooksDbAdapter.getInstance().getActiveBookDisplayName();
 			createIntent.putExtra(Intent.EXTRA_TITLE, Exporter.sanitizeFilename(bookName)+ "_" + getString(R.string.label_backup_filename));
@@ -193,7 +192,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 		}
 
 		if (key.equals(getString(R.string.key_create_backup))){
-			boolean result = GncXmlExporter.createBackup();
+			boolean result = BackupManager.backupActiveBook();
 			int msg = result ? R.string.toast_backup_successful : R.string.toast_backup_failed;
 			Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
 		}
@@ -369,9 +368,9 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 	 */
 	private void restoreBackup() {
 		Log.i("Settings", "Opening GnuCash XML backups for restore");
-		String bookUID = BooksDbAdapter.getInstance().getActiveBookUID();
+		final String bookUID = BooksDbAdapter.getInstance().getActiveBookUID();
 
-		final String defaultBackupFile = BookUtils.getBookBackupFileUri(bookUID);
+		final String defaultBackupFile = BackupManager.getBookBackupFileUri(bookUID);
 		if (defaultBackupFile != null){
 			android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity())
 					.setTitle(R.string.title_confirm_restore_backup)
@@ -393,8 +392,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 		}
 
 		//If no default location was set, look in the internal SD card location
-		File[] backupFiles = new File(Exporter.getBackupFolderPath(bookUID)).listFiles();
-		if (backupFiles == null || backupFiles.length == 0){
+		if (BackupManager.getBackupList(bookUID).isEmpty()){
 			android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity())
 					.setTitle(R.string.title_no_backups_found)
 					.setMessage(R.string.msg_no_backups_to_restore_from)
@@ -408,14 +406,10 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 			return;
 		}
 
-		Arrays.sort(backupFiles);
-		List<File> backupFilesList = Arrays.asList(backupFiles);
-		Collections.reverse(backupFilesList);
-		final File[] sortedBackupFiles = (File[]) backupFilesList.toArray();
 
 		final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.select_dialog_singlechoice);
 		final DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance();
-		for (File backupFile : sortedBackupFiles) {
+		for (File backupFile : BackupManager.getBackupList(bookUID)) {
 			long time = Exporter.getExportTime(backupFile.getName());
 			if (time > 0)
 				arrayAdapter.add(dateFormatter.format(new Date(time)));
@@ -435,7 +429,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 		restoreDialogBuilder.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				File backupFile = sortedBackupFiles[which];
+				File backupFile = BackupManager.getBackupList(bookUID).get(which);
 				new ImportAsyncTask(getActivity()).execute(Uri.fromFile(backupFile));
 			}
 		});
@@ -477,7 +471,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 
 					PreferenceActivity.getActiveBookSharedPreferences()
 							.edit()
-							.putString(BookUtils.KEY_BACKUP_FILE, backupFileUri.toString())
+							.putString(BackupManager.KEY_BACKUP_FILE, backupFileUri.toString())
 							.apply();
 
 					Preference pref = findPreference(getString(R.string.key_backup_location));

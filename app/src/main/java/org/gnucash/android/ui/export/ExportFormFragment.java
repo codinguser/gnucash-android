@@ -23,6 +23,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
@@ -133,10 +134,18 @@ public class ExportFormFragment extends Fragment implements
 	@BindView(R.id.switch_export_all) SwitchCompat mExportAllSwitch;
 
 	@BindView(R.id.export_date_layout) LinearLayout mExportDateLayout;
+	@BindView(R.id.export_separator_layout) LinearLayout mExportSeparatorLayout;
 
 	@BindView(R.id.radio_ofx_format) RadioButton mOfxRadioButton;
 	@BindView(R.id.radio_qif_format) RadioButton mQifRadioButton;
 	@BindView(R.id.radio_xml_format) RadioButton mXmlRadioButton;
+	@BindView(R.id.radio_csv_accounts_format) RadioButton mCsvAccountsRadioButton;
+	@BindView(R.id.radio_csv_transactions_format) RadioButton mCsvTransactionsRadioButton;
+
+	@BindView(R.id.radio_separator_comma_format) RadioButton mSeparatorCommaButton;
+	@BindView(R.id.radio_separator_colon_format) RadioButton mSeparatorColonButton;
+	@BindView(R.id.radio_separator_semicolon_format) RadioButton mSeparatorSemicolonButton;
+	@BindView(R.id.layout_csv_options) LinearLayout mCsvOptionsLayout;
 
 	@BindView(R.id.recurrence_options) View mRecurrenceOptionsView;
 	/**
@@ -168,6 +177,8 @@ public class ExportFormFragment extends Fragment implements
 	 */
 	private Uri mExportUri;
 
+	private char mExportCsvSeparator = ',';
+
 	/**
 	 * Flag to determine if export has been started.
 	 * Used to continue export after user has picked a destination file
@@ -185,6 +196,7 @@ public class ExportFormFragment extends Fragment implements
                     mExportWarningTextView.setVisibility(View.GONE);
                 }
 				mExportDateLayout.setVisibility(View.VISIBLE);
+				mExportSeparatorLayout.setVisibility(View.GONE);
                 break;
 
             case R.id.radio_qif_format:
@@ -197,12 +209,37 @@ public class ExportFormFragment extends Fragment implements
                     mExportWarningTextView.setVisibility(View.GONE);
                 }
 				mExportDateLayout.setVisibility(View.VISIBLE);
+				mCsvOptionsLayout.setVisibility(View.GONE);
 				break;
 
 			case R.id.radio_xml_format:
 				mExportFormat = ExportFormat.XML;
 				mExportWarningTextView.setText(R.string.export_warning_xml);
 				mExportDateLayout.setVisibility(View.GONE);
+				mCsvOptionsLayout.setVisibility(View.GONE);
+				break;
+
+			case R.id.radio_csv_accounts_format:
+				mExportFormat = ExportFormat.CSVA;
+				mExportWarningTextView.setText("");
+				mExportDateLayout.setVisibility(View.GONE);
+				mCsvOptionsLayout.setVisibility(View.VISIBLE);
+				break;
+			case R.id.radio_csv_transactions_format:
+				mExportFormat = ExportFormat.CSVT;
+				mExportWarningTextView.setText("");
+				mExportDateLayout.setVisibility(View.GONE);
+				mCsvOptionsLayout.setVisibility(View.VISIBLE);
+				break;
+
+			case R.id.radio_separator_comma_format:
+				mExportCsvSeparator = ',';
+				break;
+			case R.id.radio_separator_colon_format:
+				mExportCsvSeparator = ':';
+				break;
+			case R.id.radio_separator_semicolon_format:
+				mExportCsvSeparator = ';';
 				break;
         }
     }
@@ -215,6 +252,10 @@ public class ExportFormFragment extends Fragment implements
 		ButterKnife.bind(this, view);
 
 		bindViewListeners();
+
+		String[] export_format_strings = getResources().getStringArray(R.array.export_formats);
+		mCsvAccountsRadioButton.setText(export_format_strings[3]);
+		mCsvTransactionsRadioButton.setText(export_format_strings[4]);
 
 		return view;
 	}
@@ -288,6 +329,7 @@ public class ExportFormFragment extends Fragment implements
 		exportParameters.setExportTarget(mExportTarget);
 		exportParameters.setExportLocation(mExportUri != null ? mExportUri.toString() : null);
 		exportParameters.setDeleteTransactionsAfterExport(mDeleteAllCheckBox.isChecked());
+		exportParameters.setCsvSeparator(mExportCsvSeparator);
 
 		Log.i(TAG, "Commencing async export of transactions");
 		new ExportAsyncTask(getActivity(), GnuCashApplication.getActiveDb()).execute(exportParameters);
@@ -437,8 +479,8 @@ public class ExportFormFragment extends Fragment implements
 				mExportStartDate.setEnabled(!isChecked);
 				mExportStartTime.setEnabled(!isChecked);
 				int color = isChecked ? android.R.color.darker_gray : android.R.color.black;
-				mExportStartDate.setTextColor(getResources().getColor(color));
-				mExportStartTime.setTextColor(getResources().getColor(color));
+				mExportStartDate.setTextColor(ContextCompat.getColor(getContext(), color));
+				mExportStartTime.setTextColor(ContextCompat.getColor(getContext(), color));
 			}
 		});
 
@@ -464,12 +506,20 @@ public class ExportFormFragment extends Fragment implements
 		mOfxRadioButton.setOnClickListener(radioClickListener);
 		mQifRadioButton.setOnClickListener(radioClickListener);
 		mXmlRadioButton.setOnClickListener(radioClickListener);
+		mCsvAccountsRadioButton.setOnClickListener(radioClickListener);
+		mCsvTransactionsRadioButton.setOnClickListener(radioClickListener);
+
+		mSeparatorCommaButton.setOnClickListener(radioClickListener);
+		mSeparatorColonButton.setOnClickListener(radioClickListener);
+		mSeparatorSemicolonButton.setOnClickListener(radioClickListener);
 
 		ExportFormat defaultFormat = ExportFormat.valueOf(defaultExportFormat.toUpperCase());
 		switch (defaultFormat){
 			case QIF: mQifRadioButton.performClick(); break;
 			case OFX: mOfxRadioButton.performClick(); break;
 			case XML: mXmlRadioButton.performClick(); break;
+			case CSVA: mCsvAccountsRadioButton.performClick(); break;
+			case CSVT: mCsvTransactionsRadioButton.performClick(); break;
 		}
 
 		if (GnuCashApplication.isDoubleEntryEnabled()){
@@ -499,15 +549,12 @@ public class ExportFormFragment extends Fragment implements
 	 */
 	private void selectExportFile() {
 		Intent createIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-		createIntent.setType("text/*").addCategory(Intent.CATEGORY_OPENABLE);
+		createIntent.setType("*/*").addCategory(Intent.CATEGORY_OPENABLE);
 		String bookName = BooksDbAdapter.getInstance().getActiveBookDisplayName();
 
-		if (mExportFormat == ExportFormat.XML || mExportFormat == ExportFormat.QIF) {
-			createIntent.setType("application/zip");
-		}
-
 		String filename = Exporter.buildExportFilename(mExportFormat, bookName);
-		if (mExportTarget == ExportParams.ExportTarget.URI && mExportFormat == ExportFormat.QIF){
+		if (mExportFormat == ExportFormat.QIF) {
+			createIntent.setType("application/zip");
 			filename += ".zip";
 		}
 

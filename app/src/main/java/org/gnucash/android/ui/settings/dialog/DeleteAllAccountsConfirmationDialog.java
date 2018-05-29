@@ -16,19 +16,16 @@
 
 package org.gnucash.android.ui.settings.dialog;
 
-import android.annotation.TargetApi;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.widget.Toast;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
-import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
+import org.gnucash.android.util.BackupManager;
 
 /**
  * Confirmation dialog for deleting all accounts from the system.
@@ -36,7 +33,7 @@ import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class DeleteAllAccountsConfirmationDialog extends DialogFragment {
+public class DeleteAllAccountsConfirmationDialog extends DoubleConfirmationDialog {
 
     public static DeleteAllAccountsConfirmationDialog newInstance() {
         DeleteAllAccountsConfirmationDialog frag = new DeleteAllAccountsConfirmationDialog();
@@ -45,24 +42,17 @@ public class DeleteAllAccountsConfirmationDialog extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new AlertDialog.Builder(getActivity())
+        return getDialogBuilder()
                 .setIcon(android.R.drawable.ic_delete)
                 .setTitle(R.string.title_confirm_delete).setMessage(R.string.confirm_delete_all_accounts)
                 .setPositiveButton(R.string.alert_dialog_ok_delete,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 Context context = getDialog().getContext();
-                                GncXmlExporter.createBackup();
+                                BackupManager.backupActiveBook();
                                 AccountsDbAdapter.getInstance().deleteAllRecords();
                                 Toast.makeText(context, R.string.toast_all_accounts_deleted, Toast.LENGTH_SHORT).show();
                                 WidgetConfigurationActivity.updateAllWidgets(context);
-                            }
-                        }
-                )
-                .setNegativeButton(R.string.alert_dialog_cancel,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                dismiss();
                             }
                         }
                 )

@@ -1,16 +1,15 @@
 package org.gnucash.android.test.unit.model;
 
-import org.gnucash.android.BuildConfig;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
-import org.gnucash.android.test.unit.testutil.GnucashTestRunner;
 import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
 import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
@@ -18,8 +17,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(GnucashTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
+@RunWith(RobolectricTestRunner.class)
+@Config(sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
 public class TransactionTest {
 
 	@Test
@@ -80,6 +79,7 @@ public class TransactionTest {
 	@Test
 	public void testCreateAutoBalanceSplit() {
 		Transaction transactionCredit = new Transaction("Transaction with more credit");
+        transactionCredit.setCommodity(Commodity.getInstance("EUR"));
 		Split creditSplit = new Split(new Money("1", "EUR"), "test-account");
 		creditSplit.setType(TransactionType.CREDIT);
 		transactionCredit.addSplit(creditSplit);
@@ -93,6 +93,7 @@ public class TransactionTest {
 
 
 		Transaction transactionDebit = new Transaction("Transaction with more debit");
+		transactionDebit.setCommodity(Commodity.getInstance("EUR"));
 		Split debitSplit = new Split(new Money("1", "EUR"), "test-account");
 		debitSplit.setType(TransactionType.DEBIT);
 		transactionDebit.addSplit(debitSplit);

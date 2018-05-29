@@ -15,23 +15,21 @@
  */
 package org.gnucash.android.test.unit.export;
 
-import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.BookDbHelper;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.GncXmlImporter;
-import org.gnucash.android.test.unit.db.AccountsDbAdapterTest;
-import org.gnucash.android.test.unit.testutil.GnucashTestRunner;
 import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
 import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
+import org.gnucash.android.util.BackupManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.xml.sax.SAXException;
 
@@ -46,19 +44,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Test backup and restore functionality
  */
-@RunWith(GnucashTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
+@RunWith(RobolectricTestRunner.class)
+@Config(sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
 public class BackupTest {
 
     @Before
     public void setUp(){
         loadDefaultAccounts();
-    }
-
-    @Test
-    public void shouldCreateBackup(){
-        boolean backupResult = GncXmlExporter.createBackup();
-        assertThat(backupResult).isTrue();
     }
 
     @Test

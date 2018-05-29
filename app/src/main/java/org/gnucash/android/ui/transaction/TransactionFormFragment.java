@@ -236,6 +236,13 @@ public class TransactionFormFragment extends Fragment implements
     private boolean mEditMode = false;
 
     /**
+     * Flag which is set if another action is triggered during a transaction save (which interrrupts the save process).
+     * Allows the fragment to check and resume the save operation.
+     * Primarily used for multicurrency transactions when the currency transfer dialog is opened during save
+     */
+    private boolean onSaveAttempt = false;
+
+    /**
      * Split quantity which will be set from the funds transfer dialog
      */
     private Money mSplitQuantity;
@@ -322,9 +329,7 @@ public class TransactionFormFragment extends Fragment implements
 
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                // Remove the favorite star from the view to avoid visual clutter.
-                TextView qualifiedAccountName = (TextView) view;
-                qualifiedAccountName.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
+                removeFavoriteIconFromSelectedView((TextView) view);
 
                 if (mSplitsList.size() == 2) { //when handling simple transfer to one account
                     for (Split split : mSplitsList) {
@@ -339,6 +344,13 @@ public class TransactionFormFragment extends Fragment implements
                     return;
                 }
                 startTransferFunds();
+            }
+
+            // Removes the icon from view to avoid visual clutter
+            private void removeFavoriteIconFromSelectedView(TextView view) {
+                if (view != null) {
+                    view.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                }
             }
 
             @Override
@@ -698,7 +710,7 @@ public class TransactionFormFragment extends Fragment implements
 
         BigDecimal amountBigd = mAmountEditText.getValue();
         String baseCurrencyCode = mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID);
-        Money value = new Money(amountBigd, Commodity.getInstance(baseCurrencyCode));
+        Money value 	= new Money(amountBigd, Commodity.getInstance(baseCurrencyCode));
         Money quantity = new Money(value);
 
         String transferAcctUID = getTransferAccountUID();
@@ -828,6 +840,7 @@ public class TransactionFormFragment extends Fragment implements
         //determine whether we need to do currency conversion
 
         if (isMultiCurrencyTransaction() && !splitEditorUsed() && !mCurrencyConversionDone){
+            onSaveAttempt = true;
             startTransferFunds();
             return;
         }
@@ -1034,6 +1047,11 @@ public class TransactionFormFragment extends Fragment implements
     public void transferComplete(Money amount) {
         mCurrencyConversionDone = true;
         mSplitQuantity = amount;
+
+        //The transfer dialog was called while attempting to save. So try saving again
+        if (onSaveAttempt)
+            saveNewTransaction();
+        onSaveAttempt = false;
     }
 
     @Override

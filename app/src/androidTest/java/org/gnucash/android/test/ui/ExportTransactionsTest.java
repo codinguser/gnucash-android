@@ -28,6 +28,7 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.espresso.matcher.ViewMatchers;
+import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v7.preference.PreferenceManager;
 import android.test.ActivityInstrumentationTestCase2;
@@ -59,6 +60,7 @@ import org.gnucash.android.util.BookUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -95,7 +97,9 @@ public class ExportTransactionsTest extends
 
 	private AccountsActivity mAcccountsActivity;
 
-    public ExportTransactionsTest() {
+	@Rule public GrantPermissionRule animationPermissionsRule = GrantPermissionRule.grant(Manifest.permission.SET_ANIMATION_SCALE);
+
+	public ExportTransactionsTest() {
 		super(AccountsActivity.class);
 	}
 

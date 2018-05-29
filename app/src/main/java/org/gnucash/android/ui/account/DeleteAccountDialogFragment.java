@@ -39,6 +39,7 @@ import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
+import org.gnucash.android.util.BackupManager;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.util.List;
@@ -209,6 +210,7 @@ public class DeleteAccountDialogFragment extends DialogFragment {
 
             @Override
             public void onClick(View v) {
+                BackupManager.backupActiveBook();
 
                 AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
 

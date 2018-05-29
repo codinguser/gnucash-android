@@ -60,6 +60,7 @@ import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.ui.transaction.dialog.BulkMoveDialogFragment;
 import org.gnucash.android.ui.util.CursorRecyclerAdapter;
 import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
+import org.gnucash.android.util.BackupManager;
 
 import java.util.List;
 
@@ -354,6 +355,7 @@ public class TransactionsListFragment extends Fragment implements
 			public boolean onMenuItemClick(MenuItem item) {
 				switch (item.getItemId()) {
 					case R.id.context_menu_delete:
+						BackupManager.backupActiveBook();
 						mTransactionsDbAdapter.deleteRecord(transactionId);
 						WidgetConfigurationActivity.updateAllWidgets(getActivity());
 						refresh();

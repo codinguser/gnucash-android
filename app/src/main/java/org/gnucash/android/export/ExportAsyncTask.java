@@ -35,7 +35,6 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
-import com.dropbox.core.v2.files.Metadata;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveApi;
@@ -57,6 +56,8 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
+import org.gnucash.android.export.csv.CsvAccountExporter;
+import org.gnucash.android.export.csv.CsvTransactionsExporter;
 import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.export.qif.QifExporter;
 import org.gnucash.android.export.xml.GncXmlExporter;
@@ -65,20 +66,17 @@ import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.account.AccountsListFragment;
 import org.gnucash.android.ui.settings.BackupPreferenceFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
+import org.gnucash.android.util.BackupManager;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /**
  * Asynchronous task for exporting transactions.
@@ -217,7 +215,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
     /**
      * Returns an exporter corresponding to the user settings.
-     * @return Object of one of {@link QifExporter}, {@link OfxExporter} or {@link GncXmlExporter}
+     * @return Object of one of {@link QifExporter}, {@link OfxExporter} or {@link GncXmlExporter}, {@Link CsvAccountExporter} or {@Link CsvTransactionsExporter}
      */
     private Exporter getExporter() {
         switch (mExportParams.getExportFormat()) {
@@ -228,8 +226,11 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 return new OfxExporter(mExportParams, mDb);
 
             case XML:
-            default:
                 return new GncXmlExporter(mExportParams, mDb);
+            case CSVA:
+                return new CsvAccountExporter(mExportParams, mDb);
+            default:
+                return new CsvTransactionsExporter(mExportParams, mDb);
         }
     }
 
@@ -271,7 +272,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     /**
      * Move the exported files to a specified URI.
      * This URI could be a Storage Access Framework file
-     * @throws Exporter.ExporterException
+     * @throws Exporter.ExporterException if something failed while moving the exported file
      */
     private void moveExportToUri() throws Exporter.ExporterException {
         Uri exportUri = Uri.parse(mExportParams.getExportLocation());
@@ -283,32 +284,17 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         if (mExportedFiles.size() > 0){
             try {
                 OutputStream outputStream = mContext.getContentResolver().openOutputStream(exportUri);
-                ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
-                byte[] buffer = new byte[1024];
-                for (String exportedFile : mExportedFiles) {
-                    File file = new File(exportedFile);
-                    FileInputStream fileInputStream = new FileInputStream(file);
-                    zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
-
-                    int length;
-                    while ((length = fileInputStream.read(buffer)) > 0) {
-                        zipOutputStream.write(buffer, 0, length);
-                    }
-                    zipOutputStream.closeEntry();
-                    fileInputStream.close();
-                }
-                zipOutputStream.close();
+                // Now we always get just one file exported (QIFs are zipped)
+                org.gnucash.android.util.FileUtils.moveFile(mExportedFiles.get(0), outputStream);
             } catch (IOException ex) {
-                Log.e(TAG, "Error when zipping QIF files for export");
-                ex.printStackTrace();
-                Crashlytics.logException(ex);
+                throw new Exporter.ExporterException(mExportParams, "Error when moving file to URI");
             }
         }
     }
 
     /**
      * Move the exported files to a GnuCash folder on Google Drive
-     * @throws Exporter.ExporterException
+     * @throws Exporter.ExporterException if something failed while moving the exported file
      * @deprecated Explicit Google Drive integration is deprecated, use Storage Access Framework. See {@link #moveExportToUri()}
      */
     @Deprecated
@@ -370,11 +356,8 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
         for (String exportedFilePath : mExportedFiles) {
             File exportedFile = new File(exportedFilePath);
-            FileInputStream inputStream = null;
             try {
-                inputStream = new FileInputStream(exportedFile);
-                List<Metadata> entries = dbxClient.files().listFolder("").getEntries();
-
+                FileInputStream inputStream = new FileInputStream(exportedFile);
                 FileMetadata metadata = dbxClient.files()
                         .uploadBuilder("/" + exportedFile.getName())
                         .uploadAndFinish(inputStream);
@@ -425,13 +408,19 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             String mimeType = mExporter.getExportMimeType();
 
             RemoteOperationResult result = new UploadRemoteFileOperation(
-                    exportedFilePath, remotePath, mimeType).execute(mClient);
-
+                    exportedFilePath, remotePath, mimeType,
+                    getFileLastModifiedTimestamp(exportedFilePath))
+                    .execute(mClient);
             if (!result.isSuccess())
                 throw new Exporter.ExporterException(mExportParams, result.getLogMessage());
 
             new File(exportedFilePath).delete();
         }
+    }
+
+    private static String getFileLastModifiedTimestamp(String path) {
+        Long timeStampLong = new File(path).lastModified() / 1000;
+        return timeStampLong.toString();
     }
 
     /**
@@ -449,7 +438,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         for (String src: mExportedFiles) {
             String dst = Exporter.getExportFolderPath(mExporter.mBookUID) + stripPathPart(src);
             try {
-                moveFile(src, dst);
+                org.gnucash.android.util.FileUtils.moveFile(src, dst);
                 dstFiles.add(dst);
             } catch (IOException e) {
                 throw new Exporter.ExporterException(mExportParams, e);
@@ -470,7 +459,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     private void backupAndDeleteTransactions(){
         Log.i(TAG, "Backup and deleting transactions after export");
-        GncXmlExporter.createBackup(); //create backup before deleting everything
+        BackupManager.backupActiveBook(); //create backup before deleting everything
         List<Transaction> openingBalances = new ArrayList<>();
         boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
 
@@ -539,49 +528,6 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             exportFiles.add(contentUri);
         }
         return exportFiles;
-    }
-
-    /**
-     * Moves a file from <code>src</code> to <code>dst</code>
-     * @param src Absolute path to the source file
-     * @param dst Absolute path to the destination file
-     * @throws IOException if the file could not be moved.
-     */
-    public void moveFile(String src, String dst) throws IOException {
-        File srcFile = new File(src);
-        File dstFile = new File(dst);
-        FileChannel inChannel = new FileInputStream(srcFile).getChannel();
-        FileChannel outChannel = new FileOutputStream(dstFile).getChannel();
-        try {
-            inChannel.transferTo(0, inChannel.size(), outChannel);
-        } finally {
-            if (inChannel != null)
-                inChannel.close();
-            outChannel.close();
-        }
-        srcFile.delete();
-    }
-
-    /**
-     * Move file from a location on disk to an outputstream.
-     * The outputstream could be for a URI in the Storage Access Framework
-     * @param src Input file (usually newly exported file)
-     * @param outputStream Output stream to write to
-     * @throws IOException if error occurred while moving the file
-     */
-    public void moveFile(@NonNull String src, @NonNull OutputStream outputStream) throws IOException {
-        byte[] buffer = new byte[1024];
-        int read;
-        try (FileInputStream inputStream = new FileInputStream(src)) {
-            while ((read = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, read);
-            }
-        } finally {
-            outputStream.flush();
-            outputStream.close();
-        }
-        Log.i(TAG, "Deleting temp export file: " + src);
-        new File(src).delete();
     }
 
     private void reportSuccess() {

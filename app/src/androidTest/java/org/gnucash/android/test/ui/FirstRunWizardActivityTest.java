@@ -15,9 +15,11 @@
  */
 package org.gnucash.android.test.ui;
 
+import android.Manifest;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
@@ -31,6 +33,7 @@ import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.ui.wizard.FirstRunWizardActivity;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -56,6 +59,9 @@ public class FirstRunWizardActivityTest extends ActivityInstrumentationTestCase2
     private SplitsDbAdapter mSplitsDbAdapter;
 
     FirstRunWizardActivity mActivity;
+
+    @Rule public GrantPermissionRule animationPermissionsRule = GrantPermissionRule.grant(Manifest.permission.SET_ANIMATION_SCALE);
+
     public FirstRunWizardActivityTest() {
         super(FirstRunWizardActivity.class);
     }
@@ -101,7 +107,8 @@ public class FirstRunWizardActivityTest extends ActivityInstrumentationTestCase2
         onView(withId(R.id.btn_save)).perform(click());
 
         //default accounts should be created
-        assertThat(mAccountsDbAdapter.getRecordsCount()).isGreaterThan(60);
+        long actualCount = GnuCashApplication.getAccountsDbAdapter().getRecordsCount();
+        assertThat(actualCount).isGreaterThan(60L);
 
         boolean enableCrashlytics = GnuCashApplication.isCrashlyticsEnabled();
         assertThat(enableCrashlytics).isTrue();

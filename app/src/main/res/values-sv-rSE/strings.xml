@@ -20,7 +20,7 @@
   <string name="title_edit_account">Redigera konto</string>
   <string name="description_add_transaction_icon">Lägg till en transaktion till ett konto</string>
   <string name="description_view_account_icon">Visa kontodetaljer</string>
-  <string name="label_no_accounts">Det finns inga konton att visa</string>
+  <string name="label_no_accounts">Inga konton att visa</string>
   <string name="label_account_name">Kontonamn</string>
   <string name="btn_cancel">Avbryt</string>
   <string name="btn_save">Spara</string>
@@ -33,7 +33,7 @@
   <string name="label_transaction_name">Beskrivning</string>
   <string name="label_transaction_amount">Belopp</string>
   <string name="title_add_transaction">Lägg till transaktion</string>
-  <string name="label_no_transactions">Det finns inga transaktioner att visa</string>
+  <string name="label_no_transactions">Inga transaktioner att visa</string>
   <string name="label_debit">DEBIT</string>
   <string name="label_credit">KREDIT</string>
   <string name="title_accounts">Konton</string>
@@ -79,7 +79,7 @@
   <string name="label_display_account">Visa konto</string>
   <string name="label_hide_account_balance">Dölja kontosaldo i widget</string>
   <string name="btn_create_accounts">Skapa konton</string>
-  <string name="error_no_accounts">Inga konton finns i GnuCash.\nSkapa ett konto innan du lägger till en widget</string>
+  <string name="error_no_accounts">Inga konton finns i GnuCash.\nSkapa ett konto innan du lägger till en gränssnittskomponent</string>
   <string name="title_license">Licens</string>
   <string name="summary_licence_details">Apache License v2.0. Klicka för Detaljer</string>
   <string name="title_general_prefs">Allmänna inställningar</string>
@@ -170,6 +170,8 @@
     <item>QIF</item>
     <item>OFX</item>
     <item>XML</item>
+    <item>CSV-konton</item>
+    <item>CSV-transaktioner</item>
   </string-array>
   <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
   <string name="color_picker_default_title">Välj en färg</string>
@@ -293,7 +295,7 @@
   <string name="label_old_passcode">Ange din gamla lösenkod</string>
   <string name="label_new_passcode">Ange din nya lösenkod</string>
   <string name="title_scheduled_exports">Exporter</string>
-  <string name="label_no_scheduled_exports_to_display">Ingen schemalagda exporter att Visa</string>
+  <string name="label_no_scheduled_exports_to_display">Inga schemalagda exporter att visa</string>
   <string name="title_create_export_schedule">Skapa exportschema</string>
   <string name="toast_exported_to">Exporterades till: %1$s</string>
   <string name="toast_legend_too_long">Förklaringen är för lång</string>
@@ -391,8 +393,8 @@
   <string name="digit_nine_text">WXYZ</string>
   <string name="digit_zero">0</string>
   <string name="digit_zero_text">+</string>
-  <string name="title_manage_books">Hantera böcker</string>
-  <string name="menu_manage_books">Hantera böcker&#8230;</string>
+  <string name="title_manage_books">Hantera bokföringar</string>
+  <string name="menu_manage_books">Hantera bokföringar&#8230;</string>
   <string name="select_chart_to_view_details">Välj någon del av diagrammet för att visa detaljer</string>
   <string name="title_confirm_delete_book">Bekräfta radera bokföring</string>
   <string name="msg_all_book_data_will_be_deleted">Alla konton och transaktioner i denna bokföring kommer att raderas!</string>
@@ -400,7 +402,7 @@
   <string name="label_last_export_time">Senast exporterad:</string>
   <string name="menu_title_enable_sync">Aktivera synkronisering</string>
   <string name="menu_title_new_book">Ny bokföring</string>
-  <string name="toast_transaction_has_no_splits_and_cannot_open">Valda transaktionen har ingen delningar och kan inte öppnas</string>
+  <string name="toast_transaction_has_no_splits_and_cannot_open">Valda transaktionen har inga delningar och kan inte öppnas</string>
   <string name="label_split_count">%1$d delar</string>
   <string name="label_inside_account_with_name">i %1$s</string>
   <plurals name="book_account_stats">

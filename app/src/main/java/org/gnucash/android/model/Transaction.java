@@ -178,7 +178,7 @@ public class Transaction extends BaseModel{
         if (!imbalance.isAmountZero()){
             // yes, this is on purpose the account UID is set to the currency.
             // This should be overridden before saving to db
-            Split split = new Split(imbalance.abs(), mCommodity.getCurrencyCode());
+            Split split = new Split(imbalance, mCommodity.getCurrencyCode());
             split.setType(imbalance.isNegative() ? TransactionType.CREDIT : TransactionType.DEBIT);
             addSplit(split);
             return split;
@@ -271,7 +271,7 @@ public class Transaction extends BaseModel{
                 // so imbalance split should not be generated for them
                 return Money.createZeroInstance(mCommodity.getCurrencyCode());
             }
-            Money amount = split.getValue().abs();
+            Money amount = split.getValue();
             if (split.getType() == TransactionType.DEBIT)
                 imbalance = imbalance.subtract(amount);
             else
@@ -299,24 +299,24 @@ public class Transaction extends BaseModel{
         for (Split split : splitList) {
             if (!split.getAccountUID().equals(accountUID))
                 continue;
-            Money absAmount;
+            Money amount;
             if (split.getValue().getCommodity().getCurrencyCode().equals(accountCurrencyCode)){
-                absAmount = split.getValue().abs();
+                amount = split.getValue();
             } else { //if this split belongs to the account, then either its value or quantity is in the account currency
-                absAmount = split.getQuantity().abs();
+                amount = split.getQuantity();
             }
             boolean isDebitSplit = split.getType() == TransactionType.DEBIT;
             if (isDebitAccount) {
                 if (isDebitSplit) {
-                    balance = balance.add(absAmount);
+                    balance = balance.add(amount);
                 } else {
-                    balance = balance.subtract(absAmount);
+                    balance = balance.subtract(amount);
                 }
             } else {
                 if (isDebitSplit) {
-                    balance = balance.subtract(absAmount);
+                    balance = balance.subtract(amount);
                 } else {
-                    balance = balance.add(absAmount);
+                    balance = balance.add(amount);
                 }
             }
         }

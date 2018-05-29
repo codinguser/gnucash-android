@@ -17,7 +17,6 @@ package org.gnucash.android.test.unit.importer;
 
 import android.database.sqlite.SQLiteDatabase;
 
-import org.gnucash.android.BuildConfig;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
@@ -35,12 +34,12 @@ import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
-import org.gnucash.android.test.unit.testutil.GnucashTestRunner;
 import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
 import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -63,8 +62,8 @@ import static org.junit.Assert.fail;
 /**
  * Imports GnuCash XML files and checks the objects defined in them are imported correctly.
  */
-@RunWith(GnucashTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
+@RunWith(RobolectricTestRunner.class)
+@Config(sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
 public class GncXmlHandlerTest {
     private BooksDbAdapter mBooksDbAdapter;
     private TransactionsDbAdapter mTransactionsDbAdapter;

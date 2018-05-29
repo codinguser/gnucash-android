@@ -64,6 +64,7 @@ import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.util.AccountBalanceTask;
 import org.gnucash.android.ui.util.CursorRecyclerAdapter;
 import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
+import org.gnucash.android.util.BackupManager;
 
 import java.util.List;
 
@@ -247,6 +248,7 @@ public class AccountsListFragment extends Fragment implements
         if (acc.getTransactionCount() > 0 || mAccountsDbAdapter.getSubAccountCount(acc.getUID()) > 0) {
             showConfirmationDialog(rowId);
         } else {
+            BackupManager.backupActiveBook();
             // Avoid calling AccountsDbAdapter.deleteRecord(long). See #654
             String uid = mAccountsDbAdapter.getUID(rowId);
             mAccountsDbAdapter.deleteRecord(uid);
