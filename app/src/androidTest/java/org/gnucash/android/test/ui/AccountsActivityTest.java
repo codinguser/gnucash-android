@@ -16,20 +16,21 @@
 
 package org.gnucash.android.test.ui;
 
-import android.annotation.TargetApi;
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
+import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.View;
 
 import com.kobakei.ratethisapp.RateThisApp;
 
@@ -52,6 +53,9 @@ import org.gnucash.android.receivers.AccountCreator;
 import org.gnucash.android.test.ui.util.DisableAnimationsRule;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.account.AccountsListFragment;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -85,6 +89,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -115,6 +120,9 @@ public class AccountsActivityTest {
     public AccountsActivityTest() {
 //        super(AccountsActivity.class);
     }
+
+
+    @Rule public GrantPermissionRule animationPermissionsRule = GrantPermissionRule.grant(Manifest.permission.SET_ANIMATION_SCALE);
 
     @ClassRule public static DisableAnimationsRule disableAnimationsRule = new DisableAnimationsRule();
 
@@ -229,6 +237,21 @@ public class AccountsActivityTest {
         assertThat(newestAccount.getName()).isEqualTo(NEW_ACCOUNT_NAME);
         assertThat(newestAccount.getCommodity().getCurrencyCode()).isEqualTo(Money.DEFAULT_CURRENCY_CODE);
         assertThat(newestAccount.isPlaceholderAccount()).isTrue();
+    }
+
+    @Test
+    public void should_IncludeFutureTransactionsInAccountBalance(){
+        Transaction transaction = new Transaction("Future transaction");
+        Split split1 = new Split(new Money("4.15", ACCOUNTS_CURRENCY_CODE), SIMPLE_ACCOUNT_UID);
+        transaction.addSplit(split1);
+        transaction.setTime(System.currentTimeMillis() + 4815162342L);
+        mTransactionsDbAdapter.addRecord(transaction);
+
+        refreshAccountsList();
+
+        List<Transaction> trxns = mTransactionsDbAdapter.getAllTransactions();
+
+        onView(first(withText(containsString("4.15")))).check(matches(isDisplayed()));
     }
 
     @Test
@@ -505,5 +528,32 @@ public class AccountsActivityTest {
         } catch (Throwable throwable) {
             System.err.println("Failed to refresh fragment");
         }
+    }
+
+    /**
+     * Matcher to select the first of multiple views which are matched in the UI
+     * @param expected Matcher which fits multiple views
+     * @return Single match
+     */
+    public static Matcher<View> first(final Matcher<View> expected){
+
+        return new TypeSafeMatcher<View>() {
+            private boolean first = false;
+
+            @Override
+            protected boolean matchesSafely(View item) {
+
+                if( expected.matches(item) && !first ){
+                    return first = true;
+                }
+
+                return false;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Matcher.first( " + expected.toString() + " )" );
+            }
+        };
     }
 }

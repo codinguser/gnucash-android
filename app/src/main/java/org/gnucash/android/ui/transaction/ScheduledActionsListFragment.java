@@ -60,6 +60,7 @@ import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
+import org.gnucash.android.util.BackupManager;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -116,6 +117,8 @@ public class ScheduledActionsListFragment extends ListFragment implements
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.context_menu_delete:
+                    BackupManager.backupActiveBook();
+
                     for (long id : getListView().getCheckedItemIds()) {
 
                         if (mActionType == ScheduledAction.ActionType.TRANSACTION) {

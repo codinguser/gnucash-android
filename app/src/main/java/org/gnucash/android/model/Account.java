@@ -269,7 +269,7 @@ public class Account extends BaseModel {
     public Money getBalance() {
         Money balance = Money.createZeroInstance(mCommodity.getCurrencyCode());
         for (Transaction transaction : mTransactionsList) {
-            balance.add(transaction.getBalance(getUID()));
+            balance = balance.add(transaction.getBalance(getUID()));
         }
         return balance;
     }

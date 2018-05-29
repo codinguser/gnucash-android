@@ -25,7 +25,7 @@ import com.owncloud.android.lib.common.operations.RemoteOperation;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.resources.files.FileUtils;
 import com.owncloud.android.lib.resources.status.GetRemoteStatusOperation;
-import com.owncloud.android.lib.resources.users.GetRemoteUserNameOperation;
+import com.owncloud.android.lib.resources.users.GetRemoteUserInfoOperation;
 
 import org.gnucash.android.R;
 
@@ -185,7 +185,7 @@ public class OwnCloudDialogFragment extends DialogFragment {
                         mServerError.setText(getString(R.string.owncloud_server_invalid));
                         mServerError.setVisibility(View.VISIBLE);
 
-                    } else if (caller instanceof GetRemoteUserNameOperation &&
+                    } else if (caller instanceof GetRemoteUserInfoOperation &&
                             mServerError.getText().toString().equals(getString(R.string.owncloud_server_ok))) {
                         mUsernameError.setTextColor(ContextCompat.getColor(getContext(), R.color.debit_red));
                         mUsernameError.setText(getString(R.string.owncloud_user_invalid));
@@ -196,7 +196,7 @@ public class OwnCloudDialogFragment extends DialogFragment {
                         mServerError.setTextColor(ContextCompat.getColor(getContext(), R.color.theme_primary));
                         mServerError.setText(getString(R.string.owncloud_server_ok));
                         mServerError.setVisibility(View.VISIBLE);
-                    } else if (caller instanceof GetRemoteUserNameOperation) {
+                    } else if (caller instanceof GetRemoteUserInfoOperation) {
                         mUsernameError.setTextColor(ContextCompat.getColor(getContext(), R.color.theme_primary));
                         mUsernameError.setText(getString(R.string.owncloud_user_ok));
                         mUsernameError.setVisibility(View.VISIBLE);
@@ -209,7 +209,7 @@ public class OwnCloudDialogFragment extends DialogFragment {
         GetRemoteStatusOperation g = new GetRemoteStatusOperation(mContext);
         g.execute(mClient, listener, mHandler);
 
-        GetRemoteUserNameOperation gu = new GetRemoteUserNameOperation();
+        GetRemoteUserInfoOperation gu = new GetRemoteUserInfoOperation();
         gu.execute(mClient, listener, mHandler);
 
         if (FileUtils.isValidPath(mOC_dir, false)) {

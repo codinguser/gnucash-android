@@ -15,14 +15,13 @@
  */
 package org.gnucash.android.test.unit.db;
 
-import org.gnucash.android.BuildConfig;
 import org.gnucash.android.db.MigrationHelper;
-import org.gnucash.android.test.unit.testutil.GnucashTestRunner;
 import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
 import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
 import org.gnucash.android.util.TimestampHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.sql.Timestamp;
@@ -30,8 +29,8 @@ import java.util.TimeZone;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(GnucashTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
+@RunWith(RobolectricTestRunner.class)
+@Config(sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
 public class MigrationHelperTest {
     @Test
     public void shouldSubtractTimeZoneOffset() {

@@ -56,6 +56,8 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
+import org.gnucash.android.export.csv.CsvAccountExporter;
+import org.gnucash.android.export.csv.CsvTransactionsExporter;
 import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.export.qif.QifExporter;
 import org.gnucash.android.export.xml.GncXmlExporter;
@@ -64,6 +66,7 @@ import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.account.AccountsListFragment;
 import org.gnucash.android.ui.settings.BackupPreferenceFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
+import org.gnucash.android.util.BackupManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -212,7 +215,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
     /**
      * Returns an exporter corresponding to the user settings.
-     * @return Object of one of {@link QifExporter}, {@link OfxExporter} or {@link GncXmlExporter}
+     * @return Object of one of {@link QifExporter}, {@link OfxExporter} or {@link GncXmlExporter}, {@Link CsvAccountExporter} or {@Link CsvTransactionsExporter}
      */
     private Exporter getExporter() {
         switch (mExportParams.getExportFormat()) {
@@ -223,8 +226,11 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 return new OfxExporter(mExportParams, mDb);
 
             case XML:
-            default:
                 return new GncXmlExporter(mExportParams, mDb);
+            case CSVA:
+                return new CsvAccountExporter(mExportParams, mDb);
+            default:
+                return new CsvTransactionsExporter(mExportParams, mDb);
         }
     }
 
@@ -402,13 +408,19 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             String mimeType = mExporter.getExportMimeType();
 
             RemoteOperationResult result = new UploadRemoteFileOperation(
-                    exportedFilePath, remotePath, mimeType).execute(mClient);
-
+                    exportedFilePath, remotePath, mimeType,
+                    getFileLastModifiedTimestamp(exportedFilePath))
+                    .execute(mClient);
             if (!result.isSuccess())
                 throw new Exporter.ExporterException(mExportParams, result.getLogMessage());
 
             new File(exportedFilePath).delete();
         }
+    }
+
+    private static String getFileLastModifiedTimestamp(String path) {
+        Long timeStampLong = new File(path).lastModified() / 1000;
+        return timeStampLong.toString();
     }
 
     /**
@@ -447,7 +459,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     private void backupAndDeleteTransactions(){
         Log.i(TAG, "Backup and deleting transactions after export");
-        GncXmlExporter.createBackup(); //create backup before deleting everything
+        BackupManager.backupActiveBook(); //create backup before deleting everything
         List<Transaction> openingBalances = new ArrayList<>();
         boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
 

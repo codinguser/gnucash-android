@@ -15,9 +15,11 @@
  */
 package org.gnucash.android.test.ui;
 
+import android.Manifest;
 import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.espresso.intent.Intents;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
+import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import org.gnucash.android.R;
@@ -53,6 +55,8 @@ import static org.hamcrest.Matchers.allOf;
 public class MultiBookTest {
 
     private static BooksDbAdapter mBooksDbAdapter;
+
+    @Rule public GrantPermissionRule animationPermissionsRule = GrantPermissionRule.grant(Manifest.permission.SET_ANIMATION_SCALE);
 
     @ClassRule
     public static DisableAnimationsRule disableAnimationsRule = new DisableAnimationsRule();

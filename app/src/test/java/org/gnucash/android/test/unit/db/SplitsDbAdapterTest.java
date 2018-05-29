@@ -17,22 +17,21 @@ package org.gnucash.android.test.unit.db;
 
 import android.database.sqlite.SQLiteException;
 
-import org.gnucash.android.BuildConfig;
-import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.test.unit.testutil.GnucashTestRunner;
 import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
 import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.List;
@@ -42,8 +41,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Some tests for the splits database adapter
  */
-@RunWith(GnucashTestRunner.class) //package is required so that resources can be found in dev mode
-@Config(constants = BuildConfig.class, sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
+@RunWith(RobolectricTestRunner.class) //package is required so that resources can be found in dev mode
+@Config(sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
 public class SplitsDbAdapterTest {
 
     private AccountsDbAdapter mAccountsDbAdapter;
