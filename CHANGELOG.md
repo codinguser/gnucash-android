@@ -1,5 +1,19 @@
 Change Log
 ===============================================================================
+Version 2.4.0 *(2018-06-06)*
+----------------------------
+* Feature #665: Adds CSV export format
+* Feature #544: Add extra checkbox confirmation for irreversible actions
+* Feature #767: Backup before destructive actions
+* Feature #465: Account balances now include future transactions
+* Fixed #764: Crash when importing XML files from Gnucash desktop v2.7 and up
+* Fixed #768: ScheduledActionService crashes on Android 8 (Oreo)
+* Fixed #731: Double display of Persian currency symbol
+* Fixed #771: QIF export crashes due to illegal denominator
+* Fixed #757: Backups are created every hour
+* Fixed #766: Backups are kept forever
+
+
 Version 2.3.0 *(2018-01-10)*
 ----------------------------
 * Feature #544: Use double confirmation dialog boxes before irreversible actions
