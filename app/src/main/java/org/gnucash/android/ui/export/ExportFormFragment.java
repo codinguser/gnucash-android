@@ -139,7 +139,6 @@ public class ExportFormFragment extends Fragment implements
 	@BindView(R.id.radio_ofx_format) RadioButton mOfxRadioButton;
 	@BindView(R.id.radio_qif_format) RadioButton mQifRadioButton;
 	@BindView(R.id.radio_xml_format) RadioButton mXmlRadioButton;
-	@BindView(R.id.radio_csv_accounts_format) RadioButton mCsvAccountsRadioButton;
 	@BindView(R.id.radio_csv_transactions_format) RadioButton mCsvTransactionsRadioButton;
 
 	@BindView(R.id.radio_separator_comma_format) RadioButton mSeparatorCommaButton;
@@ -219,15 +218,9 @@ public class ExportFormFragment extends Fragment implements
 				mCsvOptionsLayout.setVisibility(View.GONE);
 				break;
 
-			case R.id.radio_csv_accounts_format:
-				mExportFormat = ExportFormat.CSVA;
-				mExportWarningTextView.setText("");
-				mExportDateLayout.setVisibility(View.GONE);
-				mCsvOptionsLayout.setVisibility(View.VISIBLE);
-				break;
 			case R.id.radio_csv_transactions_format:
 				mExportFormat = ExportFormat.CSVT;
-				mExportWarningTextView.setText("");
+				mExportWarningTextView.setText("Exports registered transactions as CSV");
 				mExportDateLayout.setVisibility(View.GONE);
 				mCsvOptionsLayout.setVisibility(View.VISIBLE);
 				break;
@@ -254,8 +247,7 @@ public class ExportFormFragment extends Fragment implements
 		bindViewListeners();
 
 		String[] export_format_strings = getResources().getStringArray(R.array.export_formats);
-		mCsvAccountsRadioButton.setText(export_format_strings[3]);
-		mCsvTransactionsRadioButton.setText(export_format_strings[4]);
+		mCsvTransactionsRadioButton.setText(export_format_strings[3]);
 
 		return view;
 	}
@@ -506,7 +498,6 @@ public class ExportFormFragment extends Fragment implements
 		mOfxRadioButton.setOnClickListener(radioClickListener);
 		mQifRadioButton.setOnClickListener(radioClickListener);
 		mXmlRadioButton.setOnClickListener(radioClickListener);
-		mCsvAccountsRadioButton.setOnClickListener(radioClickListener);
 		mCsvTransactionsRadioButton.setOnClickListener(radioClickListener);
 
 		mSeparatorCommaButton.setOnClickListener(radioClickListener);
@@ -518,7 +509,6 @@ public class ExportFormFragment extends Fragment implements
 			case QIF: mQifRadioButton.performClick(); break;
 			case OFX: mOfxRadioButton.performClick(); break;
 			case XML: mXmlRadioButton.performClick(); break;
-			case CSVA: mCsvAccountsRadioButton.performClick(); break;
 			case CSVT: mCsvTransactionsRadioButton.performClick(); break;
 		}
 

@@ -73,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="35dp"
                 android:gravity="center_vertical"
-                android:orientation="vertical">
+                android:orientation="horizontal">
 
                 <RadioButton android:id="@+id/radio_qif_format"
                     android:layout_width="wrap_content"
@@ -93,16 +93,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginRight="20dp"
                     android:text="XML"/>
-                <RadioButton android:id="@+id/radio_csv_accounts_format"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="20dp"
-                    android:text="CSV-acc"/>
                 <RadioButton android:id="@+id/radio_csv_transactions_format"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="20dp"
-                    android:text="CSV-trans"/>
+                    android:text="CSV"/>
             </RadioGroup>
         </LinearLayout>
         <LinearLayout
