@@ -126,7 +126,7 @@
     <string name="toast_transanction_amount_required">Enter an amount to save the transaction</string>
     <string name="toast_error_importing_accounts">An error occurred while importing the GnuCash accounts</string>
     <string name="toast_success_importing_accounts">GnuCash Accounts successfully imported</string>
-    <string name="summary_import_accounts">Import account structure exported from GnuCash desktop</string>
+    <string name="summary_import_accounts">Import account structure from GnuCash XML</string>
     <string name="title_import_accounts">Import GnuCash XML</string>
     <string name="summary_delete_all_accounts">Delete all accounts in the database. All transactions will be deleted as
         well.
@@ -463,6 +463,9 @@
     <string name="label_dropbox_export_destination">Export to \'/Apps/GnuCash Android/\' folder on Dropbox</string>
     <string name="title_section_preferences">Preferences</string>
     <string name="yes_sure">Yes, I\'m sure</string>
+    <string name="key_export_accounts_csv">export_accounts_csv_key</string>
+    <string name="summary_export_accounts_csv">Export all accounts (without transactions) to CSV</string>
+    <string name="title_export_accounts_csv">Export as CSV</string>
     <string-array name="csv_transaction_headers">
         <item>Date</item>
         <item>Transaction ID</item>
@@ -480,5 +483,19 @@
         <item>Reconcile</item>
         <item>Reconcile Date</item>
         <item>Rate/Price</item>
+    </string-array>
+    <string-array name="csv_account_headers">
+        <item>Type</item>
+        <item>Full Name</item>
+        <item>Name</item>
+        <item>Code</item>
+        <item>Description</item>
+        <item>Color</item>
+        <item>Notes</item>
+        <item>Commoditym</item>
+        <item>Commodityn</item>
+        <item>Hidden</item>
+        <item>Tax</item>
+        <item>Placeholder</item>
     </string-array>
 </resources>

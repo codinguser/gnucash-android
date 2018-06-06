@@ -28,6 +28,9 @@
     <Preference android:key="@string/key_import_accounts"
         android:summary="@string/summary_import_accounts"
         android:title="@string/title_import_accounts" />
+    <Preference android:key="@string/key_export_accounts_csv"
+        android:summary="@string/summary_export_accounts_csv"
+        android:title="@string/title_export_accounts_csv" />
     <Preference android:key="@string/key_delete_all_accounts"
         android:summary="@string/summary_delete_all_accounts"
         android:title="@string/title_delete_all_accounts" />

@@ -34,7 +34,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -82,12 +81,10 @@ public class CsvTransactionsExporter extends Exporter{
         } catch (IOException ex){
             Crashlytics.log("Error exporting CSV");
             Crashlytics.logException(ex);
+            throw new ExporterException(mExportParams, ex);
         }
 
-        List<String> exportedFiles = new ArrayList<>();
-        exportedFiles.add(outputFile);
-
-        return exportedFiles;
+        return Arrays.asList(outputFile);
     }
 
     /**

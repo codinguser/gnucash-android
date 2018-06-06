@@ -206,7 +206,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         stmt.bindString(3, account.getAccountType().name());
         stmt.bindString(4, account.getCommodity().getCurrencyCode());
         if (account.getColor() != Account.DEFAULT_COLOR) {
-            stmt.bindString(5, convertToRGBHexString(account.getColor()));
+            stmt.bindString(5, account.getColorHexString());
         }
         stmt.bindLong(6, account.isFavorite() ? 1 : 0);
         stmt.bindString(7, account.getFullName());
@@ -228,10 +228,6 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         stmt.bindString(14, account.getUID());
 
         return stmt;
-    }
-
-    private String convertToRGBHexString(int color) {
-        return String.format("#%06X", (0xFFFFFF & color));
     }
 
     /**

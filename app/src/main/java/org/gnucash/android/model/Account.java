@@ -283,6 +283,14 @@ public class Account extends BaseModel {
     }
 
     /**
+     * Returns the account color as an RGB hex string
+     * @return Hex color of the account
+     */
+    public String getColorHexString(){
+        return String.format("#%06X", (0xFFFFFF & mColor));
+    }
+
+    /**
      * Sets the color of the account.
      * @param color Color as an int as returned by {@link Color}.
      * @throws java.lang.IllegalArgumentException if the color is transparent,
