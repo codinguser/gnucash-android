@@ -175,10 +175,10 @@
 		<item>TRADING</item>
     </string-array>
     <string-array name="export_formats">
+        <item>CSV</item>
         <item>QIF</item>
         <item>OFX</item>
         <item>XML</item>
-        <item>CSV</item>
     </string-array>
     <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
     <string name="color_picker_default_title">Select a Color</string>
@@ -466,6 +466,8 @@
     <string name="key_export_accounts_csv">export_accounts_csv_key</string>
     <string name="summary_export_accounts_csv">Export all accounts (without transactions) to CSV</string>
     <string name="title_export_accounts_csv">Export as CSV</string>
+    <string name="label_csv_separator">Separator</string>
+    <string name="export_notice_csv">Exports transactions as CSV</string>
     <string-array name="csv_transaction_headers">
         <item>Date</item>
         <item>Transaction ID</item>

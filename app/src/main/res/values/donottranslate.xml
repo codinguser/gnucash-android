@@ -57,6 +57,7 @@
         <item>TRADING</item>
     </string-array>
     <string-array name="key_export_format_values" translatable="false">
+        <item>CSVT</item>
         <item>QIF</item>
         <item>OFX</item>
         <item>XML</item>

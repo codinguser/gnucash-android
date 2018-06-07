@@ -34,6 +34,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -134,7 +136,6 @@ public class ExportFormFragment extends Fragment implements
 	@BindView(R.id.switch_export_all) SwitchCompat mExportAllSwitch;
 
 	@BindView(R.id.export_date_layout) LinearLayout mExportDateLayout;
-	@BindView(R.id.export_separator_layout) LinearLayout mExportSeparatorLayout;
 
 	@BindView(R.id.radio_ofx_format) RadioButton mOfxRadioButton;
 	@BindView(R.id.radio_qif_format) RadioButton mQifRadioButton;
@@ -194,8 +195,9 @@ public class ExportFormFragment extends Fragment implements
                 } else {
                     mExportWarningTextView.setVisibility(View.GONE);
                 }
-				mExportDateLayout.setVisibility(View.VISIBLE);
-				mExportSeparatorLayout.setVisibility(View.GONE);
+
+				OptionsViewAnimationUtils.expand(mExportDateLayout);
+				OptionsViewAnimationUtils.collapse(mCsvOptionsLayout);
                 break;
 
             case R.id.radio_qif_format:
@@ -207,22 +209,23 @@ public class ExportFormFragment extends Fragment implements
                 } else {
                     mExportWarningTextView.setVisibility(View.GONE);
                 }
-				mExportDateLayout.setVisibility(View.VISIBLE);
-				mCsvOptionsLayout.setVisibility(View.GONE);
+
+				OptionsViewAnimationUtils.expand(mExportDateLayout);
+				OptionsViewAnimationUtils.collapse(mCsvOptionsLayout);
 				break;
 
 			case R.id.radio_xml_format:
 				mExportFormat = ExportFormat.XML;
 				mExportWarningTextView.setText(R.string.export_warning_xml);
-				mExportDateLayout.setVisibility(View.GONE);
-				mCsvOptionsLayout.setVisibility(View.GONE);
+				OptionsViewAnimationUtils.collapse(mExportDateLayout);
+				OptionsViewAnimationUtils.collapse(mCsvOptionsLayout);
 				break;
 
 			case R.id.radio_csv_transactions_format:
 				mExportFormat = ExportFormat.CSVT;
-				mExportWarningTextView.setText("Exports registered transactions as CSV");
-				mExportDateLayout.setVisibility(View.GONE);
-				mCsvOptionsLayout.setVisibility(View.VISIBLE);
+				mExportWarningTextView.setText(R.string.export_notice_csv);
+				OptionsViewAnimationUtils.expand(mExportDateLayout);
+				OptionsViewAnimationUtils.expand(mCsvOptionsLayout);
 				break;
 
 			case R.id.radio_separator_comma_format:
@@ -245,9 +248,6 @@ public class ExportFormFragment extends Fragment implements
 		ButterKnife.bind(this, view);
 
 		bindViewListeners();
-
-		String[] export_format_strings = getResources().getStringArray(R.array.export_formats);
-		mCsvTransactionsRadioButton.setText(export_format_strings[3]);
 
 		return view;
 	}
@@ -359,12 +359,11 @@ public class ExportFormFragment extends Fragment implements
 				if (view == null) //the item selection is fired twice by the Android framework. Ignore the first one
 					return;
 				switch (position) {
-					case 0:
+					case 0: //Save As..
 						mExportTarget = ExportParams.ExportTarget.URI;
 						mRecurrenceOptionsView.setVisibility(View.VISIBLE);
 						if (mExportUri != null)
 							setExportUriText(mExportUri.toString());
-						selectExportFile();
 						break;
 					case 1: //DROPBOX
 						setExportUriText(getString(R.string.label_dropbox_export_destination));
@@ -377,7 +376,7 @@ public class ExportFormFragment extends Fragment implements
 							Auth.startOAuth2Authentication(getActivity(), dropboxAppKey);
 						}
 						break;
-					case 2:
+					case 2: //OwnCloud
 						setExportUriText(null);
 						mRecurrenceOptionsView.setVisibility(View.VISIBLE);
 						mExportTarget = ExportParams.ExportTarget.OWNCLOUD;
@@ -387,7 +386,7 @@ public class ExportFormFragment extends Fragment implements
 							ocDialog.show(getActivity().getSupportFragmentManager(), "ownCloud dialog");
 						}
 						break;
-					case 3:
+					case 3: //Share File
 						setExportUriText(getString(R.string.label_select_destination_after_export));
 						mExportTarget = ExportParams.ExportTarget.SHARING;
 						mRecurrenceOptionsView.setVisibility(View.GONE);
@@ -401,7 +400,7 @@ public class ExportFormFragment extends Fragment implements
 
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-
+				//nothing to see here, move along
 			}
 		});
 
@@ -482,7 +481,7 @@ public class ExportFormFragment extends Fragment implements
 		mRecurrenceTextView.setOnClickListener(new RecurrenceViewClickListener((AppCompatActivity) getActivity(), mRecurrenceRule, this));
 
 		//this part (setting the export format) must come after the recurrence view bindings above
-        String defaultExportFormat = sharedPrefs.getString(getString(R.string.key_default_export_format), ExportFormat.QIF.name());
+        String defaultExportFormat = sharedPrefs.getString(getString(R.string.key_default_export_format), ExportFormat.CSVT.name());
         mExportFormat = ExportFormat.valueOf(defaultExportFormat);
 
         View.OnClickListener radioClickListener = new View.OnClickListener() {
@@ -543,11 +542,6 @@ public class ExportFormFragment extends Fragment implements
 		String bookName = BooksDbAdapter.getInstance().getActiveBookDisplayName();
 
 		String filename = Exporter.buildExportFilename(mExportFormat, bookName);
-		if (mExportFormat == ExportFormat.QIF) {
-			createIntent.setType("application/zip");
-			filename += ".zip";
-		}
-
 		createIntent.putExtra(Intent.EXTRA_TITLE, filename);
 		startActivityForResult(createIntent, REQUEST_EXPORT_FILE);
 	}
@@ -615,3 +609,57 @@ public class ExportFormFragment extends Fragment implements
 	}
 }
 
+// Gotten from: https://stackoverflow.com/a/31720191
+class OptionsViewAnimationUtils {
+
+	public static void expand(final View v) {
+		v.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+		final int targetHeight = v.getMeasuredHeight();
+
+		v.getLayoutParams().height = 0;
+		v.setVisibility(View.VISIBLE);
+		Animation a = new Animation()
+		{
+			@Override
+			protected void applyTransformation(float interpolatedTime, Transformation t) {
+				v.getLayoutParams().height = interpolatedTime == 1
+						? ViewGroup.LayoutParams.WRAP_CONTENT
+						: (int)(targetHeight * interpolatedTime);
+				v.requestLayout();
+			}
+
+			@Override
+			public boolean willChangeBounds() {
+				return true;
+			}
+		};
+
+		a.setDuration((int)(3 * targetHeight / v.getContext().getResources().getDisplayMetrics().density));
+		v.startAnimation(a);
+	}
+
+	public static void collapse(final View v) {
+		final int initialHeight = v.getMeasuredHeight();
+
+		Animation a = new Animation()
+		{
+			@Override
+			protected void applyTransformation(float interpolatedTime, Transformation t) {
+				if(interpolatedTime == 1){
+					v.setVisibility(View.GONE);
+				}else{
+					v.getLayoutParams().height = initialHeight - (int)(initialHeight * interpolatedTime);
+					v.requestLayout();
+				}
+			}
+
+			@Override
+			public boolean willChangeBounds() {
+				return true;
+			}
+		};
+
+		a.setDuration((int)(3 * initialHeight / v.getContext().getResources().getDisplayMetrics().density));
+		v.startAnimation(a);
+	}
+}

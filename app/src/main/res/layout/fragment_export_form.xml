@@ -75,41 +75,50 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <RadioButton android:id="@+id/radio_qif_format"
+                <RadioButton android:id="@+id/radio_csv_transactions_format"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="20dp"
                     android:checked="true"
-                    android:text="QIF" />
+                    android:text="CSV"/>
 
-                <RadioButton android:id="@+id/radio_ofx_format"
+                <RadioButton android:id="@+id/radio_qif_format"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="20dp"
-                    android:text="OFX"/>
+                    android:text="QIF" />
 
                 <RadioButton android:id="@+id/radio_xml_format"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="20dp"
                     android:text="XML"/>
-                <RadioButton android:id="@+id/radio_csv_transactions_format"
+
+                <RadioButton android:id="@+id/radio_ofx_format"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="20dp"
-                    android:text="CSV"/>
+                    android:text="OFX"/>
             </RadioGroup>
         </LinearLayout>
+
+        <TextView android:id="@+id/export_warning"
+            tools:text="Some format-based export warning"
+            android:textColor="@color/title_green"
+            android:layout_marginLeft="100dp"
+            style="@style/TextAppearance.Hint" />
+
         <LinearLayout
             android:id="@+id/layout_csv_options"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
+            android:animateLayoutChanges="true"
             android:layout_marginBottom="-8dp">
             <TextView
                 android:id="@+id/label_separator_format"
-                android:text="Separator"
+                android:text="@string/label_csv_separator"
                 android:gravity="center_vertical"
                 android:layout_marginLeft="8dp"
                 android:layout_height="?android:attr/listPreferredItemHeight"
@@ -129,32 +138,24 @@
                     android:layout_marginRight="20dp"
                     android:checked="true"
                     android:text="," />
-                <RadioButton android:id="@+id/radio_separator_colon_format"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="20dp"
-                    android:checked="true"
-                    android:text=":" />
                 <RadioButton android:id="@+id/radio_separator_semicolon_format"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="20dp"
-                    android:checked="true"
                     android:text=";" />
+                <RadioButton android:id="@+id/radio_separator_colon_format"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:text=":" />
             </RadioGroup>
         </LinearLayout>
-
-        <TextView android:id="@+id/export_warning"
-            tools:text="Some format-based export warning"
-            android:textColor="@color/title_green"
-            android:layout_marginBottom="@dimen/dialog_padding"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="100dp"
-            style="@style/TextAppearance.Hint" />
 
     <LinearLayout android:id="@+id/export_date_layout"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/listPreferredItemHeight"
+        android:layout_marginTop="@dimen/dialog_padding"
+        android:layout_marginBottom="@dimen/dialog_padding"
         android:orientation="horizontal">
         <TextView
             android:id="@+id/label_export_date"
@@ -198,7 +199,7 @@
         <CheckBox android:id="@+id/checkbox_post_export_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dialog_padding"
+            android:layout_marginTop="20dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="@string/option_delete_after_export"
             />

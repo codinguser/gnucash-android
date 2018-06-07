@@ -161,8 +161,8 @@ public abstract class Exporter {
     public static String buildExportFilename(ExportFormat format, String bookName) {
         return EXPORT_FILENAME_DATE_FORMAT.format(new Date(System.currentTimeMillis()))
                 + "_gnucash_export_" + sanitizeFilename(bookName) +
-                (format==ExportFormat.CSVA?"_accounts_":"") +
-                (format==ExportFormat.CSVT?"_transactions_":"") +
+                (format == ExportFormat.CSVA ? "_accounts" : "") +
+                (format == ExportFormat.CSVT ? "_transactions" : "") +
                 format.getExtension();
     }
 
