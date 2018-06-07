@@ -1,8 +1,9 @@
-GnuCash is a mobile finance expense tracker application for Android.
+GnuCash is a mobile finance manager for Android.
 
-It is a companion application for GnuCash for the desktop and enables flexible tracking of expenses on-the-go which can be exported to QIF or OFX formats.
+It is a companion application for GnuCash on the desktop, and enables flexible tracking of expenses on-the-go.
+Recorded transactions can be exported back to the desktop GnuCash via several formats (CSV / QIF / OFX).
 
-Some of feature highlights  include:
+Some of feature highlights include:
 
 <b>&bull; An easy-to-use interface.</b>
 
@@ -26,10 +27,3 @@ You can also import an existing account hierarchy from GnuCash desktop.
 
 <br/><b><u>NOTE</u></b>: that the app does not offer full compatibility with GnuCash for the desktop. You cannot synchronize between the desktop app and this one. But you can import your accounts and transactions from GnuCash XML files.
 
-<br/><small>
-<i><u>What does the app use the requested permissions for? </u></i>
-&bull; VIBRATE: Used to provide haptic feedback when entering some inputs
-&bull; WAKE_LOCK: Used for keeping device active when exporting scheduled transactions in the background service
-&bull; RECEIVE_BOOT_COMPLETED: Used to restart service for scheduled transactions or exports after device is rebooted
-&bull; INTERNET/ACCESS_NETWORK_STATE: Used when exporting accounts/transactions to 3rd-party service like DropBox or ownCloud
-</small>

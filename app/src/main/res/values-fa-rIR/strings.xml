@@ -156,6 +156,7 @@
   <string name="label_placeholder_account">Placeholder account</string>
   <string name="label_default_transfer_account">Default Transfer Account</string>
   <plurals name="label_sub_accounts">
+    <item quantity="one">%d sub-account</item>
     <item quantity="other">%d sub-accounts</item>
   </plurals>
   <string-array name="account_type_entry_values">
@@ -277,18 +278,23 @@
   <string name="owncloud_user_ok">OC username/password OK</string>
   <string name="owncloud_dir_ok">Dir name OK</string>
   <plurals name="label_every_x_hours">
+    <item quantity="one">Hourly</item>
     <item quantity="other">Every %d hours</item>
   </plurals>
   <plurals name="label_every_x_days">
+    <item quantity="one">Daily</item>
     <item quantity="other">Every %d days</item>
   </plurals>
   <plurals name="label_every_x_weeks">
+    <item quantity="one">Weekly</item>
     <item quantity="other">Every %d weeks</item>
   </plurals>
   <plurals name="label_every_x_months">
+    <item quantity="one">Monthly</item>
     <item quantity="other">Every %d months</item>
   </plurals>
   <plurals name="label_every_x_years">
+    <item quantity="one">Yearly</item>
     <item quantity="other">Every %d years</item>
   </plurals>
   <string name="title_enable_crashlytics">Enable Crash Logging</string>
@@ -408,9 +414,11 @@
   <string name="label_split_count">%1$d splits</string>
   <string name="label_inside_account_with_name">in %1$s</string>
   <plurals name="book_account_stats">
+    <item quantity="one">%d account</item>
     <item quantity="other">%d accounts</item>
   </plurals>
   <plurals name="book_transaction_stats">
+    <item quantity="one">%d transaction</item>
     <item quantity="other">%d transactions</item>
   </plurals>
   <string-array name="report_account_types">

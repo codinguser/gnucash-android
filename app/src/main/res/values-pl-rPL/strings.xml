@@ -177,8 +177,6 @@ Konto docelowe używa innej waluty niż konto wyjściowe</string>
     <item>QIF</item>
     <item>OFX</item>
     <item>XML</item>
-    <item>CSV-konta</item>
-    <item>CSV-transakcje</item>
   </string-array>
   <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
   <string name="color_picker_default_title">Wybierz kolor</string>

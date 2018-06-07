@@ -19,7 +19,7 @@
   <string name="title_create_account">创建科目</string>
   <string name="title_edit_account">编辑科目</string>
   <string name="description_add_transaction_icon">为科目增加交易</string>
-  <string name="description_view_account_icon">科目的详细资料</string>
+  <string name="description_view_account_icon">查看帐户详细信息</string>
   <string name="label_no_accounts">没有可以显示的科目</string>
   <string name="label_account_name">科目名称</string>
   <string name="btn_cancel">取消</string>
@@ -175,8 +175,6 @@
     <item>QIF</item>
     <item>OFX</item>
     <item>XML</item>
-    <item>CSV-账户</item>
-    <item>CSV-交易</item>
   </string-array>
   <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
   <string name="color_picker_default_title">选择一种颜色</string>
