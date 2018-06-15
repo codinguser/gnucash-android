@@ -18,9 +18,9 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="title_create_account">新增科目</string>
   <string name="title_edit_account">編輯科目</string>
-  <string name="description_add_transaction_icon">给科目添加交易</string>
+  <string name="description_add_transaction_icon">在科目中新增交易</string>
   <string name="description_view_account_icon">檢視帳戶詳細資訊</string>
-  <string name="label_no_accounts">没有要显示的科目</string>
+  <string name="label_no_accounts">沒有科目可顯示</string>
   <string name="label_account_name">科目名稱</string>
   <string name="btn_cancel">取消</string>
   <string name="btn_save">存檔</string>
@@ -78,7 +78,7 @@
   <string name="label_permission_create_account">建立會計科目</string>
   <string name="label_display_account">顯示科目名字</string>
   <string name="label_hide_account_balance">小工具中隱藏帳戶餘額</string>
-  <string name="btn_create_accounts">创建科目</string>
+  <string name="btn_create_accounts">建立科目</string>
   <string name="error_no_accounts">GnuCash裡還没有會計科目信息。\n使用小部件前需要添加會計科目</string>
   <string name="title_license">授權許可</string>
   <string name="summary_licence_details">Apache License v2.0，點擊查看詳细（將打開網頁）。</string>
@@ -125,7 +125,7 @@
 	</string>
   <string name="label_dismiss">知道了</string>
   <string name="toast_transanction_amount_required">輸入金額才能保存交易</string>
-  <string name="toast_error_importing_accounts">匯入GnuCash科目时發生錯誤。</string>
+  <string name="toast_error_importing_accounts">匯入GnuCash科目時發生錯誤。</string>
   <string name="toast_success_importing_accounts">GnuCash科目資料匯入完成。</string>
   <string name="summary_import_accounts">匯入從GnuCash桌面版匯出的科目設置</string>
   <string name="title_import_accounts">匯入GnuCash科目</string>
@@ -177,7 +177,7 @@
     <item>XML</item>
   </string-array>
   <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
-  <string name="color_picker_default_title">选择一种颜色</string>
+  <string name="color_picker_default_title">選擇顏色</string>
   <!-- Content description for a color square. -->
   <!-- Content description for a selected color square. -->
   <string name="label_account_color_and_type">科目顏色和類型</string>
@@ -187,7 +187,7 @@
   <string name="title_all_accounts">所有</string>
   <string name="summary_create_default_accounts">建立通用的科目結構</string>
   <string name="title_create_default_accounts">建立預設科目</string>
-  <string name="msg_confirm_create_default_accounts_setting">這將用預設科目來創建新的帳簿\n\n目前擁有的科目與交易不會受影響</string>
+  <string name="msg_confirm_create_default_accounts_setting">這將用預設科目來建立新的帳簿\n\n目前擁有的科目與交易不會受影響</string>
   <string name="title_scheduled_transactions">交易</string>
   <string name="title_select_export_destination">選擇儲存的位置</string>
   <string name="hint_split_memo">描述</string>
@@ -196,7 +196,7 @@
   <string name="label_withdrawal">提款</string>
   <string name="label_deposit">存款</string>
   <string name="label_payment">付款</string>
-  <string name="label_charge">费用</string>
+  <string name="label_charge">費用</string>
   <string name="label_decrease">減少</string>
   <string name="label_increase">增加</string>
   <string name="label_income">收入</string>
@@ -220,10 +220,10 @@
   <string name="title_reports">報表</string>
   <string name="title_pie_chart">圓形圖</string>
   <string name="title_line_chart">折線圖</string>
-  <string name="title_bar_chart">橫條圖</string>
+  <string name="title_bar_chart">長條圖</string>
   <string name="title_report_prefs">報表設置</string>
   <string name="title_use_account_color">用不同顏色区分科目</string>
-  <string name="summary_use_account_color">在饼图中使用科目的颜色</string>
+  <string name="summary_use_account_color">在圓餅圖中使用科目的顏色</string>
   <string name="menu_order_by_size">按數量排序</string>
   <string name="menu_toggle_legend">顯示圖例</string>
   <string name="menu_toggle_labels">顯示標籤</string>
@@ -279,7 +279,7 @@
     <item quantity="other">每 %d 天</item>
   </plurals>
   <plurals name="label_every_x_weeks">
-    <item quantity="other">每 %d 周</item>
+    <item quantity="other">每 %d 週</item>
   </plurals>
   <plurals name="label_every_x_months">
     <item quantity="other">每 %d 月</item>
@@ -311,13 +311,13 @@ No user-identifiable information will be collected as part of this process!
   <string name="wizard_title_select_currency">選擇幣種</string>
   <string name="wizard_title_feedback_options">回饋選項</string>
   <string name="wizard_option_create_default_accounts">建立預設科目</string>
-  <string name="wizard_option_import_my_accounts">汇入科目</string>
+  <string name="wizard_option_import_my_accounts">匯入科目</string>
   <string name="wizard_option_let_me_handle_it">稍后处理</string>
   <string name="wizard_option_currency_other">其他...</string>
   <string name="wizard_option_auto_send_crash_reports">自動發送故障報告</string>
   <string name="wizard_option_disable_crash_reports">禁用崩潰報告</string>
   <string name="wizard_btn_back">後退</string>
-  <string name="title_setup_gnucash">设置GnuCash</string>
+  <string name="title_setup_gnucash">設定GnuCash</string>
   <string name="wizard_title_welcome_to_gnucash">歡迎來到GnuCash</string>
   <string name="msg_wizard_welcome_page">在使用之前，需 \n要设置几个参数\n\n请点击“下一步”繼續</string>
   <string name="title_split_editor">拆分交易</string>
@@ -343,7 +343,7 @@ No user-identifiable information will be collected as part of this process!
   <string name="label_liabilities">負債</string>
   <string name="label_equity">財產淨值</string>
   <string name="label_move_to">移動至</string>
-  <string name="menu_group_by">分组方式</string>
+  <string name="menu_group_by">分組方式</string>
   <string name="menu_group_by_month">月</string>
   <string name="menu_group_by_quarter">季度</string>
   <string name="menu_group_by_year">年</string>
@@ -352,13 +352,13 @@ No user-identifiable information will be collected as part of this process!
   <string name="title_google_plus_community">Google+ 社群</string>
   <string name="title_translate_gnucash">翻譯GnuCash</string>
   <string name="summary_google_plus">在Google+上提交问题和建议</string>
-  <string name="summary_translate_gnucash">帮忙翻譯或校對（ CrowdIn）</string>
+  <string name="summary_translate_gnucash">在CrowdIn上協助翻譯或校對GnuCash</string>
   <string name="toast_no_compatible_apps_to_receive_export">没有合适的应用接收汇出的文档</string>
   <string name="menu_move_transaction">移動...</string>
   <string name="menu_duplicate_transaction">複製</string>
   <string name="title_cash_flow_report">現金流</string>
   <string name="title_budgets">預算</string>
-  <string name="title_use_compact_list">啟用紧凑視圖</string>
+  <string name="title_use_compact_list">啟用緊湊視圖</string>
   <string name="summary_use_compact_list">交易清單總是啟用緊湊視圖</string>
   <string name="error_invalid_exchange_rate">匯率不正確</string>
   <string name="sample_exchange_rate">例如 1 %1$s = x.xx %2$s</string>
@@ -393,18 +393,18 @@ No user-identifiable information will be collected as part of this process!
   <string name="digit_nine_text">WXYZ</string>
   <string name="digit_zero">0</string>
   <string name="digit_zero_text">+</string>
-  <string name="title_manage_books">管理帐簿</string>
-  <string name="menu_manage_books">管理帐簿</string>
+  <string name="title_manage_books">管理帳簿</string>
+  <string name="menu_manage_books">管理帳簿&#8230;</string>
   <string name="select_chart_to_view_details">選擇該圖表以查看詳細資訊的任何部分</string>
   <string name="title_confirm_delete_book">確認删除</string>
-  <string name="msg_all_book_data_will_be_deleted">帐簿中所有科目和交易都將被刪除 ！</string>
-  <string name="btn_delete_book">删除帐簿</string>
+  <string name="msg_all_book_data_will_be_deleted">帳簿中所有科目和交易都將被刪除 ！</string>
+  <string name="btn_delete_book">删除帳簿</string>
   <string name="label_last_export_time">最後匯出︰</string>
   <string name="menu_title_enable_sync">啟用同步</string>
   <string name="menu_title_new_book">新建帐簿</string>
   <string name="toast_transaction_has_no_splits_and_cannot_open">选择的交易没有拆分</string>
   <string name="label_split_count">%1$d 项分割</string>
-  <string name="label_inside_account_with_name">于 %1$s</string>
+  <string name="label_inside_account_with_name">於 %1$s</string>
   <plurals name="book_account_stats">
     <item quantity="other">%d 個科目</item>
   </plurals>
@@ -419,15 +419,15 @@ No user-identifiable information will be collected as part of this process!
   <string name="toast_unable_to_connect_to_google_drive">無法連線到伺服器</string>
   <string name="toast_enter_amount_to_split">請輸入要拆分的金額</string>
   <string name="label_export_target_external_service">外部服務</string>
-  <string name="toast_updated_transaction_recurring_schedule">排程交易已经更新</string>
+  <string name="toast_updated_transaction_recurring_schedule">排程交易已經更新</string>
   <string name="label_export_transactions_since_date">自從</string>
   <string name="switch_export_transactions_from_all_time">全部時間</string>
   <string name="label_recommend_app">在 Play Store 推薦</string>
   <string name="repeat_until_date">直到%1$s</string>
   <string name="repeat_on_weekday">在%1$s</string>
   <string name="repeat_x_times">%1$d 次</string>
-  <string name="menu_show_compact_view">紧凑视图</string>
-  <string name="book_default_name">账簿 %1$d</string>
+  <string name="menu_show_compact_view">緊湊視圖</string>
+  <string name="book_default_name">帳簿 %1$d</string>
   <string name="last_export_time_never">從未</string>
   <string name="title_rename_book">重新命名帳簿</string>
   <string name="btn_rename">重新命名</string>

@@ -138,7 +138,7 @@
   <string name="toast_all_transactions_deleted">Todas as transações apagadas com sucesso!</string>
   <string name="title_progress_importing_accounts">Importando contas</string>
   <string name="section_header_transactions">Transações</string>
-  <string name="section_header_subaccounts">Sub-Contas</string>
+  <string name="section_header_subaccounts">Subcontas</string>
   <string name="menu_search_accounts">Procurar</string>
   <string name="title_default_export_format">Formato de Exportação padrão</string>
   <string name="summary_default_export_format">Formato de arquivo a ser usado por padrão ao exportar transações</string>
@@ -151,8 +151,8 @@
   <string name="label_placeholder_account">Conta não editável</string>
   <string name="label_default_transfer_account">Conta para transferências padrão</string>
   <plurals name="label_sub_accounts">
-    <item quantity="one">%d sub-conta</item>
-    <item quantity="other">%d sub-contas</item>
+    <item quantity="one">%d subconta</item>
+    <item quantity="other">%d subconta</item>
   </plurals>
   <string-array name="account_type_entry_values">
     <item>DINHEIRO</item>
@@ -180,9 +180,9 @@
   <!-- Content description for a color square. -->
   <!-- Content description for a selected color square. -->
   <string name="label_account_color_and_type">Cor de conta &amp; Tipo</string>
-  <string name="label_delete_sub_accounts">Apagar sub-contas</string>
+  <string name="label_delete_sub_accounts">Apagar subcontas</string>
   <string name="title_recent_accounts">Recentes</string>
-  <string name="title_favorite_accounts">Favoritos</string>
+  <string name="title_favorite_accounts">Favoritas</string>
   <string name="title_all_accounts">Todas</string>
   <string name="summary_create_default_accounts">Cria uma estrutura de contas GnuCash padrão</string>
   <string name="title_create_default_accounts">Cria contas padrão</string>
@@ -222,8 +222,8 @@
   <string name="title_line_chart">Gráfico de Linhas</string>
   <string name="title_bar_chart">Gráfico de Barras</string>
   <string name="title_report_prefs">Preferências de relatórios</string>
-  <string name="title_use_account_color">Côr da conta nos relatórios</string>
-  <string name="summary_use_account_color">Use côr da conta no gráfico de barras/linhas</string>
+  <string name="title_use_account_color">Cor da conta nos relatórios</string>
+  <string name="summary_use_account_color">Use cor da conta no gráfico de barras/linhas</string>
   <string name="menu_order_by_size">Ordenar por tamanho</string>
   <string name="menu_toggle_legend">Alterna visibilidade da legenda</string>
   <string name="menu_toggle_labels">Alterna visibilidade das etiquetas</string>
@@ -428,7 +428,7 @@ Neste processo não serão recolhidas informações do utilizador!</string>
   <string name="toast_updated_transaction_recurring_schedule">Agenda recorrente de transação atualizada</string>
   <string name="label_export_transactions_since_date">Desde</string>
   <string name="switch_export_transactions_from_all_time">Desde o início</string>
-  <string name="label_recommend_app">Recomendado na Play Store</string>
+  <string name="label_recommend_app">Recomendar na Play Store</string>
   <string name="repeat_until_date">até %1$s</string>
   <string name="repeat_on_weekday">em %1$s</string>
   <string name="repeat_x_times">por %1$d vezes</string>

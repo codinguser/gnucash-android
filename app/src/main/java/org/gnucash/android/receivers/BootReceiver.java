@@ -21,10 +21,11 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.util.BackupManager;
 
 /**
  * Receiver which is called when the device finishes booting.
- * It starts the service for running scheduled events
+ * It schedules periodic jobs.
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class BootReceiver extends BroadcastReceiver {
@@ -32,5 +33,6 @@ public class BootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         GnuCashApplication.startScheduledActionExecutionService(context);
+        BackupManager.schedulePeriodicBackups(context);
     }
 }

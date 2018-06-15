@@ -16,108 +16,106 @@
  limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="title_create_account">Δημιουργία Λογαριασμού</string>
-  <string name="title_edit_account">Επεξεργασία Λογαριασμού</string>
-  <string name="description_add_transaction_icon">Προσθήκη μιας νέας συναλλαγής σε ένα λογαριασμό</string>
+  <string name="title_create_account">Create Account</string>
+  <string name="title_edit_account">Edit Account</string>
+  <string name="description_add_transaction_icon">Add a new transaction to an account</string>
   <string name="description_view_account_icon">View account details</string>
-  <string name="label_no_accounts">Δεν υπάρχουν λογαριασμοί για εμφάνιση</string>
-  <string name="label_account_name">Όνομα λογαριασμού</string>
-  <string name="btn_cancel">Ακύρωση</string>
-  <string name="btn_save">Αποθήκευση</string>
+  <string name="label_no_accounts">No accounts to display</string>
+  <string name="label_account_name">Account name</string>
+  <string name="btn_cancel">Cancel</string>
+  <string name="btn_save">Save</string>
   <string name="btn_test">Test</string>
-  <string name="label_passcode">Εισάγετε κωδικό</string>
-  <string name="toast_wrong_passcode">Λάθος κωδικός, παρακαλώ προσπαθήστε ξανά</string>
-  <string name="toast_passcode_set">Κωδικός δημιουργήθηκε</string>
-  <string name="label_confirm_passcode">Παρακαλώ επιβεβαιώστε τον κωδικό σας</string>
-  <string name="toast_invalid_passcode_confirmation">Λάθος επιβεβαίωση κωδικού. Παρακαλώ προσπαθήστε ξανά</string>
-  <string name="label_transaction_name">Περιγραφή</string>
-  <string name="label_transaction_amount">Ποσό</string>
-  <string name="title_add_transaction">Νέα συναλλαγή</string>
-  <string name="label_no_transactions">Δεν υπάρχουν συναλλαγές για εμφάνιση</string>
-  <string name="label_debit">ΧΡΕΩΣΗ</string>
-  <string name="label_credit">ΠΙΣΤΩΣΗ</string>
-  <string name="title_accounts">Λογαριασμοί</string>
-  <string name="title_transactions">Συναλλαγές</string>
-  <string name="menu_delete">ΔΙΑΓΡΑΦΗ</string>
-  <string name="alert_dialog_ok_delete">Διαγραφή</string>
-  <string name="alert_dialog_cancel">Ακύρωση</string>
-  <string name="toast_account_deleted">Ο λογαριασμός διαγράφηκε</string>
-  <string name="title_confirm_delete">Επιβεβαίωση διαγραφής</string>
-  <string name="title_edit_transaction">Επεξεργασία Συναλλαγής</string>
-  <string name="label_transaction_description">Σημείωση</string>
-  <string name="title_selected">%1$d επιλέχθηκε</string>
-  <string name="label_account_balance">Υπόλοιπο:</string>
-  <string name="label_export_destination">Εξαγωγή σε:</string>
-  <string name="title_export_dialog">Export transactions</string>
-  <string name="hint_export_choice">Προεπιλεγμένα, μόνο οι νέες συναλλαγές από τη τελευταία εξαγωγή θα εξαχθούν. Ενεργοποίησε αυτή την επιλογή για την εξαγωγή όλων των συναλλαγών</string>
-  <string name="toast_export_error">Σφάλμα εξαγωγής δεδομένων %1$s</string>
-  <string name="btn_export">Εξαγωγή</string>
-  <string name="option_delete_after_export">Διαγραφή συναλλαγών μετά την εξαγωγή</string>
-  <string name="hint_delete_after_export">Όλες οι συναλλαγές που εξάγονται, θα διαγραφούν με την ολοκλήρωση της εξαγωγής</string>
-  <string name="title_settings">Ρυθμίσεις</string>
+  <string name="label_passcode">Enter Passcode</string>
+  <string name="toast_wrong_passcode">Wrong passcode, please try again</string>
+  <string name="toast_passcode_set">Passcode set</string>
+  <string name="label_confirm_passcode">Please confirm your passcode</string>
+  <string name="toast_invalid_passcode_confirmation">Invalid passcode confirmation. Please try again</string>
+  <string name="label_transaction_name">Description</string>
+  <string name="label_transaction_amount">Amount</string>
+  <string name="title_add_transaction">New transaction</string>
+  <string name="label_no_transactions">No transactions to display</string>
+  <string name="label_debit">DEBIT</string>
+  <string name="label_credit">CREDIT</string>
+  <string name="title_accounts">Accounts</string>
+  <string name="title_transactions">Transactions</string>
+  <string name="menu_delete">Delete</string>
+  <string name="alert_dialog_ok_delete">Delete</string>
+  <string name="alert_dialog_cancel">Cancel</string>
+  <string name="toast_account_deleted">Account deleted</string>
+  <string name="title_confirm_delete">Confirm delete</string>
+  <string name="title_edit_transaction">Edit Transaction</string>
+  <string name="label_transaction_description">Add note</string>
+  <string name="title_selected">%1$d selected</string>
+  <string name="label_account_balance">Balance:</string>
+  <string name="label_export_destination">Export To:</string>
+  <string name="title_export_dialog">Export Transactions</string>
+  <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
+  <string name="toast_export_error">Error exporting %1$s file</string>
+  <string name="btn_export">Export</string>
+  <string name="option_delete_after_export">Delete transactions after export</string>
+  <string name="hint_delete_after_export">All exported transactions will be deleted when exporting is completed</string>
+  <string name="title_settings">Settings</string>
   <string-array name="export_destinations">
     <item>Save As&#8230;</item>
     <item>Dropbox</item>
     <item>ownCloud</item>
     <item>Send to&#8230;</item>
   </string-array>
-  <string name="btn_move">Μετακίνηση</string>
-  <string name="title_move_transactions">Μετακίνησε %1$d συναλλαγή(ες)</string>
-  <string name="label_move_destination">Λογιαριασμός Προορισμού</string>
-  <string name="toast_incompatible_currency">Αδυναμία μετακίνησης	συναλλαγών.\nΟ λογαριασμός προορισμού χρησιμοποιεί διαφορετικό νόμισμα από το λογαριασμό προέλευσης</string>
-  <string name="header_general_settings">Γενικές</string>
-  <string name="header_about_gnucash">Πληροφορίες</string>
-  <string name="title_choose_currency">Προεπιλογή νομίσματος</string>
-  <string name="title_default_currency">Προεπιλεγμένο νόμισμα</string>
-  <string name="summary_default_currency">Προεπιλεγμένο νόμισμα για νέους λογαριασμούς</string>
-  <string name="label_permission_record_transactions">Ενεργοποίηση καταγραφής	συναλλαγών στο GnuCash για Android</string>
-  <string name="label_permission_create_accounts">Ενεργοποίηση δημιουργίας λογαριασμών στο GnuCash για Android</string>
-  <string name="label_permission_group">Τα δεδομένα σας στο GnuCash</string>
-  <string name="description_permission_group">Ανάγνωση και επεξεργασία δεδομένων GnuCash</string>
-  <string name="label_permission_record_transaction">Καταγραφή συναλλαγών στο GnuCash</string>
-  <string name="label_permission_create_account">Δημιουργία λογαριασμών στο GnuCash</string>
-  <string name="label_display_account">Εμφάνιση λογαριασμού</string>
+  <string name="btn_move">Move</string>
+  <string name="title_move_transactions">Move %1$d transaction(s)</string>
+  <string name="label_move_destination">Destination Account</string>
+  <string name="toast_incompatible_currency">Cannot move transactions.\nThe destination account uses a different currency from origin account</string>
+  <string name="header_general_settings">General</string>
+  <string name="header_about_gnucash">About</string>
+  <string name="title_choose_currency">Choose default currency</string>
+  <string name="title_default_currency">Default currency</string>
+  <string name="summary_default_currency">Default currency to assign to new accounts</string>
+  <string name="label_permission_record_transactions">Enables recording transactions in GnuCash for Android</string>
+  <string name="label_permission_create_accounts">Enables creation of accounts in GnuCash for Android</string>
+  <string name="label_permission_group">Your GnuCash data</string>
+  <string name="description_permission_group">Read and modify GnuCash data</string>
+  <string name="label_permission_record_transaction">Record transactions in GnuCash</string>
+  <string name="label_permission_create_account">Create accounts in GnuCash</string>
+  <string name="label_display_account">Display account</string>
   <string name="label_hide_account_balance">Hide account balance in widget</string>
-  <string name="btn_create_accounts">Δημιουργία Λογαριασμών</string>
-  <string name="error_no_accounts">Δεν υπάρχουν λογαριασμοί στο
-	GnuCash.\nΔημιουργήστε ενα λογαριασμό πριν προσθέσετε ένα γραφικό στοιχείο</string>
-  <string name="title_license">Άδεια χρήσης</string>
-  <string name="summary_licence_details">Άδεια χρήσης Apache v2.0. Επιλέξτε για λεπτομέρειες</string>
-  <string name="title_general_prefs">Γενικά</string>
-  <string name="label_widget_configuration">Επιλογή Λογαριασμού</string>
-  <string name="toast_no_transactions_to_export">Δεν υπάρχουν διαθέσιμες συναλλαγές για εξαγωγή</string>
-  <string name="title_passcode_preferences">Προτιμήσεις Κωδικού</string>
+  <string name="btn_create_accounts">Create Accounts</string>
+  <string name="error_no_accounts">No accounts exist in GnuCash.\nCreate an account before adding a widget</string>
+  <string name="title_license">License</string>
+  <string name="summary_licence_details">Apache License v2.0. Click for details</string>
+  <string name="title_general_prefs">General Preferences</string>
+  <string name="label_widget_configuration">Select Account</string>
+  <string name="toast_no_transactions_to_export">There are no transactions available to export</string>
+  <string name="title_passcode_preferences">Passcode Preferences</string>
   <string name="title_enable_passcode">Enable passcode</string>
-  <string name="title_change_passcode">Αλλαγή Κωδικού</string>
-  <string name="title_about_gnucash">Πληροφορίες για GnuCash</string>
-  <string name="title_export_email">Εξαγωγή GnuCash Android %1$s</string>
-  <string name="description_export_email">Εξαγωγή GnuCash Android προς </string>
-  <string name="header_transaction_settings">Κινήσεις</string>
-  <string name="title_transaction_preferences">Προτιμήσεις Κινήσεων</string>
-  <string name="title_account_preferences">Προτιμήσεις Λογαριασμών</string>
-  <string name="title_default_transaction_type">Προεπιλογή Τύπου Κίνησης</string>
-  <string name="summary_default_transaction_type">Ο προεπιλεγμένος τύπος κίνησης, ΠΙΣΤΩΣΗ ή ΧΡΕΩΣΗ</string>
+  <string name="title_change_passcode">Change Passcode</string>
+  <string name="title_about_gnucash">About GnuCash</string>
+  <string name="title_export_email">GnuCash Android %1$s export</string>
+  <string name="description_export_email">GnuCash Android Export from </string>
+  <string name="header_transaction_settings">Transactions</string>
+  <string name="title_transaction_preferences">Transaction Preferences</string>
+  <string name="title_account_preferences">Account Preferences</string>
+  <string name="title_default_transaction_type">Default Transaction Type</string>
+  <string name="summary_default_transaction_type">The type of transaction to use by default, CREDIT or DEBIT</string>
   <string-array name="transaction_types">
-    <item>ΠΙΣΤΩΣΗ</item>
-    <item>ΧΡΕΩΣΗ</item>
+    <item>CREDIT</item>
+    <item>DEBIT</item>
   </string-array>
-  <string name="msg_delete_all_transactions_confirmation">Σίγουρα θέλετε να διαγράψετε ΌΛΕΣ τις κινήσεις;</string>
-  <string name="msg_delete_transaction_confirmation">Σίγουρα θέλετε να διαγράψετε αυτή τη κίνηση;</string>
-  <string name="title_export_preference_category">Εξαγωγή</string>
-  <string name="title_export_all_transactions">Εξαγωγή όλων των κινήσεων</string>
-  <string name="title_always_delete_exported_transactions">Διαγραφή εξηγμένων κινήσεων</string>
-  <string name="title_default_export_email">Προεπιλεγμένο email εξαγωγής</string>
-  <string name="summary_default_export_email">Η προεπιλεγμένη διεύθυνση email για αποστολή εξαγωγών. Μπορείτε να το αλλάξετε και κατα την εξαγωγή.</string>
-  <string name="summary_use_double_entry">Όλες οι κινήσεις θα μεταφερθούν από τον ένα λογαριασμό στον άλλο.</string>
-  <string name="title_use_double_entry">Ενεργοποίηση Διπλών Λογιστικών Εγγραφών</string>
-  <string name="account_balance">Υπόλοιπο</string>
-  <string name="toast_no_account_name_entered">Εισαγωγή ονόματος λογαριασμού
-	για τη δημιουργία του</string>
-  <string name="label_account_currency">Νόμισμα</string>
-  <string name="label_parent_account">Γονικός λογαριασμός</string>
-  <string name="title_xml_ofx_header">Χρήση κεφαλίδας XML OFX</string>
-  <string name="summary_xml_ofx_header">Ενεργοποίηση αυτής της επιλογής για εξαγωγή σε εφαρμογές τρίτων, εκτός του GnuCash για επιτραπέζιο υπολογιστή.</string>
-  <string name="title_whats_new">Τι νέο υπάρχει</string>
+  <string name="msg_delete_all_transactions_confirmation">Are you sure you want to delete ALL transactions?</string>
+  <string name="msg_delete_transaction_confirmation">Are you sure you want to delete this transaction?</string>
+  <string name="title_export_preference_category">Export</string>
+  <string name="title_export_all_transactions">Export all transactions</string>
+  <string name="title_always_delete_exported_transactions">Delete exported transactions</string>
+  <string name="title_default_export_email">Default export email</string>
+  <string name="summary_default_export_email">The default email address to send exports to. You can still change this when you export.</string>
+  <string name="summary_use_double_entry">All transactions will be a transfer from one account to another</string>
+  <string name="title_use_double_entry">Activate Double Entry</string>
+  <string name="account_balance">Balance</string>
+  <string name="toast_no_account_name_entered">Enter an account name to create an account</string>
+  <string name="label_account_currency">Currency</string>
+  <string name="label_parent_account">Parent account</string>
+  <string name="title_xml_ofx_header">Use XML OFX header</string>
+  <string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>
+  <string name="title_whats_new">What\'s New</string>
   <string name="whats_new">
         - Added ability to export to any service which supports the Storage Access Framework \n
         - Added option to set the location for regular automatic backups (See backup settings)\n
@@ -125,63 +123,56 @@
         - Added support for renaming books\n
         - Multiple bug fixes and improvements\n
 	</string>
-  <string name="label_dismiss">Απόρριψη</string>
-  <string name="toast_transanction_amount_required">Εισαγωγή ποσού για
-	αποθήκευση κίνησης</string>
-  <string name="toast_error_importing_accounts">Προέκυψε σφάλμα κατά την
-	εισαγωγή λογαριασμών GnuCash</string>
-  <string name="toast_success_importing_accounts">Λογαριασμοί GnuCash
-	εισήχθησαν με επιτυχία</string>
-  <string name="summary_import_accounts">Το εισαγόμενο λογιστικό σχέδιο
-	εξήχθει από το GnuCash για επιτραπέζιους υπολογιστές</string>
-  <string name="title_import_accounts">Εισαγωγή λογαριασμών GnuCash</string>
-  <string name="summary_delete_all_accounts">Διαγραφή όλων των λογαριασμών
-	στη βάση δεδομένων. Όλες οι κινήσεις θα διαγραφούν επίσης.
+  <string name="label_dismiss">Dismiss</string>
+  <string name="toast_transanction_amount_required">Enter an amount to save the transaction</string>
+  <string name="toast_error_importing_accounts">An error occurred while importing the GnuCash accounts</string>
+  <string name="toast_success_importing_accounts">GnuCash Accounts successfully imported</string>
+  <string name="summary_import_accounts">Import account structure exported from GnuCash desktop</string>
+  <string name="title_import_accounts">Import GnuCash XML</string>
+  <string name="summary_delete_all_accounts">Delete all accounts in the database. All transactions will be deleted as
+        well.
     </string>
-  <string name="title_delete_all_accounts">Διαγραφή όλων των λογαριασμών</string>
-  <string name="header_account_settings">Λογαριασμοί</string>
-  <string name="toast_all_accounts_deleted">Όλοι οι λογαριασμοί διαγράφηκαν
-	με επιτυχία</string>
-  <string name="confirm_delete_all_accounts">Σίγουρα θέλετε να διαγράψετε
-	όλους του λογαριασμούς και τις κινήσεις; \nΑυτή η ενέργεια δε μπορεί να αναιρεθεί!
+  <string name="title_delete_all_accounts">Delete all accounts</string>
+  <string name="header_account_settings">Accounts</string>
+  <string name="toast_all_accounts_deleted">All accounts have been successfully deleted</string>
+  <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions?\n\nThis
+        operation cannot be undone!
     </string>
-  <string name="summary_delete_all_transactions">Όλες οι κινήσεις σε όλους
-	τους λογαριασμούς θα διαγραφούν!</string>
-  <string name="title_delete_all_transactions">Διαγραφή όλων των κινήσεων</string>
-  <string name="toast_all_transactions_deleted">Όλες οι κινήσεις διαγράφηκαν
-	με επιτυχία!</string>
-  <string name="title_progress_importing_accounts">Εισαγωγή λογαριασμών</string>
-  <string name="section_header_transactions">Κινήσεις</string>
-  <string name="section_header_subaccounts">Υπο-Λογαριασμοί</string>
-  <string name="menu_search_accounts">Αναζήτηση</string>
-  <string name="title_default_export_format">Προεπιλεγμένη Μορφή Εξόδου</string>
-  <string name="summary_default_export_format">Μορφή αρχείου για προεπιλεγμένη χρήση κατά την εξαγωγή κινήσεων.</string>
-  <string name="label_recurring_transaction">Επαναλαμβανόμενη</string>
+  <string name="summary_delete_all_transactions">All transactions in all accounts will be deleted!</string>
+  <string name="title_delete_all_transactions">Delete all transactions</string>
+  <string name="toast_all_transactions_deleted">All transactions successfully deleted!</string>
+  <string name="title_progress_importing_accounts">Importing accounts</string>
+  <string name="section_header_transactions">Transactions</string>
+  <string name="section_header_subaccounts">Sub-Accounts</string>
+  <string name="menu_search_accounts">Search</string>
+  <string name="title_default_export_format">Default Export Format</string>
+  <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
+  <string name="label_recurring_transaction">Recurrence</string>
   <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">Imbalance</string>
-  <string name="title_progress_exporting_transactions">Εξαγωγή κινήσεων</string>
-  <string name="label_no_recurring_transactions">Δεν υπάρχουν επαναλαμβανόμενες κινήσεις για εμφάνιση.</string>
-  <string name="toast_recurring_transaction_deleted">Επιτυχία διαγραφής επαναλαμβανόμενης κίνησης</string>
-  <string name="label_placeholder_account">Λογαριασμός κράτησης θέσης</string>
-  <string name="label_default_transfer_account">Προεπιλεγμένος Λογαριασμός Μεταφοράς</string>
+  <string name="title_progress_exporting_transactions">Exporting transactions</string>
+  <string name="label_no_recurring_transactions">No recurring transactions to display.</string>
+  <string name="toast_recurring_transaction_deleted">Successfully deleted recurring transaction</string>
+  <string name="label_placeholder_account">Placeholder account</string>
+  <string name="label_default_transfer_account">Default Transfer Account</string>
   <plurals name="label_sub_accounts">
-    <item quantity="one">%d υπο-λογαριασμός</item>
-    <item quantity="other">%d υπο-λογαριασμοί</item>
+    <item quantity="one">%d sub-account</item>
+    <item quantity="other">%d sub-accounts</item>
   </plurals>
   <string-array name="account_type_entry_values">
-    <item>ΡΕΥΣΤΟ</item>
-    <item>ΤΡΑΠΕΖΑ</item>
-    <item>ΠΙΣΤΩΤΙΚΗ ΚΑΡΤΑ</item>
-    <item>ΠΑΓΙΟ</item>
-    <item>ΠΑΘΗΤΙΚΟ</item>
-    <item>ΕΣΟΔΟ</item>
-    <item>ΕΞΟΔΟ</item>
-    <item>ΠΛΗΡΩΤΕΟ</item>
-    <item>ΕΙΣΠΡΑΚΤΕΟ</item>
-    <item>ΚΑΘΑΡΗ ΑΞΙΑ</item>
-    <item>ΝΟΜΙΣΜΑ</item>
-    <item>ΜΕΤΟΧΗ</item>
-    <item>ΑΜΟΙΒΑΙΟ ΚΕΦΑΛΑΙΟ</item>
+    <item>CASH</item>
+    <item>BANK</item>
+    <item>CREDIT CARD</item>
+    <item>ASSET</item>
+    <item>LIABILITY</item>
+    <item>INCOME</item>
+    <item>EXPENSE</item>
+    <item>PAYABLE</item>
+    <item>RECEIVABLE</item>
+    <item>EQUITY</item>
+    <item>CURRENCY</item>
+    <item>STOCK</item>
+    <item>MUTUAL FUND</item>
     <item>TRADING</item>
   </string-array>
   <string-array name="export_formats">
@@ -190,26 +181,26 @@
     <item>XML</item>
   </string-array>
   <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
-  <string name="color_picker_default_title">Επιλογή χρώματος</string>
+  <string name="color_picker_default_title">Select a Color</string>
   <!-- Content description for a color square. -->
   <!-- Content description for a selected color square. -->
-  <string name="label_account_color_and_type">Χρώμα Λογαριασμού &amp; Τύπος</string>
-  <string name="label_delete_sub_accounts">Διαγραφή υπο-λογαριασμών</string>
-  <string name="title_recent_accounts">Πρόσφατοι</string>
-  <string name="title_favorite_accounts">Αγαπημένοι</string>
-  <string name="title_all_accounts">Όλοι</string>
-  <string name="summary_create_default_accounts">Δημιουργία προεπιλεγμένης συχνά χρησιμοποιούμενης δομής λογαριασμών GnuCash</string>
-  <string name="title_create_default_accounts">Δημιουργία προεπιλεγμένων λογαριασμών</string>
+  <string name="label_account_color_and_type">Account Color &amp; Type</string>
+  <string name="label_delete_sub_accounts">Delete sub-accounts</string>
+  <string name="title_recent_accounts">Recent</string>
+  <string name="title_favorite_accounts">Favorites</string>
+  <string name="title_all_accounts">All</string>
+  <string name="summary_create_default_accounts">Creates default GnuCash commonly-used account structure</string>
+  <string name="title_create_default_accounts">Create default accounts</string>
   <string name="msg_confirm_create_default_accounts_setting">A new book will be opened with the default accounts\n\nYour current accounts and transactions will not be modified!</string>
-  <string name="title_scheduled_transactions">Προγραμματισμένες Κινήσεις</string>
+  <string name="title_scheduled_transactions">Transactions</string>
   <string name="title_select_export_destination">Select destination for export</string>
   <string name="hint_split_memo">Memo</string>
   <string name="label_spend">Spend</string>
   <string name="label_receive">Receive</string>
-  <string name="label_withdrawal">Ανάληψη</string>
-  <string name="label_deposit">Κατάθεση</string>
-  <string name="label_payment">Πληρωμή</string>
-  <string name="label_charge">Χρέωση</string>
+  <string name="label_withdrawal">Withdrawal</string>
+  <string name="label_deposit">Deposit</string>
+  <string name="label_payment">Payment</string>
+  <string name="label_charge">Charge</string>
   <string name="label_decrease">Decrease</string>
   <string name="label_increase">Increase</string>
   <string name="label_income">Income</string>
@@ -217,10 +208,10 @@
   <string name="label_expense">Expense</string>
   <string name="label_bill">Bill</string>
   <string name="label_invoice">Invoice</string>
-  <string name="label_buy">Αγορά</string>
-  <string name="label_sell">Πώληση</string>
-  <string name="account_name_opening_balances">Αρχικά υπόλοιπα</string>
-  <string name="account_name_equity">Καθαρή Θέση</string>
+  <string name="label_buy">Buy</string>
+  <string name="label_sell">Sell</string>
+  <string name="account_name_opening_balances">Opening Balances</string>
+  <string name="account_name_equity">Equity</string>
   <string name="summary_save_opening_balances">Enable to save the current account balance (before deleting transactions) as new opening balance after deleting transactions
     </string>
   <string name="title_save_opening_balances">Save account opening balances</string>
@@ -228,14 +219,14 @@
   <string name="export_warning_qif">Generates separate QIF files per currency</string>
   <string name="label_imbalance">Imbalance:</string>
   <string name="btn_add_split">Add split</string>
-  <string name="menu_title_favorite">Αγαπημένο</string>
+  <string name="menu_title_favorite">Favorite</string>
   <string name="drawer_open">Navigation drawer opened</string>
   <string name="drawer_close">Navigation drawer closed</string>
-  <string name="title_reports">Αναφορές</string>
+  <string name="title_reports">Reports</string>
   <string name="title_pie_chart">Pie Chart</string>
   <string name="title_line_chart">Line Chart</string>
   <string name="title_bar_chart">Bar Chart</string>
-  <string name="title_report_prefs">Προτιμήσεις αναφοράς</string>
+  <string name="title_report_prefs">Report Preferences</string>
   <string name="title_use_account_color">Account color in reports</string>
   <string name="summary_use_account_color">Use account color in the bar/pie chart</string>
   <string name="menu_order_by_size">Order by size</string>
@@ -272,9 +263,9 @@
   <string name="toast_install_file_manager">Install a file manager to select files</string>
   <string name="title_select_backup_to_restore">Select backup to restore</string>
   <string name="nav_menu_favorites">Favorites</string>
-  <string name="nav_menu_open">Open...</string>
+  <string name="nav_menu_open">Open&#8230;</string>
   <string name="nav_menu_reports">Reports</string>
-  <string name="nav_menu_export">Export...</string>
+  <string name="nav_menu_export">Export&#8230;</string>
   <string name="nav_menu_settings">Settings</string>
   <string name="username">User Name</string>
   <string name="password">Password</string>
@@ -307,13 +298,11 @@
     <item quantity="other">Every %d years</item>
   </plurals>
   <string name="title_enable_crashlytics">Enable Crash Logging</string>
-  <string name="msg_enable_crashlytics">Enable to send information about malfunctions to the developers for improvement (recommended).
-No user-identifiable information will be collected as part of this process!
-    </string>
+  <string name="msg_enable_crashlytics">Automatically send information about app malfunction to the developers.</string>
   <string name="label_export_format"> Format</string>
   <string name="label_old_passcode">Enter your old passcode</string>
   <string name="label_new_passcode">Enter your new passcode</string>
-  <string name="title_scheduled_exports">Scheduled Exports</string>
+  <string name="title_scheduled_exports">Exports</string>
   <string name="label_no_scheduled_exports_to_display">No scheduled exports to display</string>
   <string name="title_create_export_schedule">Create export schedule</string>
   <string name="toast_exported_to">Exported to: %1$s</string>
@@ -322,7 +311,7 @@ No user-identifiable information will be collected as part of this process!
   <string name="label_no_recent_accounts">No recent accounts</string>
   <string name="label_no_favorite_accounts">No favorite accounts</string>
   <string name="nav_menu_scheduled_actions">Scheduled Actions</string>
-  <string name="label_scheduled_action_ended">"Ended, last executed on "</string>
+  <string name="label_scheduled_action_ended">"Ended, last executed on %1$s"</string>
   <string name="btn_wizard_next">Next</string>
   <string name="btn_wizard_finish">Done</string>
   <string name="wizard_title_default_currency">Default Currency</string>
@@ -332,7 +321,7 @@ No user-identifiable information will be collected as part of this process!
   <string name="wizard_option_create_default_accounts">Create default accounts</string>
   <string name="wizard_option_import_my_accounts">Import my accounts</string>
   <string name="wizard_option_let_me_handle_it">Let me handle it</string>
-  <string name="wizard_option_currency_other">Other...</string>
+  <string name="wizard_option_currency_other">Other&#8230;</string>
   <string name="wizard_option_auto_send_crash_reports">Automatically send crash reports</string>
   <string name="wizard_option_disable_crash_reports">Disable crash reports</string>
   <string name="wizard_btn_back">Back</string>

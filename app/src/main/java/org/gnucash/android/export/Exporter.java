@@ -160,7 +160,10 @@ public abstract class Exporter {
      */
     public static String buildExportFilename(ExportFormat format, String bookName) {
         return EXPORT_FILENAME_DATE_FORMAT.format(new Date(System.currentTimeMillis()))
-                + "_gnucash_export_" + sanitizeFilename(bookName) + format.getExtension();
+                + "_gnucash_export_" + sanitizeFilename(bookName) +
+                (format == ExportFormat.CSVA ? "_accounts" : "") +
+                (format == ExportFormat.CSVT ? "_transactions" : "") +
+                format.getExtension();
     }
 
     /**
@@ -231,20 +234,6 @@ public abstract class Exporter {
      */
     public static String getExportFolderPath(String bookUID){
         String path = BASE_FOLDER_PATH + "/" + bookUID + "/exports/";
-        File file = new File(path);
-        if (!file.exists())
-            file.mkdirs();
-        return path;
-    }
-
-    /**
-     * Returns the path to the backups folder for the book with GUID {@code bookUID}
-     * Each book has its own backup path
-     *
-     * @return Absolute path to backup folder for the book
-     */
-    public static String getBackupFolderPath(String bookUID){
-        String path = BASE_FOLDER_PATH + "/" + bookUID + "/backups/";
         File file = new File(path);
         if (!file.exists())
             file.mkdirs();

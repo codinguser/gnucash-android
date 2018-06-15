@@ -22,7 +22,9 @@ package org.gnucash.android.export;
 public enum ExportFormat {
     QIF("Quicken Interchange Format"),
     OFX("Open Financial eXchange"),
-    XML("GnuCash XML");
+    XML("GnuCash XML"),
+    CSVA("GnuCash accounts CSV"),
+    CSVT("GnuCash transactions CSV");
 
     /**
      * Full name of the export format acronym
@@ -45,6 +47,9 @@ public enum ExportFormat {
                 return ".ofx";
             case XML:
                 return ".gnca";
+            case CSVA:
+            case CSVT:
+                return ".csv";
             default:
                 return ".txt";
         }

@@ -213,6 +213,15 @@ public class QifExporter extends Exporter{
                         case 1000:
                             precision = 3;
                             break;
+                        case 10000:
+                            precision = 4;
+                            break;
+                        case 100000:
+                            precision = 5;
+                            break;
+                        case 1000000:
+                            precision = 6;
+                            break;
                         default:
                             throw new ExporterException(mExportParams, "split quantity has illegal denominator: "+ quantity_denom);
                     }
@@ -242,11 +251,14 @@ public class QifExporter extends Exporter{
 
             /// export successful
             PreferencesHelper.setLastExportTime(TimestampHelper.getTimestampFromNow());
+
             List<String> exportedFiles = splitQIF(file);
             if (exportedFiles.isEmpty())
                 return Collections.emptyList();
-            else
+            else if (exportedFiles.size() > 1)
                 return zipQifs(exportedFiles);
+            else
+                return exportedFiles;
         } catch (IOException e) {
             throw new ExporterException(mExportParams, e);
         }

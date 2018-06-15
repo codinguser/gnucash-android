@@ -50,9 +50,9 @@ import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
-import org.gnucash.android.model.Book;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.receivers.PeriodicJobReceiver;
 import org.gnucash.android.service.ScheduledActionService;
 import org.gnucash.android.ui.settings.PreferenceActivity;
 
@@ -333,20 +333,22 @@ public class GnuCashApplication extends MultiDexApplication {
      * @param context Application context
      */
     public static void startScheduledActionExecutionService(Context context){
-        Intent alarmIntent = new Intent(context, ScheduledActionService.class);
-        PendingIntent pendingIntent = PendingIntent.getService(context, 0, alarmIntent, PendingIntent.FLAG_NO_CREATE);
+        Intent alarmIntent = new Intent(context, PeriodicJobReceiver.class);
+        alarmIntent.setAction(PeriodicJobReceiver.ACTION_SCHEDULED_ACTIONS);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,0, alarmIntent,
+                                                                 PendingIntent.FLAG_NO_CREATE);
 
         if (pendingIntent != null) //if service is already scheduled, just return
             return;
         else
-            pendingIntent = PendingIntent.getService(context, 0, alarmIntent, 0);
+            pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 SystemClock.elapsedRealtime() + AlarmManager.INTERVAL_FIFTEEN_MINUTES,
                 AlarmManager.INTERVAL_HOUR, pendingIntent);
 
-        context.startService(alarmIntent); //run the service the first time
+        ScheduledActionService.enqueueWork(context);
     }
 
     /**

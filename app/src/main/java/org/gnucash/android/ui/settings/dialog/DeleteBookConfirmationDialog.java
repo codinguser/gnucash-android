@@ -24,6 +24,7 @@ import android.support.annotation.NonNull;
 import org.gnucash.android.R;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.ui.common.Refreshable;
+import org.gnucash.android.util.BackupManager;
 
 /**
  * Confirmation dialog for deleting a book.
@@ -52,6 +53,7 @@ public class DeleteBookConfirmationDialog extends DoubleConfirmationDialog {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int which) {
                         final String bookUID = getArguments().getString("bookUID");
+                        BackupManager.backupBook(bookUID);
                         BooksDbAdapter.getInstance().deleteBook(bookUID);
                         ((Refreshable) getTargetFragment()).refresh();
                     }

@@ -38,7 +38,7 @@
   <string name="label_credit">ABONO</string>
   <string name="title_accounts">Cuentas</string>
   <string name="title_transactions">Transacciones</string>
-  <string name="menu_delete">BORRAR</string>
+  <string name="menu_delete">Borrar</string>
   <string name="alert_dialog_ok_delete">Borrar</string>
   <string name="alert_dialog_cancel">Cancelar</string>
   <string name="toast_account_deleted">Cuenta borrada</string>

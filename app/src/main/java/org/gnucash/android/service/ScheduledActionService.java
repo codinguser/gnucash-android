@@ -16,14 +16,13 @@
 
 package org.gnucash.android.service;
 
-import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
-import android.os.PowerManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.app.JobIntentService;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -38,72 +37,63 @@ import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportAsyncTask;
-import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
-import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.model.Book;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.util.BookUtils;
 
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.zip.GZIPOutputStream;
 
 /**
  * Service for running scheduled events.
- * <p>The service is started and goes through all scheduled event entries in the the database and executes them.
- * Then it is stopped until the next time it is run. <br>
- * Scheduled runs of the service should be achieved using an {@link android.app.AlarmManager}</p>
+ *
+ * <p>It's run every time the <code>enqueueWork</code> is called. It goes
+ * through all scheduled event entries in the the database and executes them.</p>
+ *
+ * <p>Scheduled runs of the service should be achieved using an
+ * {@link android.app.AlarmManager}, with
+ * {@link org.gnucash.android.receivers.PeriodicJobReceiver} as an intermediary.</p>
+ *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class ScheduledActionService extends IntentService {
+public class ScheduledActionService extends JobIntentService {
 
-    public static final String LOG_TAG = "ScheduledActionService";
+    private static final String LOG_TAG = "ScheduledActionService";
+    private static final int JOB_ID = 1001;
 
-    public ScheduledActionService() {
-        super(LOG_TAG);
+
+    public static void enqueueWork(Context context) {
+        Intent intent = new Intent(context, ScheduledActionService.class);
+        enqueueWork(context, ScheduledActionService.class, JOB_ID, intent);
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    protected void onHandleWork(@NonNull Intent intent) {
         Log.i(LOG_TAG, "Starting scheduled action service");
 
-        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, LOG_TAG);
-        wakeLock.acquire();
+        BooksDbAdapter booksDbAdapter = BooksDbAdapter.getInstance();
+        List<Book> books = booksDbAdapter.getAllRecords();
+        for (Book book : books) { //// TODO: 20.04.2017 Retrieve only the book UIDs with new method
+            DatabaseHelper dbHelper = new DatabaseHelper(GnuCashApplication.getAppContext(), book.getUID());
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            RecurrenceDbAdapter recurrenceDbAdapter = new RecurrenceDbAdapter(db);
+            ScheduledActionDbAdapter scheduledActionDbAdapter = new ScheduledActionDbAdapter(db, recurrenceDbAdapter);
 
-        autoBackup(); //First run automatic backup of all books before doing anything else
-        try {
-            BooksDbAdapter booksDbAdapter = BooksDbAdapter.getInstance();
-            List<Book> books = booksDbAdapter.getAllRecords();
-            for (Book book : books) { //// TODO: 20.04.2017 Retrieve only the book UIDs with new method
-                DatabaseHelper dbHelper = new DatabaseHelper(GnuCashApplication.getAppContext(), book.getUID());
-                SQLiteDatabase db = dbHelper.getWritableDatabase();
-                RecurrenceDbAdapter recurrenceDbAdapter = new RecurrenceDbAdapter(db);
-                ScheduledActionDbAdapter scheduledActionDbAdapter = new ScheduledActionDbAdapter(db, recurrenceDbAdapter);
+            List<ScheduledAction> scheduledActions = scheduledActionDbAdapter.getAllEnabledScheduledActions();
+            Log.i(LOG_TAG, String.format("Processing %d total scheduled actions for Book: %s",
+                    scheduledActions.size(), book.getDisplayName()));
+            processScheduledActions(scheduledActions, db);
 
-                List<ScheduledAction> scheduledActions = scheduledActionDbAdapter.getAllEnabledScheduledActions();
-                Log.i(LOG_TAG, String.format("Processing %d total scheduled actions for Book: %s",
-                        scheduledActions.size(), book.getDisplayName()));
-                processScheduledActions(scheduledActions, db);
-
-                //close all databases except the currently active database
-                if (!db.getPath().equals(GnuCashApplication.getActiveDb().getPath()))
-                    db.close();
-            }
-
-            Log.i(LOG_TAG, "Completed service @ " + java.text.DateFormat.getDateTimeInstance().format(new Date()));
-
-        } finally { //release the lock either way
-            wakeLock.release();
+            //close all databases except the currently active database
+            if (!db.getPath().equals(GnuCashApplication.getActiveDb().getPath()))
+                db.close();
         }
+
+        Log.i(LOG_TAG, "Completed service @ " + java.text.DateFormat.getDateTimeInstance().format(new Date()));
     }
 
     /**
@@ -189,7 +179,14 @@ public class ScheduledActionService extends IntentService {
             Crashlytics.logException(e);
             Log.e(LOG_TAG, e.getMessage());
         }
-        Log.i(LOG_TAG, "Backup/export did not occur. There might have beeen no new transactions to export or it might have crashed");
+        if (!result) {
+            Log.i(LOG_TAG, "Backup/export did not occur. There might have been no"
+                    + " new transactions to export or it might have crashed");
+            // We don't know if something failed or there weren't transactions to export,
+            // so fall on the safe side and return as if something had failed.
+            // FIXME: Change ExportAsyncTask to distinguish between the two cases
+            return 0;
+        }
         return 1;
     }
 
@@ -198,6 +195,7 @@ public class ScheduledActionService extends IntentService {
      * @param scheduledAction Scheduled action
      * @return {@code true} if execution is due, {@code false} otherwise
      */
+    @SuppressWarnings("RedundantIfStatement")
     private static boolean shouldExecuteScheduledBackup(ScheduledAction scheduledAction) {
         long now = System.currentTimeMillis();
         long endTime = scheduledAction.getEndTime();
@@ -223,7 +221,7 @@ public class ScheduledActionService extends IntentService {
         int executionCount = 0;
         String actionUID = scheduledAction.getActionUID();
         TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
-        Transaction trxnTemplate = null;
+        Transaction trxnTemplate;
         try {
             trxnTemplate = transactionsDbAdapter.getRecord(actionUID);
         } catch (IllegalArgumentException ex){ //if the record could not be found, abort
@@ -260,35 +258,5 @@ public class ScheduledActionService extends IntentService {
         // Be nice and restore the parameter's original state to avoid confusing the callers
         scheduledAction.setExecutionCount(previousExecutionCount);
         return executionCount;
-    }
-
-    /**
-     * Perform an automatic backup of all books in the database.
-     * This method is run everytime the service is executed
-     */
-    private static void autoBackup(){
-        BooksDbAdapter booksDbAdapter = BooksDbAdapter.getInstance();
-        List<String> bookUIDs = booksDbAdapter.getAllBookUIDs();
-        Context context = GnuCashApplication.getAppContext();
-
-        for (String bookUID : bookUIDs) {
-            String backupFile = BookUtils.getBookBackupFileUri(bookUID);
-            if (backupFile == null){
-                GncXmlExporter.createBackup();
-                continue;
-            }
-
-            try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(context.getContentResolver().openOutputStream(Uri.parse(backupFile)))){
-                GZIPOutputStream gzipOutputStream = new GZIPOutputStream(bufferedOutputStream);
-                OutputStreamWriter writer = new OutputStreamWriter(gzipOutputStream);
-                ExportParams params = new ExportParams(ExportFormat.XML);
-                new GncXmlExporter(params).generateExport(writer);
-                writer.close();
-            } catch (IOException ex) {
-                Log.e(LOG_TAG, "Auto backup failed for book " + bookUID);
-                ex.printStackTrace();
-                Crashlytics.logException(ex);
-            }
-        }
     }
 }
