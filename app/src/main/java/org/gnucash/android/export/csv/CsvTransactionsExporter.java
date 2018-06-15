@@ -18,29 +18,31 @@ package org.gnucash.android.export.csv;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.gnucash.android.R;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
-import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
+import org.gnucash.android.util.PreferencesHelper;
+import org.gnucash.android.util.TimestampHelper;
 
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Creates a GnuCash CSV transactions representation of the accounts and transactions
@@ -51,20 +53,7 @@ public class CsvTransactionsExporter extends Exporter{
 
     private char mCsvSeparator;
 
-    private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
-
-    private Comparator<Split> splitComparator = new Comparator<Split>() {
-        @Override
-        public int compare(Split o1, Split o2) {
-            if(o1.getType() == TransactionType.DEBIT
-                    && o2.getType() == TransactionType.CREDIT)
-                return -1;
-            if (o1.getType() == TransactionType.CREDIT
-                    && o2.getType() == TransactionType.DEBIT)
-                return 1;
-            return 0;
-        }
-    };
+    private DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd", Locale.US);
 
     /**
      * Construct a new exporter with export parameters
@@ -90,139 +79,91 @@ public class CsvTransactionsExporter extends Exporter{
 
     @Override
     public List<String> generateExport() throws ExporterException {
-        OutputStreamWriter writerStream = null;
-        CsvWriter writer = null;
         String outputFile = getExportCacheFilePath();
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
-            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-            writerStream = new OutputStreamWriter(bufferedOutputStream);
-            writer = new CsvWriter(writerStream);
-            generateExport(writer);
+
+        try (CsvWriter csvWriter = new CsvWriter(new FileWriter(outputFile), "" + mCsvSeparator)){
+            generateExport(csvWriter);
         } catch (IOException ex){
             Crashlytics.log("Error exporting CSV");
             Crashlytics.logException(ex);
-        } finally {
-            if (writerStream != null) {
-                try {
-                    writerStream.close();
-                } catch (IOException e) {
-                    throw new ExporterException(mExportParams, e);
-                }
+            throw new ExporterException(mExportParams, ex);
+        }
+
+        return Arrays.asList(outputFile);
+    }
+
+    /**
+     * Write splits to CSV format
+     * @param splits Splits to be written
+     */
+    private void writeSplitsToCsv(@NonNull List<Split> splits, @NonNull CsvWriter writer) throws IOException {
+        int index = 0;
+
+        Map<String, Account> uidAccountMap = new HashMap<>();
+
+        for (Split split : splits) {
+            if (index++ > 0){ // the first split is on the same line as the transactions. But after that, we
+                writer.write("" + mCsvSeparator + mCsvSeparator + mCsvSeparator + mCsvSeparator
+                        + mCsvSeparator + mCsvSeparator + mCsvSeparator + mCsvSeparator);
             }
+            writer.writeToken(split.getMemo());
+
+            //cache accounts so that we do not have to go to the DB each time
+            String accountUID = split.getAccountUID();
+            Account account;
+            if (uidAccountMap.containsKey(accountUID)) {
+                account = uidAccountMap.get(accountUID);
+            } else {
+                account = mAccountsDbAdapter.getRecord(accountUID);
+                uidAccountMap.put(accountUID, account);
+            }
+
+            writer.writeToken(account.getFullName());
+            writer.writeToken(account.getName());
+
+            String sign = split.getType() == TransactionType.CREDIT ? "-" : "";
+            writer.writeToken(sign + split.getQuantity().formattedString());
+            writer.writeToken(sign + split.getQuantity().toLocaleString());
+            writer.writeToken("" + split.getReconcileState());
+            if (split.getReconcileState() == Split.FLAG_RECONCILED) {
+                String recDateString = dateFormat.format(new Date(split.getReconcileDate().getTime()));
+                writer.writeToken(recDateString);
+            } else {
+                writer.writeToken(null);
+            }
+            writer.writeEndToken(split.getQuantity().divide(split.getValue()).toLocaleString());
         }
-
-        List<String> exportedFiles = new ArrayList<>();
-        exportedFiles.add(outputFile);
-
-        return exportedFiles;
     }
 
-    private void write_split(final Transaction transaction, final Split split, final CsvWriter writer) throws IOException
-    {
-        String separator = mCsvSeparator + "";
-        Account account = mAccountsDbAdapter.getRecord(split.getAccountUID());
-
-        // Date
-        Date date = new Date(transaction.getTimeMillis());
-        writer.write(dateFormat.format(date) + separator);
-        // Account name
-        writer.write(account.getName() + separator);
-        // TODO:Number is not defined yet?
-        writer.write( separator);
-        // Description
-        writer.write(transaction.getDescription() + separator);
-        // Notes of transaction
-        writer.write(transaction.getNote() + separator);
-        // Memo
-        writer.write(
-                (split.getMemo()==null?
-                "":split.getMemo()) + separator);
-        // TODO:Category is not defined yet?
-        writer.write(separator);
-        // Type
-        writer.write(split.getType().name() + separator);
-        // TODO:Action is not defined yet?
-        writer.write(separator);
-        // Reconcile
-        writer.write(split.getReconcileState() + separator);
-
-        // Changes
-        Money change = split.getFormattedQuantity().withCurrency(transaction.getCommodity());
-        Money zero = Money.getZeroInstance().withCurrency(transaction.getCommodity());
-        // To currency; From currency; To; From
-        if (change.isNegative()) {
-            writer.write(zero.toPlainString() + separator);
-            writer.write(change.abs().toPlainString() + separator);
-            writer.write(Money.getZeroInstance().toPlainString() + separator);
-            writer.write(split.getFormattedQuantity().abs().toPlainString() + separator);
-        }
-        else {
-            writer.write(change.abs().toPlainString() + separator);
-            writer.write(zero.toPlainString() + separator);
-            writer.write(split.getFormattedQuantity().abs().toPlainString() + separator);
-            writer.write(Money.getZeroInstance().toPlainString() + separator);
-        }
-
-        // TODO: What is price?
-        writer.write(separator);
-        writer.write(separator);
-    }
-
-    public void generateExport(final CsvWriter writer) throws ExporterException {
+    private void generateExport(final CsvWriter csvWriter) throws ExporterException {
         try {
-            String separator = mCsvSeparator + "";
-            List<String> names = new ArrayList<String>();
-            names.add("Date");
-            names.add("Account name");
-            names.add("Number");
-            names.add("Description");
-            names.add("Notes");
-            names.add("Memo");
-            names.add("Category");
-            names.add("Type");
-            names.add("Action");
-            names.add("Reconcile");
-            names.add("To With Sym");
-            names.add("From With Sym");
-            names.add("To Num.");
-            names.add("From Num.");
-            names.add("To Rate/Price");
-            names.add("From Rate/Price");
-
-            List<Transaction> transactions = mTransactionsDbAdapter.getAllTransactions();
-
+            List<String> names = Arrays.asList(mContext.getResources().getStringArray(R.array.csv_transaction_headers));
             for(int i = 0; i < names.size(); i++) {
-                writer.write(names.get(i) + separator);
+                csvWriter.writeToken(names.get(i));
             }
-            writer.write("\n");
+            csvWriter.newLine();
 
 
-            Cursor cursor = mTransactionsDbAdapter.fetchAllRecords();
-            while (cursor.moveToNext())
-            {
+            Cursor cursor = mTransactionsDbAdapter.fetchTransactionsModifiedSince(mExportParams.getExportStartTime());
+            Log.d(LOG_TAG, String.format("Exporting %d transactions to CSV", cursor.getCount()));
+            while (cursor.moveToNext()){
                 Transaction transaction = mTransactionsDbAdapter.buildModelInstance(cursor);
-                List<Split> splits = transaction.getSplits();
-                Collections.sort(splits,splitComparator);
-                for (int j = 0; j < splits.size()/2; j++) {
-                    Split split = splits.get(j);
-                    Split pair = null;
-                    for (int k = 0; k < splits.size(); k++) {
-                        if (split.isPairOf(splits.get(k))) {
-                            pair = splits.get(k);
-                        }
-                    }
+                Date date = new Date(transaction.getTimeMillis());
+                csvWriter.writeToken(dateFormat.format(date));
+                csvWriter.writeToken(transaction.getUID());
+                csvWriter.writeToken(null);  //Transaction number
 
-                    write_split(transaction, split, writer);
-                    writer.write("\n");
-                    if (pair != null) {
-                        write_split(transaction, pair, writer);
-                        writer.write("\n");
-                    }
-                }
+                csvWriter.writeToken(transaction.getDescription());
+                csvWriter.writeToken(transaction.getNote());
+
+                csvWriter.writeToken("CURRENCY::" + transaction.getCurrencyCode());
+                csvWriter.writeToken(null); // Void Reason
+                csvWriter.writeToken(null); // Action
+                writeSplitsToCsv(transaction.getSplits(), csvWriter);
             }
 
-        } catch (Exception e) {
+            PreferencesHelper.setLastExportTime(TimestampHelper.getTimestampFromNow());
+        } catch (IOException e) {
             Crashlytics.logException(e);
             throw new ExporterException(mExportParams, e);
         }

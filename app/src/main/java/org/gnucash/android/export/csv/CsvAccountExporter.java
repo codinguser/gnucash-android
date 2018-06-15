@@ -17,16 +17,17 @@
 package org.gnucash.android.export.csv;
 
 import android.database.sqlite.SQLiteDatabase;
+
 import com.crashlytics.android.Crashlytics;
+
+import org.gnucash.android.R;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
 
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -61,84 +62,51 @@ public class CsvAccountExporter extends Exporter{
 
     @Override
     public List<String> generateExport() throws ExporterException {
-        OutputStreamWriter writerStream = null;
-        CsvWriter writer = null;
         String outputFile = getExportCacheFilePath();
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
-            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-            writerStream = new OutputStreamWriter(bufferedOutputStream);
-            writer = new CsvWriter(writerStream);
+        try (CsvWriter writer = new CsvWriter(new FileWriter(outputFile), mCsvSeparator + "")) {
             generateExport(writer);
         } catch (IOException ex){
             Crashlytics.log("Error exporting CSV");
             Crashlytics.logException(ex);
-        } finally {
-            if (writerStream != null) {
-                try {
-                    writerStream.close();
-                } catch (IOException e) {
-                    throw new ExporterException(mExportParams, e);
-                }
-            }
+            throw new ExporterException(mExportParams, ex);
         }
 
-        List<String> exportedFiles = new ArrayList<>();
-        exportedFiles.add(outputFile);
-
-        return exportedFiles;
+        return Arrays.asList(outputFile);
     }
 
-    public void generateExport(final CsvWriter writer) throws ExporterException {
+    /**
+     * Writes out all the accounts in the system as CSV to the provided writer
+     * @param csvWriter Destination for the CSV export
+     * @throws ExporterException if an error occurred while writing to the stream
+     */
+    public void generateExport(final CsvWriter csvWriter) throws ExporterException {
         try {
-            String separator = mCsvSeparator + "";
-            List<String> names = new ArrayList<String>();
-            names.add("type");
-            names.add("full_name");
-            names.add("name");
-            names.add("code");
-            names.add("description");
-            names.add("color");
-            names.add("notes");
-            names.add("commoditym");
-            names.add("commodityn");
-            names.add("hidden");
-            names.add("tax");
-            names.add("place_holder");
-
+            List<String> names = Arrays.asList(mContext.getResources().getStringArray(R.array.csv_account_headers));
             List<Account> accounts = mAccountsDbAdapter.getAllRecords();
 
             for(int i = 0; i < names.size(); i++) {
-                writer.write(names.get(i) + separator);
+                csvWriter.writeToken(names.get(i));
             }
-            writer.write("\n");
-            for(int i = 0; i < accounts.size(); i++) {
-                Account account = accounts.get(i);
 
-                writer.write(account.getAccountType().toString() + separator);
-                writer.write(account.getFullName() + separator);
-                writer.write(account.getName() + separator);
+            csvWriter.newLine();
+            for (Account account : accounts) {
+                csvWriter.writeToken(account.getAccountType().toString());
+                csvWriter.writeToken(account.getFullName());
+                csvWriter.writeToken(account.getName());
 
-                //Code
-                writer.write(separator);
+                csvWriter.writeToken(null); //Account code
+                csvWriter.writeToken(account.getDescription());
+                csvWriter.writeToken(account.getColorHexString());
+                csvWriter.writeToken(null); //Account notes
 
-                writer.write(account.getDescription() + separator);
-                writer.write(account.getColor() + separator);
+                csvWriter.writeToken(account.getCommodity().getCurrencyCode());
+                csvWriter.writeToken("CURRENCY");
+                csvWriter.writeToken(account.isHidden() ? "T" : "F");
 
-                //Notes
-                writer.write(separator);
-
-                writer.write(account.getCommodity().getCurrencyCode() + separator);
-                writer.write("CURRENCY" + separator);
-                writer.write(account.isHidden()?"T":"F" + separator);
-
-                writer.write("F" + separator);
-
-                writer.write(account.isPlaceholderAccount()?"T":"F" + separator);
-
-                writer.write("\n");
+                csvWriter.writeToken("F"); //Tax
+                csvWriter.writeEndToken(account.isPlaceholderAccount() ? "T": "F");
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             Crashlytics.logException(e);
             throw new ExporterException(mExportParams, e);
         }

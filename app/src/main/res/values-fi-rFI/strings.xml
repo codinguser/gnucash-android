@@ -179,8 +179,6 @@
     <item>QIF</item>
     <item>OFX</item>
     <item>XML</item>
-    <item>CSV-tilit</item>
-    <item>CSV-liiketoimet</item>
   </string-array>
   <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
   <string name="color_picker_default_title">Select a Color</string>

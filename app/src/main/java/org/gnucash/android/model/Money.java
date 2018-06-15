@@ -28,7 +28,6 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
-import java.util.Currency;
 import java.util.Locale;
 
 /**
@@ -427,11 +426,22 @@ public final class Money implements Comparable<Money>{
 	
 	/**
 	 * Returns the string representation of the amount (without currency) of the Money object.
-	 * <p>This string is not locale-formatted. The decimal operator is a period (.)</p>
+	 *
+	 * <p>This string is not locale-formatted. The decimal operator is a period (.)
+	 * For a locale-formatted version, see the method overload {@link #toLocaleString(Locale)}</p>
 	 * @return String representation of the amount (without currency) of the Money object
 	 */
 	public String toPlainString(){
 		return mAmount.setScale(mCommodity.getSmallestFractionDigits(), ROUNDING_MODE).toPlainString();
+	}
+
+	/**
+	 * Returns a locale-specific representation of the amount of the Money object (excluding the currency)
+	 *
+	 * @return String representation of the amount (without currency) of the Money object
+	 */
+	public String toLocaleString(){
+		return String.format(Locale.getDefault(), "%.2f", asDouble());
 	}
 
 	/**

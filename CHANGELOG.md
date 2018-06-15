@@ -1,6 +1,6 @@
 Change Log
 ===============================================================================
-Version 2.4.0 *(2018-06-06)*
+Version 2.4.0 *(2018-06-15)*
 ----------------------------
 * Feature #665: Adds CSV export format
 * Feature #544: Add extra checkbox confirmation for irreversible actions

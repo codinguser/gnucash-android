@@ -48,7 +48,6 @@ public enum ExportFormat {
             case XML:
                 return ".gnca";
             case CSVA:
-                return ".csv";
             case CSVT:
                 return ".csv";
             default:

@@ -32,7 +32,6 @@ import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.AccountType;
-import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -330,6 +329,19 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
                         " , trans_extra_info ON trans_extra_info.trans_acct_t_uid = " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID ,
                 columns, where, whereArgs, null, null,
                 orderBy);
+    }
+
+    /**
+     * Fetch all transactions modified since a given timestamp
+     * @param timestamp Timestamp in milliseconds (since Epoch)
+     * @return Cursor to the results
+     */
+    public Cursor fetchTransactionsModifiedSince(Timestamp timestamp){
+        SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+        queryBuilder.setTables(TransactionEntry.TABLE_NAME);
+        String startTimeString = TimestampHelper.getUtcStringFromTimestamp(timestamp);
+        return queryBuilder.query(mDb, null, TransactionEntry.COLUMN_MODIFIED_AT + " >= \"" + startTimeString + "\"",
+                null, null, null, TransactionEntry.COLUMN_TIMESTAMP + " ASC", null);
     }
 
     public Cursor fetchTransactionsWithSplitsWithTransactionAccount(String [] columns, String where, String[] whereArgs, String orderBy) {

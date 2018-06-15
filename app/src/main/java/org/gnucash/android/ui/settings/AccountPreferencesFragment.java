@@ -27,17 +27,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.widget.Toast;
+
+import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
+import org.gnucash.android.export.ExportAsyncTask;
+import org.gnucash.android.export.ExportFormat;
+import org.gnucash.android.export.ExportParams;
+import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.settings.dialog.DeleteAllAccountsConfirmationDialog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Account settings fragment inside the Settings activity
@@ -47,6 +56,8 @@ import java.util.List;
  */
 public class AccountPreferencesFragment extends PreferenceFragmentCompat implements
         Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener{
+
+    private static final int REQUEST_EXPORT_FILE = 0xC5;
 
     List<CharSequence> mCurrencyEntries = new ArrayList<>();
     List<CharSequence> mCurrencyEntryValues = new ArrayList<>();
@@ -89,6 +100,9 @@ public class AccountPreferencesFragment extends PreferenceFragmentCompat impleme
         ((ListPreference) pref).setEntryValues(mCurrencyEntryValues.toArray(entryValues));
 
         Preference preference = findPreference(getString(R.string.key_import_accounts));
+        preference.setOnPreferenceClickListener(this);
+
+        preference = findPreference(getString(R.string.key_export_accounts_csv));
         preference.setOnPreferenceClickListener(this);
 
         preference = findPreference(getString(R.string.key_delete_all_accounts));
@@ -137,7 +151,27 @@ public class AccountPreferencesFragment extends PreferenceFragmentCompat impleme
             return true;
         }
 
+        if (key.equals(getString(R.string.key_export_accounts_csv))){
+            selectExportFile();
+            return true;
+        }
+
         return false;
+    }
+
+    /**
+     * Open a chooser for user to pick a file to export to
+     */
+    private void selectExportFile() {
+        Intent createIntent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        createIntent.setType("*/*").addCategory(Intent.CATEGORY_OPENABLE);
+        String bookName = BooksDbAdapter.getInstance().getActiveBookDisplayName();
+
+        String filename = Exporter.buildExportFilename(ExportFormat.CSVA, bookName);
+        createIntent.setType("application/text");
+
+        createIntent.putExtra(Intent.EXTRA_TITLE, filename);
+        startActivityForResult(createIntent, REQUEST_EXPORT_FILE);
     }
 
     @Override
@@ -167,6 +201,22 @@ public class AccountPreferencesFragment extends PreferenceFragmentCompat impleme
                     AccountsActivity.importXmlFileFromIntent(getActivity(), data, null);
                 }
                 break;
+
+            case REQUEST_EXPORT_FILE:
+                if (resultCode == Activity.RESULT_OK && data != null){
+                    ExportParams exportParams = new ExportParams(ExportFormat.CSVA);
+                    exportParams.setExportTarget(ExportParams.ExportTarget.URI);
+                    exportParams.setExportLocation(data.getData().toString());
+                    ExportAsyncTask exportTask = new ExportAsyncTask(getActivity(), GnuCashApplication.getActiveDb());
+
+                    try {
+                        exportTask.execute(exportParams).get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        Crashlytics.logException(e);
+                        Toast.makeText(getActivity(), "An error occurred during the Accounts CSV export",
+                                Toast.LENGTH_LONG).show();
+                    }
+                }
         }
     }
 }
