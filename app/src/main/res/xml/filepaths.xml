@@ -18,4 +18,5 @@
     <cache-path name="ofx" path="OFX/" />
     <cache-path name="qif" path="QIF/" />
     <cache-path name="xml" path="XML/" />
+    <cache-path name="cache" path="." />
 </paths>
