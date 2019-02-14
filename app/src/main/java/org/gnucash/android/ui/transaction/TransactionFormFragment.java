@@ -87,6 +87,7 @@ import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -139,7 +140,7 @@ public class TransactionFormFragment extends Fragment implements
 	/**
 	 * Formats a {@link Date} object to time string of format HH:mm e.g. 15:25
 	 */
-	public final static DateFormat TIME_FORMATTER = DateFormat.getTimeInstance();
+	public final static DateFormat TIME_FORMATTER = new SimpleDateFormat("hh:mm a");
 
 	/**
 	 * Button for setting the transaction type, either credit or debit
