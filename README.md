@@ -99,7 +99,7 @@ Please visit [CrowdIn](https://crowdin.com/project/gnucash-android) in order to 
 For development, it is recommended to use the Android Studio for development which is available for free.
 Import the project into the IDE using the build.gradle file. The IDE will resolve dependencies automatically.
 
-# Licence
+# License
 GnuCash Android is free software; you can redistribute it and/or
 modify it under the terms of the Apache license, version 2.0.
 You may obtain a copy of the License at
