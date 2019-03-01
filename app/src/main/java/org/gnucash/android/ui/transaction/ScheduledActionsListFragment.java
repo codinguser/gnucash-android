@@ -25,6 +25,7 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
@@ -78,6 +79,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
      * Logging tag
      */
     protected static final String TAG = "ScheduledActionFragment";
+    private static final String FRAGMENT_ACTION_KEY = "action_key";
 
     private TransactionsDbAdapter mTransactionsDbAdapter;
     private SimpleCursorAdapter mCursorAdapter;
@@ -174,6 +176,10 @@ public class ScheduledActionsListFragment extends ListFragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if(savedInstanceState != null && savedInstanceState.containsKey(FRAGMENT_ACTION_KEY)) {
+            mActionType = (ScheduledAction.ActionType) savedInstanceState.getSerializable(FRAGMENT_ACTION_KEY);
+        }
 
         mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
         switch (mActionType){
@@ -641,5 +647,10 @@ public class ScheduledActionsListFragment extends ListFragment implements
         }
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putSerializable(FRAGMENT_ACTION_KEY, mActionType);
+        super.onSaveInstanceState(outState);
+    }
 }
 
