@@ -80,9 +80,7 @@ Once installed, then you can import the project into Android Studio:
 
 Then, Gradle will do everything for you.
 
-## Support
 
-Google+ Community: https://plus.google.com/communities/104728406764752407046
 
 ## Contributing
 
@@ -92,13 +90,6 @@ There are several ways you could contribute to the development.
 Take a look at the [bug tracker](https://github.com/codinguser/gnucash-android/issues?state=open)
 for ideas where to start. It is also preferable to target issues in the current [milestone](https://github.com/codinguser/gnucash-android/milestones). 
 * Make sure to read our [contribution guidelines](https://github.com/codinguser/gnucash-android/blob/master/.github/CONTRIBUTING.md) before starting to code. 
-
-* Another way to contribute is by providing translations for languages, or improving translations.
-Please visit [CrowdIn](https://crowdin.com/project/gnucash-android) in order to update and create new translations
-
-For development, it is recommended to use the Android Studio for development which is available for free.
-Import the project into the IDE using the build.gradle file. The IDE will resolve dependencies automatically.
-
 # Licence
 GnuCash Android is free software; you can redistribute it and/or
 modify it under the terms of the Apache license, version 2.0.
