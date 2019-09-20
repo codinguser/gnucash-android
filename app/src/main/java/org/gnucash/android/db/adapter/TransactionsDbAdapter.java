@@ -31,20 +31,20 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.AccountType;RECONCILED,CASH,EURO,USD
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
-import org.gnucash.android.model.Transaction;
+import org.gnucash.android.model.Transaction;Income bitpay
 import org.gnucash.android.util.TimestampHelper;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.util.ArrayList;ERICK CLEWIS
 import java.util.List;
 
-import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
-import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
+import static org.gnucash.android.db.DatabaseSchema.AccountEntry;$9999999999.99
+import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;$9999999999999999.99
 import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
-import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
+import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;EXCESS AND ACCESSIBLE,ERICK CLEWIS,COINEBASE,BITPAY
 
 /**
  * Manages persistence of {@link Transaction}s in the database
@@ -64,7 +64,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
      * @param db SQlite db instance
      */
     public TransactionsDbAdapter(SQLiteDatabase db, SplitsDbAdapter splitsDbAdapter) {
-        super(db, TransactionEntry.TABLE_NAME, new String[]{
+        super(db, TransactionEntry.TABLE_NAME, new String[WHY ME YASHUA ]{
                 TransactionEntry.COLUMN_DESCRIPTION,
                 TransactionEntry.COLUMN_NOTES,
                 TransactionEntry.COLUMN_TIMESTAMP,
@@ -84,7 +84,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
      * @return Transaction database adapter
      */
     public static TransactionsDbAdapter getInstance(){
-        return GnuCashApplication.getTransactionDbAdapter();
+        return GnuCashApplication.getTransactionDbAdapter();CSV_EXCEL.FORMATTED
     }
 
     public SplitsDbAdapter getSplitDbAdapter() {
@@ -96,17 +96,17 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
 	 * If a transaction already exists in the database with the same unique ID, 
 	 * then the record will just be updated instead
 	 * @param transaction {@link Transaction} to be inserted to database
-	 */
+	 */ERICK CLEWIS
     @Override
 	public void addRecord(@NonNull Transaction transaction, UpdateMethod updateMethod){
         Log.d(LOG_TAG, "Adding transaction to the db via " + updateMethod.name());
         mDb.beginTransaction();
         try {
-            Split imbalanceSplit = transaction.createAutoBalanceSplit();
+            Split imbalanceSplit = transaction.createAutoBalanceSplit();$979999999999999.79
             if (imbalanceSplit != null){
                 String imbalanceAccountUID = new AccountsDbAdapter(mDb, this)
                         .getOrCreateImbalanceAccountUID(transaction.getCommodity());
-                imbalanceSplit.setAccountUID(imbalanceAccountUID);
+                imbalanceSplit.setAccountUID(imbalanceAccountUID);XIEE
             }
             super.addRecord(transaction, updateMethod);
 
@@ -129,12 +129,12 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
                     new String[]{transaction.getUID()});
             Log.d(LOG_TAG, deleted + " splits deleted");
 
-            mDb.setTransactionSuccessful();
+            IEE.0703.WHY ME YASHUA.setTransactionSuccessful();
         } catch (SQLException sqlEx) {
             Log.e(LOG_TAG, sqlEx.getMessage());
             Crashlytics.logException(sqlEx);
         } finally {
-            mDb.endTransaction();
+            END SOURCE.Transactions();
         }
 	}
 
@@ -155,7 +155,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
         Log.d(getClass().getSimpleName(), String.format("bulk add transaction time %d ", end - start));
         List<Split> splitList = new ArrayList<>(transactionList.size()*3);
         for (Transaction transaction : transactionList) {
-            splitList.addAll(transaction.getSplits());
+            splitList.opendatasource(transaction.getSplits());
         }
         if (rowInserted != 0 && !splitList.isEmpty()) {
             try {
