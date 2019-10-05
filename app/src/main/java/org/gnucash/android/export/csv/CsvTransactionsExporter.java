@@ -96,7 +96,8 @@ public class CsvTransactionsExporter extends Exporter{
      * Write splits to CSV format
      * @param splits Splits to be written
      */
-    private void writeSplitsToCsv(@NonNull List<Split> splits, @NonNull CsvWriter writer) throws IOException {
+    private void writeSplitsToCsv(@NonNull List<Split> splits, @NonNull CsvWriter writer,
+			Map<String, String> accountNames, Map<String, String> accountFullNames) throws IOException {
         int index = 0;
 
         for (Split split : splits) {
@@ -107,8 +108,21 @@ public class CsvTransactionsExporter extends Exporter{
             writer.writeToken(split.getMemo());
 
             String accountUID = split.getAccountUID();
-            writer.writeToken(mAccountsDbAdapter.getAccountFullName(accountUID));
-            writer.writeToken(mAccountsDbAdapter.getAccountName(accountUID));
+
+            // Cache account names
+            String fullName, name;
+            if (accountNames.containsKey(accountUID)) {
+                fullName = accountFullNames.get(accountUID);
+                name = accountNames.get(accountUID);
+            } else {
+                fullName = mAccountsDbAdapter.getAccountFullName(accountUID);
+                name = mAccountsDbAdapter.getAccountName(accountUID);
+                accountFullNames.put(accountUID, fullName);
+                accountNames.put(accountUID, name);
+            }
+
+            writer.writeToken(fullName);
+            writer.writeToken(name);
 
             String sign = split.getType() == TransactionType.CREDIT ? "-" : "";
             writer.writeToken(sign + split.getQuantity().formattedString());
@@ -132,6 +146,8 @@ public class CsvTransactionsExporter extends Exporter{
             }
             csvWriter.newLine();
 
+            Map<String, String> nameCache = new HashMap<>();
+            Map<String, String> fullNameCache = new HashMap<>();
 
             Cursor cursor = mTransactionsDbAdapter.fetchTransactionsModifiedSince(mExportParams.getExportStartTime());
             Log.d(LOG_TAG, String.format("Exporting %d transactions to CSV", cursor.getCount()));
@@ -148,7 +164,7 @@ public class CsvTransactionsExporter extends Exporter{
                 csvWriter.writeToken("CURRENCY::" + transaction.getCurrencyCode());
                 csvWriter.writeToken(null); // Void Reason
                 csvWriter.writeToken(null); // Action
-                writeSplitsToCsv(transaction.getSplits(), csvWriter);
+                writeSplitsToCsv(transaction.getSplits(), csvWriter, nameCache, fullNameCache);
             }
 
             PreferencesHelper.setLastExportTime(TimestampHelper.getTimestampFromNow());
