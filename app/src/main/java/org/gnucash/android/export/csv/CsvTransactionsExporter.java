@@ -99,8 +99,6 @@ public class CsvTransactionsExporter extends Exporter{
     private void writeSplitsToCsv(@NonNull List<Split> splits, @NonNull CsvWriter writer) throws IOException {
         int index = 0;
 
-        Map<String, Account> uidAccountMap = new HashMap<>();
-
         for (Split split : splits) {
             if (index++ > 0){ // the first split is on the same line as the transactions. But after that, we
                 writer.write("" + mCsvSeparator + mCsvSeparator + mCsvSeparator + mCsvSeparator
@@ -108,18 +106,9 @@ public class CsvTransactionsExporter extends Exporter{
             }
             writer.writeToken(split.getMemo());
 
-            //cache accounts so that we do not have to go to the DB each time
             String accountUID = split.getAccountUID();
-            Account account;
-            if (uidAccountMap.containsKey(accountUID)) {
-                account = uidAccountMap.get(accountUID);
-            } else {
-                account = mAccountsDbAdapter.getRecord(accountUID);
-                uidAccountMap.put(accountUID, account);
-            }
-
-            writer.writeToken(account.getFullName());
-            writer.writeToken(account.getName());
+            writer.writeToken(mAccountsDbAdapter.getAccountFullName(accountUID));
+            writer.writeToken(mAccountsDbAdapter.getAccountName(accountUID));
 
             String sign = split.getType() == TransactionType.CREDIT ? "-" : "";
             writer.writeToken(sign + split.getQuantity().formattedString());
