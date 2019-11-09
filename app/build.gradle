@@ -20,13 +20,13 @@ static def gitSha() {
 
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 29
+    buildToolsVersion '29.0.0'
     defaultConfig {
         applicationId "org.gnucash.android"
         testApplicationId 'org.gnucash.android.test'
         minSdkVersion 19
-        targetSdkVersion 27
+        targetSdkVersion 29
         versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         resValue "string", "app_version_name", "${versionName}"
@@ -147,6 +147,7 @@ android {
     }
 
     testOptions {
+        animationsDisabled true
         unitTests {
             includeAndroidResources = true
         }
@@ -223,8 +224,8 @@ dependencies {
         exclude module: 'httpclient'
     }
 
-    implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
-        transitive = true;
+    implementation('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
+        transitive = true
     }
 
 
