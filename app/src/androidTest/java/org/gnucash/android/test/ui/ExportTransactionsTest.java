@@ -17,23 +17,13 @@
 package org.gnucash.android.test.ui;
 
 import android.Manifest;
-import android.app.AlertDialog;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
-import android.os.Build;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.Espresso;
 import android.support.test.espresso.contrib.DrawerActions;
-import android.support.test.espresso.matcher.ViewMatchers;
+import android.support.test.rule.ActivityTestRule;
 import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.support.v7.preference.PreferenceManager;
-import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
-import android.widget.CompoundButton;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
@@ -42,52 +32,38 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.adapter.DatabaseAdapter;
-import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
-import org.gnucash.android.export.ExportFormat;
-import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.model.PeriodType;
-import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.test.ui.util.GnucashAndroidTestRunner;
 import org.gnucash.android.ui.account.AccountsActivity;
-import org.gnucash.android.ui.settings.PreferenceActivity;
-import org.gnucash.android.util.BookUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
-import java.io.File;
-import java.util.List;
-
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.swipeUp;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
-import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
-import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class ExportTransactionsTest extends
-		ActivityInstrumentationTestCase2<AccountsActivity> {
+public class ExportTransactionsTest  {
 
     private DatabaseHelper mDbHelper;
     private SQLiteDatabase mDb;
@@ -99,20 +75,23 @@ public class ExportTransactionsTest extends
 
 	@Rule public GrantPermissionRule animationPermissionsRule = GrantPermissionRule.grant(Manifest.permission.SET_ANIMATION_SCALE);
 
+	@Rule
+	public ActivityTestRule<AccountsActivity> mActivityRule = new ActivityTestRule<>(AccountsActivity.class);
+
 	public ExportTransactionsTest() {
-		super(AccountsActivity.class);
 	}
 
-	@Override
+	@BeforeClass
+	public static void setupClass(){
+		GnucashAndroidTestRunner.preventFirstRunDialogs(GnuCashApplication.getAppContext());
+	}
+
 	@Before
-	public void setUp() throws Exception {
-		super.setUp();
-		injectInstrumentation(InstrumentationRegistry.getInstrumentation());
-		AccountsActivityTest.preventFirstRunDialogs(getInstrumentation().getTargetContext());
-		mAcccountsActivity = getActivity();
+	public void setUp() {
+		mAcccountsActivity = mActivityRule.getActivity();
 
 		String activeBookUID = BooksDbAdapter.getInstance().getActiveBookUID();
-        mDbHelper = new DatabaseHelper(getActivity(), activeBookUID);
+        mDbHelper = new DatabaseHelper(mAcccountsActivity.getApplicationContext(), activeBookUID);
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
@@ -164,16 +143,14 @@ public class ExportTransactionsTest extends
 	 */
 	private void assertToastDisplayed(int toastString) {
 		onView(withText(toastString))
-				.inRoot(withDecorView(not(is(getActivity().getWindow().getDecorView()))))
+				.inRoot(withDecorView(not(is(mAcccountsActivity.getWindow().getDecorView()))))
 				.check(matches(isDisplayed()));
 	}
 
 	//todo: add testing of export flag to unit test
 	//todo: add test of ignore exported transactions to unit tests
-	@Override
-	@After public void tearDown() throws Exception {
+	@After public void tearDown(){
         mDbHelper.close();
         mDb.close();
-		super.tearDown();
 	}
 }

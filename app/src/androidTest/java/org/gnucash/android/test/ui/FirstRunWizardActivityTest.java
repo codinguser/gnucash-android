@@ -18,10 +18,9 @@ package org.gnucash.android.test.ui;
 import android.Manifest;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.test.InstrumentationRegistry;
+import android.support.test.rule.ActivityTestRule;
 import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
 
 import org.gnucash.android.R;
@@ -50,7 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Ngewi Fet
  */
 @RunWith(AndroidJUnit4.class)
-public class FirstRunWizardActivityTest extends ActivityInstrumentationTestCase2<FirstRunWizardActivity>{
+public class FirstRunWizardActivityTest {
 
     private DatabaseHelper mDbHelper;
     private SQLiteDatabase mDb;
@@ -62,16 +61,12 @@ public class FirstRunWizardActivityTest extends ActivityInstrumentationTestCase2
 
     @Rule public GrantPermissionRule animationPermissionsRule = GrantPermissionRule.grant(Manifest.permission.SET_ANIMATION_SCALE);
 
-    public FirstRunWizardActivityTest() {
-        super(FirstRunWizardActivity.class);
-    }
+    @Rule
+    public ActivityTestRule<FirstRunWizardActivity> mActivityRule = new ActivityTestRule<>(FirstRunWizardActivity.class);
 
     @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        injectInstrumentation(InstrumentationRegistry.getInstrumentation());
-
-        mActivity = getActivity();
+    public void setUp() {
+        mActivity = mActivityRule.getActivity();
         mDbHelper = new DatabaseHelper(mActivity, BaseModel.generateUID());
         try {
             mDb = mDbHelper.getWritableDatabase();

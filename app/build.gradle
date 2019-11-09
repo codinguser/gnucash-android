@@ -180,7 +180,7 @@ afterEvaluate {
 }
 
 
-def androidSupportVersion       = "27.0.2"
+def androidSupportVersion       = "28.0.0"
 def androidEspressoVersion      = "3.0.0"
 def androidSupportTestVersion   = "1.0.0"
 
