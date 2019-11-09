@@ -264,7 +264,7 @@ public class MigrationHelper {
                             " ADD COLUMN double_account_uid varchar(255)";
 
         //introducing sub accounts
-        Log.i(DatabaseHelper.LOG_TAG, "Adding column for parent accounts");
+        Log.i(LOG_TAG, "Adding column for parent accounts");
         String addParentAccountSql = "ALTER TABLE " + AccountEntry.TABLE_NAME +
                 " ADD COLUMN " + AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " varchar(255)";
 
@@ -273,7 +273,7 @@ public class MigrationHelper {
 
         //update account types to GnuCash account types
         //since all were previously CHECKING, now all will be CASH
-        Log.i(DatabaseHelper.LOG_TAG, "Converting account types to GnuCash compatible types");
+        Log.i(LOG_TAG, "Converting account types to GnuCash compatible types");
         ContentValues cv = new ContentValues();
         cv.put(SplitEntry.COLUMN_TYPE, AccountType.CASH.toString());
         db.update(AccountEntry.TABLE_NAME, cv, null, null);
@@ -495,7 +495,7 @@ public class MigrationHelper {
      * @return New database version (8) if upgrade successful, old version (7) if unsuccessful
      */
     static int upgradeDbToVersion8(SQLiteDatabase db) {
-        Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 8");
+        Log.i(LOG_TAG, "Upgrading database to version 8");
         int oldVersion = 7;
         new File(Exporter.LEGACY_BASE_FOLDER_PATH + "/backups/").mkdirs();
         new File(Exporter.LEGACY_BASE_FOLDER_PATH + "/exports/").mkdirs();
@@ -505,7 +505,7 @@ public class MigrationHelper {
         db.beginTransaction();
         try {
 
-            Log.i(DatabaseHelper.LOG_TAG, "Creating scheduled actions table");
+            Log.i(LOG_TAG, "Creating scheduled actions table");
             db.execSQL("CREATE TABLE " + ScheduledActionEntry.TABLE_NAME + " ("
                     + ScheduledActionEntry._ID                   + " integer primary key autoincrement, "
                     + ScheduledActionEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
@@ -525,7 +525,7 @@ public class MigrationHelper {
 
 
             //==============================BEGIN TABLE MIGRATIONS ========================================
-            Log.i(DatabaseHelper.LOG_TAG, "Migrating accounts table");
+            Log.i(LOG_TAG, "Migrating accounts table");
             // backup transaction table
             db.execSQL("ALTER TABLE " + AccountEntry.TABLE_NAME + " RENAME TO " + AccountEntry.TABLE_NAME + "_bak");
             // create new transaction table
@@ -577,7 +577,7 @@ public class MigrationHelper {
                             + " FROM " + AccountEntry.TABLE_NAME + "_bak;"
             );
 
-            Log.i(DatabaseHelper.LOG_TAG, "Migrating transactions table");
+            Log.i(LOG_TAG, "Migrating transactions table");
             // backup transaction table
             db.execSQL("ALTER TABLE " + TransactionEntry.TABLE_NAME + " RENAME TO " + TransactionEntry.TABLE_NAME + "_bak");
             // create new transaction table
@@ -618,7 +618,7 @@ public class MigrationHelper {
                             + " FROM " + TransactionEntry.TABLE_NAME + "_bak;"
             );
 
-            Log.i(DatabaseHelper.LOG_TAG, "Migrating splits table");
+            Log.i(LOG_TAG, "Migrating splits table");
             // backup split table
             db.execSQL("ALTER TABLE " + SplitEntry.TABLE_NAME + " RENAME TO " + SplitEntry.TABLE_NAME + "_bak");
             // create new split table
@@ -668,7 +668,7 @@ public class MigrationHelper {
             //TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(db, splitsDbAdapter);
             //AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(db,transactionsDbAdapter);
 
-            Log.i(DatabaseHelper.LOG_TAG, "Creating default root account if none exists");
+            Log.i(LOG_TAG, "Creating default root account if none exists");
             ContentValues contentValues = new ContentValues();
             //assign a root account to all accounts which had null as parent except ROOT (top-level accounts)
             String rootAccountUID;
@@ -706,7 +706,7 @@ public class MigrationHelper {
             contentValues.put(AccountEntry.COLUMN_PARENT_ACCOUNT_UID, rootAccountUID);
             db.update(AccountEntry.TABLE_NAME, contentValues, AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " IS NULL AND " + AccountEntry.COLUMN_TYPE + " != ?", new String[]{"ROOT"});
 
-            Log.i(DatabaseHelper.LOG_TAG, "Migrating existing recurring transactions");
+            Log.i(LOG_TAG, "Migrating existing recurring transactions");
             cursor = db.query(TransactionEntry.TABLE_NAME + "_bak", null, "recurrence_period > 0", null, null, null, null);
             long lastRun = System.currentTimeMillis();
             while (cursor.moveToNext()){
@@ -753,7 +753,7 @@ public class MigrationHelper {
             cursor.close();
 
             //auto-balance existing splits
-            Log.i(DatabaseHelper.LOG_TAG, "Auto-balancing existing transaction splits");
+            Log.i(LOG_TAG, "Auto-balancing existing transaction splits");
             cursor = db.query(
                     TransactionEntry.TABLE_NAME + " , " + SplitEntry.TABLE_NAME + " ON "
                             + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + "=" + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID
@@ -830,7 +830,7 @@ public class MigrationHelper {
                 cursor.close();
             }
 
-            Log.i(DatabaseHelper.LOG_TAG, "Dropping temporary migration tables");
+            Log.i(LOG_TAG, "Dropping temporary migration tables");
             db.execSQL("DROP TABLE " + SplitEntry.TABLE_NAME + "_bak");
             db.execSQL("DROP TABLE " + AccountEntry.TABLE_NAME + "_bak");
             db.execSQL("DROP TABLE " + TransactionEntry.TABLE_NAME + "_bak");
@@ -861,7 +861,7 @@ public class MigrationHelper {
      * @throws RuntimeException if the default commodities could not be imported
      */
     static int upgradeDbToVersion9(SQLiteDatabase db){
-        Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 9");
+        Log.i(LOG_TAG, "Upgrading database to version 9");
         int oldVersion = 8;
 
         db.beginTransaction();
@@ -885,7 +885,7 @@ public class MigrationHelper {
             try {
                 importCommodities(db);
             } catch (SAXException | ParserConfigurationException | IOException e) {
-                Log.e(DatabaseHelper.LOG_TAG, "Error loading currencies into the database", e);
+                Log.e(LOG_TAG, "Error loading currencies into the database", e);
                 Crashlytics.logException(e);
                 throw new RuntimeException(e);
             }
@@ -1092,7 +1092,7 @@ public class MigrationHelper {
      * @return 10 if upgrade was successful, 9 otherwise
      */
     static int upgradeDbToVersion10(SQLiteDatabase db){
-        Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 9");
+        Log.i(LOG_TAG, "Upgrading database to version 9");
         int oldVersion = 9;
 
         db.beginTransaction();
@@ -1145,7 +1145,7 @@ public class MigrationHelper {
      * @return 11 if upgrade was successful, 10 otherwise
      */
     static int upgradeDbToVersion11(SQLiteDatabase db){
-        Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 9");
+        Log.i(LOG_TAG, "Upgrading database to version 9");
         int oldVersion = 10;
 
         db.beginTransaction();
@@ -1241,7 +1241,7 @@ public class MigrationHelper {
      * @return New database version, 13 if migration succeeds, 11 otherwise
      */
     static int upgradeDbToVersion13(SQLiteDatabase db){
-        Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 13");
+        Log.i(LOG_TAG, "Upgrading database to version 13");
         int oldVersion = 12;
 
         db.beginTransaction();
@@ -1552,7 +1552,7 @@ public class MigrationHelper {
      * @return New database version
      */
     public static int upgradeDbToVersion14(SQLiteDatabase db){
-        Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 14");
+        Log.i(LOG_TAG, "Upgrading database to version 14");
         int oldDbVersion = 13;
         File backupFolder = new File(Exporter.BASE_FOLDER_PATH);
         backupFolder.mkdir();
@@ -1585,7 +1585,7 @@ public class MigrationHelper {
     }
 
     /**
-     * Upgrades the database to version 14.
+     * Upgrades the database to version 15.
      * <p>This migration makes the following changes to the database:
      * <ul>
      *     <li>Fixes accounts referencing a default transfer account that no longer
@@ -1593,10 +1593,10 @@ public class MigrationHelper {
      * </ul>
      * </p>
      * @param db SQLite database to be upgraded
-     * @return New database version, 14 if migration succeeds, 13 otherwise
+     * @return New database version, 15 if migration succeeds, 14 otherwise
      */
     static int upgradeDbToVersion15(SQLiteDatabase db) {
-        Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 15");
+        Log.i(LOG_TAG, "Upgrading database to version 15");
         int dbVersion = 14;
 
         db.beginTransaction();
@@ -1626,6 +1626,31 @@ public class MigrationHelper {
 
         //the default interval has been changed from daily to hourly with this release. So reschedule alarm
         rescheduleServiceAlarm();
+        return dbVersion;
+    }
+
+    /**
+     * Upgrades the database to version 16.
+     * <p>This migration makes the following changes to the database:
+     * <ul>
+     *     <li>Re-populate the commodities table (see #731)</li>
+     * </ul>
+     * </p>
+     * @param db SQLite database to be upgraded
+     * @return New database version, 16 if migration succeeds, 15 otherwise
+     */
+    static int upgradeDbToVersion16(SQLiteDatabase db) {
+        Log.i(LOG_TAG, "Upgrading database to version 16");
+        int dbVersion = 15;
+
+        try {
+            importCommodities(db);
+            dbVersion = 16;
+        } catch (SAXException | ParserConfigurationException | IOException e) {
+            Log.e(LOG_TAG, "Error loading currencies into the database", e);
+            Crashlytics.logException(e);
+        }
+
         return dbVersion;
     }
 }

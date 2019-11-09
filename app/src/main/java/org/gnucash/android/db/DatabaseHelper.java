@@ -278,9 +278,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         while(oldVersion < newVersion){
             try {
                 Method method = MigrationHelper.class.getDeclaredMethod("upgradeDbToVersion" + (oldVersion+1), SQLiteDatabase.class);
-                Object result = method.invoke(null, db);
-                oldVersion = Integer.parseInt(result.toString());
-
+                oldVersion = (int) method.invoke(null, db);
             } catch (NoSuchMethodException e) {
                 String msg = String.format("Database upgrade method upgradeToVersion%d(SQLiteDatabase) definition not found ", newVersion);
                 Log.e(LOG_TAG, msg, e);

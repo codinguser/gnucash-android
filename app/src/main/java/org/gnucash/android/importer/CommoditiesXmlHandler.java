@@ -82,6 +82,7 @@ public class CommoditiesXmlHandler extends DefaultHandler {
 
     @Override
     public void endDocument() throws SAXException {
+        mCommoditiesDbAdapter.deleteAllRecords();
         mCommoditiesDbAdapter.bulkAddRecords(mCommodities, DatabaseAdapter.UpdateMethod.insert);
     }
 }
