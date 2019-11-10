@@ -16,58 +16,58 @@
  limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="title_create_account">إنشاء حساب</string>
-  <string name="title_edit_account">تعديل الحساب</string>
-  <string name="description_add_transaction_icon">إضافة حركة جديدة لحساب</string>
-  <string name="description_view_account_icon">عرض تفاصيل الحساب</string>
-  <string name="label_no_accounts">لا توجد حسابات للعرض</string>
-  <string name="label_account_name">اسم الحساب</string>
-  <string name="btn_cancel">إلغاء</string>
-  <string name="btn_save">حفظ</string>
-  <string name="btn_test">اختبار</string>
-  <string name="label_passcode">أدخل رمز المرور</string>
-  <string name="toast_wrong_passcode">رمز المرور خطأ؛ من فضلك حاول مُجددًا</string>
-  <string name="toast_passcode_set">إعداد رمز المرور</string>
-  <string name="label_confirm_passcode">الرجاء تأكيد كلمة المرور الخاصة بك</string>
-  <string name="toast_invalid_passcode_confirmation">تأكيد رمز المرور غير صحيح. الرجاء المحاولة مرة أخرى</string>
-  <string name="label_transaction_name">الوصف</string>
-  <string name="label_transaction_amount">المبلغ</string>
-  <string name="title_add_transaction">معاملة جديدة</string>
-  <string name="label_no_transactions">لا معاملات لعرض</string>
-  <string name="label_debit">الخصم</string>
-  <string name="label_credit">الائتمان</string>
-  <string name="title_accounts">الحسابات</string>
-  <string name="title_transactions">المعاملات</string>
-  <string name="menu_delete">حذف</string>
-  <string name="alert_dialog_ok_delete">حذف</string>
-  <string name="alert_dialog_cancel">إلغاء</string>
-  <string name="toast_account_deleted">تم حذف الحساب</string>
-  <string name="title_confirm_delete">تأكيد الحذف</string>
-  <string name="title_edit_transaction">تحرير المعاملات</string>
-  <string name="label_transaction_description">إضافة ملاحظة</string>
-  <string name="title_selected">%1$d محدد</string>
-  <string name="label_account_balance">الرصيد:</string>
-  <string name="label_export_destination">التصدير إلى:</string>
-  <string name="title_export_dialog">تصدير المعاملات</string>
-  <string name="hint_export_choice">بشكل افتراضي، سيتم تصدير المعاملات الجديدة فقط منذ آخر تصدير. حدد هذا الخيار لتصدير جميع المعاملات</string>
-  <string name="toast_export_error">خطأ في تصدير ملف %1$s</string>
-  <string name="btn_export">تصدير</string>
-  <string name="option_delete_after_export">حذف الحركات بعد التصدير</string>
-  <string name="hint_delete_after_export">سيتم حذف كافة المعاملات المصدرة عند اكتمال التصدير</string>
-  <string name="title_settings">إعدادات</string>
+  <string name="title_create_account">Create Account</string>
+  <string name="title_edit_account">Edit Account</string>
+  <string name="description_add_transaction_icon">Add a new transaction to an account</string>
+  <string name="description_view_account_icon">View account details</string>
+  <string name="label_no_accounts">No accounts to display</string>
+  <string name="label_account_name">Account name</string>
+  <string name="btn_cancel">Cancel</string>
+  <string name="btn_save">Save</string>
+  <string name="btn_test">Test</string>
+  <string name="label_passcode">Enter Passcode</string>
+  <string name="toast_wrong_passcode">Wrong passcode, please try again</string>
+  <string name="toast_passcode_set">Passcode set</string>
+  <string name="label_confirm_passcode">Please confirm your passcode</string>
+  <string name="toast_invalid_passcode_confirmation">Invalid passcode confirmation. Please try again</string>
+  <string name="label_transaction_name">Description</string>
+  <string name="label_transaction_amount">Amount</string>
+  <string name="title_add_transaction">New transaction</string>
+  <string name="label_no_transactions">No transactions to display</string>
+  <string name="label_debit">DEBIT</string>
+  <string name="label_credit">CREDIT</string>
+  <string name="title_accounts">Accounts</string>
+  <string name="title_transactions">Transactions</string>
+  <string name="menu_delete">Delete</string>
+  <string name="alert_dialog_ok_delete">Delete</string>
+  <string name="alert_dialog_cancel">Cancel</string>
+  <string name="toast_account_deleted">Account deleted</string>
+  <string name="title_confirm_delete">Confirm delete</string>
+  <string name="title_edit_transaction">Edit Transaction</string>
+  <string name="label_transaction_description">Add note</string>
+  <string name="title_selected">%1$d selected</string>
+  <string name="label_account_balance">Balance:</string>
+  <string name="label_export_destination">Export To:</string>
+  <string name="title_export_dialog">Export Transactions</string>
+  <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
+  <string name="toast_export_error">Error exporting %1$s file</string>
+  <string name="btn_export">Export</string>
+  <string name="option_delete_after_export">Delete transactions after export</string>
+  <string name="hint_delete_after_export">All exported transactions will be deleted when exporting is completed</string>
+  <string name="title_settings">Settings</string>
   <string-array name="export_destinations">
-    <item>حفظ باسم&#8230;</item>
+    <item>Save As&#8230;</item>
     <item>Dropbox</item>
     <item>ownCloud</item>
-    <item>إرسال إلى&#8230;</item>
+    <item>Send to&#8230;</item>
   </string-array>
-  <string name="btn_move">نقل</string>
-  <string name="title_move_transactions">نقل %1$d معاملات</string>
+  <string name="btn_move">Move</string>
+  <string name="title_move_transactions">Move %1$d transaction(s)</string>
   <string name="label_move_destination">Destination Account</string>
   <string name="toast_incompatible_currency">Cannot move transactions.\nThe destination account uses a different currency from origin account</string>
-  <string name="header_general_settings">عام</string>
-  <string name="header_about_gnucash">حول</string>
-  <string name="title_choose_currency">اختار عملة إفتراضية</string>
+  <string name="header_general_settings">General</string>
+  <string name="header_about_gnucash">About</string>
+  <string name="title_choose_currency">Choose default currency</string>
   <string name="title_default_currency">Default currency</string>
   <string name="summary_default_currency">Default currency to assign to new accounts</string>
   <string name="label_permission_record_transactions">Enables recording transactions in GnuCash for Android</string>
@@ -124,9 +124,9 @@
         - Multiple bug fixes and improvements\n
 	</string>
   <string name="label_dismiss">Dismiss</string>
-  <string name="toast_transanction_amount_required">أدخل مبلغ لحفظ الحركة</string>
-  <string name="toast_error_importing_accounts">حدث خطأ أثناء استيراد حسابات GnuCash</string>
-  <string name="toast_success_importing_accounts">تم إستيراد حسابات GnuCash بنجاح</string>
+  <string name="toast_transanction_amount_required">Enter an amount to save the transaction</string>
+  <string name="toast_error_importing_accounts">An error occurred while importing the GnuCash accounts</string>
+  <string name="toast_success_importing_accounts">GnuCash Accounts successfully imported</string>
   <string name="summary_import_accounts">Import account structure exported from GnuCash desktop</string>
   <string name="title_import_accounts">Import GnuCash XML</string>
   <string name="summary_delete_all_accounts">Delete all accounts in the database. All transactions will be deleted as

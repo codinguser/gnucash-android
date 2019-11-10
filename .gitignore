@@ -23,6 +23,7 @@ out/
 /captures
 
 gradle.properties
+crowdin.properties
 
 #Crashlytics
 

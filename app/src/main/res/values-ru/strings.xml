@@ -154,7 +154,6 @@
   <plurals name="label_sub_accounts">
     <item quantity="one">%d дочерний счёт</item>
     <item quantity="few">%d шт. дочерних счетов</item>
-    <item quantity="many">%d sub-accounts</item>
     <item quantity="other">%d шт. дочерних счетов</item>
   </plurals>
   <string-array name="account_type_entry_values">
@@ -225,7 +224,7 @@
   <string name="title_line_chart">График</string>
   <string name="title_bar_chart">Гистограмма</string>
   <string name="title_report_prefs">Настройки отчётов</string>
-  <string name="title_use_account_color">Цвет счёта в отчётах</string>
+  <string name="title_use_account_color">Цвет счёта в отчётых</string>
   <string name="summary_use_account_color">Использовать цвет счёта в отчётах</string>
   <string name="menu_order_by_size">Отсортировать по размеру</string>
   <string name="menu_toggle_legend">Показать легенду</string>
@@ -278,31 +277,26 @@
   <plurals name="label_every_x_hours">
     <item quantity="one">Каждый час</item>
     <item quantity="few">Каждые %d часа</item>
-    <item quantity="many">Every %d hours</item>
     <item quantity="other">Каждые %d часов</item>
   </plurals>
   <plurals name="label_every_x_days">
     <item quantity="one">Ежедневно</item>
     <item quantity="few">Каждые %d дня</item>
-    <item quantity="many">Every %d days</item>
     <item quantity="other">Каждые %d дней</item>
   </plurals>
   <plurals name="label_every_x_weeks">
     <item quantity="one">Еженедельно</item>
     <item quantity="few">Каждые %d недели</item>
-    <item quantity="many">Every %d weeks</item>
     <item quantity="other">Каждые %d недель</item>
   </plurals>
   <plurals name="label_every_x_months">
     <item quantity="one">Ежемесячно</item>
     <item quantity="few">Каждые %d месяца</item>
-    <item quantity="many">Every %d months</item>
     <item quantity="other">Каждые %d месяцев</item>
   </plurals>
   <plurals name="label_every_x_years">
     <item quantity="one">Ежегодно</item>
     <item quantity="few">Каждые %d года</item>
-    <item quantity="many">Every %d years</item>
     <item quantity="other">Каждые %d лет</item>
   </plurals>
   <string name="title_enable_crashlytics">Записывать отказы программы</string>
@@ -335,7 +329,7 @@
   <string name="wizard_btn_back">Назад</string>
   <string name="title_setup_gnucash">Настройка GnuCash</string>
   <string name="wizard_title_welcome_to_gnucash">Добро пожаловать в GnuCash</string>
-  <string name="msg_wizard_welcome_page">Прежде, чем вы начнёте,\nдавайте настроим некоторые вещи.\n\nДля продолжения нажмите «Далее».</string>
+  <string name="msg_wizard_welcome_page">Прежде, чем вы начныте,\nдавайте настроим некоторые вещи.\n\nДля продолжения нажмите «Далее».</string>
   <string name="title_split_editor">Редактор разбиения</string>
   <string name="toast_error_check_split_amounts">Проверьте, что все части корректно распределены перед сохранением!</string>
   <string name="label_error_invalid_expression">Неверное выражение!</string>
@@ -347,7 +341,7 @@
   <string name="label_convert_from">С:</string>
   <string name="label_convert_to">До:</string>
   <string name="msg_provide_exchange_rate">Заполните или обменянную сумму или курс обмена</string>
-  <string name="hint_exchange_rate">Курс обмена</string>
+  <string name="hint_exchange_rate">EКурс обмена</string>
   <string name="btn_fetch_quote">Получить котировки</string>
   <string name="hint_converted_amount">Обмененная сумма</string>
   <string name="title_report_sheet">Сводка</string>
@@ -424,13 +418,11 @@
   <plurals name="book_account_stats">
     <item quantity="one">%d счета</item>
     <item quantity="few">%d счета</item>
-    <item quantity="many">%d accounts</item>
     <item quantity="other">%d счетов</item>
   </plurals>
   <plurals name="book_transaction_stats">
     <item quantity="one">%d транзакция</item>
     <item quantity="few">%d транзакции</item>
-    <item quantity="many">%d transactions</item>
     <item quantity="other">%d транзакций</item>
   </plurals>
   <string-array name="report_account_types">
@@ -457,7 +449,7 @@
   <string name="title_select_backup_file">Выберите файл резервной копии</string>
   <string name="summary_select_backup_file">Выберите файл для автоматического резервного копирования</string>
   <string name="title_confirm_restore_backup">Подтвердите восстановление из резервной копии</string>
-  <string name="msg_confirm_restore_backup_into_new_book">Новая книга будет открыта с содержанием этой резервной копии. Хотите продолжить?</string>
+  <string name="msg_confirm_restore_backup_into_new_book">Новая книга будет открыта с содержанием этой резервной копии. Вы хотите продолжить?</string>
   <string name="btn_restore">Восстановить</string>
   <string name="title_no_backups_found">Резервные копии не найдены</string>
   <string name="msg_no_backups_to_restore_from">Нет существующих файлов резервных копий для восстановления</string>

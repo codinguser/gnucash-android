@@ -38,7 +38,7 @@
   <string name="label_credit">ABONO</string>
   <string name="title_accounts">Cuentas</string>
   <string name="title_transactions">Transacciones</string>
-  <string name="menu_delete">Borrar</string>
+  <string name="menu_delete">BORRAR</string>
   <string name="alert_dialog_ok_delete">Borrar</string>
   <string name="alert_dialog_cancel">Cancelar</string>
   <string name="toast_account_deleted">Cuenta borrada</string>
@@ -226,7 +226,7 @@
   <string name="menu_toggle_legend">Mostrar leyenda</string>
   <string name="menu_toggle_labels">Mostrar etiquetas</string>
   <string name="menu_toggle_percentage_mode">Mostrar porcentaje</string>
-  <string name="menu_toggle_average_lines">Mostrar líneas de media</string>
+  <string name="menu_toggle_average_lines">Mostar lineas de media</string>
   <string name="menu_group_smaller_slices">Agrupar porciones pequeñas</string>
   <string name="label_chart_no_data">Datos del gráfico no disponibles</string>
   <string name="label_chart_total">Total</string>
