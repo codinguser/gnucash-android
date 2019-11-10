@@ -2,6 +2,15 @@ Change Log
 ===============================================================================
 Version 2.4.0 *(2018-06-15)*
 ----------------------------
+* Fixes #809: Crash when exporting CSV
+* Fixes #811: Add button in schedule action disappears after rotation
+* Fixes #790: Missing transaction description margin
+* Improve performance of CSV export
+* Improved: Add book name to accounts listing view
+* Improved: Update translations
+
+Version 2.4.0 *(2018-06-15)*
+----------------------------
 * Feature #665: Adds CSV export format
 * Feature #544: Add extra checkbox confirmation for irreversible actions
 * Feature #767: Backup before destructive actions
