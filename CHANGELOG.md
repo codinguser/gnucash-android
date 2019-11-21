@@ -1,10 +1,11 @@
 Change Log
 ===============================================================================
-Version 2.4.0 *(2018-06-15)*
+Version 2.4.1 *(2019-11-30)*
 ----------------------------
 * Fixes #809: Crash when exporting CSV
 * Fixes #811: Add button in schedule action disappears after rotation
 * Fixes #790: Missing transaction description margin
+* Fixes crash if during database upgrade triggered by scheduled action
 * Improve performance of CSV export
 * Improved: Add book name to accounts listing view
 * Improved: Update translations

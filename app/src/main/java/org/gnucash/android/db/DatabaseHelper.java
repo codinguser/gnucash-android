@@ -20,11 +20,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.Commodity;
 import org.xml.sax.SAXException;
 
@@ -264,7 +262,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Log.i(LOG_TAG, "Upgrading database from version "
                 + oldVersion + " to " + newVersion);
 
-        Toast.makeText(GnuCashApplication.getAppContext(), "Upgrading GnuCash database", Toast.LENGTH_SHORT).show();
+		//TODO: Find way to show a progress dialog for long running db upgrades
         /*
         * NOTE: In order to modify the database, create a new static method in the MigrationHelper class
         * called upgradeDbToVersion<#>, e.g. int upgradeDbToVersion10(SQLiteDatabase) in order to upgrade to version 10.
@@ -354,7 +352,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(createBudgetAmountUidIndex);
 
         try {
-            MigrationHelper.importCommodities(db);
+            MigrationHelper.importCommodities(db, true);
         } catch (SAXException | ParserConfigurationException | IOException e) {
             Log.e(LOG_TAG, "Error loading currencies into the database");
             e.printStackTrace();

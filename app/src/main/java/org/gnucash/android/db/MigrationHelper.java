@@ -235,7 +235,7 @@ public class MigrationHelper {
     /**
      * Imports commodities into the database from XML resource file
      */
-    static void importCommodities(SQLiteDatabase db) throws SAXException, ParserConfigurationException, IOException {
+    static void importCommodities(SQLiteDatabase db, boolean deleteExisting) throws SAXException, ParserConfigurationException, IOException {
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SAXParser sp = spf.newSAXParser();
         XMLReader xr = sp.getXMLReader();
@@ -246,7 +246,7 @@ public class MigrationHelper {
 
         /** Create handler to handle XML Tags ( extends DefaultHandler ) */
 
-        CommoditiesXmlHandler handler = new CommoditiesXmlHandler(db);
+        CommoditiesXmlHandler handler = new CommoditiesXmlHandler(db, deleteExisting);
 
         xr.setContentHandler(handler);
         xr.parse(new InputSource(bos));
@@ -883,7 +883,7 @@ public class MigrationHelper {
                     + "' ON " + CommodityEntry.TABLE_NAME + "(" + CommodityEntry.COLUMN_UID + ")");
 
             try {
-                importCommodities(db);
+                importCommodities(db, true);
             } catch (SAXException | ParserConfigurationException | IOException e) {
                 Log.e(LOG_TAG, "Error loading currencies into the database", e);
                 Crashlytics.logException(e);
@@ -1633,7 +1633,7 @@ public class MigrationHelper {
      * Upgrades the database to version 16.
      * <p>This migration makes the following changes to the database:
      * <ul>
-     *     <li>Re-populate the commodities table (see #731)</li>
+     *     <li>Update the commodities table (see #731)</li>
      * </ul>
      * </p>
      * @param db SQLite database to be upgraded
@@ -1644,7 +1644,7 @@ public class MigrationHelper {
         int dbVersion = 15;
 
         try {
-            importCommodities(db);
+            importCommodities(db, false);
             dbVersion = 16;
         } catch (SAXException | ParserConfigurationException | IOException e) {
             Log.e(LOG_TAG, "Error loading currencies into the database", e);
