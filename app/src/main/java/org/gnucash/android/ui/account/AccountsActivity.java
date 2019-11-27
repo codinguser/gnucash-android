@@ -37,6 +37,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
@@ -227,7 +228,6 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
 
         init();
 
-        getSupportActionBar().setSubtitle(BooksDbAdapter.getInstance().getActiveBookDisplayName());
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText(R.string.title_recent_accounts));
         tabLayout.addTab(tabLayout.newTab().setText(R.string.title_all_accounts));
@@ -268,6 +268,15 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
             }
         });
 	}
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setSubtitle(BooksDbAdapter.getInstance().getActiveBookDisplayName());
+        }
+    }
 
     @Override
     protected void onStart() {

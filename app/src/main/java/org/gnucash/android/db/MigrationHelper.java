@@ -1653,4 +1653,26 @@ public class MigrationHelper {
 
         return dbVersion;
     }
+
+    /**
+     * Upgrades the database to version 17.
+     * This migration updates the foreign keys to the commodities in the splits table
+     * after a previous migration which overwrote the db table for commodities, rendering
+     * all foreign keys to commodity GUIDs invalid.
+     *
+     * @param db SQLite database to be upgraded
+     * @return New database version, 16 if migration succeeds, 15 otherwise
+     */
+    static int upgradeDbToVersion17(SQLiteDatabase db) {
+        Log.i(LOG_TAG, "Upgrading database to version 17");
+        int dbVersion = 16;
+
+        db.beginTransaction();
+        db.execSQL("UPDATE accounts SET commodity_uid = (SELECT uid FROM commodities WHERE mnemonic = accounts.currency_code)");
+        db.execSQL("UPDATE transactions SET commodity_uid = (SELECT uid FROM commodities WHERE commodities.mnemonic = transactions.currency_code)");
+
+        db.endTransaction();
+
+        return dbVersion + 1;
+    }
 }
