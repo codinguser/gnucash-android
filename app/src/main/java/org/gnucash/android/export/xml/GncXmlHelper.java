@@ -147,7 +147,7 @@ public abstract class GncXmlHelper {
 
     public static final String RECURRENCE_VERSION           = "1.0.0";
     public static final String BOOK_VERSION                 = "2.0.0";
-    public static final SimpleDateFormat TIME_FORMATTER     = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z", Locale.US);
+    public static final SimpleDateFormat TIME_FORMATTER     = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
     public static final SimpleDateFormat DATE_FORMATTER     = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
     public static final String KEY_PLACEHOLDER              = "placeholder";
