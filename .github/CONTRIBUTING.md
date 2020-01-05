@@ -9,7 +9,7 @@ GnuCash Android is built by people like you! Please [join us](https://github.com
 ## Code Contributions
 * Contributions are submitted, reviewed, and accepted using Github pull requests. [Read this article](https://help.github.com/articles/using-pull-requests) for some details. We use the _Fork and Pull_ model, as described there.
 * You can maintain your stable installation of GnuCash and test with another installation.
-The two instances of GnuCash Android will live side-by-side on your device and not affect each other. You can install the development version by executing `gradle installDD` inside the root project directory
+The two instances of GnuCash Android will live side-by-side on your device and not affect each other. You can install the development version by executing `gradlew installDevelopmentDebug` inside the root project directory
 * The latest changes are in the `develop` branch.
   * Always rebase develop before working on a fix or issuing a pull request
 * The master branch contains only stable releases.
