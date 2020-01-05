@@ -49,6 +49,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -302,7 +303,13 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
         mToast = Toast.makeText(getApplicationContext(),
                                 R.string.double_back_press_exit_msg,
                                 Toast.LENGTH_SHORT);
-        mToast.setGravity(Gravity.CENTER,0,0);
+
+        // Align-Center text inside the Toast
+        TextView toastTextView = (TextView) mToast.getView()
+                                                  .findViewById(android.R.id.message);
+        if (toastTextView != null) {
+            toastTextView.setGravity(Gravity.CENTER);
+        }
 	}
 
     @Override
