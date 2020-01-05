@@ -169,12 +169,20 @@ public class TransactionsListFragment extends Fragment implements
 		refresh();
 	}
 
-	public void onListItemClick(long id) {
-		Intent intent = new Intent(getActivity(), TransactionDetailActivity.class);
-		intent.putExtra(UxArgument.SELECTED_TRANSACTION_UID, mTransactionsDbAdapter.getUID(id));
+    /**
+     * Called when user clicks on a transaction list item
+     *
+     * @param transactionListItemId
+     *         Transaction list item number (starting from 1)
+     */
+    public void onTransactionListItemClick(long transactionListItemId) {
+
+        Intent intent = new Intent(getActivity(),
+                                   TransactionDetailActivity.class);
+        intent.putExtra(UxArgument.SELECTED_TRANSACTION_UID,
+                        mTransactionsDbAdapter.getUID(transactionListItemId));
 		intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
 		startActivity(intent);
-//		mTransactionEditListener.editTransaction(mTransactionsDbAdapter.getUID(id));
 	}
 
 	@Override
@@ -280,11 +288,16 @@ public class TransactionsListFragment extends Fragment implements
 			long dateMillis = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_TIMESTAMP));
 			String dateText = TransactionsActivity.getPrettyDateFormat(getActivity(), dateMillis);
 
-			final long id = holder.transactionId;
+            // Transaction list item number (First item is 1, second is 2, ...)
+            final long transactionListItemId = holder.transactionId;
+
+            // Listener when user clicks on a transaction list item
 			holder.itemView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					onListItemClick(id);
+
+                    // Handle click on a transaction list item
+                    onTransactionListItemClick(transactionListItemId);
 				}
 			});
 
@@ -309,6 +322,11 @@ public class TransactionsListFragment extends Fragment implements
 				}
 				holder.secondaryText.setText(text);
 				holder.transactionDate.setText(dateText);
+
+                //
+                // Action when clicking on the right pen icon of a cardview_transaction
+                // to open transaction editor
+                //
 
 				holder.editTransaction.setOnClickListener(new View.OnClickListener() {
 					@Override
@@ -339,21 +357,94 @@ public class TransactionsListFragment extends Fragment implements
 				super(itemView);
 				ButterKnife.bind(this, itemView);
 				primaryText.setTextSize(18);
+
+                //
+                // Define action when clicking on the secondary text to jump to this account transaction list
+                //
+
+                secondaryText.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+
+                        // Prepare Intent to jump to the Transaction List of the Account selected by the user (when clicking on the secondary text)
+                        Intent jumpToSelectedAccountTransactionListIntent = new Intent(getActivity(),
+                                                                                       TransactionsActivity.class);
+
+                        // Get Transaction UID for the transactionId nth item of the transaction list
+                        String transactionUID = mTransactionsDbAdapter.getUID(transactionId);
+
+                        // Get all Splits of Transaction transactionUID
+                        final List<Split> splitsForTransaction = mTransactionsDbAdapter.getSplitDbAdapter()
+                                                                                       .getSplitsForTransaction(transactionUID);
+
+                        // Get the Account UID to jump to
+                        String jumpToAccountUID = "";
+                        for (int i = 0; i < splitsForTransaction.size(); i++) {
+
+                            // Get the UID of the i-nth account involved in the Transaction
+                            jumpToAccountUID = splitsForTransaction.get(i)
+                                                                   .getAccountUID();
+
+                            if (!mAccountUID.equals(jumpToAccountUID)) {
+                                // The account transaction list to jump to is not the current one
+
+                                // Stop searching
+                                break;
+
+                            } else {
+                                // The account transaction list to jump to is the current one
+
+                                // NTD : Continue to look for another Account
+                            }
+                        } // for
+
+                        jumpToSelectedAccountTransactionListIntent.setAction(Intent.ACTION_VIEW);
+
+                        // Indicate the Account Transaction List to jump to
+                        jumpToSelectedAccountTransactionListIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID,
+                                                                            jumpToAccountUID);
+
+                        // Start the Activity to display the Account Transaction List of the other Account
+                        startActivity(jumpToSelectedAccountTransactionListIntent);
+                    }
+                });
+
+                //
+                // Define action when clicking on the three dot icon of a cardview_transaction
+                // to open a menu
+                //
+
 				optionsMenu.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						PopupMenu popup = new PopupMenu(getActivity(), v);
-						popup.setOnMenuItemClickListener(ViewHolder.this);
-						MenuInflater inflater = popup.getMenuInflater();
-						inflater.inflate(R.menu.transactions_context_menu, popup.getMenu());
-						popup.show();
+
+                        // Build pop-menu
+                        PopupMenu popupMenu = new PopupMenu(getActivity(),
+                                                            v);
+
+                        // Current ViewHolder instance will handle the click on a menu item
+                        popupMenu.setOnMenuItemClickListener(ViewHolder.this);
+
+                        // Unserialize the menu defined in transactions_context_menu.xml
+                        MenuInflater inflater = popupMenu.getMenuInflater();
+                        inflater.inflate(R.menu.transactions_context_menu,
+                                         popupMenu.getMenu());
+
+                        // Display pop-menu
+                        popupMenu.show();
 					}
 				});
 			}
 
 			@Override
-			public boolean onMenuItemClick(MenuItem item) {
-				switch (item.getItemId()) {
+            public boolean onMenuItemClick(MenuItem menuItem) {
+
+                //
+                // Handle click on pop-up menu item
+                //
+
+                switch (menuItem.getItemId()) {
 					case R.id.context_menu_delete:
 						BackupManager.backupActiveBook();
 						mTransactionsDbAdapter.deleteRecord(transactionId);
