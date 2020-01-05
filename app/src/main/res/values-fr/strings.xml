@@ -54,7 +54,7 @@
   <string name="btn_export">Exporter</string>
   <string name="option_delete_after_export">Effacer les transactions après export</string>
   <string name="hint_delete_after_export">Toutes les transactions exportées seront supprimées après l\'export</string>
-  <string name="title_settings">Paramètres</string>
+    <string name="title_settings">Préférences</string>
   <string-array name="export_destinations">
     <item>Enregistrer sous &#8230;</item>
     <item>Dropbox</item>
@@ -65,7 +65,7 @@
   <string name="title_move_transactions">Déplacer %1$d transaction(s)</string>
   <string name="label_move_destination">Compte de destination</string>
   <string name="toast_incompatible_currency">Impossible de déplacer les transactions.\nLe compte de destination utilise une monnaie différente du compte d\'origine</string>
-  <string name="header_general_settings">Général</string>
+    <string name="header_general_settings">Générales</string>
   <string name="header_about_gnucash">À propos</string>
   <string name="title_choose_currency">Choisisez une monnaie par défaut</string>
   <string name="title_default_currency">Monnaie par défaut</string>
@@ -258,7 +258,7 @@
   <string name="nav_menu_open">Ouvrir&#8230;</string>
   <string name="nav_menu_reports">Rapports</string>
   <string name="nav_menu_export">Export&#8230;</string>
-  <string name="nav_menu_settings">Paramètres</string>
+    <string name="nav_menu_settings">Préférences</string>
   <string name="username">Nom d\'utilisateur</string>
   <string name="password">Mot de passe</string>
   <string name="owncloud_pref">ownCloud</string>

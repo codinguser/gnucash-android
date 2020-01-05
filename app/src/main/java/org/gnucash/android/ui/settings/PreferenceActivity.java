@@ -78,12 +78,22 @@ public class PreferenceActivity extends PasscodeLockActivity implements
         });
 
         String action = getIntent().getAction();
-        if (action != null && action.equals(ACTION_MANAGE_BOOKS)){
-            loadFragment(new BookManagerFragment());
+        if (action != null && action.equals(ACTION_MANAGE_BOOKS)) {
+            // Intent action is to manage books
+
+            // Close the left Preference Pane
             mSlidingPaneLayout.closePane();
+
+            // Load the BookManager fragment (in the right pane)
+            loadFragment(new BookManagerFragment());
         } else {
+            // Intent action is not defined
+
+            // Open left Preference Pane with all Preferences Choices
             mSlidingPaneLayout.openPane();
-            loadFragment(new GeneralPreferenceFragment());
+
+            // Do not load Fragment now in order to not starting GeneralPreferenceFragment.onCreate() which will override title
+//            loadFragment(new GeneralPreferenceFragment());
         }
 
         ActionBar actionBar = getSupportActionBar();
