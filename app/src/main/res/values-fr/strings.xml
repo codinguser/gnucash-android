@@ -446,4 +446,8 @@
   <string name="label_select_destination_after_export">Sélectionnez la destination une fois l\'exportation terminée</string>
   <string name="label_dropbox_export_destination">Exporter dans le dossier \'/Apps/GnuCash Android/\' sur Dropbox</string>
   <string name="title_section_preferences">Préférences</string>
+    <string name="double_back_press_exit_msg">Cliquez à nouveau sur BACK pour Quitter\n(ou modifiez les Préférences Générales)</string>
+    <string name="prefs_ui_category_title">Préférences d\'ergonomie</string>
+    <string name="prefs_ui_title_use_double_back_button_press_to_quit">Double confirmation pour Quitter</string>
+    <string name="prefs_ui_summary_use_double_back_button_press_to_quit">Appuyer deux fois de suite sur le bouton \"BACK\" pour Quitter l\'application</string>
 </resources>
