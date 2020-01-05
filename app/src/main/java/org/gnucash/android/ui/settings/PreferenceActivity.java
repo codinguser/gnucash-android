@@ -127,12 +127,18 @@ public class PreferenceActivity extends PasscodeLockActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                android.app.FragmentManager fm = getFragmentManager();
-                if (fm.getBackStackEntryCount() > 0) {
-                    fm.popBackStack();
-                } else {
-                    finish();
-                }
+                // User clicked on the "home" button (i.e. left arrow in the ActionBar)
+
+                // Handle as it was a Back Button press
+                onBackPressed();
+
+//                android.app.FragmentManager fm = getFragmentManager();
+//                if (fm.getBackStackEntryCount() > 0) {
+//                    fm.popBackStack();
+//                } else {
+//                    finish();
+//                }
+
                 return true;
 
             default:
