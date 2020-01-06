@@ -431,45 +431,55 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
     @Override
     public void onBackPressed() {
 
-        // Get Preference about double back button press to exit
-        boolean prefShallUseDoubleBackPressToExit = PreferenceManager.getDefaultSharedPreferences(this)
-                                                                     .getBoolean(getString(R.string.key_use_double_back_button_press_to_quit),
-                                                                                 true);
+        if (isNavigationViewOpen()) {
+            // The main navigation menu is open
 
-        if (mDoubleBackButtonPressedOnce || !prefShallUseDoubleBackPressToExit) {
-            // BackPress button has already been pressed recently OR shall not use double back press to exit
-
-            //
-            // Do not show the Toast anymore
-            //
-
-            if (mToast != null) {
-                // There is a Toast
-
-                // Do not show the Toast anymore
-                mToast.cancel();
-
-            } else {
-                // There is no Toast
-
-                // NTD
-            }
-
-            // Perform BackPress
+            // Close the main navigation menu
             super.onBackPressed();
 
         } else {
-            // BackPress button has been pressed for the first time AND shall use double back press to exit
+            // The main navigation menu is closed
 
-            // Notice that button has been pressed once
-            this.mDoubleBackButtonPressedOnce = true;
+            // Get Preference about double back button press to exit
+            boolean prefShallUseDoubleBackPressToExit = PreferenceManager.getDefaultSharedPreferences(this)
+                                                                         .getBoolean(getString(R.string.key_use_double_back_button_press_to_quit),
+                                                                                     true);
 
-            // Show a message to explain that user must press again to exit
-            mToast.show();
+            if (mDoubleBackButtonPressedOnce || !prefShallUseDoubleBackPressToExit) {
+                // BackPress button has already been pressed recently OR shall not use double back press to exit
 
-            // After two seconds, it is not more considered as already pressed
-            mHandler.postDelayed(mResetDoubleBackPressedStatusRunnable,
-                                 2000);
+                //
+                // Do not show the Toast anymore
+                //
+
+                if (mToast != null) {
+                    // There is a Toast
+
+                    // Do not show the Toast anymore
+                    mToast.cancel();
+
+                } else {
+                    // There is no Toast
+
+                    // NTD
+                }
+
+                // Perform BackPress
+                super.onBackPressed();
+
+            } else {
+                // BackPress button has been pressed for the first time AND shall use double back press to exit
+
+                // Notice that button has been pressed once
+                this.mDoubleBackButtonPressedOnce = true;
+
+                // Show a message to explain that user must press again to exit
+                mToast.show();
+
+                // After two seconds, it is not more considered as already pressed
+                mHandler.postDelayed(mResetDoubleBackPressedStatusRunnable,
+                                     2000);
+            }
         }
     }
 
