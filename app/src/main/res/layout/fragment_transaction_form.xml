@@ -100,7 +100,8 @@
 
                 <ImageView style="@style/FormIcon"
                     android:src="@drawable/ic_action_forward"/>
-                <Spinner
+
+                <org.gnucash.android.ui.util.widget.searchablespinner.SearchableSpinner
                     android:id="@+id/input_transfer_account_spinner"
                     android:layout_width="0dp"
                     android:layout_weight="5"
