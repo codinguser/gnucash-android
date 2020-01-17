@@ -500,4 +500,5 @@
         <item>Tax</item>
         <item>Placeholder</item>
     </string-array>
+    <string name="select_transfer_account">Select Transfer Account</string>
 </resources>
