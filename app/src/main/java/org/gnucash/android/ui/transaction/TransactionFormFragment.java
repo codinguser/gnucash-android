@@ -332,9 +332,12 @@ public class TransactionFormFragment extends Fragment implements
 
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+
                 removeFavoriteIconFromSelectedView((TextView) view);
 
-                if (mSplitsList.size() == 2) { //when handling simple transfer to one account
+                if (mSplitsList.size() == 2) {
+                    //when handling simple transfer to one account
+
                     for (Split split : mSplitsList) {
                         if (!split.getAccountUID().equals(mAccountUID)) {
                             split.setAccountUID(mAccountsDbAdapter.getUID(id));
@@ -342,10 +345,12 @@ public class TransactionFormFragment extends Fragment implements
                         // else case is handled when saving the transactions
                     }
                 }
+
                 if (!userInteraction) {
                     userInteraction = true;
                     return;
                 }
+
                 startTransferFunds();
             }
 
