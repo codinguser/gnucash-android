@@ -30,13 +30,15 @@ public class SearchableListDialog
 
     private static final String ITEMS = "items";
 
-    private ArrayAdapter listAdapter;
+    private ArrayAdapter withContainsFilterArrayAdapter;
 
-    private ListView _listViewItems;
+    private ListView _listView;
 
-    private SearchableItem _searchableItem;
+    private OnSearchTextChangedListener _onSearchTextChangedListener;
 
-    private OnSearchTextChanged _onSearchTextChanged;
+    private OnSearchableItemClickedListener _onSearchableItemClickedListener;
+
+    private DialogInterface.OnClickListener _onPositiveBtnClickListener;
 
     private SearchView _searchView;
 
@@ -44,7 +46,6 @@ public class SearchableListDialog
 
     private String _strPositiveButtonText;
 
-    private DialogInterface.OnClickListener _onClickListener;
 
     public SearchableListDialog() {
 
@@ -93,7 +94,7 @@ public class SearchableListDialog
         // Description: As the instance was re initializing to null on rotating the device,
         // getting the instance from the saved instance
         if (null != savedInstanceState) {
-            _searchableItem = (SearchableItem) savedInstanceState.getSerializable("item");
+            _onSearchableItemClickedListener = (OnSearchableItemClickedListener) savedInstanceState.getSerializable("item");
         }
         // Change End
 
@@ -109,7 +110,7 @@ public class SearchableListDialog
                                    ? "CLOSE"
                                    : _strPositiveButtonText;
         alertDialogBuilder.setPositiveButton(strPositiveButton,
-                                             _onClickListener);
+                                             _onPositiveBtnClickListener);
 
         String strTitle = _strTitle == null
                           ? "Select Item"
@@ -117,50 +118,12 @@ public class SearchableListDialog
         alertDialogBuilder.setTitle(strTitle);
 
         final AlertDialog dialog = alertDialogBuilder.create();
-//        dialog.getWindow()
-//              .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
+        //        dialog.getWindow()
+        //              .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         hideKeyboard(_searchView);
+
         return dialog;
-    }
-
-    // Crash on orientation change #7
-    // Change Start
-    // Description: Saving the instance of searchable item instance.
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-
-        outState.putSerializable("item",
-                                 _searchableItem);
-        super.onSaveInstanceState(outState);
-    }
-    // Change End
-
-    public void setTitle(String strTitle) {
-
-        _strTitle = strTitle;
-    }
-
-    public void setPositiveButton(String strPositiveButtonText) {
-
-        _strPositiveButtonText = strPositiveButtonText;
-    }
-
-    public void setPositiveButton(String strPositiveButtonText,
-                                  DialogInterface.OnClickListener onClickListener) {
-
-        _strPositiveButtonText = strPositiveButtonText;
-        _onClickListener = onClickListener;
-    }
-
-    public void setOnSearchableItemClickListener(SearchableItem searchableItem) {
-
-        this._searchableItem = searchableItem;
-    }
-
-    public void setOnSearchTextChangedListener(OnSearchTextChanged onSearchTextChanged) {
-
-        this._onSearchTextChanged = onSearchTextChanged;
     }
 
     private void setData(View rootView) {
@@ -181,32 +144,72 @@ public class SearchableListDialog
 
         List items = (List) getArguments().getSerializable(ITEMS);
 
-        _listViewItems = (ListView) rootView.findViewById(R.id.listItems);
+        _listView = (ListView) rootView.findViewById(R.id.listItems);
 
         //create the adapter by passing your ArrayList data
-//        listAdapter = new ArrayAdapter(getActivity(),
-//                                       android.R.layout.simple_list_item_1,
-//                                       items);
-        listAdapter = new ArrayAdapterWithContainsFilter(getActivity(),
-                                                         android.R.layout.simple_list_item_1,
-                                                         items);
+        withContainsFilterArrayAdapter = new WithContainsFilterArrayAdapter(getActivity(),
+                                                                            android.R.layout.simple_list_item_1,
+                                                                            items);
         //attach the adapter to the list
-        _listViewItems.setAdapter(listAdapter);
+        _listView.setAdapter(withContainsFilterArrayAdapter);
 
-        _listViewItems.setTextFilterEnabled(true);
+        _listView.setTextFilterEnabled(true);
 
-        _listViewItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        _listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
             @Override
             public void onItemClick(AdapterView<?> parent,
                                     View view,
                                     int position,
                                     long id) {
 
-                _searchableItem.onSearchableItemClicked(listAdapter.getItem(position),
-                                                        position);
+                final Object accountFullName = withContainsFilterArrayAdapter.getItem(position);
+
+                // Call Listener
+                _onSearchableItemClickedListener.onSearchableItemClicked(accountFullName,
+                                                                         position);
                 getDialog().dismiss();
             }
         });
+    }
+
+    // Crash on orientation change #7
+    // Change Start
+    // Description: Saving the instance of searchable item instance.
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+
+        outState.putSerializable("item",
+                                 _onSearchableItemClickedListener);
+        super.onSaveInstanceState(outState);
+    }
+    // Change End
+
+    public void setTitle(String strTitle) {
+
+        _strTitle = strTitle;
+    }
+
+    public void setPositiveButton(String strPositiveButtonText) {
+
+        _strPositiveButtonText = strPositiveButtonText;
+    }
+
+    public void setPositiveButton(String strPositiveButtonText,
+                                  DialogInterface.OnClickListener onClickListener) {
+
+        _strPositiveButtonText = strPositiveButtonText;
+        _onPositiveBtnClickListener = onClickListener;
+    }
+
+    public void setOnSearchableItemClickListener(OnSearchableItemClickedListener onSearchableItemClickedListener) {
+
+        this._onSearchableItemClickedListener = onSearchableItemClickedListener;
+    }
+
+    public void setOnSearchTextChangedListener(OnSearchTextChangedListener onSearchTextChangedListener) {
+
+        this._onSearchTextChangedListener = onSearchTextChangedListener;
     }
 
 
@@ -235,28 +238,32 @@ public class SearchableListDialog
 
         if (TextUtils.isEmpty(s)) {
 
-//            ((ArrayAdapter) _listViewItems.getAdapter()).getFilter()
-//                                                        .filter(null);
-            ((ArrayAdapterWithContainsFilter) _listViewItems.getAdapter()).filter(null);
+            ((WithContainsFilterArrayAdapter) _listView.getAdapter()).getFilter()
+                                                                     .filter(null);
+
         } else {
-//            ((ArrayAdapter) _listViewItems.getAdapter()).getFilter()
-//                                                        .filter(s);
-            ((ArrayAdapterWithContainsFilter) _listViewItems.getAdapter()).filter(s);
+
+            ((WithContainsFilterArrayAdapter) _listView.getAdapter()).getFilter()
+                                                                     .filter(s);
         }
 
-        if (null != _onSearchTextChanged) {
-            _onSearchTextChanged.onSearchTextChanged(s);
+        if (null != _onSearchTextChangedListener) {
+
+            // Call Listener
+            _onSearchTextChangedListener.onSearchTextChanged(s);
         }
+
         return true;
     }
 
-    public interface SearchableItem<T>
+    public interface OnSearchableItemClickedListener<T>
             extends Serializable {
+
         void onSearchableItemClicked(T item,
                                      int position);
     }
 
-    public interface OnSearchTextChanged {
+    public interface OnSearchTextChangedListener {
         void onSearchTextChanged(String strText);
     }
 
@@ -283,79 +290,4 @@ public class SearchableListDialog
                            200);
     }
 
-//    /**
-//     * <p>An array filter constrains the content of the array adapter with
-//     * items containing a text.</p>
-//     */
-//    private class ArrayTextFilter
-//            extends Filter {
-//
-//        @Override
-//        protected FilterResults performFiltering(CharSequence prefix) {
-//
-//            final FilterResults results = new FilterResults();
-//
-//            if (mOriginalValues == null) {
-//                synchronized (mLock) {
-//                    mOriginalValues = new ArrayList<>(mObjects);
-//                }
-//            }
-//
-//            if (prefix == null || prefix.length() == 0) {
-//                final ArrayList<T> list;
-//                synchronized (mLock) {
-//                    list = new ArrayList<>(mOriginalValues);
-//                }
-//                results.values = list;
-//                results.count = list.size();
-//            } else {
-//                final String prefixString = prefix.toString()
-//                                                  .toLowerCase();
-//
-//                final ArrayList<T> values;
-//                synchronized (mLock) {
-//                    values = new ArrayList<>(mOriginalValues);
-//                }
-//
-//                final int          count     = values.size();
-//                final ArrayList<T> newValues = new ArrayList<>();
-//
-//                for (int i = 0; i < count; i++) {
-//                    final T      value     = values.get(i);
-//                    final String valueText = value.toString()
-//                                                  .toLowerCase();
-//
-//                    // First match against the whole, non-splitted value
-//                    if (valueText.startsWith(prefixString)) {
-//                        newValues.add(value);
-//                    } else {
-//                        final String[] words = valueText.split(" ");
-//                        for (String word : words) {
-//                            if (word.startsWith(prefixString)) {
-//                                newValues.add(value);
-//                                break;
-//                            }
-//                        }
-//                    }
-//                }
-//
-//                results.values = newValues;
-//                results.count = newValues.size();
-//            }
-//
-//            return results;
-//        }
-//
-//        @Override
-//        protected void publishResults(CharSequence constraint,
-//                                      FilterResults results) {
-//            //noinspection unchecked
-//            mObjects = (List<T>) results.values;
-//            if (results.count > 0) {
-//                notifyDataSetChanged();
-//            } else {
-//                notifyDataSetInvalidated();
-//            }
-//        }
-//    }
 }
