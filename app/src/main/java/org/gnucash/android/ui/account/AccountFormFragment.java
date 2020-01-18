@@ -155,6 +155,7 @@ public class AccountFormFragment extends Fragment {
     /**
      * Spinner for parent account list
      */
+    // TODO TW C 2020-01-18 : A remplacer par un SearchableSpinner
 	@BindView(R.id.input_parent_account) Spinner mParentAccountSpinner;
 
     /**
@@ -177,6 +178,8 @@ public class AccountFormFragment extends Fragment {
     /**
      * Spinner for selecting the default transfer account
      */
+    // TODO TW C 2020-01-18 : A remplacer par un SearchableSpinner + Vérifier exclure Placeholder + Etoile des Favoris + 1
+    //  seule ligne
     @BindView(R.id.input_default_transfer_account) Spinner mDefaultTransferAccountSpinner;
 
     /**

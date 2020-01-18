@@ -35,57 +35,103 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class QualifiedAccountNameCursorAdapter extends SimpleCursorAdapter {
+public class QualifiedAccountNameCursorAdapter
+        extends SimpleCursorAdapter {
 
     /**
      * Initialize the Cursor adapter for account names using default spinner views
-     * @param context Application context
-     * @param cursor Cursor to accounts
+     *
+     * @param context
+     *         Application context
+     * @param cursor
+     *         Cursor to accounts
      */
-    public QualifiedAccountNameCursorAdapter(Context context, Cursor cursor) {
-        super(context, android.R.layout.simple_spinner_item, cursor,
-                new String[]{DatabaseSchema.AccountEntry.COLUMN_FULL_NAME},
-                new int[]{android.R.id.text1}, 0);
+    public QualifiedAccountNameCursorAdapter(Context context,
+                                             Cursor cursor) {
+
+        super(context,
+              android.R.layout.simple_spinner_item,
+              cursor,
+              new String[]{DatabaseSchema.AccountEntry.COLUMN_FULL_NAME},
+              new int[]{android.R.id.text1},
+              0);
+
         setDropDownViewResource(R.layout.account_spinner_dropdown_item);
     }
 
     /**
      * Overloaded constructor. Specifies the view to use for displaying selected spinner text
-     * @param context Application context
-     * @param cursor Cursor to account data
-     * @param selectedSpinnerItem Layout resource for selected item text
+     *
+     * @param context
+     *         Application context
+     * @param cursor
+     *         Cursor to account data
+     * @param selectedSpinnerItem
+     *         Layout resource for selected item text
      */
-    public QualifiedAccountNameCursorAdapter(Context context, Cursor cursor,
+    public QualifiedAccountNameCursorAdapter(Context context,
+                                             Cursor cursor,
                                              @LayoutRes int selectedSpinnerItem) {
-        super(context, selectedSpinnerItem, cursor,
-                new String[]{DatabaseSchema.AccountEntry.COLUMN_FULL_NAME},
-                new int[]{android.R.id.text1}, 0);
+
+        super(context,
+              selectedSpinnerItem,
+              cursor,
+              new String[]{DatabaseSchema.AccountEntry.COLUMN_FULL_NAME},
+              new int[]{android.R.id.text1},
+              0);
+
         setDropDownViewResource(R.layout.account_spinner_dropdown_item);
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
-        super.bindView(view, context, cursor);
-        TextView textView = (TextView) view.findViewById(android.R.id.text1);
-        textView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+    public void bindView(View view,
+                         Context context,
+                         Cursor cursor) {
+
+        super.bindView(view,
+                       context,
+                       cursor);
+
+        // item text
+        TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+
+        // TODO TW C 2020-01-19 : A mettre ?
+//        // item on single line
+//        text1.setSingleLine();
+
+        // Add "..." in the middle of the item if too long for one line
+        text1.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+
 
         Integer isFavorite = cursor.getInt(cursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_FAVORITE));
-        if(isFavorite == 0) {
-            textView.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
+
+        if (isFavorite == 0) {
+            text1.setCompoundDrawablesWithIntrinsicBounds(0,
+                                                             0,
+                                                             0,
+                                                             0);
         } else {
-            textView.setCompoundDrawablesWithIntrinsicBounds(0,0,R.drawable.ic_star_black_18dp,0);
+            text1.setCompoundDrawablesWithIntrinsicBounds(0,
+                                                             0,
+                                                             R.drawable.ic_star_black_18dp,
+                                                             0);
         }
     }
 
     /**
      * Returns the position of a given account in the adapter
-     * @param accountUID GUID of the account
+     *
+     * @param accountUID
+     *         GUID of the account
+     *
      * @return Position of the account or -1 if the account is not found
      */
-    public int getPosition(@NonNull String accountUID){
-        long accountId = AccountsDbAdapter.getInstance().getID(accountUID);
+    public int getPosition(@NonNull String accountUID) {
+
+        long accountId = AccountsDbAdapter.getInstance()
+                                          .getID(accountUID);
         for (int pos = 0; pos < getCount(); pos++) {
-            if (getItemId(pos) == accountId){
+            if (getItemId(pos) == accountId) {
                 return pos;
             }
         }
