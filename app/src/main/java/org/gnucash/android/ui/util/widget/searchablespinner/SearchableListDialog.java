@@ -30,7 +30,7 @@ public class SearchableListDialog
 
     private static final String ITEMS = "items";
 
-    private ArrayAdapter withContainsFilterArrayAdapter;
+    private ArrayAdapter withContaingTextArrayFilterArrayAdapter;
 
     private ListView _listView;
 
@@ -146,12 +146,12 @@ public class SearchableListDialog
 
         _listView = (ListView) rootView.findViewById(R.id.listItems);
 
-        //create the adapter by passing your ArrayList data
-        withContainsFilterArrayAdapter = new WithContainsFilterArrayAdapter(getActivity(),
-                                                                            android.R.layout.simple_list_item_1,
-                                                                            items);
+        // Create an ArrayAdapter for items, with filtering capablity based on item containing a text
+        withContaingTextArrayFilterArrayAdapter = new WithContaingTextArrayFilterArrayAdapter(getActivity(),
+                                                                                              android.R.layout.simple_list_item_1,
+                                                                                              items);
         //attach the adapter to the list
-        _listView.setAdapter(withContainsFilterArrayAdapter);
+        _listView.setAdapter(withContaingTextArrayFilterArrayAdapter);
 
         _listView.setTextFilterEnabled(true);
 
@@ -163,7 +163,7 @@ public class SearchableListDialog
                                     int position,
                                     long id) {
 
-                final Object accountFullName = withContainsFilterArrayAdapter.getItem(position);
+                final Object accountFullName = withContaingTextArrayFilterArrayAdapter.getItem(position);
 
                 // Call Listener
                 _onSearchableItemClickedListener.onSearchableItemClicked(accountFullName,
@@ -238,13 +238,13 @@ public class SearchableListDialog
 
         if (TextUtils.isEmpty(s)) {
 
-            ((WithContainsFilterArrayAdapter) _listView.getAdapter()).getFilter()
-                                                                     .filter(null);
+            ((WithContaingTextArrayFilterArrayAdapter) _listView.getAdapter()).getFilter()
+                                                                              .filter(null);
 
         } else {
 
-            ((WithContainsFilterArrayAdapter) _listView.getAdapter()).getFilter()
-                                                                     .filter(s);
+            ((WithContaingTextArrayFilterArrayAdapter) _listView.getAdapter()).getFilter()
+                                                                              .filter(s);
         }
 
         if (null != _onSearchTextChangedListener) {
