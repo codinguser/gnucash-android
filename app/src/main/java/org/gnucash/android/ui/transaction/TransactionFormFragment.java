@@ -368,6 +368,7 @@ public class TransactionFormFragment extends Fragment implements
         });
 
         mTransferAccountSpinner.setTitle(getString(R.string.select_transfer_account));
+        mTransferAccountSpinner.setPositiveButton(getString(R.string.alert_dialog_cancel));
 
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         assert actionBar != null;
