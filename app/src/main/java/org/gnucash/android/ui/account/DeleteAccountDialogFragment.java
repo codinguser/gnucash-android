@@ -148,8 +148,10 @@ public class DeleteAccountDialogFragment extends DialogFragment {
                 + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0 AND "
                 + DatabaseSchema.AccountEntry.COLUMN_UID + " NOT IN ('" + TextUtils.join("','", descendantAccountUIDs) + "')"
                 + ")";
-        Cursor cursor = accountsDbAdapter.fetchAccountsOrderedByFullName(transactionDeleteConditions,
-                new String[]{mOriginAccountUID, currencyCode, accountType.name()});
+        Cursor cursor = accountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(transactionDeleteConditions,
+                                                                                    new String[]{mOriginAccountUID,
+                                                                                                 currencyCode,
+                                                                                                 accountType.name()});
 
         SimpleCursorAdapter mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), cursor);
         mTransactionsDestinationAccountSpinner.setAdapter(mCursorAdapter);
@@ -160,8 +162,11 @@ public class DeleteAccountDialogFragment extends DialogFragment {
                 + DatabaseSchema.AccountEntry.COLUMN_TYPE         + " = ? AND "
                 + DatabaseSchema.AccountEntry.COLUMN_UID + " NOT IN ('" + TextUtils.join("','", descendantAccountUIDs) + "')"
                 + ")";
-        cursor = accountsDbAdapter.fetchAccountsOrderedByFullName(accountMoveConditions,
-                new String[]{mOriginAccountUID, currencyCode, accountType.name()});
+        cursor = accountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(accountMoveConditions,
+                                                                             new String[]{mOriginAccountUID,
+                                                                                          currencyCode,
+                                                                                          accountType.name()});
+
         mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), cursor);
         mAccountsDestinationAccountSpinner.setAdapter(mCursorAdapter);
 
