@@ -163,11 +163,11 @@ public class WithContaingTextArrayFilterArrayAdapter<T>
         // item text
         TextView text1 = (TextView) itemView.findViewById(android.R.id.text1);
 
-        // item on single line
-        text1.setSingleLine();
-
-        // Add "..." in the middle of the item if too long for one line
-        text1.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+//        // item on single line
+//        text1.setSingleLine();
+//
+//        // Add "..." in the middle of the item if too long for one line
+//        text1.setEllipsize(TextUtils.TruncateAt.MIDDLE);
 
 //        text1.setTextColor(getContext().getResources().getColor(R.color.account_red));
 
