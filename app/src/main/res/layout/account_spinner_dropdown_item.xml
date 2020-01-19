@@ -15,10 +15,10 @@
  limitations under the License.
 -->
 <CheckedTextView xmlns:android="http://schemas.android.com/apk/res/android"
-                 android:id="@android:id/text1"
-                 style="?android:attr/spinnerDropDownItemStyle"
-                 android:maxLines="1"
-                 android:textColor="@android:color/black"
-                 android:layout_width="match_parent"
-                 android:layout_height="?attr/dropdownListPreferredItemHeight"
-                 android:ellipsize="marquee"/>
+    android:id="@android:id/text1"
+    style="?android:attr/spinnerDropDownItemStyle"
+    android:textColor="@android:color/black"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/dropdownListPreferredItemHeight"
+    android:ellipsize="marquee"
+    android:singleLine="true" />
