@@ -28,11 +28,42 @@ public class SearchableListDialog
         implements SearchView.OnQueryTextListener,
                    SearchView.OnCloseListener {
 
+    /**
+     * Listener to call when user clicks on an item
+     *
+     * @param <T>
+     */
+    public interface OnSearchableItemClickedListener<T>
+            extends Serializable {
+
+        void onSearchableItemClicked(T item,
+                                     int position);
+    }
+
+    /**
+     * Listener to call when Search text change
+     */
+    public interface OnSearchTextChangedListener {
+        void onSearchTextChanged(String strText);
+    }
+
+
     private static final String ITEMS = "items";
 
-    private ArrayAdapter withContaingTextArrayFilterArrayAdapter;
+    // Dialog Title
+    private String _strTitle;
 
+    // Search Edit text zone
+    private SearchView _searchTextEditView;
+
+    // Item list
     private ListView _listView;
+
+    // Bottom right button to close the pop-up
+    private String _strPositiveButtonText;
+
+
+    private ArrayAdapter withContaingTextArrayFilterArrayAdapter;
 
     private OnSearchTextChangedListener _onSearchTextChangedListener;
 
@@ -40,28 +71,33 @@ public class SearchableListDialog
 
     private DialogInterface.OnClickListener _onPositiveBtnClickListener;
 
-    private SearchView _searchView;
 
-    private String _strTitle;
-
-    private String _strPositiveButtonText;
-
-
+    /**
+     * Constructor
+     */
     public SearchableListDialog() {
 
     }
 
+    /**
+     * Factory
+     *
+     * @param items
+     *
+     * @return
+     */
     public static SearchableListDialog newInstance(List items) {
 
-        SearchableListDialog multiSelectExpandableFragment = new SearchableListDialog();
+        SearchableListDialog searchableListDialog = new SearchableListDialog();
 
         Bundle args = new Bundle();
+
         args.putSerializable(ITEMS,
                              (Serializable) items);
 
-        multiSelectExpandableFragment.setArguments(args);
+        searchableListDialog.setArguments(args);
 
-        return multiSelectExpandableFragment;
+        return searchableListDialog;
     }
 
     @Override
@@ -78,6 +114,7 @@ public class SearchableListDialog
 
         getDialog().getWindow()
                    .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
         return super.onCreateView(inflater,
                                   container,
                                   savedInstanceState);
@@ -98,59 +135,85 @@ public class SearchableListDialog
         }
         // Change End
 
-        View rootView = inflater.inflate(R.layout.searchable_list_dialog,
-                                         null);
+        //
+        // Prepare the searchableListView
+        //
 
-        setData(rootView);
+        // Instantiate the searchableListView from XML
+        View searchableListRootView = inflater.inflate(R.layout.searchable_list_dialog,
+                                                       null);
+
+        // Configure the searchableListView
+        configureView(searchableListRootView);
+
+        //
+        // Create dialog builder
+        //
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-        alertDialogBuilder.setView(rootView);
 
-        String strPositiveButton = _strPositiveButtonText == null
-                                   ? "CLOSE"
-                                   : _strPositiveButtonText;
-        alertDialogBuilder.setPositiveButton(strPositiveButton,
-                                             _onPositiveBtnClickListener);
+        // Indicate to put the searchableListView in the alertDialog
+        alertDialogBuilder.setView(searchableListRootView);
+
+        // Title
 
         String strTitle = _strTitle == null
                           ? "Select Item"
                           : _strTitle;
+
         alertDialogBuilder.setTitle(strTitle);
 
-        final AlertDialog dialog = alertDialogBuilder.create();
+        // Positive Button
 
-        //        dialog.getWindow()
-        //              .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        hideKeyboard(_searchView);
+        String strPositiveButton = _strPositiveButtonText == null
+                                   ? "CLOSE"
+                                   : _strPositiveButtonText;
 
-        return dialog;
+        alertDialogBuilder.setPositiveButton(strPositiveButton,
+                                             _onPositiveBtnClickListener);
+
+        //
+        // Create searchableListDialog
+        //
+
+        final AlertDialog searchableListDialog = alertDialogBuilder.create();
+
+        // Hide Soft Keybord
+//        hideKeyboard(_searchTextEditView);
+        hideKeyboard(searchableListRootView);
+
+        return searchableListDialog;
     }
 
-    private void setData(View rootView) {
+    private void configureView(View searchableListRootView) {
 
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
 
-        _searchView = (SearchView) rootView.findViewById(R.id.search);
-        _searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
-        _searchView.setIconifiedByDefault(false);
-        _searchView.setOnQueryTextListener(this);
-        _searchView.setOnCloseListener(this);
-        _searchView.clearFocus();
+        //
+        // Search Edit text zone
+        //
 
-        // Hide Soft Keybord
-//        InputMethodManager keyboard = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-//        keyboard.hideSoftInputFromWindow(_searchView.getWindowToken(),
-//                                         0);
+        _searchTextEditView = (SearchView) searchableListRootView.findViewById(R.id.search);
+
+        _searchTextEditView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+        _searchTextEditView.setIconifiedByDefault(false);
+        _searchTextEditView.setOnQueryTextListener(this);
+        _searchTextEditView.setOnCloseListener(this);
+        _searchTextEditView.clearFocus();
+
+        //
+        // Items list
+        //
+
+        _listView = (ListView) searchableListRootView.findViewById(R.id.listItems);
 
         List items = (List) getArguments().getSerializable(ITEMS);
-
-        _listView = (ListView) rootView.findViewById(R.id.listItems);
 
         // Create an ArrayAdapter for items, with filtering capablity based on item containing a text
         withContaingTextArrayFilterArrayAdapter = new WithContaingTextArrayFilterArrayAdapter(getActivity(),
                                                                                               android.R.layout.simple_list_item_1,
                                                                                               items);
-        //attach the adapter to the list
+        // Attach the adapter to the list
         _listView.setAdapter(withContaingTextArrayFilterArrayAdapter);
 
         _listView.setTextFilterEnabled(true);
@@ -229,12 +292,16 @@ public class SearchableListDialog
     @Override
     public boolean onQueryTextSubmit(String s) {
 
-        _searchView.clearFocus();
+        _searchTextEditView.clearFocus();
         return true;
     }
 
     @Override
     public boolean onQueryTextChange(String s) {
+
+        //
+        // Filter item list
+        //
 
         if (TextUtils.isEmpty(s)) {
 
@@ -247,6 +314,10 @@ public class SearchableListDialog
                                                                               .filter(s);
         }
 
+        //
+        // Call Search Text Change Listener
+        //
+
         if (null != _onSearchTextChangedListener) {
 
             // Call Listener
@@ -254,17 +325,6 @@ public class SearchableListDialog
         }
 
         return true;
-    }
-
-    public interface OnSearchableItemClickedListener<T>
-            extends Serializable {
-
-        void onSearchableItemClicked(T item,
-                                     int position);
-    }
-
-    public interface OnSearchTextChangedListener {
-        void onSearchTextChanged(String strText);
     }
 
     private void hideKeyboard(final View ettext) {

@@ -89,8 +89,9 @@ public class SearchableSpinner
     private void init() {
 
         _allItems=new ArrayList();
-
         _items = new ArrayList();
+
+        // Create Dialog instance
         _searchableListDialog = SearchableListDialog.newInstance(_items);
 
         // S'abonner aux clicks sur un item
@@ -116,41 +117,49 @@ public class SearchableSpinner
                            MotionEvent event) {
 
         if (_searchableListDialog.isAdded()) {
-            return true;
-        }
-        if (event.getAction() == MotionEvent.ACTION_UP) {
 
-            if (null != _cursorAdapter) {
+            // NTD
 
-                // Refresh content #6
-                // Change Start
-                // Description: The items were only set initially, not reloading the data in the
-                // spinner every time it is loaded with items in the adapter.
-                _items.clear();
-                _allItems.clear();
+        } else {
+            // dialog is not visible
 
-                //
-                // Add items from DB Cursor
-                //
+            if (event.getAction() == MotionEvent.ACTION_UP) {
 
-                for (int i = 0; i < _cursorAdapter.getCount(); i++) {
+                if (null != _cursorAdapter) {
 
-                    Cursor cursorOnRow = (Cursor) _cursorAdapter.getItem(i);
+                    // Refresh content #6
+                    // Change Start
+                    // Description: The items were only set initially, not reloading the data in the
+                    // spinner every time it is loaded with items in the adapter.
+                    _items.clear();
+                    _allItems.clear();
 
-                    final String accountFullName = cursorOnRow.getString(cursorOnRow.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
+                    //
+                    // Add items from DB Cursor
+                    //
 
-                    // TODO TW C 2020-01-17 : Ajouter l'étoile pour les Favoris
+                    for (int i = 0; i < _cursorAdapter.getCount(); i++) {
 
-                    _items.add(accountFullName);
+                        Cursor cursorOnRow = (Cursor) _cursorAdapter.getItem(i);
 
-                } // for
+                        final String accountFullName = cursorOnRow.getString(cursorOnRow.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
 
-                _allItems.addAll(_items);
+                        // TODO TW C 2020-01-17 : Ajouter l'étoile pour les Favoris
 
-                _searchableListDialog.show(scanForActivity(_context).getFragmentManager(),
-                                           "TAG");
+                        _items.add(accountFullName);
+
+                    } // for
+
+                    // Create a copy of the items
+                    _allItems.addAll(_items);
+
+                    // Display SearchableListDialog
+                    _searchableListDialog.show(scanForActivity(_context).getFragmentManager(),
+                                               "TAG");
+                }
             }
         }
+
         return true;
     }
 

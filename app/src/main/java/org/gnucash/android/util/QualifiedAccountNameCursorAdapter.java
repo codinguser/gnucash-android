@@ -95,7 +95,7 @@ public class QualifiedAccountNameCursorAdapter
         // item text
         TextView text1 = (TextView) view.findViewById(android.R.id.text1);
 
-        // TODO TW C 2020-01-19 : A mettre ?
+        // TODO TW C 2020-01-19 : A mettre ici ou dans xml avec android:ellipsize="marquee" ?
 //        // item on single line
 //        text1.setSingleLine();
 
