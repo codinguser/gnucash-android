@@ -2,8 +2,12 @@ package org.gnucash.android.ui.util.widget.searchablespinner;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,15 +127,15 @@ public class WithContaingTextArrayFilterArrayAdapter<T>
      * Constructor
      *
      * @param context
-     * @param items_view
+     * @param itemView
      * @param items
      */
     public WithContaingTextArrayFilterArrayAdapter(Activity context,
-                                                   int items_view,
+                                                   int itemView,
                                                    List<T> items) {
 
         super(context,
-              items_view,
+              itemView,
               items);
 
         // save all the items (before filtering)
@@ -146,4 +150,42 @@ public class WithContaingTextArrayFilterArrayAdapter<T>
         return _itemContaingTextArrayFilter;
     }
 
+    @NonNull
+    @Override
+    public View getView(int position,
+                        View convertView,
+                        ViewGroup parent) {
+
+        View itemView = super.getView(position,
+                                      convertView,
+                                      parent);
+
+        // item text
+        TextView text1 = (TextView) itemView.findViewById(android.R.id.text1);
+
+        // item on single line
+        text1.setSingleLine();
+
+        // Add "..." in the middle of the item if too long for one line
+        text1.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+
+//        text1.setTextColor(getContext().getResources().getColor(R.color.account_red));
+
+        // TODO TW C 2020-01-19 : Handle favorite star
+//        Integer isFavorite = cursor.getInt(cursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_FAVORITE));
+//
+//        if (isFavorite == 0) {
+//            text1.setCompoundDrawablesWithIntrinsicBounds(0,
+//                                                          0,
+//                                                          0,
+//                                                          0);
+//        } else {
+//            text1.setCompoundDrawablesWithIntrinsicBounds(0,
+//                                                          0,
+//                                                          R.drawable.ic_star_black_18dp,
+//                                                          0);
+//        }
+
+        return itemView;
+    }
 }
