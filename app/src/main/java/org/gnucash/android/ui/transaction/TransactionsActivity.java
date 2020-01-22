@@ -380,10 +380,11 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         }
 		mAccountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
 
-        SpinnerAdapter mSpinnerAdapter = new QualifiedAccountNameCursorAdapter(
-                getSupportActionBar().getThemedContext(), mAccountsCursor, R.layout.account_spinner_item);
+        SpinnerAdapter qualifiedAccountNameCursorAdapter = new QualifiedAccountNameCursorAdapter(getSupportActionBar().getThemedContext(),
+                                                                                                 mAccountsCursor,
+                                                                                                 R.layout.transaction_account_spinner_item);
 
-        mToolbarSpinner.setAdapter(mSpinnerAdapter);
+        mToolbarSpinner.setAdapter(qualifiedAccountNameCursorAdapter);
         mToolbarSpinner.setOnItemSelectedListener(mTransactionListNavigationListener);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
