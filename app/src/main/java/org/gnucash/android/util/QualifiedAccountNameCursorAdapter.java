@@ -21,7 +21,6 @@ import android.database.Cursor;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -49,14 +48,20 @@ public class QualifiedAccountNameCursorAdapter
     public QualifiedAccountNameCursorAdapter(Context context,
                                              Cursor cursor) {
 
-        super(context,
-              android.R.layout.simple_spinner_item,
-              cursor,
-              new String[]{DatabaseSchema.AccountEntry.COLUMN_FULL_NAME},
-              new int[]{android.R.id.text1},
-              0);
+        this(context,
+             cursor,
+             android.R.layout.simple_spinner_item  // Layout of the closed spinner item
+            );
 
-        setDropDownViewResource(R.layout.account_spinner_dropdown_item);
+//        super(context,
+//              android.R.layout.simple_spinner_item, // Layout of the closed spinner item
+//              cursor,
+//              new String[]{DatabaseSchema.AccountEntry.COLUMN_FULL_NAME},
+//              new int[]{android.R.id.text1},
+//              0);
+//
+//        // Define layout of each item in the open drop down of the spinner
+//        setDropDownViewResource(R.layout.account_spinner_dropdown_item);
     }
 
     /**
@@ -74,12 +79,13 @@ public class QualifiedAccountNameCursorAdapter
                                              @LayoutRes int selectedSpinnerItem) {
 
         super(context,
-              selectedSpinnerItem,
+              selectedSpinnerItem,  // Layout of the closed spinner item
               cursor,
               new String[]{DatabaseSchema.AccountEntry.COLUMN_FULL_NAME},
               new int[]{android.R.id.text1},
               0);
 
+        // Define layout of each item in the open drop down of the spinner
         setDropDownViewResource(R.layout.account_spinner_dropdown_item);
     }
 
@@ -94,14 +100,6 @@ public class QualifiedAccountNameCursorAdapter
 
         // item text
         TextView text1 = (TextView) view.findViewById(android.R.id.text1);
-
-        // TODO TW C 2020-01-19 : A mettre ici ou dans xml avec android:ellipsize="marquee" ?
-//        // item on single line
-//        text1.setSingleLine();
-
-        // Add "..." in the middle of the item if too long for one line
-        text1.setEllipsize(TextUtils.TruncateAt.MIDDLE);
-
 
         Integer isFavorite = cursor.getInt(cursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_FAVORITE));
 
@@ -130,11 +128,14 @@ public class QualifiedAccountNameCursorAdapter
 
         long accountId = AccountsDbAdapter.getInstance()
                                           .getID(accountUID);
+
         for (int pos = 0; pos < getCount(); pos++) {
+
             if (getItemId(pos) == accountId) {
                 return pos;
             }
         }
+        
         return -1;
     }
 }

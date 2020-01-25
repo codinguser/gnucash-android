@@ -35,11 +35,16 @@ import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
  */
 public class CommoditiesCursorAdapter extends SimpleCursorAdapter {
 
-    public CommoditiesCursorAdapter(Context context, @LayoutRes int itemLayoutResource) {
-        super(context, itemLayoutResource,
-                CommoditiesDbAdapter.getInstance().fetchAllRecords(DatabaseSchema.CommodityEntry.COLUMN_MNEMONIC + " ASC"),
-                new String[]{DatabaseSchema.CommodityEntry.COLUMN_FULLNAME},
-                new int[] {android.R.id.text1}, 0);
+    public CommoditiesCursorAdapter(Context context,
+                                    @LayoutRes int itemLayoutResource) {
+
+        super(context,
+              itemLayoutResource,
+              CommoditiesDbAdapter.getInstance()
+                                  .fetchAllRecords(DatabaseSchema.CommodityEntry.COLUMN_MNEMONIC + " ASC"),
+              new String[]{DatabaseSchema.CommodityEntry.COLUMN_FULLNAME},
+              new int[]{android.R.id.text1},
+              0);
     }
 
     @Override

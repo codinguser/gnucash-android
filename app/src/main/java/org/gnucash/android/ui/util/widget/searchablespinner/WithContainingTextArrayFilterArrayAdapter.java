@@ -2,7 +2,6 @@ package org.gnucash.android.ui.util.widget.searchablespinner;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -12,7 +11,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WithContaingTextArrayFilterArrayAdapter<T>
+public class WithContainingTextArrayFilterArrayAdapter<T>
         extends ArrayAdapter {
 
     /**
@@ -24,16 +23,16 @@ public class WithContaingTextArrayFilterArrayAdapter<T>
         @Override
         protected FilterResults performFiltering(CharSequence textToSearch) {
 
-            final FilterResults results = new FilterResults();
+            final FilterResults filteredItems = new FilterResults();
+
+            // Get copy of all items
+            final ArrayList<T> allItems = getCopyOfAllItems();
 
             if (textToSearch == null || textToSearch.length() == 0) {
                 // Nothing to search
 
-                // Get copy of all items
-                final ArrayList<T> allItems = getCopyOfAllItems();
-
-                results.values = allItems;
-                results.count = allItems.size();
+                filteredItems.values = allItems;
+                filteredItems.count = allItems.size();
 
             } else {
                 // There is something to search
@@ -41,14 +40,11 @@ public class WithContaingTextArrayFilterArrayAdapter<T>
                 final String textToSearchLowerCase = textToSearch.toString()
                                                                  .toLowerCase();
 
-                // Get copy of all items
-                final ArrayList<T> allItems = getCopyOfAllItems();
-
                 //
                 // Filter items
                 //
 
-                final ArrayList<T> filteredItems = new ArrayList<>();
+                final ArrayList<T> tmpFilteredItems = new ArrayList<>();
 
                 final int count = allItems.size();
 
@@ -57,13 +53,13 @@ public class WithContaingTextArrayFilterArrayAdapter<T>
                     final T item = allItems.get(i);
 
                     final String itemTextLowerCase = item.toString()
-                                                           .toLowerCase();
+                                                         .toLowerCase();
 
                     // First match against the whole, non-splitted value
                     if (itemTextLowerCase.contains(textToSearchLowerCase)) {
                         // It matches
 
-                        filteredItems.add(item);
+                        tmpFilteredItems.add(item);
 
                     } else {
                         // It doesen't match
@@ -72,22 +68,22 @@ public class WithContaingTextArrayFilterArrayAdapter<T>
                     }
                 }
 
-                results.values = filteredItems;
-                results.count = filteredItems.size();
+                filteredItems.values = tmpFilteredItems;
+                filteredItems.count = tmpFilteredItems.size();
             }
 
-            return results;
+            return filteredItems;
         }
 
         @Override
         protected void publishResults(CharSequence constraint,
-                                      FilterResults results) {
+                                      FilterResults filteredItems) {
 
             // Replace items in ArrayAdapter with filtered ones
             clear();
-            addAll((List<T>) results.values);
+            addAll((List<T>) filteredItems.values);
 
-            if (results.count > 0) {
+            if (filteredItems.count > 0) {
                 notifyDataSetChanged();
             } else {
                 notifyDataSetInvalidated();
@@ -96,11 +92,12 @@ public class WithContaingTextArrayFilterArrayAdapter<T>
 
         private ArrayList<T> getCopyOfAllItems() {
 
-            final ArrayList<T> values;
+            final ArrayList<T> allItemsCopy;
+
             synchronized (_lock) {
-                values = new ArrayList<>(_allItems);
+                allItemsCopy = new ArrayList<>(_allItems);
             }
-            return values;
+            return allItemsCopy;
         }
 
     }
@@ -130,9 +127,9 @@ public class WithContaingTextArrayFilterArrayAdapter<T>
      * @param itemView
      * @param items
      */
-    public WithContaingTextArrayFilterArrayAdapter(Activity context,
-                                                   int itemView,
-                                                   List<T> items) {
+    public WithContainingTextArrayFilterArrayAdapter(Activity context,
+                                                     int itemView,
+                                                     List<T> items) {
 
         super(context,
               itemView,
@@ -156,20 +153,14 @@ public class WithContaingTextArrayFilterArrayAdapter<T>
                         View convertView,
                         ViewGroup parent) {
 
+        // TODO TW C 2020-01-25 : Optimiser en utilisant un ViewHolder
+
         View itemView = super.getView(position,
                                       convertView,
                                       parent);
 
         // item text
         TextView text1 = (TextView) itemView.findViewById(android.R.id.text1);
-
-//        // item on single line
-//        text1.setSingleLine();
-//
-//        // Add "..." in the middle of the item if too long for one line
-//        text1.setEllipsize(TextUtils.TruncateAt.MIDDLE);
-
-//        text1.setTextColor(getContext().getResources().getColor(R.color.account_red));
 
         // TODO TW C 2020-01-19 : Handle favorite star
 //        Integer isFavorite = cursor.getInt(cursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_FAVORITE));

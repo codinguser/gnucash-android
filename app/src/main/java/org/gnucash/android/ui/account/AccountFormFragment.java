@@ -325,8 +325,8 @@ public class AccountFormFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-        CommoditiesCursorAdapter commoditiesAdapter = new CommoditiesCursorAdapter(
-                getActivity(), android.R.layout.simple_spinner_item);
+        CommoditiesCursorAdapter commoditiesAdapter = new CommoditiesCursorAdapter(getActivity(),
+                                                                                   android.R.layout.simple_spinner_item);
         commoditiesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         mCurrencySpinner.setAdapter(commoditiesAdapter);
@@ -586,7 +586,7 @@ public class AccountFormFragment extends Fragment {
         }
 
         mDefaultTransferAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
-                defaultTransferAccountCursor);
+                                                                                     defaultTransferAccountCursor);
         mDefaultTransferAccountSpinner.setAdapter(mDefaultTransferAccountCursorAdapter);
     }
 
@@ -626,10 +626,10 @@ public class AccountFormFragment extends Fragment {
             view.findViewById(R.id.label_parent_account).setVisibility(View.VISIBLE);
         }
 
-		mParentAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(
-				getActivity(), mParentAccountCursor);
+        mParentAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
+                                                                            mParentAccountCursor);
 		mParentAccountSpinner.setAdapter(mParentAccountCursorAdapter);
-	}
+    }
 
     /**
      * Returns a comma separated list of account types which can be parent accounts for the specified <code>type</code>.
