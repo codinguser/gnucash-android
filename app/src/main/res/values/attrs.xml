@@ -19,7 +19,7 @@
         <attr name="keyboardKeysLayout" format="reference" />
     </declare-styleable>
 
-    <declare-styleable name="SearchableSpinner">
+    <declare-styleable name="SearchableSpinnerView">
         <attr name="hintText" format="string"/>
     </declare-styleable>
 

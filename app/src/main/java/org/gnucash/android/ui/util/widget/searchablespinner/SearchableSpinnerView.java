@@ -5,27 +5,24 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
-import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.SpinnerAdapter;
 
 import org.gnucash.android.R;
-import org.gnucash.android.db.DatabaseSchema;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchableSpinner
+public class SearchableSpinnerView
         extends android.support.v7.widget.AppCompatSpinner
         implements View.OnTouchListener,
-                   SearchableListDialog.OnSearchableItemClickedListener {
+                   SearchableListDialogFragment.OnSearchableItemClickedListener {
 
     public static final int                  NO_ITEM_SELECTED = -1;
 
@@ -35,25 +32,25 @@ public class SearchableSpinner
     private             List                 _items;
     private             List                 _allItems;
 
-    private             SearchableListDialog _searchableListDialog;
+    private SearchableListDialogFragment _searchableListDialogFragment;
 
     private boolean       _isDirty;
 
-    // Adpater for Spinner based on data in a DB Cursor
-    private CursorAdapter _cursorAdapter;
+//    // Adpater for Spinner based on data in a DB Cursor
+//    private CursorAdapter _cursorAdapter;
 
     private String        _strHintText;
     private boolean       _isFromInit;
 
-    public SearchableSpinner(Context context) {
+    public SearchableSpinnerView(Context context) {
 
         super(context);
         this._context = context;
         init();
     }
 
-    public SearchableSpinner(Context context,
-                             AttributeSet attrs) {
+    public SearchableSpinnerView(Context context,
+                                 AttributeSet attrs) {
 
         super(context,
               attrs);
@@ -61,11 +58,11 @@ public class SearchableSpinner
         this._context = context;
 
         TypedArray a = context.obtainStyledAttributes(attrs,
-                                                      R.styleable.SearchableSpinner);
+                                                      R.styleable.SearchableSpinnerView);
         final int N = a.getIndexCount();
         for (int i = 0; i < N; ++i) {
             int attr = a.getIndex(i);
-            if (attr == R.styleable.SearchableSpinner_hintText) {
+            if (attr == R.styleable.SearchableSpinnerView_hintText) {
                 _strHintText = a.getString(attr);
             }
         }
@@ -73,9 +70,9 @@ public class SearchableSpinner
         init();
     }
 
-    public SearchableSpinner(Context context,
-                             AttributeSet attrs,
-                             int defStyleAttr) {
+    public SearchableSpinnerView(Context context,
+                                 AttributeSet attrs,
+                                 int defStyleAttr) {
 
         super(context,
               attrs,
@@ -92,10 +89,11 @@ public class SearchableSpinner
         _items = new ArrayList();
 
         // Create Dialog instance
-        _searchableListDialog = SearchableListDialog.newInstance(_items);
+        // TODO TW C 2020-01-25 : Supprimer _items
+        _searchableListDialogFragment = SearchableListDialogFragment.makeInstance(this, _items);
 
         // S'abonner aux clicks sur un item
-        _searchableListDialog.setOnSearchableItemClickListener(this);
+        _searchableListDialogFragment.setOnSearchableItemClickListener(this);
 
         // S'abonner aux évènements onTouch
         setOnTouchListener(this);
@@ -116,7 +114,8 @@ public class SearchableSpinner
     public boolean onTouch(View v,
                            MotionEvent event) {
 
-        if (_searchableListDialog.isAdded()) {
+        if (_searchableListDialogFragment.isAdded()) {
+            // dialog is already visible
 
             // NTD
 
@@ -124,39 +123,41 @@ public class SearchableSpinner
             // dialog is not visible
 
             if (event.getAction() == MotionEvent.ACTION_UP) {
+                // User has just clicked on the spinner
 
-                if (null != _cursorAdapter) {
+//                if (null != _cursorAdapter) {
+//
+//                    //
+//                    // Open Search & List Dialog
+//                    //
+//
+//                    // Refresh content #6
+//                    // Change Start
+//                    // Description: The items were only set initially, not reloading the data in the
+//                    // spinner every time it is loaded with items in the adapter.
+//                    _items.clear();
+//                    _allItems.clear();
+//
+//                    // Create items from DB Cursor
+//                    for (int i = 0; i < _cursorAdapter.getCount(); i++) {
+//
+//                        Cursor cursorOnRow = (Cursor) _cursorAdapter.getItem(i);
+//
+//                        final String accountFullName = cursorOnRow.getString(cursorOnRow.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
+//
+//                        // TODO TW C 2020-01-17 : Ajouter l'étoile pour les Favoris
+//
+//                        _items.add(accountFullName);
+//
+//                    } // for
+//
+//                    // Create a copy of the items
+//                    _allItems.addAll(_items);
 
-                    // Refresh content #6
-                    // Change Start
-                    // Description: The items were only set initially, not reloading the data in the
-                    // spinner every time it is loaded with items in the adapter.
-                    _items.clear();
-                    _allItems.clear();
-
-                    //
-                    // Add items from DB Cursor
-                    //
-
-                    for (int i = 0; i < _cursorAdapter.getCount(); i++) {
-
-                        Cursor cursorOnRow = (Cursor) _cursorAdapter.getItem(i);
-
-                        final String accountFullName = cursorOnRow.getString(cursorOnRow.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
-
-                        // TODO TW C 2020-01-17 : Ajouter l'étoile pour les Favoris
-
-                        _items.add(accountFullName);
-
-                    } // for
-
-                    // Create a copy of the items
-                    _allItems.addAll(_items);
-
-                    // Display SearchableListDialog
-                    _searchableListDialog.show(scanForActivity(_context).getFragmentManager(),
-                                               "TAG");
-                }
+                    // Display SearchableListDialogFragment
+                    _searchableListDialogFragment.show(scanForActivity(_context).getFragmentManager(),
+                                                       "TAG");
+//                }
             }
         }
 
@@ -170,64 +171,68 @@ public class SearchableSpinner
 //        String accountFullName = (String) item;
 
 //        setSelection(_items.indexOf(item));
-        setSelection(_allItems.indexOf(item));
+//        setSelection(_allItems.indexOf(item));
+        setSelection(position);
 
-        if (!_isDirty) {
-            _isDirty = true;
-            setAdapter(_cursorAdapter);
-//            setSelection(_items.indexOf(item));
-            setSelection(_allItems.indexOf(item));
-        }
+//        if (!_isDirty) {
+//            _isDirty = true;
+//            setAdapter(_cursorAdapter);
+////            setSelection(_items.indexOf(item));
+//            setSelection(_allItems.indexOf(item));
+//        }
     }
 
 
     @Override
     public void setAdapter(SpinnerAdapter adapter) {
 
-        _cursorAdapter = (CursorAdapter) adapter;
+        super.setAdapter(adapter);
 
-        if (!_isFromInit) {
+//        _cursorAdapter = (CursorAdapter) adapter;
+//        _searchableListDialogFragment.setCursorAdapter((CursorAdapter) adapter);
 
-            // TODO TW C 2020-01-17 : Supprimer la partie ArrayAdapter
-            if (!TextUtils.isEmpty(_strHintText) && !_isDirty) {
-                //
-
-                //
-                ArrayAdapter arrayAdapter = new ArrayAdapter(_context,
-                                                             android.R.layout.simple_list_item_1,
-                                                             new String[]{_strHintText});
-                super.setAdapter(arrayAdapter);
-
-            } else {
-                super.setAdapter(adapter);
-            }
-
-        } else {
-            _isFromInit = false;
-            super.setAdapter(adapter);
-        }
+//        if (!_isFromInit) {
+//
+//            // TODO TW C 2020-01-17 : Supprimer la partie ArrayAdapter
+//            if (!TextUtils.isEmpty(_strHintText) && !_isDirty) {
+//                //
+//
+//                //
+//                ArrayAdapter arrayAdapter = new ArrayAdapter(_context,
+//                                                             android.R.layout.simple_list_item_1,
+//                                                             new String[]{_strHintText});
+//                super.setAdapter(arrayAdapter);
+//
+//            } else {
+//                super.setAdapter(adapter);
+//            }
+//
+//        } else {
+//            _isFromInit = false;
+//            super.setAdapter(adapter);
+//        }
     }
 
     public void setTitle(String strTitle) {
 
-        _searchableListDialog.setTitle(strTitle);
+        _searchableListDialogFragment.setTitle(strTitle);
     }
 
     public void setPositiveButton(String strPositiveButtonText) {
 
-        _searchableListDialog.setPositiveButton(strPositiveButtonText);
+        _searchableListDialogFragment.setPositiveButton(strPositiveButtonText);
     }
 
     public void setPositiveButton(String strPositiveButtonText,
                                   DialogInterface.OnClickListener onPositiveBtnClickListener) {
 
-        _searchableListDialog.setPositiveButton(strPositiveButtonText,
-                                                onPositiveBtnClickListener);
+        _searchableListDialogFragment.setPositiveButton(strPositiveButtonText,
+                                                        onPositiveBtnClickListener);
     }
 
-    public void setOnSearchTextChangedListener(SearchableListDialog.OnSearchTextChangedListener onSearchTextChangedListener) {
+    public void setOnSearchTextChangedListener(SearchableListDialogFragment.OnSearchTextChangedListener onSearchTextChangedListener) {
 
-        _searchableListDialog.setOnSearchTextChangedListener(onSearchTextChangedListener);
+        _searchableListDialogFragment.setOnSearchTextChangedListener(onSearchTextChangedListener);
     }
 
     private Activity scanForActivity(Context cont) {
