@@ -6,7 +6,9 @@ import android.app.DialogFragment;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.widget.CursorAdapter;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,16 +16,17 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 
 import org.gnucash.android.R;
+import org.gnucash.android.db.DatabaseSchema;
 
 import java.io.Serializable;
 import java.util.List;
 
-public class SearchableListDialog
+public class SearchableListDialogFragment
         extends DialogFragment
         implements SearchView.OnQueryTextListener,
                    SearchView.OnCloseListener {
@@ -53,6 +56,9 @@ public class SearchableListDialog
     // Dialog Title
     private String _strTitle;
 
+    // Parent View
+    private AdapterView _parentAdapterView;
+
     // Search Edit text zone
     private SearchView _searchTextEditView;
 
@@ -62,8 +68,9 @@ public class SearchableListDialog
     // Bottom right button to close the pop-up
     private String _strPositiveButtonText;
 
-
-    private ArrayAdapter withContaingTextArrayFilterArrayAdapter;
+    // Adpater for Spinner based on data in a DB Cursor
+//    private CursorAdapter _cursorAdapter;
+//    private ArrayAdapter _withContainingTextArrayFilterArrayAdapter;
 
     private OnSearchTextChangedListener _onSearchTextChangedListener;
 
@@ -75,7 +82,7 @@ public class SearchableListDialog
     /**
      * Constructor
      */
-    public SearchableListDialog() {
+    public SearchableListDialogFragment() {
 
     }
 
@@ -86,18 +93,20 @@ public class SearchableListDialog
      *
      * @return
      */
-    public static SearchableListDialog newInstance(List items) {
+    public static SearchableListDialogFragment makeInstance(AdapterView parentAdapterView, List items) {
 
-        SearchableListDialog searchableListDialog = new SearchableListDialog();
+        SearchableListDialogFragment searchableListDialogFragment = new SearchableListDialogFragment();
+
+        searchableListDialogFragment.setParentAdapterView(parentAdapterView);
 
         Bundle args = new Bundle();
 
         args.putSerializable(ITEMS,
                              (Serializable) items);
 
-        searchableListDialog.setArguments(args);
+        searchableListDialogFragment.setArguments(args);
 
-        return searchableListDialog;
+        return searchableListDialogFragment;
     }
 
     @Override
@@ -209,12 +218,12 @@ public class SearchableListDialog
 
         List items = (List) getArguments().getSerializable(ITEMS);
 
-        // Create an ArrayAdapter for items, with filtering capablity based on item containing a text
-        withContaingTextArrayFilterArrayAdapter = new WithContaingTextArrayFilterArrayAdapter(getActivity(),
-                                                                                              android.R.layout.simple_list_item_1,
-                                                                                              items);
+//        // Create an ArrayAdapter for items, with filtering capablity based on item containing a text
+//        _withContainingTextArrayFilterArrayAdapter = new WithContainingTextArrayFilterArrayAdapter(getActivity(),
+//                                                                                                   android.R.layout.simple_list_item_1,
+//                                                                                                   items);
         // Attach the adapter to the list
-        _listView.setAdapter(withContaingTextArrayFilterArrayAdapter);
+        _listView.setAdapter((ListAdapter) getParentAdapterView().getAdapter());
 
         _listView.setTextFilterEnabled(true);
 
@@ -226,7 +235,10 @@ public class SearchableListDialog
                                     int position,
                                     long id) {
 
-                final Object accountFullName = withContaingTextArrayFilterArrayAdapter.getItem(position);
+//                final Object accountFullName = _withContainingTextArrayFilterArrayAdapter.getItem(position);
+                final CursorAdapter cursorAdapter   = (CursorAdapter) getParentAdapterView().getAdapter();
+                final Cursor        cursor          = (Cursor) cursorAdapter.getItem(position);
+                final String        accountFullName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
 
                 // Call Listener
                 _onSearchableItemClickedListener.onSearchableItemClicked(accountFullName,
@@ -303,15 +315,17 @@ public class SearchableListDialog
         // Filter item list
         //
 
+        final WithContainingTextArrayFilterArrayAdapter listViewAdapter = (WithContainingTextArrayFilterArrayAdapter) _listView.getAdapter();
+
         if (TextUtils.isEmpty(s)) {
 
-            ((WithContaingTextArrayFilterArrayAdapter) _listView.getAdapter()).getFilter()
-                                                                              .filter(null);
+            listViewAdapter.getFilter()
+                           .filter(null);
 
         } else {
 
-            ((WithContaingTextArrayFilterArrayAdapter) _listView.getAdapter()).getFilter()
-                                                                              .filter(s);
+            listViewAdapter.getFilter()
+                           .filter(s);
         }
 
         //
@@ -350,4 +364,13 @@ public class SearchableListDialog
                            200);
     }
 
+    public AdapterView getParentAdapterView() {
+
+        return _parentAdapterView;
+    }
+
+    public void setParentAdapterView(AdapterView parentAdapterView) {
+
+        _parentAdapterView = parentAdapterView;
+    }
 }
