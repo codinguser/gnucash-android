@@ -14,7 +14,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.FilterQueryProvider;
@@ -124,8 +123,9 @@ public class SearchableListDialogFragment
                              ViewGroup container,
                              Bundle savedInstanceState) {
 
-        getDialog().getWindow()
-                   .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        // Hide Keyboard
+//        getDialog().getWindow()
+//                   .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         return super.onCreateView(inflater,
                                   container,
@@ -191,8 +191,7 @@ public class SearchableListDialogFragment
         final AlertDialog searchableListDialog = alertDialogBuilder.create();
 
         // Hide Soft Keybord
-//        hideKeyboard(_searchTextEditView);
-        hideKeyboard(searchableListRootView);
+//        hideKeyboard(searchableListRootView);
 
         return searchableListDialog;
     }
@@ -211,7 +210,21 @@ public class SearchableListDialogFragment
         _searchTextEditView.setIconifiedByDefault(false);
         _searchTextEditView.setOnQueryTextListener(this);
         _searchTextEditView.setOnCloseListener(this);
-        _searchTextEditView.clearFocus();
+
+        // TODO TW C 2020-01-30 : Add a Preference to choose
+        if (true) {
+            // Want to open keyboard
+
+            // Set Focus on searchTextEditView to open cursor
+            _searchTextEditView.setFocusable(true);
+            _searchTextEditView.requestFocus();
+
+        } else {
+            // Do not want to open keyboard
+
+            // Clear Focus
+            _searchTextEditView.clearFocus();
+        }
 
         //
         // Items list
@@ -250,6 +263,7 @@ public class SearchableListDialogFragment
                 getDialog().dismiss();
             }
         });
+
     }
 
     // Crash on orientation change #7
@@ -431,6 +445,7 @@ public class SearchableListDialogFragment
                            },
                            200);
     }
+
 
     public AdapterView getParentAdapterView() {
 

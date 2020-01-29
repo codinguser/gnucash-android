@@ -285,21 +285,4 @@ public class SearchableSpinnerView
                            200);
     }
 
-    private void hideKeyboard(final EditText ettext) {
-
-        ettext.requestFocus();
-        ettext.postDelayed(new Runnable() {
-                               @Override
-                               public void run() {
-
-                                   InputMethodManager keyboard =
-                                           (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-
-                                   keyboard.hideSoftInputFromWindow(ettext.getWindowToken(),
-                                                          0);
-                               }
-                           },
-                           200);
-    }
-
 }
