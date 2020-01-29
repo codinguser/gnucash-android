@@ -181,7 +181,7 @@ public class TransactionFormFragment extends Fragment implements
 	 * Spinner for selecting the transfer account
 	 */
     @BindView(R.id.input_transfer_account_spinner)
-    SearchableSpinnerView mTransferAccountSpinnerView;
+    SearchableSpinnerView mTransferAccountSearchableSpinnerView;
 
     /**
      * Checkbox indicating if this transaction should be saved as a template or not
@@ -271,7 +271,7 @@ public class TransactionFormFragment extends Fragment implements
      */
     private void startTransferFunds() {
         Commodity fromCommodity = Commodity.getInstance((mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID)));
-        long id = mTransferAccountSpinnerView.getSelectedItemId();
+        long id = mTransferAccountSearchableSpinnerView.getSelectedItemId();
         String targetCurrencyCode = mAccountsDbAdapter.getCurrencyCode(mAccountsDbAdapter.getUID(id));
 
         if (fromCommodity.equals(Commodity.getInstance(targetCurrencyCode))
@@ -323,7 +323,7 @@ public class TransactionFormFragment extends Fragment implements
         //updateTransferAccountsList must only be called after initializing mAccountsDbAdapter
         updateTransferAccountsList();
 
-        mTransferAccountSpinnerView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        mTransferAccountSearchableSpinnerView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             /**
              * Flag for ignoring first call to this listener.
              * The first call is during layout, but we want it called only in response to user interaction
@@ -367,8 +367,8 @@ public class TransactionFormFragment extends Fragment implements
             }
         });
 
-        mTransferAccountSpinnerView.setTitle(getString(R.string.select_transfer_account));
-        mTransferAccountSpinnerView.setPositiveButton(getString(R.string.alert_dialog_cancel));
+        mTransferAccountSearchableSpinnerView.setTitle(getString(R.string.select_transfer_account));
+        mTransferAccountSearchableSpinnerView.setPositiveButton(getString(R.string.alert_dialog_cancel));
 
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         assert actionBar != null;
@@ -611,7 +611,7 @@ public class TransactionFormFragment extends Fragment implements
         mAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
                                                                       mCursor);
 
-        mTransferAccountSpinnerView.setAdapter(mAccountCursorAdapter);
+        mTransferAccountSearchableSpinnerView.setAdapter(mAccountCursorAdapter);
 	}
 
     /**
@@ -709,7 +709,7 @@ public class TransactionFormFragment extends Fragment implements
 	private void setSelectedTransferAccount(long accountId){
         int position = mAccountCursorAdapter.getPosition(mAccountsDbAdapter.getUID(accountId));
         if (position >= 0)
-            mTransferAccountSpinnerView.setSelection(position);
+            mTransferAccountSearchableSpinnerView.setSelection(position);
 	}
 
     /**
@@ -781,7 +781,7 @@ public class TransactionFormFragment extends Fragment implements
     private @NonNull String getTransferAccountUID() {
         String transferAcctUID;
         if (mUseDoubleEntry) {
-            long transferAcctId = mTransferAccountSpinnerView.getSelectedItemId();
+            long transferAcctId = mTransferAccountSearchableSpinnerView.getSelectedItemId();
             transferAcctUID = mAccountsDbAdapter.getUID(transferAcctId);
         } else {
             Commodity baseCommodity = mAccountsDbAdapter.getRecord(mAccountUID).getCommodity();
@@ -838,7 +838,7 @@ public class TransactionFormFragment extends Fragment implements
         if (!mUseDoubleEntry)
             return false;
 
-        String transferAcctUID = mAccountsDbAdapter.getUID(mTransferAccountSpinnerView.getSelectedItemId());
+        String transferAcctUID = mAccountsDbAdapter.getUID(mTransferAccountSearchableSpinnerView.getSelectedItemId());
         String currencyCode = mAccountsDbAdapter.getAccountCurrencyCode(mAccountUID);
         String transferCurrencyCode = mAccountsDbAdapter.getCurrencyCode(transferAcctUID);
 
@@ -964,7 +964,7 @@ public class TransactionFormFragment extends Fragment implements
                 if (mAmountEditText.getValue() == null) {
                     Toast.makeText(getActivity(), R.string.toast_transanction_amount_required, Toast.LENGTH_SHORT).show();
                 }
-                if (mUseDoubleEntry && mTransferAccountSpinnerView.getCount() == 0){
+                if (mUseDoubleEntry && mTransferAccountSearchableSpinnerView.getCount() == 0){
                     Toast.makeText(getActivity(),
                             R.string.toast_disable_double_entry_to_save_transaction,
                             Toast.LENGTH_LONG).show();
@@ -984,7 +984,7 @@ public class TransactionFormFragment extends Fragment implements
      */
     private boolean canSave(){
         return (mUseDoubleEntry && mAmountEditText.isInputValid()
-                && mTransferAccountSpinnerView.getCount() > 0)
+                && mTransferAccountSearchableSpinnerView.getCount() > 0)
                || (!mUseDoubleEntry && mAmountEditText.isInputValid());
     }
 
