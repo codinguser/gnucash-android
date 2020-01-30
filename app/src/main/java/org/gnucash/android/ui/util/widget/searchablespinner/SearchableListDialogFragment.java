@@ -95,6 +95,7 @@ public class SearchableListDialogFragment
      *
      * @return
      */
+    // TODO TW C 2020-01-30 : Supprimer items
     public static SearchableListDialogFragment makeInstance(AdapterView parentAdapterView, List items) {
 
         SearchableListDialogFragment searchableListDialogFragment = new SearchableListDialogFragment();
@@ -232,10 +233,15 @@ public class SearchableListDialogFragment
 
         _listView = (ListView) searchableListRootView.findViewById(R.id.listItems);
 
+        // TODO TW C 2020-01-30 : A supprimer
         List items = (List) getArguments().getSerializable(ITEMS);
 
         // Attach the adapter to the list
-        _listView.setAdapter((ListAdapter) getParentAdapterView().getAdapter());
+        // TODO TW C 2020-01-30 : A nettoyer
+//        _listView.setAdapter((ListAdapter) getParentAdapterView().getAdapter());
+        _listView.setAdapter((ListAdapter) new QualifiedAccountNameCursorAdapter(getActivity(),
+                                                                                 null,
+                                                                                 R.layout.account_spinner_dropdown_item));
 
 //        // Enable filtering based on search text field
 //        _listView.setTextFilterEnabled(false);
@@ -423,12 +429,12 @@ public class SearchableListDialogFragment
         return true;
     }
 
-    private void hideKeyboard(final View ettext) {
+    public static void hideKeyboard(final View editTextView) {
 
-        ettext.requestFocus();
+        editTextView.requestFocus();
 
         // Delay the keyboard hiding
-        ettext.postDelayed(new Runnable() {
+        editTextView.postDelayed(new Runnable() {
                                @Override
                                public void run() {
 
@@ -436,14 +442,14 @@ public class SearchableListDialogFragment
                                    // Hide keyboard
                                    //
 
-                                   InputMethodManager keyboard = (InputMethodManager) ettext.getContext()
-                                                                                            .getSystemService(Context.INPUT_METHOD_SERVICE);
+                                   InputMethodManager keyboard = (InputMethodManager) editTextView.getContext()
+                                                                                                  .getSystemService(Context.INPUT_METHOD_SERVICE);
 
-                                   keyboard.hideSoftInputFromWindow(ettext.getWindowToken(),
+                                   keyboard.hideSoftInputFromWindow(editTextView.getWindowToken(),
                                                                     0);
                                }
                            },
-                           200);
+                                 200);
     }
 
 
