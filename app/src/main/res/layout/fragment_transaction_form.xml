@@ -104,8 +104,9 @@
                 <org.gnucash.android.ui.util.widget.searchablespinner.SearchableSpinnerView
                     android:id="@+id/input_transfer_account_spinner"
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="5"
-                    android:layout_height="wrap_content"  />
+                    />
             </TableRow>
             <View style="@style/Divider" />
             <TableRow style="@style/FormRow" >

@@ -38,23 +38,37 @@ public class QualifiedAccountNameCursorAdapter
         extends SimpleCursorAdapter {
 
     //
-    private int _DropDownItemLayout;
+    private int _spinnerSelectedItemLayout;
+    private int _spinnerDropDownItemLayout;
 
     /**
-     * Initialize the Cursor adapter for account names using default spinner views
+     * Overloaded constructor. Specifies the view to use for displaying selected spinner text
      *
      * @param context
      *         Application context
      * @param cursor
-     *         Cursor to accounts
+     *         Cursor to account data
+     * @param spinnerSelectedItemLayout
+     *         Layout resource for selected item text
      */
     public QualifiedAccountNameCursorAdapter(Context context,
-                                             Cursor cursor) {
+                                             Cursor cursor,
+                                             @LayoutRes int spinnerSelectedItemLayout,
+                                             @LayoutRes int spinnerDropDownItemLayout
+                                            ) {
 
-        this(context,
-             cursor,
-             android.R.layout.simple_spinner_item  // Layout of the closed spinner item
-            );
+        super(context,
+              spinnerSelectedItemLayout,  // Layout of the closed spinner item
+              cursor,
+              new String[]{DatabaseSchema.AccountEntry.COLUMN_FULL_NAME},
+              new int[]{android.R.id.text1},
+              0);
+
+        // Store layout of each item in the open drop down of the spinner
+        setSpinnerSelectedItemLayout(spinnerSelectedItemLayout);
+
+        // Store layout of each item in the open drop down of the spinner
+        setSpinnerDropDownItemLayout(spinnerDropDownItemLayout);
     }
 
     /**
@@ -79,30 +93,20 @@ public class QualifiedAccountNameCursorAdapter
     }
 
     /**
-     * Overloaded constructor. Specifies the view to use for displaying selected spinner text
+     * Initialize the Cursor adapter for account names using default spinner views
      *
      * @param context
      *         Application context
      * @param cursor
-     *         Cursor to account data
-     * @param selectedSpinnerItemLayout
-     *         Layout resource for selected item text
+     *         Cursor to accounts
      */
     public QualifiedAccountNameCursorAdapter(Context context,
-                                             Cursor cursor,
-                                             @LayoutRes int selectedSpinnerItemLayout,
-                                             @LayoutRes int dropdownSpinnerItemLayout
-                                            ) {
+                                             Cursor cursor) {
 
-        super(context,
-              selectedSpinnerItemLayout,  // Layout of the closed spinner item
-              cursor,
-              new String[]{DatabaseSchema.AccountEntry.COLUMN_FULL_NAME},
-              new int[]{android.R.id.text1},
-              0);
-
-        // Define layout of each item in the open drop down of the spinner
-        setDropDownItemLayout(dropdownSpinnerItemLayout);
+        this(context,
+             cursor,
+             android.R.layout.simple_spinner_item  // Layout of the closed spinner item
+            );
     }
 
     @Override
@@ -155,16 +159,26 @@ public class QualifiedAccountNameCursorAdapter
         return -1;
     }
 
-    public int getDropDownItemLayout() {
+    public int getSpinnerSelectedItemLayout() {
 
-        return _DropDownItemLayout;
+        return _spinnerSelectedItemLayout;
     }
 
-    public void setDropDownItemLayout(int dropDownItemLayout) {
+    public void setSpinnerSelectedItemLayout(int spinnerSelectedItemLayout) {
 
-        _DropDownItemLayout = dropDownItemLayout;
+        _spinnerSelectedItemLayout = spinnerSelectedItemLayout;
+    }
 
-        setDropDownViewResource(getDropDownItemLayout());
+    public int getSpinnerDropDownItemLayout() {
+
+        return _spinnerDropDownItemLayout;
+    }
+
+    public void setSpinnerDropDownItemLayout(int spinnerDropDownItemLayout) {
+
+        _spinnerDropDownItemLayout = spinnerDropDownItemLayout;
+
+        setDropDownViewResource(getSpinnerDropDownItemLayout());
     }
 
 }

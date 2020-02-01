@@ -86,7 +86,7 @@
 
             <Spinner android:id="@+id/input_account_type_spinner"
                      android:layout_width="0dp"
-                    android:minHeight="?android:attr/listPreferredItemHeight"
+                     android:minHeight="?android:attr/listPreferredItemHeight"
                      android:layout_height="wrap_content"
                      android:layout_weight="1"
                      android:layout_marginLeft="@dimen/dialog_padding" />
@@ -135,7 +135,10 @@
             <Spinner
                     android:id="@+id/input_parent_account"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:spinnerMode="dropdown"
+                    android:dropDownWidth="match_parent"
+                />
         </LinearLayout>
 
         <TextView android:id="@+id/label_default_transfer_account"
@@ -148,6 +151,7 @@
         <LinearLayout android:id="@+id/layout_default_transfer_account"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
+                      android:layout_marginBottom="@dimen/form_row_bottom_margin"
                       android:orientation="horizontal" >
 
             <CheckBox android:id="@+id/checkbox_default_transfer_account"

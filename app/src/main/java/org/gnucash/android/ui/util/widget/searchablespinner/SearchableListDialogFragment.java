@@ -24,6 +24,7 @@ import android.widget.SearchView;
 import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.util.KeyboardUtils;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.io.Serializable;
@@ -55,14 +56,8 @@ public class SearchableListDialogFragment
         void onSearchTextChanged(String strText);
     }
 
-
-//    private static final String ITEMS = "items";
-
     // Dialog Title
     private String _strTitle;
-
-    // Parent View
-    private AdapterView _parentAdapterView;
 
     // Search Edit text zone
     private SearchView _searchTextEditView;
@@ -79,6 +74,9 @@ public class SearchableListDialogFragment
 
     private DialogInterface.OnClickListener _onPositiveBtnClickListener;
 
+    // Parent View
+    private AdapterView _parentAdapterView;
+
 
     /**
      * Constructor
@@ -90,23 +88,14 @@ public class SearchableListDialogFragment
     /**
      * Factory
      *
-//     * @param items
-     *
      * @return
      */
-    // TODO TW C 2020-01-30 : Supprimer items
     public static SearchableListDialogFragment makeInstance(AdapterView parentAdapterView) {
 
         SearchableListDialogFragment searchableListDialogFragment = new SearchableListDialogFragment();
 
+        // Store a link to the Parent SearchableSpinnerView which holds the CursorAdapter
         searchableListDialogFragment.setParentAdapterView(parentAdapterView);
-
-//        Bundle args = new Bundle();
-//
-//        args.putSerializable(ITEMS,
-//                             (Serializable) items);
-//
-//        searchableListDialogFragment.setArguments(args);
 
         return searchableListDialogFragment;
     }
@@ -192,9 +181,6 @@ public class SearchableListDialogFragment
 
         final AlertDialog searchableListDialog = alertDialogBuilder.create();
 
-        // Hide Soft Keybord
-//        hideKeyboard(searchableListRootView);
-
         return searchableListDialog;
     }
 
@@ -209,7 +195,7 @@ public class SearchableListDialogFragment
         _searchTextEditView = (SearchView) searchableListRootView.findViewById(R.id.search);
 
         _searchTextEditView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
-//        _searchTextEditView.setIconifiedByDefault(false); // Déjà fait dans le xml
+//        _searchTextEditView.setIconifiedByDefault(false); // Already done in xml
         _searchTextEditView.setOnQueryTextListener(this);
         _searchTextEditView.setOnCloseListener(this);
 
@@ -234,23 +220,29 @@ public class SearchableListDialogFragment
 
         _listView = (ListView) searchableListRootView.findViewById(R.id.listItems);
 
-        // TODO TW C 2020-01-30 : A supprimer
-//        List items = (List) getArguments().getSerializable(ITEMS);
+
+        //
+        // Put temporarily DropDownItemLayout in selectedItemView,
+        // because ListView use only selectedItemView for list item
+        // (this is only a workaround because the setAdapter below does not work)
+        //
+
+        QualifiedAccountNameCursorAdapter parentCursorAdapter =
+                (QualifiedAccountNameCursorAdapter) getParentAdapterView().getAdapter();
+
+        parentCursorAdapter.setViewResource(parentCursorAdapter.getSpinnerDropDownItemLayout());
+
 
         // Attach the adapter to the list
-        // TODO TW C 2020-01-30 : A nettoyer
-        _listView.setAdapter((ListAdapter) getParentAdapterView().getAdapter());
-//        QualifiedAccountNameCursorAdapter parentCursorAdapter =
-//                (QualifiedAccountNameCursorAdapter) getParentAdapterView().getAdapter();
-//
-//        parentCursorAdapter.getCursor().moveToFirst();
-//
+        _listView.setAdapter((ListAdapter) parentCursorAdapter);
+
+        // This does not work
 //        _listView.setAdapter((ListAdapter) new QualifiedAccountNameCursorAdapter(getActivity(),
 //                                                                                 parentCursorAdapter.getCursor(),
-//                                                                                 parentCursorAdapter.getDropDownItemLayout(),
+//                                                                                 parentCursorAdapter.getSpinnerDropDownItemLayout(),
 //                                                                                 // ListView utilise uniquement le Layout
 //                                                                                 // ci-dessus pour les items
-//                                                                                 parentCursorAdapter.getDropDownItemLayout() //
+//                                                                                 parentCursorAdapter.getSpinnerDropDownItemLayout() //
 //                                                                                 ));
 
 //        // Enable filtering based on search text field
@@ -268,9 +260,8 @@ public class SearchableListDialogFragment
                                     int position,
                                     long id) {
 
-                // TODO TW C 2020-01-29 : A améliorer pour fonctionner aussi avec un ArrayAdapter
-                final CursorAdapter cursorAdapter   = (CursorAdapter) getParentAdapterView().getAdapter();
-                final Cursor        cursor          = (Cursor) cursorAdapter.getItem(position);
+                final CursorAdapter parentCursorAdapter   = (CursorAdapter) getParentAdapterView().getAdapter();
+                final Cursor        cursor          = (Cursor) parentCursorAdapter.getItem(position);
                 final String        accountFullName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
 
                 // Call Listener
@@ -280,7 +271,6 @@ public class SearchableListDialogFragment
                 dismissDialog();
             }
         });
-
     }
 
     // Crash on orientation change #7
@@ -356,7 +346,6 @@ public class SearchableListDialogFragment
         // Set a filter that rebuild Cursor by running a new query based on a LIKE criteria
         //
 
-        // TODO TW C 2020-01-29 : A améliorer pour fonctionner aussi avec un ArrayAdapter
         listViewCursorAdapter.setFilterQueryProvider(new FilterQueryProvider() {
 
             public Cursor runQuery(CharSequence constraint) {
@@ -386,6 +375,7 @@ public class SearchableListDialogFragment
         //
 
         listViewCursorAdapter.registerDataSetObserver(new DataSetObserver() {
+
             @Override
             public void onChanged() {
 
@@ -443,42 +433,20 @@ public class SearchableListDialogFragment
 
     protected void dismissDialog() {
 
-        hideKeyboard(_searchTextEditView);
+        //
+        // Restore original Spinner Selected Item Layout
+        //
+
+        QualifiedAccountNameCursorAdapter parentCursorAdapter =
+                (QualifiedAccountNameCursorAdapter) getParentAdapterView().getAdapter();
+
+        parentCursorAdapter.setViewResource(parentCursorAdapter.getSpinnerSelectedItemLayout());
+
+
+        KeyboardUtils.hideKeyboard(_searchTextEditView);
 
         getDialog().dismiss();
     }
-
-    // TODO TW C 2020-02-01 : A déplacer dans une classe utilitaire
-    public static void hideKeyboard(final View editTextView) {
-
-        //
-        // Hide keyboard
-        //
-
-        InputMethodManager keyboard = (InputMethodManager) editTextView.getContext()
-                                                                       .getSystemService(Context.INPUT_METHOD_SERVICE);
-
-        keyboard.hideSoftInputFromWindow(editTextView.getWindowToken(),
-                                         0);
-    }
-
-    public static void hideKeyboard(final View editTextView,
-                                    final long delay) {
-
-//        editTextView.requestFocus();
-
-        // Delay the keyboard hiding
-        editTextView.postDelayed(new Runnable() {
-                                     @Override
-                                     public void run() {
-
-                                         // Hide keyboard
-                                         hideKeyboard(editTextView);
-                                     }
-                                 },
-                                 delay);
-    }
-
 
     public AdapterView getParentAdapterView() {
 
