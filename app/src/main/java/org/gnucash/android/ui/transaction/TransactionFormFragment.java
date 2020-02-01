@@ -630,7 +630,7 @@ public class TransactionFormFragment extends Fragment implements
                                                                       mCursor,
 //                                                                      R.layout.account_spinner_dropdown_item);
 //                                                                      android.R.layout.simple_spinner_item);
-                                                                      R.layout.transaction_account_spinner_item);
+                                                                      R.layout.account_spinner_dropdown_item);
 
         mTransferAccountSearchableSpinnerView.setAdapter(mAccountCursorAdapter);
 	}

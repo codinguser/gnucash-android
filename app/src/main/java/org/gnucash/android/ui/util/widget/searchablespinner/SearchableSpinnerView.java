@@ -9,8 +9,6 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.SpinnerAdapter;
 
 import org.gnucash.android.R;
@@ -50,18 +48,31 @@ public class SearchableSpinnerView
         super(context,
               attrs);
 
-//        this._context = context;
+        //
+        // Retrieve attribute value
+        //
 
         TypedArray a = context.obtainStyledAttributes(attrs,
                                                       R.styleable.SearchableSpinnerView);
+
         final int N = a.getIndexCount();
+
         for (int i = 0; i < N; ++i) {
+
             int attr = a.getIndex(i);
+
             if (attr == R.styleable.SearchableSpinnerView_hintText) {
+
                 _strHintText = a.getString(attr);
             }
         }
+
         a.recycle();
+
+        //
+        // Init
+        //
+
         init();
     }
 
