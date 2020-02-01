@@ -11,6 +11,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ArrayAdapter to filter Array items that contains the text to search
+ *
+ * @param <T>
+ */
 public class WithContainingTextArrayFilterArrayAdapter<T>
         extends ArrayAdapter {
 
@@ -154,28 +159,12 @@ public class WithContainingTextArrayFilterArrayAdapter<T>
                         ViewGroup parent) {
 
         // TODO TW C 2020-01-25 : Optimiser en utilisant un ViewHolder
-
         View itemView = super.getView(position,
                                       convertView,
                                       parent);
 
         // item text
         TextView text1 = (TextView) itemView.findViewById(android.R.id.text1);
-
-        // TODO TW C 2020-01-19 : Handle favorite star
-//        Integer isFavorite = cursor.getInt(cursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_FAVORITE));
-//
-//        if (isFavorite == 0) {
-//            text1.setCompoundDrawablesWithIntrinsicBounds(0,
-//                                                          0,
-//                                                          0,
-//                                                          0);
-//        } else {
-//            text1.setCompoundDrawablesWithIntrinsicBounds(0,
-//                                                          0,
-//                                                          R.drawable.ic_star_black_18dp,
-//                                                          0);
-//        }
 
         return itemView;
     }
