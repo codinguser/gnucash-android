@@ -27,7 +27,6 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * Pop-up that display a ListView with a search text field
@@ -57,7 +56,7 @@ public class SearchableListDialogFragment
     }
 
 
-    private static final String ITEMS = "items";
+//    private static final String ITEMS = "items";
 
     // Dialog Title
     private String _strTitle;
@@ -91,23 +90,23 @@ public class SearchableListDialogFragment
     /**
      * Factory
      *
-     * @param items
+//     * @param items
      *
      * @return
      */
     // TODO TW C 2020-01-30 : Supprimer items
-    public static SearchableListDialogFragment makeInstance(AdapterView parentAdapterView, List items) {
+    public static SearchableListDialogFragment makeInstance(AdapterView parentAdapterView) {
 
         SearchableListDialogFragment searchableListDialogFragment = new SearchableListDialogFragment();
 
         searchableListDialogFragment.setParentAdapterView(parentAdapterView);
 
-        Bundle args = new Bundle();
-
-        args.putSerializable(ITEMS,
-                             (Serializable) items);
-
-        searchableListDialogFragment.setArguments(args);
+//        Bundle args = new Bundle();
+//
+//        args.putSerializable(ITEMS,
+//                             (Serializable) items);
+//
+//        searchableListDialogFragment.setArguments(args);
 
         return searchableListDialogFragment;
     }
@@ -125,6 +124,7 @@ public class SearchableListDialogFragment
                              Bundle savedInstanceState) {
 
         // Hide Keyboard
+//        hideKeyboard();
 //        getDialog().getWindow()
 //                   .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
@@ -182,6 +182,7 @@ public class SearchableListDialogFragment
                                    ? "CLOSE"
                                    : _strPositiveButtonText;
 
+        // TODO TW C 2020-02-01 : Negative button
         alertDialogBuilder.setPositiveButton(strPositiveButton,
                                              _onPositiveBtnClickListener);
 
@@ -208,7 +209,7 @@ public class SearchableListDialogFragment
         _searchTextEditView = (SearchView) searchableListRootView.findViewById(R.id.search);
 
         _searchTextEditView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
-        _searchTextEditView.setIconifiedByDefault(false);
+//        _searchTextEditView.setIconifiedByDefault(false); // Déjà fait dans le xml
         _searchTextEditView.setOnQueryTextListener(this);
         _searchTextEditView.setOnCloseListener(this);
 
@@ -234,14 +235,23 @@ public class SearchableListDialogFragment
         _listView = (ListView) searchableListRootView.findViewById(R.id.listItems);
 
         // TODO TW C 2020-01-30 : A supprimer
-        List items = (List) getArguments().getSerializable(ITEMS);
+//        List items = (List) getArguments().getSerializable(ITEMS);
 
         // Attach the adapter to the list
         // TODO TW C 2020-01-30 : A nettoyer
-//        _listView.setAdapter((ListAdapter) getParentAdapterView().getAdapter());
-        _listView.setAdapter((ListAdapter) new QualifiedAccountNameCursorAdapter(getActivity(),
-                                                                                 null,
-                                                                                 R.layout.account_spinner_dropdown_item));
+        _listView.setAdapter((ListAdapter) getParentAdapterView().getAdapter());
+//        QualifiedAccountNameCursorAdapter parentCursorAdapter =
+//                (QualifiedAccountNameCursorAdapter) getParentAdapterView().getAdapter();
+//
+//        parentCursorAdapter.getCursor().moveToFirst();
+//
+//        _listView.setAdapter((ListAdapter) new QualifiedAccountNameCursorAdapter(getActivity(),
+//                                                                                 parentCursorAdapter.getCursor(),
+//                                                                                 parentCursorAdapter.getDropDownItemLayout(),
+//                                                                                 // ListView utilise uniquement le Layout
+//                                                                                 // ci-dessus pour les items
+//                                                                                 parentCursorAdapter.getDropDownItemLayout() //
+//                                                                                 ));
 
 //        // Enable filtering based on search text field
 //        _listView.setTextFilterEnabled(false);
@@ -266,7 +276,8 @@ public class SearchableListDialogFragment
                 // Call Listener
                 _onSearchableItemClickedListener.onSearchableItemClicked(accountFullName,
                                                                          position);
-                getDialog().dismiss();
+
+                dismissDialog();
             }
         });
 
@@ -390,7 +401,8 @@ public class SearchableListDialogFragment
                     // Simulate a onSearchableItemClicked
                     _onSearchableItemClickedListener.onSearchableItemClicked(accountsCursor.getString(accountsCursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME)),
                                                                              1);
-                    getDialog().dismiss();
+
+                    dismissDialog();
 
                 } else {
                     // only one account n' pas
@@ -429,27 +441,42 @@ public class SearchableListDialogFragment
         return true;
     }
 
+    protected void dismissDialog() {
+
+        hideKeyboard(_searchTextEditView);
+
+        getDialog().dismiss();
+    }
+
+    // TODO TW C 2020-02-01 : A déplacer dans une classe utilitaire
     public static void hideKeyboard(final View editTextView) {
 
-        editTextView.requestFocus();
+        //
+        // Hide keyboard
+        //
+
+        InputMethodManager keyboard = (InputMethodManager) editTextView.getContext()
+                                                                       .getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        keyboard.hideSoftInputFromWindow(editTextView.getWindowToken(),
+                                         0);
+    }
+
+    public static void hideKeyboard(final View editTextView,
+                                    final long delay) {
+
+//        editTextView.requestFocus();
 
         // Delay the keyboard hiding
         editTextView.postDelayed(new Runnable() {
-                               @Override
-                               public void run() {
+                                     @Override
+                                     public void run() {
 
-                                   //
-                                   // Hide keyboard
-                                   //
-
-                                   InputMethodManager keyboard = (InputMethodManager) editTextView.getContext()
-                                                                                                  .getSystemService(Context.INPUT_METHOD_SERVICE);
-
-                                   keyboard.hideSoftInputFromWindow(editTextView.getWindowToken(),
-                                                                    0);
-                               }
-                           },
-                                 200);
+                                         // Hide keyboard
+                                         hideKeyboard(editTextView);
+                                     }
+                                 },
+                                 delay);
     }
 
 

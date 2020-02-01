@@ -252,19 +252,28 @@ public class TransactionFormFragment extends Fragment implements
 	 * Create the view and retrieve references to the UI elements
 	 */
 	@Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.fragment_transaction_form, container, false);
-        ButterKnife.bind(this, v);
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        View v = inflater.inflate(R.layout.fragment_transaction_form,
+                                  container,
+                                  false);
+
+        ButterKnife.bind(this,
+                         v);
+
         mAmountEditText.bindListeners(mKeyboardView);
+
         mOpenSplitEditor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 openSplitEditor();
             }
         });
         return v;
-	}
+    }
 
     /**
      * Starts the transfer of funds from one currency to another
@@ -609,7 +618,10 @@ public class TransactionFormFragment extends Fragment implements
                                                                                             AccountType.ROOT.name()});
 
         mAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
-                                                                      mCursor);
+                                                                      mCursor,
+//                                                                      R.layout.account_spinner_dropdown_item);
+//                                                                      android.R.layout.simple_spinner_item);
+                                                                      R.layout.transaction_account_spinner_item);
 
         mTransferAccountSearchableSpinnerView.setAdapter(mAccountCursorAdapter);
 	}

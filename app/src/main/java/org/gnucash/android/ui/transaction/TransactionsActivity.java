@@ -120,7 +120,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
     private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<>();
 
     /**
-     * Flag for determining is the currently displayed account is a placeholder account or not.
+     * Flag for determining if the currently displayed account is a placeholder account or not.
      * This will determine if the transactions tab is displayed or not
      */
     private boolean mIsPlaceholderAccount;
@@ -378,14 +378,17 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         if (mAccountsCursor != null) {
             mAccountsCursor.close();
         }
-		mAccountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
+//        mAccountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
+        mAccountsCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(null,null);
 
         SpinnerAdapter qualifiedAccountNameCursorAdapter = new QualifiedAccountNameCursorAdapter(getSupportActionBar().getThemedContext(),
                                                                                                  mAccountsCursor,
                                                                                                  R.layout.transaction_account_spinner_item);
 
         mToolbarSpinner.setAdapter(qualifiedAccountNameCursorAdapter);
+
         mToolbarSpinner.setOnItemSelectedListener(mTransactionListNavigationListener);
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		updateNavigationSelection();
@@ -395,12 +398,18 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 	 * Updates the action bar navigation list selection to that of the current account
 	 * whose transactions are being displayed/manipulated
 	 */
-	public void updateNavigationSelection() {
-		// set the selected item in the spinner
-		int i = 0;
-		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
+    public void updateNavigationSelection() {
+        // set the selected item in the spinner
+        int i = 0;
+
+//        Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
+        Cursor accountsCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(null,
+                                                                                             null);
+
         while (accountsCursor.moveToNext()) {
+
             String uid = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
+
             if (mAccountUID.equals(uid)) {
                 mToolbarSpinner.setSelection(i);
                 break;
@@ -408,7 +417,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
             ++i;
         }
         accountsCursor.close();
-	}
+    }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {

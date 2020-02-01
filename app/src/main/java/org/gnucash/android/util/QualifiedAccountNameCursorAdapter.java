@@ -37,6 +37,9 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
 public class QualifiedAccountNameCursorAdapter
         extends SimpleCursorAdapter {
 
+    //
+    private int _DropDownItemLayout;
+
     /**
      * Initialize the Cursor adapter for account names using default spinner views
      *
@@ -52,16 +55,6 @@ public class QualifiedAccountNameCursorAdapter
              cursor,
              android.R.layout.simple_spinner_item  // Layout of the closed spinner item
             );
-
-//        super(context,
-//              android.R.layout.simple_spinner_item, // Layout of the closed spinner item
-//              cursor,
-//              new String[]{DatabaseSchema.AccountEntry.COLUMN_FULL_NAME},
-//              new int[]{android.R.id.text1},
-//              0);
-//
-//        // Define layout of each item in the open drop down of the spinner
-//        setDropDownViewResource(R.layout.account_spinner_dropdown_item);
     }
 
     /**
@@ -71,22 +64,45 @@ public class QualifiedAccountNameCursorAdapter
      *         Application context
      * @param cursor
      *         Cursor to account data
-     * @param selectedSpinnerItem
+     * @param selectedSpinnerItemLayout
      *         Layout resource for selected item text
      */
     public QualifiedAccountNameCursorAdapter(Context context,
                                              Cursor cursor,
-                                             @LayoutRes int selectedSpinnerItem) {
+                                             @LayoutRes int selectedSpinnerItemLayout) {
+
+        this(context,
+             cursor,
+             selectedSpinnerItemLayout,  // Layout of the closed spinner item
+             R.layout.account_spinner_dropdown_item
+            );
+    }
+
+    /**
+     * Overloaded constructor. Specifies the view to use for displaying selected spinner text
+     *
+     * @param context
+     *         Application context
+     * @param cursor
+     *         Cursor to account data
+     * @param selectedSpinnerItemLayout
+     *         Layout resource for selected item text
+     */
+    public QualifiedAccountNameCursorAdapter(Context context,
+                                             Cursor cursor,
+                                             @LayoutRes int selectedSpinnerItemLayout,
+                                             @LayoutRes int dropdownSpinnerItemLayout
+                                            ) {
 
         super(context,
-              selectedSpinnerItem,  // Layout of the closed spinner item
+              selectedSpinnerItemLayout,  // Layout of the closed spinner item
               cursor,
               new String[]{DatabaseSchema.AccountEntry.COLUMN_FULL_NAME},
               new int[]{android.R.id.text1},
               0);
 
         // Define layout of each item in the open drop down of the spinner
-        setDropDownViewResource(R.layout.account_spinner_dropdown_item);
+        setDropDownItemLayout(dropdownSpinnerItemLayout);
     }
 
     @Override
@@ -138,4 +154,17 @@ public class QualifiedAccountNameCursorAdapter
         
         return -1;
     }
+
+    public int getDropDownItemLayout() {
+
+        return _DropDownItemLayout;
+    }
+
+    public void setDropDownItemLayout(int dropDownItemLayout) {
+
+        _DropDownItemLayout = dropDownItemLayout;
+
+        setDropDownViewResource(getDropDownItemLayout());
+    }
+
 }

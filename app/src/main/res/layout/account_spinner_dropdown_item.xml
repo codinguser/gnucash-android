@@ -19,7 +19,6 @@
     android:layout_width="match_parent"
     android:layout_height="?attr/dropdownListPreferredItemHeight"
     style="?android:attr/spinnerDropDownItemStyle"
-    android:textColor="@android:color/black"
-    android:textSize="14sp"
+    android:textColor="@android:color/holo_green_dark"
     android:ellipsize="start"
     android:singleLine="true" />
