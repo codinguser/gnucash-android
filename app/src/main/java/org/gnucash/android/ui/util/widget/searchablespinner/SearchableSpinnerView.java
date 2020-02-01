@@ -26,11 +26,10 @@ public class SearchableSpinnerView
 
     public static final int                  NO_ITEM_SELECTED = -1;
 
-    // TODO TW C 2020-01-17 : a remplacer par getContext()
-    private             Context              _context;
+//    private             Context              _context;
 
-    private             List                 _items;
-    private             List                 _allItems;
+//    private             List                 _items;
+//    private             List                 _allItems;
 
     private SearchableListDialogFragment _searchableListDialogFragment;
 
@@ -40,12 +39,12 @@ public class SearchableSpinnerView
 //    private CursorAdapter _cursorAdapter;
 
     private String        _strHintText;
-    private boolean       _isFromInit;
+//    private boolean       _isFromInit;
 
     public SearchableSpinnerView(Context context) {
 
         super(context);
-        this._context = context;
+//        this._context = context;
         init();
     }
 
@@ -55,7 +54,7 @@ public class SearchableSpinnerView
         super(context,
               attrs);
 
-        this._context = context;
+//        this._context = context;
 
         TypedArray a = context.obtainStyledAttributes(attrs,
                                                       R.styleable.SearchableSpinnerView);
@@ -78,19 +77,20 @@ public class SearchableSpinnerView
               attrs,
               defStyleAttr);
 
-        this._context = context;
+//        this._context = context;
 
         init();
     }
 
     private void init() {
 
-        _allItems=new ArrayList();
-        _items = new ArrayList();
+        // TODO TW C 2020-02-01 : A enlever
+//        _allItems=new ArrayList();
+//        _items = new ArrayList();
 
         // Create Dialog instance
         // TODO TW C 2020-01-25 : Supprimer _items
-        _searchableListDialogFragment = SearchableListDialogFragment.makeInstance(this, _items);
+        _searchableListDialogFragment = SearchableListDialogFragment.makeInstance(this);
 
         // S'abonner aux clicks sur un item
         _searchableListDialogFragment.setOnSearchableItemClickListener(this);
@@ -155,7 +155,7 @@ public class SearchableSpinnerView
 //                    _allItems.addAll(_items);
 
                     // Display SearchableListDialogFragment
-                    _searchableListDialogFragment.show(scanForActivity(_context).getFragmentManager(),
+                    _searchableListDialogFragment.show(scanForActivity(getContext()).getFragmentManager(),
                                                        "TAG");
 //                }
             }
@@ -186,6 +186,7 @@ public class SearchableSpinnerView
     @Override
     public void setAdapter(SpinnerAdapter adapter) {
 
+        // Use given adapter for spinner item (not drop down)
         super.setAdapter(adapter);
 
 //        _cursorAdapter = (CursorAdapter) adapter;
