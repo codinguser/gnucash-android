@@ -81,6 +81,7 @@ import org.gnucash.android.ui.util.RecurrenceParser;
 import org.gnucash.android.ui.util.RecurrenceViewClickListener;
 import org.gnucash.android.ui.util.widget.CalculatorEditText;
 import org.gnucash.android.ui.util.widget.TransactionTypeSwitch;
+import org.gnucash.android.ui.util.widget.searchablespinner.SearchableListDialogFragment;
 import org.gnucash.android.ui.util.widget.searchablespinner.SearchableSpinnerView;
 import org.gnucash.android.util.KeyboardUtils;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
@@ -388,11 +389,18 @@ public class TransactionFormFragment extends Fragment implements
             actionBar.setTitle(R.string.title_add_transaction);
             initalizeViews();
             initTransactionNameAutocomplete();
+
         } else {
             actionBar.setTitle(R.string.title_edit_transaction);
-			initializeViewsWithTransaction();
+            initializeViewsWithTransaction();
             mEditMode = true;
-		}
+        }
+
+        // Set Focus onto Amount at first
+//            mDescriptionEditText.clearFocus();
+        KeyboardUtils.hideKeyboard(mDescriptionEditText,
+                                   200);
+        mAmountEditText.requestFocus();
 
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 	}
