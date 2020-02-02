@@ -118,21 +118,52 @@ public class QualifiedAccountNameCursorAdapter
                        context,
                        cursor);
 
-        // item text
-        TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+        //
+        // Add or not Favorite Star Icon
+        //
 
         Integer isFavorite = cursor.getInt(cursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_FAVORITE));
 
+        displayFavoriteAccountStarIcon(view,
+                                       isFavorite);
+
+    }
+
+    /**
+     * @param view
+     * @param isFavorite
+     */
+    public static void displayFavoriteAccountStarIcon(View view,
+                                                  Integer isFavorite) {
+
+        // item text
+        TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+
         if (isFavorite == 0) {
-            text1.setCompoundDrawablesWithIntrinsicBounds(0,
-                                                             0,
-                                                             0,
-                                                             0);
+
+            removeFavoriteIconFromSelectedView(text1);
+//            text1.setCompoundDrawablesWithIntrinsicBounds(0,
+//                                                             0,
+//                                                             0,
+//                                                             0);
         } else {
             text1.setCompoundDrawablesWithIntrinsicBounds(0,
                                                              0,
                                                              R.drawable.ic_star_black_18dp,
                                                              0);
+        }
+    }
+
+    /**
+     * Removes the icon from view to avoid visual clutter
+     *
+     * @param textView
+     */
+    public static void removeFavoriteIconFromSelectedView(TextView textView) {
+
+        if (textView != null) {
+
+            textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
         }
     }
 

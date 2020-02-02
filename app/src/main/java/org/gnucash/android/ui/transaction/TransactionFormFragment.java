@@ -98,6 +98,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static org.gnucash.android.util.QualifiedAccountNameCursorAdapter.removeFavoriteIconFromSelectedView;
+
 /**
  * Fragment for creating or editing transactions
  * @author Ngewi Fet <ngewif@gmail.com>
@@ -363,13 +365,6 @@ public class TransactionFormFragment extends Fragment implements
                 }
 
                 startTransferFunds();
-            }
-
-            // Removes the icon from view to avoid visual clutter
-            private void removeFavoriteIconFromSelectedView(TextView view) {
-                if (view != null) {
-                    view.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                }
             }
 
             @Override
