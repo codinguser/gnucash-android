@@ -141,12 +141,12 @@ public class QualifiedAccountNameCursorAdapter
 
         if (isFavorite == 0) {
 
-            removeFavoriteIconFromSelectedView(text1);
-//            text1.setCompoundDrawablesWithIntrinsicBounds(0,
-//                                                             0,
-//                                                             0,
-//                                                             0);
+            // Hide Favorite Account Star
+            hideFavoriteAccountStarIcon(text1);
+
         } else {
+
+            // Display Favorite Account Star
             text1.setCompoundDrawablesWithIntrinsicBounds(0,
                                                              0,
                                                              R.drawable.ic_star_black_18dp,
@@ -159,7 +159,7 @@ public class QualifiedAccountNameCursorAdapter
      *
      * @param textView
      */
-    public static void removeFavoriteIconFromSelectedView(TextView textView) {
+    public static void hideFavoriteAccountStarIcon(TextView textView) {
 
         if (textView != null) {
 

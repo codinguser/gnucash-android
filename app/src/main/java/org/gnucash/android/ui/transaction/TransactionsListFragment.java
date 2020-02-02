@@ -165,7 +165,7 @@ public class TransactionsListFragment extends Fragment implements
 	@Override
 	public void onResume() {
 		super.onResume();
-		((TransactionsActivity)getActivity()).updateNavigationSelection();
+		((TransactionsActivity)getActivity()).selectCurrentAccountInToolbarSpinner();
 		refresh();
 	}
 

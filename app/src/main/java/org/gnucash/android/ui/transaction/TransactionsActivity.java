@@ -70,7 +70,7 @@ import java.util.Date;
 
 import butterknife.BindView;
 
-import static org.gnucash.android.util.QualifiedAccountNameCursorAdapter.removeFavoriteIconFromSelectedView;
+import static org.gnucash.android.util.QualifiedAccountNameCursorAdapter.hideFavoriteAccountStarIcon;
 
 /**
  * Activity for displaying, creating and editing transactions
@@ -149,7 +149,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
                 }
             }
 
-            removeFavoriteIconFromSelectedView((TextView) selectedItemView);
+            hideFavoriteAccountStarIcon((TextView) selectedItemView);
 //            if (view != null) {
 //                // Hide the favorite icon of the selected account to avoid clutter
 //                ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
@@ -283,7 +283,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         // TODO TW C 2020-02-02 : Il faudrait récupérer la couleur du Thème
         text1.setTextColor(Color.WHITE);
 
-        removeFavoriteIconFromSelectedView((TextView) text1);
+        hideFavoriteAccountStarIcon((TextView) text1);
     }
 
 
@@ -417,8 +417,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         if (mAccountsCursor != null) {
             mAccountsCursor.close();
         }
-//        mAccountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
-        mAccountsCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(null,null);
+        mAccountsCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName();
 
         SpinnerAdapter qualifiedAccountNameCursorAdapter = new QualifiedAccountNameCursorAdapter(getSupportActionBar().getThemedContext(),
                                                                                                  mAccountsCursor,
@@ -436,32 +435,35 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-		updateNavigationSelection();
+		selectCurrentAccountInToolbarSpinner();
 	}
 	
 	/**
 	 * Updates the action bar navigation list selection to that of the current account
 	 * whose transactions are being displayed/manipulated
 	 */
-    public void updateNavigationSelection() {
+    public void selectCurrentAccountInToolbarSpinner() {
         // set the selected item in the spinner
         int i = 0;
 
 //        Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
-        Cursor accountsCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(null,
-                                                                                             null);
+//        Cursor accountsCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(null,
+//                                                                                             null);
 
-        while (accountsCursor.moveToNext()) {
+        while (mAccountsCursor.moveToNext()) {
 
-            String uid = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
+            String uid = mAccountsCursor.getString(mAccountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
 
             if (mAccountUID.equals(uid)) {
+                // Found
+
+                // Set Spinner selection
                 mToolbarSpinner.setSelection(i);
+
                 break;
             }
             ++i;
         }
-        accountsCursor.close();
     }
 
     @Override

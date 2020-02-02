@@ -81,7 +81,6 @@ import org.gnucash.android.ui.util.RecurrenceParser;
 import org.gnucash.android.ui.util.RecurrenceViewClickListener;
 import org.gnucash.android.ui.util.widget.CalculatorEditText;
 import org.gnucash.android.ui.util.widget.TransactionTypeSwitch;
-import org.gnucash.android.ui.util.widget.searchablespinner.SearchableListDialogFragment;
 import org.gnucash.android.ui.util.widget.searchablespinner.SearchableSpinnerView;
 import org.gnucash.android.util.KeyboardUtils;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
@@ -98,7 +97,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static org.gnucash.android.util.QualifiedAccountNameCursorAdapter.removeFavoriteIconFromSelectedView;
+import static org.gnucash.android.util.QualifiedAccountNameCursorAdapter.hideFavoriteAccountStarIcon;
 
 /**
  * Fragment for creating or editing transactions
@@ -346,7 +345,7 @@ public class TransactionFormFragment extends Fragment implements
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
 
-                removeFavoriteIconFromSelectedView((TextView) view);
+                hideFavoriteAccountStarIcon((TextView) view);
 
                 if (mSplitsList.size() == 2) {
                     //when handling simple transfer to one account
