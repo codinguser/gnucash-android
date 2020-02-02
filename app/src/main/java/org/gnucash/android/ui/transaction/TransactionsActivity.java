@@ -59,7 +59,6 @@ import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.util.AccountBalanceTask;
-import org.gnucash.android.ui.util.widget.searchablespinner.SearchableSpinnerView;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 import org.joda.time.LocalDate;
 
@@ -68,6 +67,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import butterknife.BindView;
+
+import static org.gnucash.android.util.QualifiedAccountNameCursorAdapter.removeFavoriteIconFromSelectedView;
 
 /**
  * Activity for displaying, creating and editing transactions
@@ -130,7 +131,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 	private AdapterView.OnItemSelectedListener mTransactionListNavigationListener = new AdapterView.OnItemSelectedListener() {
 
         @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        public void onItemSelected(AdapterView<?> parent, View selectedItemView, int position, long id) {
             mAccountUID = mAccountsDbAdapter.getUID(id);
             getIntent().putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID); //update the intent in case the account gets rotated
             mIsPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(mAccountUID);
@@ -145,10 +146,13 @@ public class TransactionsActivity extends BaseDrawerActivity implements
                     mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_transactions));
                 }
             }
-            if (view != null) {
-                // Hide the favorite icon of the selected account to avoid clutter
-                ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-            }
+
+            removeFavoriteIconFromSelectedView((TextView) selectedItemView);
+//            if (view != null) {
+//                // Hide the favorite icon of the selected account to avoid clutter
+//                ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+//            }
+
             //refresh any fragments in the tab with the new account UID
             refresh();
         }
