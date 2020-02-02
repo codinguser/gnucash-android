@@ -59,6 +59,7 @@ import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.util.AccountBalanceTask;
+import org.gnucash.android.ui.util.widget.searchablespinner.SearchableSpinnerView;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 import org.joda.time.LocalDate;
 
@@ -111,11 +112,12 @@ public class TransactionsActivity extends BaseDrawerActivity implements
      */
     private Cursor mAccountsCursor = null;
 
-    @BindView(R.id.pager)            ViewPager mViewPager;
-    @BindView(R.id.toolbar_spinner)  Spinner mToolbarSpinner;
-    @BindView(R.id.tab_layout)       TabLayout mTabLayout;
-    @BindView(R.id.transactions_sum) TextView mSumTextView;
-    @BindView(R.id.fab_create_transaction) FloatingActionButton mCreateFloatingButton;
+    @BindView(R.id.pager)                 ViewPager             mViewPager;
+    @BindView(R.id.toolbar_spinner)
+                                          Spinner               mToolbarSpinner;
+    @BindView(R.id.tab_layout)            TabLayout             mTabLayout;
+    @BindView(R.id.transactions_sum)      TextView              mSumTextView;
+    @BindView(R.id.fab_create_transaction)FloatingActionButton  mCreateFloatingButton;
 
     private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<>();
 
