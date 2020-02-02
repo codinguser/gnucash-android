@@ -378,15 +378,16 @@ public class SearchableListDialogFragment
                 final AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
 
                 final Cursor accountsCursor = accountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(DatabaseSchema.AccountEntry.COLUMN_HIDDEN
-                                                                                                          + " = 0 AND "
+                                                                                                          + " = 0"
+                                                                                                          + " AND "
                                                                                                           + DatabaseSchema.AccountEntry.COLUMN_TYPE
                                                                                                           + " != ?"
+                                                                                                          + " AND "
                                                                                                           + DatabaseSchema.AccountEntry.COLUMN_FULL_NAME
                                                                                                           + " LIKE ?"
                                                                                                           + " AND "
                                                                                                           + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER
-                                                                                                          + " = 0"
-                                                                                                          + ")",
+                                                                                                          + " = 0",
                                                                                                           new String[]{AccountType.ROOT.name(),
                                                                                                                        "%"
                                                                                                                        + ((constraint
