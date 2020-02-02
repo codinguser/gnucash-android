@@ -20,25 +20,16 @@ public class SearchableSpinnerView
 
     public static final int                  NO_ITEM_SELECTED = -1;
 
-//    private             Context              _context;
-
-//    private             List                 _items;
-//    private             List                 _allItems;
-
     private SearchableListDialogFragment _searchableListDialogFragment;
 
     private boolean       _isDirty;
 
-//    // Adpater for Spinner based on data in a DB Cursor
-//    private CursorAdapter _cursorAdapter;
-
-    private String        _strHintText;
-//    private boolean       _isFromInit;
+    private String                           _strHintText;
 
     public SearchableSpinnerView(Context context) {
 
         super(context);
-//        this._context = context;
+
         init();
     }
 
@@ -158,6 +149,17 @@ public class SearchableSpinnerView
     public void setOnSearchTextChangedListener(SearchableListDialogFragment.OnSearchTextChangedListener onSearchTextChangedListener) {
 
         _searchableListDialogFragment.setOnSearchTextChangedListener(onSearchTextChangedListener);
+    }
+
+    /**
+     * Register a callback to be invoked when an item in this AdapterView has
+     * been selected.
+     *
+     * @param listener The callback that will run
+     */
+    public void setOnCancelListener(DialogInterface.OnCancelListener listener) {
+
+        _searchableListDialogFragment.setOnCancelListener(listener);
     }
 
     private Activity scanForActivity(Context cont) {

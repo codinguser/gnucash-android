@@ -14,7 +14,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.FilterQueryProvider;
 import android.widget.ListAdapter;
@@ -36,6 +35,8 @@ public class SearchableListDialogFragment
         extends DialogFragment
         implements SearchView.OnQueryTextListener,
                    SearchView.OnCloseListener {
+
+    private DialogInterface.OnCancelListener _onCancelListener;
 
     /**
      * Listener to call when user clicks on an item
@@ -307,9 +308,33 @@ public class SearchableListDialogFragment
         this._onSearchableItemClickedListener = onSearchableItemClickedListener;
     }
 
+    public void setOnCancelListener(DialogInterface.OnCancelListener onCancelListener) {
+
+        this._onCancelListener = onCancelListener;
+    }
+
     public void setOnSearchTextChangedListener(OnSearchTextChangedListener onSearchTextChangedListener) {
 
         this._onSearchTextChangedListener = onSearchTextChangedListener;
+    }
+
+
+    @Override
+    public void onCancel(DialogInterface dialog) {
+
+        if (_onCancelListener != null) {
+            // There is a listener
+
+            // Call listener
+            _onCancelListener.onCancel(dialog);
+
+        } else {
+            // There is no listener
+
+            // RAF
+        }
+
+        dismissDialog();
     }
 
 
@@ -442,8 +467,19 @@ public class SearchableListDialogFragment
 
         parentCursorAdapter.setViewResource(parentCursorAdapter.getSpinnerSelectedItemLayout());
 
+        // TODO TW M 2020-02-02 : Génère une boucle infinie lorsque l'on tape parking, mais est nécessaire pour remettre le
+        //  "blanc"
+//        parentCursorAdapter.notifyDataSetChanged();
+
+        //
+        // Hide keyboard
+        //
 
         KeyboardUtils.hideKeyboard(_searchTextEditView);
+
+        //
+        // Close Dialog
+        //
 
         getDialog().dismiss();
     }

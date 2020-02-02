@@ -18,8 +18,10 @@
 package org.gnucash.android.ui.transaction;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -40,7 +42,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
@@ -59,6 +60,7 @@ import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.util.AccountBalanceTask;
+import org.gnucash.android.ui.util.widget.searchablespinner.SearchableSpinnerView;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 import org.joda.time.LocalDate;
 
@@ -115,7 +117,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 
     @BindView(R.id.pager)                 ViewPager             mViewPager;
     @BindView(R.id.toolbar_spinner)
-                                          Spinner               mToolbarSpinner;
+    SearchableSpinnerView mToolbarSpinner;
     @BindView(R.id.tab_layout)            TabLayout             mTabLayout;
     @BindView(R.id.transactions_sum)      TextView              mSumTextView;
     @BindView(R.id.fab_create_transaction)FloatingActionButton  mCreateFloatingButton;
@@ -162,6 +164,25 @@ public class TransactionsActivity extends BaseDrawerActivity implements
             //nothing to see here, move along
         }
 	};
+
+    private DialogInterface.OnCancelListener mOnCancelListener = new DialogInterface.OnCancelListener() {
+
+        @Override
+        public void onCancel(DialogInterface dialog) {
+
+            resetSpinnerItemAppearance();
+        }
+    };
+
+    private DialogInterface.OnClickListener mOnClickListener = new DialogInterface.OnClickListener() {
+
+        @Override
+        public void onClick(DialogInterface dialog,
+                            int which) {
+
+            resetSpinnerItemAppearance();
+        }
+    };
 
     private PagerAdapter mPagerAdapter;
 
@@ -253,6 +274,18 @@ public class TransactionsActivity extends BaseDrawerActivity implements
             return transactionsListFragment;
         }
     }
+
+    protected void resetSpinnerItemAppearance() {
+
+        // item text
+        TextView text1 = (TextView) mToolbarSpinner.findViewById(android.R.id.text1);
+
+        // TODO TW C 2020-02-02 : Il faudrait récupérer la couleur du Thème
+        text1.setTextColor(Color.WHITE);
+
+        removeFavoriteIconFromSelectedView((TextView) text1);
+    }
+
 
     /**
      * Refreshes the fragments currently in the transactions activity
@@ -394,6 +427,12 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         mToolbarSpinner.setAdapter(qualifiedAccountNameCursorAdapter);
 
         mToolbarSpinner.setOnItemSelectedListener(mTransactionListNavigationListener);
+
+        mToolbarSpinner.setOnCancelListener(mOnCancelListener);
+
+        // The "positive" button act as a Cancel button
+        mToolbarSpinner.setPositiveButton(getString(R.string.alert_dialog_cancel),
+                                          mOnClickListener);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
