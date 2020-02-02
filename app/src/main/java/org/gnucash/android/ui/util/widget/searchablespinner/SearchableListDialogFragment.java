@@ -23,6 +23,7 @@ import android.widget.SearchView;
 import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.model.AccountType;
 import org.gnucash.android.util.KeyboardUtils;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
@@ -172,7 +173,6 @@ public class SearchableListDialogFragment
                                    ? "CLOSE"
                                    : _strPositiveButtonText;
 
-        // TODO TW C 2020-02-01 : Negative button
         alertDialogBuilder.setPositiveButton(strPositiveButton,
                                              _onPositiveBtnClickListener);
 
@@ -377,14 +377,18 @@ public class SearchableListDialogFragment
 
                 final AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
 
-                final Cursor accountsCursor = accountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName("("
+                final Cursor accountsCursor = accountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(DatabaseSchema.AccountEntry.COLUMN_HIDDEN
+                                                                                                          + " = 0 AND "
+                                                                                                          + DatabaseSchema.AccountEntry.COLUMN_TYPE
+                                                                                                          + " != ?"
                                                                                                           + DatabaseSchema.AccountEntry.COLUMN_FULL_NAME
                                                                                                           + " LIKE ?"
                                                                                                           + " AND "
                                                                                                           + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER
                                                                                                           + " = 0"
                                                                                                           + ")",
-                                                                                                          new String[]{"%"
+                                                                                                          new String[]{AccountType.ROOT.name(),
+                                                                                                                       "%"
                                                                                                                        + ((constraint
                                                                                                                            != null)
                                                                                                                           ? constraint.toString()

@@ -775,6 +775,24 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     }
 
     /**
+     * Returns a Cursor set of all Accounts
+     *
+     * <p>This method returns the favorite accounts first, sorted by name, and then the other accounts,
+     * sorted by name.</p>
+     *
+     * @return Cursor set of all accounts
+     */
+    public Cursor fetchAccountsOrderedByFavoriteAndFullName() {
+
+        String selection = AccountEntry.COLUMN_HIDDEN + " = 0 AND " + AccountEntry.COLUMN_TYPE + " != ?";
+
+        return fetchAccountsOrderedByFavoriteAndFullName(selection,
+                                                         new String[]{AccountType.ROOT.name()});
+    }
+
+
+
+    /**
      * Returns the balance of an account while taking sub-accounts into consideration
      * @return Account Balance of an account including sub-accounts
      */
