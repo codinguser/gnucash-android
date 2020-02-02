@@ -16,9 +16,29 @@
 -->
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Customize Spinner appearance -->
+
+    <style name="SpinnerItemTextView" parent="@android:style/Widget.TextView.SpinnerItem">
+        <item name="android:textColor">@color/bpWhite</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">start</item>
+    </style>
+
+    <style name="SpinnerDropDownItemTextView" parent="Widget.AppCompat.DropDownItem.Spinner">
+        <item name="android:textColor">@color/bpblack</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">middle</item>
+    </style>
+
+    <!-- Customize List appearance -->
+
     <style name="ListItemContainerBase">
         <item name="android:minHeight">?android:attr/listPreferredItemHeight</item>
     </style>
+
     <style name="ListItem" parent="ListItemContainerBase">
         <item name="android:paddingLeft">@dimen/dialog_padding</item>
         <item name="android:paddingRight">@dimen/dialog_padding</item>

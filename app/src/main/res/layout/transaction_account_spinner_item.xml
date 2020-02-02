@@ -18,8 +18,5 @@
           android:id="@android:id/text1"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          style="?android:attr/spinnerDropDownItemStyle"
-          android:textSize="18sp"
-          android:singleLine="true"
-          android:ellipsize="start"
+          style="?android:attr/spinnerItemStyle"
           android:textAlignment="inherit"/>
