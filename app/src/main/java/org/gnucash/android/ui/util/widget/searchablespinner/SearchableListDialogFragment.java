@@ -254,11 +254,11 @@ public class SearchableListDialogFragment
                                                                                                           + " != ?"
                                                                                                           + " AND "
                                                                                                           + DatabaseSchema.AccountEntry.COLUMN_FULL_NAME
-                                                                                                          + " LIKE ?",
+                                                                                                          + " LIKE ?"
 // TODO TW C 2020-02-08 : A améliorer
-//                                                                                                          + " AND "
-//                                                                                                          + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER
-//                                                                                                          + " = 0",
+                                                                                                          + " AND "
+                                                                                                          + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER
+                                                                                                          + " = 0",
                                                                                                           new String[]{AccountType.ROOT.name(),
                                                                                                                        "%"
                                                                                                                        + ((constraint
