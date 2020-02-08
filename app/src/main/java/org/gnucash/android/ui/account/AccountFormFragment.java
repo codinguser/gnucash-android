@@ -67,6 +67,7 @@ import org.gnucash.android.ui.colorpicker.ColorPickerSwatch;
 import org.gnucash.android.ui.colorpicker.ColorSquare;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.settings.PreferenceActivity;
+import org.gnucash.android.ui.util.widget.searchablespinner.SearchableSpinnerView;
 import org.gnucash.android.util.CommoditiesCursorAdapter;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
@@ -136,6 +137,14 @@ public class AccountFormFragment extends Fragment {
     private String mAccountUID = null;
 
     /**
+     * Spinner for the account type
+     *
+     * @see org.gnucash.android.model.AccountType
+     */
+    @BindView(R.id.input_account_type_spinner)
+    Spinner mAccountTypeSpinner;
+
+    /**
      * Cursor which will hold set of eligible parent accounts
      */
 	private Cursor mParentAccountCursor;
@@ -155,20 +164,14 @@ public class AccountFormFragment extends Fragment {
     /**
      * Spinner for parent account list
      */
-    // TODO TW C 2020-01-18 : A remplacer par un SearchableSpinner
-	@BindView(R.id.input_parent_account) Spinner mParentAccountSpinner;
+    @BindView(R.id.input_parent_account)
+    SearchableSpinnerView mParentAccountSpinner;
 
     /**
      * Checkbox which activates the parent account spinner when selected
      * Leaving this unchecked means it is a top-level root account
      */
 	@BindView(R.id.checkbox_parent_account) CheckBox mParentCheckBox;
-
-    /**
-     * Spinner for the account type
-     * @see org.gnucash.android.model.AccountType
-     */
-    @BindView(R.id.input_account_type_spinner) Spinner mAccountTypeSpinner;
 
     /**
      * Checkbox for activating the default transfer account spinner
@@ -180,7 +183,8 @@ public class AccountFormFragment extends Fragment {
      */
     // TODO TW C 2020-01-18 : A remplacer par un SearchableSpinner + Vérifier exclure Placeholder + Etoile des Favoris + 1
     //  seule ligne
-    @BindView(R.id.input_default_transfer_account) Spinner mDefaultTransferAccountSpinner;
+    @BindView(R.id.input_default_transfer_account)
+    SearchableSpinnerView mDefaultTransferAccountSpinner;
 
     /**
      * Account description input text view
@@ -572,21 +576,38 @@ public class AccountFormFragment extends Fragment {
     /**
      * Initializes the default transfer account spinner with eligible accounts
      */
-    private void loadDefaultTransferAccountList(){
-        String condition = DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountUID + "' " //when creating a new account mAccountUID is null, so don't use whereArgs
-                + " AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + "=0"
-                + " AND " + DatabaseSchema.AccountEntry.COLUMN_HIDDEN + "=0"
-                + " AND " + DatabaseSchema.AccountEntry.COLUMN_TYPE + " != ?";
+    private void loadDefaultTransferAccountList() {
 
-        Cursor defaultTransferAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition,
-                new String[]{AccountType.ROOT.name()});
+        String condition = DatabaseSchema.AccountEntry.COLUMN_UID
+                           + " != '"
+                           + mAccountUID
+                           + "' "
+                           //when creating a new account mAccountUID is null, so don't use whereArgs
+                           + " AND "
+                           + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER
+                           + "=0"
+                           + " AND "
+                           + DatabaseSchema.AccountEntry.COLUMN_HIDDEN
+                           + "=0"
+                           + " AND "
+                           + DatabaseSchema.AccountEntry.COLUMN_TYPE
+                           + " != ?";
+
+        // TODO TW C 2020-02-08 : A remplacer par
+//        Cursor defaultTransferAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition,
+//                                                                                                new String[]{AccountType.ROOT.name()});
+        Cursor defaultTransferAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(condition,
+                                                                                                           new String[]{AccountType.ROOT.name()});
 
         if (mDefaultTransferAccountSpinner.getCount() <= 0) {
             setDefaultTransferAccountInputsVisible(false);
         }
 
         mDefaultTransferAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
-                                                                                     defaultTransferAccountCursor);
+                                                                                     defaultTransferAccountCursor,
+                                                                                     // TODO TW C 2020-02-08 : Améliorer la colorisation
+                                                                                     R.layout.account_spinner_dropdown_item);
+
         mDefaultTransferAccountSpinner.setAdapter(mDefaultTransferAccountCursorAdapter);
     }
 
@@ -595,40 +616,65 @@ public class AccountFormFragment extends Fragment {
      * The allowed parent accounts depends on the account type
      * @param accountType AccountType of account whose allowed parent list is to be loaded
      */
-	private void loadParentAccountList(AccountType accountType){
-        String condition = DatabaseSchema.SplitEntry.COLUMN_TYPE + " IN ("
-                + getAllowedParentAccountTypes(accountType) + ") AND " + DatabaseSchema.AccountEntry.COLUMN_HIDDEN + "!=1 ";
+    private void loadParentAccountList(AccountType accountType) {
 
-        if (mAccount != null){  //if editing an account
-            mDescendantAccountUIDs = mAccountsDbAdapter.getDescendantAccountUIDs(mAccount.getUID(), null, null);
-            String rootAccountUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
+        String condition = DatabaseSchema.SplitEntry.COLUMN_TYPE
+                           + " IN ("
+                           + getAllowedParentAccountTypes(accountType)
+                           + ") AND "
+                           + DatabaseSchema.AccountEntry.COLUMN_HIDDEN
+                           + "!=1 ";
+
+        if (mAccount != null) {  //if editing an account
+            mDescendantAccountUIDs = mAccountsDbAdapter.getDescendantAccountUIDs(mAccount.getUID(),
+                                                                                 null,
+                                                                                 null);
+            String       rootAccountUID        = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
             List<String> descendantAccountUIDs = new ArrayList<>(mDescendantAccountUIDs);
-            if (rootAccountUID != null)
+            if (rootAccountUID != null) {
                 descendantAccountUIDs.add(rootAccountUID);
+            }
             // limit cyclic account hierarchies.
-            condition += " AND (" + DatabaseSchema.AccountEntry.COLUMN_UID + " NOT IN ( '"
-                    + TextUtils.join("','", descendantAccountUIDs) + "','" + mAccountUID + "' ) )";
+            condition += " AND ("
+                         + DatabaseSchema.AccountEntry.COLUMN_UID
+                         + " NOT IN ( '"
+                         + TextUtils.join("','",
+                                          descendantAccountUIDs)
+                         + "','"
+                         + mAccountUID
+                         + "' ) )";
         }
 
         //if we are reloading the list, close the previous cursor first
-        if (mParentAccountCursor != null)
+        if (mParentAccountCursor != null) {
             mParentAccountCursor.close();
+        }
 
-		mParentAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition, null);
+//                mParentAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition,
+//                                                                                         null);
+        mParentAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(condition,
+                                                                                            null);
+
         final View view = getView();
         assert view != null;
-        if (mParentAccountCursor.getCount() <= 0){
+        if (mParentAccountCursor.getCount() <= 0) {
             mParentCheckBox.setChecked(false); //disable before hiding, else we can still read it when saving
-            view.findViewById(R.id.layout_parent_account).setVisibility(View.GONE);
-            view.findViewById(R.id.label_parent_account).setVisibility(View.GONE);
+            view.findViewById(R.id.layout_parent_account)
+                .setVisibility(View.GONE);
+            view.findViewById(R.id.label_parent_account)
+                .setVisibility(View.GONE);
         } else {
-            view.findViewById(R.id.layout_parent_account).setVisibility(View.VISIBLE);
-            view.findViewById(R.id.label_parent_account).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.layout_parent_account)
+                .setVisibility(View.VISIBLE);
+            view.findViewById(R.id.label_parent_account)
+                .setVisibility(View.VISIBLE);
         }
 
         mParentAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
-                                                                            mParentAccountCursor);
-		mParentAccountSpinner.setAdapter(mParentAccountCursorAdapter);
+                                                                            mParentAccountCursor,
+                                                                            // TODO TW C 2020-02-08 : Améliorer la colorisation
+                                                                            R.layout.account_spinner_dropdown_item);
+        mParentAccountSpinner.setAdapter(mParentAccountCursorAdapter);
     }
 
     /**

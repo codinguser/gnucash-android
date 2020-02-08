@@ -132,12 +132,10 @@
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
                       android:focusable="false"        />
-            <Spinner
+            <org.gnucash.android.ui.util.widget.searchablespinner.SearchableSpinnerView
                     android:id="@+id/input_parent_account"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:spinnerMode="dropdown"
-                    android:dropDownWidth="match_parent"
                 />
         </LinearLayout>
 
@@ -158,7 +156,8 @@
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
                       android:focusable="false" />
-            <Spinner
+
+            <org.gnucash.android.ui.util.widget.searchablespinner.SearchableSpinnerView
                     android:id="@+id/input_default_transfer_account"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
