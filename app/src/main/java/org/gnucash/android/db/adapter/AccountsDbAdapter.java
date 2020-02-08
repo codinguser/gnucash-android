@@ -733,8 +733,12 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         Log.v(LOG_TAG, "Fetching all accounts from db where " + where + " order by " + orderBy);
 
         return mDb.query(AccountEntry.TABLE_NAME,
-                null, where, whereArgs, null, null,
-                orderBy);
+                         null,
+                         where,
+                         whereArgs,
+                         null,
+                         null,
+                         orderBy);
     }
     
     /**
@@ -745,10 +749,16 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      * @return Cursor set of accounts which fulfill <code>where</code>
      */
     public Cursor fetchAccountsOrderedByFullName(String where, String[] whereArgs) {
+
         Log.v(LOG_TAG, "Fetching all accounts from db where " + where);
+
         return mDb.query(AccountEntry.TABLE_NAME,
-                null, where, whereArgs, null, null,
-                AccountEntry.COLUMN_FULL_NAME + " ASC");
+                         null,
+                         where,
+                         whereArgs,
+                         null,
+                         null,
+                         AccountEntry.COLUMN_FULL_NAME + " ASC");
     }
 
     /**
@@ -960,12 +970,18 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      */
     public Cursor fetchTopLevelAccounts() {
         //condition which selects accounts with no parent, whose UID is not ROOT and whose type is not ROOT
-        return fetchAccounts("(" + AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " IS NULL OR "
-                        + AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " = ?) AND "
-                        + AccountEntry.COLUMN_HIDDEN + " = 0 AND "
-                        + AccountEntry.COLUMN_TYPE + " != ?",
-                new String[]{getOrCreateGnuCashRootAccountUID(), AccountType.ROOT.name()},
-                AccountEntry.COLUMN_NAME + " ASC");
+        return fetchAccounts("("
+                             + AccountEntry.COLUMN_PARENT_ACCOUNT_UID
+                             + " IS NULL OR "
+                             + AccountEntry.COLUMN_PARENT_ACCOUNT_UID
+                             + " = ?) AND "
+                             + AccountEntry.COLUMN_HIDDEN
+                             + " = 0 AND "
+                             + AccountEntry.COLUMN_TYPE
+                             + " != ?",
+                             new String[]{getOrCreateGnuCashRootAccountUID(),
+                                          AccountType.ROOT.name()},
+                             AccountEntry.COLUMN_NAME + " ASC");
     }
 
     /**

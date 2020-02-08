@@ -25,7 +25,6 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -433,19 +432,24 @@ public class AccountsListFragment extends Fragment implements
 
         @Override
         public Cursor loadInBackground() {
+
             mDatabaseAdapter = AccountsDbAdapter.getInstance();
             Cursor cursor;
 
-            if (mFilter != null){
-                cursor = ((AccountsDbAdapter)mDatabaseAdapter)
-                        .fetchAccounts(DatabaseSchema.AccountEntry.COLUMN_HIDDEN + "= 0 AND "
-                                + DatabaseSchema.AccountEntry.COLUMN_NAME + " LIKE '%" + mFilter + "%'",
-                                null, null);
+            if (mFilter != null) {
+                cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchAccounts(DatabaseSchema.AccountEntry.COLUMN_HIDDEN
+                                                                              + "= 0 AND "
+                                                                              + DatabaseSchema.AccountEntry.COLUMN_NAME
+                                                                              + " LIKE '%"
+                                                                              + mFilter
+                                                                              + "%'",
+                                                                              null,
+                                                                              null);
             } else {
-                if (mParentAccountUID != null && mParentAccountUID.length() > 0)
+                if (mParentAccountUID != null && mParentAccountUID.length() > 0) {
                     cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchSubAccounts(mParentAccountUID);
-                else {
-                    switch (this.mDisplayMode){
+                } else {
+                    switch (this.mDisplayMode) {
                         case RECENT:
                             cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchRecentAccounts(10);
                             break;
@@ -461,8 +465,9 @@ public class AccountsListFragment extends Fragment implements
 
             }
 
-            if (cursor != null)
+            if (cursor != null) {
                 registerContentObserver(cursor);
+            }
             return cursor;
         }
     }

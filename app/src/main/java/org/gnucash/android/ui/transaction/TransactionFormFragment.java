@@ -309,7 +309,9 @@ public class TransactionFormFragment extends Fragment implements
 
     @Override
 	public void onActivityCreated(Bundle savedInstanceState) {
+
 		super.onActivityCreated(savedInstanceState);
+
 		setHasOptionsMenu(true);
 
 		SharedPreferences sharedPrefs = PreferenceActivity.getActiveBookSharedPreferences();
@@ -608,6 +610,7 @@ public class TransactionFormFragment extends Fragment implements
      * Only accounts with the same currency can be transferred to
      */
 	private void updateTransferAccountsList(){
+
 		String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID + " != ?"
                             + " AND " + DatabaseSchema.AccountEntry.COLUMN_TYPE + " != ?"
                             + " AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"

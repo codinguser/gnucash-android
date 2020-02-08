@@ -107,7 +107,7 @@ public class SearchableSpinnerView
 
                 // Display SearchableListDialogFragment
                 _searchableListDialogFragment.show(scanForActivity(getContext()).getFragmentManager(),
-                                                       "TAG");
+                                                       "LOG_TAG");
             }
         }
 
