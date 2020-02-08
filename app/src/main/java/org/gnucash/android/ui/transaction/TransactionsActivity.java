@@ -49,7 +49,6 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
-import org.gnucash.android.db.adapter.DebugDb;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
@@ -135,8 +134,6 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 
         @Override
         public void onItemSelected(AdapterView<?> parent, View selectedItemView, int position, long id) {
-
-            DebugDb.showAccountFullName(mAccountsDbAdapter, id);
 
             mAccountUID = mAccountsDbAdapter.getUID(id);
             getIntent().putExtra(UxArgument.SELECTED_ACCOUNT_UID,
@@ -476,8 +473,8 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 
         while (accountsCursor.moveToNext()) {
 
-            String uid  = accountsCursor.getString(getAccountsCursor().getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
-            String name = accountsCursor.getString(getAccountsCursor().getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
+            String uid  = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
+            String name = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
 
             if (getCurrentAccountUID().equals(uid)) {
                 // Found
