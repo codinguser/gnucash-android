@@ -42,6 +42,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
@@ -446,6 +447,8 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 
         mToolbarSpinner.setAdapter(qualifiedAccountNameCursorAdapter);
 
+        mToolbarSpinner.setAllowPlaceHolderAccounts(true);
+
         mToolbarSpinner.setOnItemSelectedListener(mTransactionListNavigationListener);
 
         mToolbarSpinner.setOnCancelListener(mOnCancelListener);
@@ -465,23 +468,37 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 	 */
     public void selectCurrentAccountInToolbarSpinner() {
 
+        Cursor accountsCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName();
+
+        selectSpinnerAccount(accountsCursor,
+                             getCurrentAccountUID(),
+                             mToolbarSpinner);
+
+        accountsCursor.close();
+    }
+
+    public static void selectSpinnerAccount(Cursor accountsCursor,
+                                            final String accountUID,
+                                            final Spinner spinner) {
+
+        //
         // set the selected item in the spinner
+        //
+
         int     spinnerSelectedPosition = 0;
         boolean found                   = false;
 
-        Cursor accountsCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName();
-
-        while (accountsCursor.moveToNext()) {
+        for (accountsCursor.moveToFirst(); !accountsCursor.isAfterLast(); accountsCursor.moveToNext()) {
 
             String uid  = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
             String name = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
 
-            if (getCurrentAccountUID().equals(uid)) {
+            if (accountUID.equals(uid)) {
                 // Found
 
                 Log.d(LOG_TAG,
                       "Account found in current Cursor for ("
-                      + getCurrentAccountUID()
+                      + accountUID
                       + ") => ("
                       + name
                       + "), position ("
@@ -489,7 +506,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
                       + ")");
 
                 // Set Spinner selection
-                mToolbarSpinner.setSelection(spinnerSelectedPosition);
+                spinner.setSelection(spinnerSelectedPosition);
 
                 found = true;
                 break;
@@ -497,7 +514,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 
             ++spinnerSelectedPosition;
 
-        } // while
+        } // for
 
         if (found) {
             // Account has found
@@ -509,10 +526,8 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 
             // Log message
             Log.e(LOG_TAG,
-                  "No Account found in current Cursor for (" + getCurrentAccountUID() + ")");
+                  "No Account found in current Cursor for (" + accountUID + ")");
         }
-
-        accountsCursor.close();
     }
 
     @Override

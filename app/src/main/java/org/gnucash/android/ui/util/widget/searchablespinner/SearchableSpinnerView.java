@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
+import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -12,6 +13,9 @@ import android.view.View;
 import android.widget.SpinnerAdapter;
 
 import org.gnucash.android.R;
+import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
+
+import static org.gnucash.android.ui.transaction.TransactionsActivity.selectSpinnerAccount;
 
 public class SearchableSpinnerView
         extends android.support.v7.widget.AppCompatSpinner
@@ -19,6 +23,8 @@ public class SearchableSpinnerView
                    SearchableListDialogFragment.OnSearchableItemClickedListener {
 
     public static final int                  NO_ITEM_SELECTED = -1;
+
+    private boolean _allowPlaceHolderAccounts;
 
     private SearchableListDialogFragment _searchableListDialogFragment;
 
@@ -86,6 +92,9 @@ public class SearchableSpinnerView
         // S'abonner aux clicks sur un item
         _searchableListDialogFragment.setOnSearchableItemClickListener(this);
 
+        // By default, don't allow PlaceHolderAccounts in spinners
+        setAllowPlaceHolderAccounts(false);
+
         // S'abonner aux évènements onTouch
         setOnTouchListener(this);
     }
@@ -115,10 +124,16 @@ public class SearchableSpinnerView
     }
 
     @Override
-    public void onSearchableItemClicked(Object item,
+    public void onSearchableItemClicked(Object accountUID,
                                         int position) {
 
-        setSelection(position);
+        final Cursor cursor = ((QualifiedAccountNameCursorAdapter) getAdapter()).getCursor();
+
+        selectSpinnerAccount(cursor,
+                             (String) accountUID,
+                             this);
+
+//        setSelection(position);
     }
 
 
@@ -195,5 +210,15 @@ public class SearchableSpinnerView
         } else {
             return super.getSelectedItem();
         }
+    }
+
+    public void setAllowPlaceHolderAccounts(boolean allowPlaceHolderAccounts) {
+
+        _allowPlaceHolderAccounts = allowPlaceHolderAccounts;
+    }
+
+    public boolean isAllowPlaceHolderAccounts() {
+
+        return _allowPlaceHolderAccounts;
     }
 }

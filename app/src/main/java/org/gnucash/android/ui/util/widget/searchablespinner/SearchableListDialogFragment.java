@@ -237,6 +237,15 @@ public class SearchableListDialogFragment
         // Attach the adapter to the list
         _listView.setAdapter((ListAdapter) parentCursorAdapter);
 
+        // This does not work
+//        _listView.setAdapter((ListAdapter) new QualifiedAccountNameCursorAdapter(getActivity(),
+//                                                                                 parentCursorAdapter.getCursor(),
+//                                                                                 parentCursorAdapter.getSpinnerDropDownItemLayout(),
+//                                                                                 // ListView utilise uniquement le Layout
+//                                                                                 // ci-dessus pour les items
+//                                                                                 parentCursorAdapter.getSpinnerDropDownItemLayout() //
+//                                                                                 ));
+
         //
         // Set a filter that rebuild Cursor by running a new query based on a LIKE criteria
         //
@@ -255,10 +264,11 @@ public class SearchableListDialogFragment
                                                                                                           + " AND "
                                                                                                           + DatabaseSchema.AccountEntry.COLUMN_FULL_NAME
                                                                                                           + " LIKE ?"
-// TODO TW C 2020-02-08 : A améliorer
-                                                                                                          + " AND "
-                                                                                                          + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER
-                                                                                                          + " = 0",
+                                                                                                          + (((SearchableSpinnerView) getParentAdapterView()).isAllowPlaceHolderAccounts()
+                                                                                                             ? ""
+                                                                                                             : " AND "
+                                                                                                               + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER
+                                                                                                               + " = 0"),
                                                                                                           new String[]{AccountType.ROOT.name(),
                                                                                                                        "%"
                                                                                                                        + ((constraint
@@ -289,8 +299,10 @@ public class SearchableListDialogFragment
 
                     accountsCursor.moveToFirst();
 
+                    final String accountUID = accountsCursor.getString(accountsCursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_UID));
+
                     // Simulate a onSearchableItemClicked
-                    _onSearchableItemClickedListener.onSearchableItemClicked(accountsCursor.getString(accountsCursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME)),
+                    _onSearchableItemClickedListener.onSearchableItemClicked(accountUID,
                                                                              1);
 
                     dismissDialog();
@@ -304,15 +316,6 @@ public class SearchableListDialogFragment
             }
         });
 
-        // This does not work
-//        _listView.setAdapter((ListAdapter) new QualifiedAccountNameCursorAdapter(getActivity(),
-//                                                                                 parentCursorAdapter.getCursor(),
-//                                                                                 parentCursorAdapter.getSpinnerDropDownItemLayout(),
-//                                                                                 // ListView utilise uniquement le Layout
-//                                                                                 // ci-dessus pour les items
-//                                                                                 parentCursorAdapter.getSpinnerDropDownItemLayout() //
-//                                                                                 ));
-
 //        // Enable filtering based on search text field
 //        _listView.setTextFilterEnabled(false);
 
@@ -325,12 +328,12 @@ public class SearchableListDialogFragment
                                     int position,
                                     long id) {
 
-                final CursorAdapter parentCursorAdapter   = (CursorAdapter) getParentAdapterView().getAdapter();
-                final Cursor        cursor          = (Cursor) parentCursorAdapter.getItem(position);
-                final String        accountFullName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
+                final CursorAdapter parentCursorAdapter = (CursorAdapter) getParentAdapterView().getAdapter();
+                final Cursor        cursor              = (Cursor) parentCursorAdapter.getItem(position);
+                final String        accountUID          = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
 
                 // Call Listener
-                _onSearchableItemClickedListener.onSearchableItemClicked(accountFullName,
+                _onSearchableItemClickedListener.onSearchableItemClicked(accountUID,
                                                                          position);
 
                 dismissDialog();
