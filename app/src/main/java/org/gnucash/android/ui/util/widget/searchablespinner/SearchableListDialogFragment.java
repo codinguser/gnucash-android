@@ -237,6 +237,73 @@ public class SearchableListDialogFragment
         // Attach the adapter to the list
         _listView.setAdapter((ListAdapter) parentCursorAdapter);
 
+        //
+        // Set a filter that rebuild Cursor by running a new query based on a LIKE criteria
+        //
+
+        parentCursorAdapter.setFilterQueryProvider(new FilterQueryProvider() {
+
+            public Cursor runQuery(CharSequence constraint) {
+
+                final AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
+
+                final Cursor accountsCursor = accountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(DatabaseSchema.AccountEntry.COLUMN_HIDDEN
+                                                                                                          + " = 0"
+                                                                                                          + " AND "
+                                                                                                          + DatabaseSchema.AccountEntry.COLUMN_TYPE
+                                                                                                          + " != ?"
+                                                                                                          + " AND "
+                                                                                                          + DatabaseSchema.AccountEntry.COLUMN_FULL_NAME
+                                                                                                          + " LIKE ?",
+// TODO TW C 2020-02-08 : A améliorer
+//                                                                                                          + " AND "
+//                                                                                                          + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER
+//                                                                                                          + " = 0",
+                                                                                                          new String[]{AccountType.ROOT.name(),
+                                                                                                                       "%"
+                                                                                                                       + ((constraint
+                                                                                                                           != null)
+                                                                                                                          ? constraint.toString()
+                                                                                                                          : "")
+                                                                                                                       + "%"});
+                return accountsCursor;
+            }
+        });
+
+        //
+        // Register a Listener to close dialog if there is only one item remaining in the filtered list, and select it
+        // automatically
+        //
+
+        parentCursorAdapter.registerDataSetObserver(new DataSetObserver() {
+
+            @Override
+            public void onChanged() {
+
+                super.onChanged();
+
+                final Cursor accountsCursor = parentCursorAdapter.getCursor();
+
+                if (accountsCursor.getCount() == 1) {
+                    // only one account
+
+                    accountsCursor.moveToFirst();
+
+                    // Simulate a onSearchableItemClicked
+                    _onSearchableItemClickedListener.onSearchableItemClicked(accountsCursor.getString(accountsCursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME)),
+                                                                             1);
+
+                    dismissDialog();
+
+                } else {
+                    // only one account n' pas
+
+                    // RAF
+                }
+
+            }
+        });
+
         // This does not work
 //        _listView.setAdapter((ListAdapter) new QualifiedAccountNameCursorAdapter(getActivity(),
 //                                                                                 parentCursorAdapter.getCursor(),
@@ -248,9 +315,6 @@ public class SearchableListDialogFragment
 
 //        // Enable filtering based on search text field
 //        _listView.setTextFilterEnabled(false);
-
-        // Simulate an empty search text field to build the full accounts list
-        onQueryTextChange(null);
 
         // On item click listener
         _listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -272,6 +336,9 @@ public class SearchableListDialogFragment
                 dismissDialog();
             }
         });
+
+        // Simulate an empty search text field to build the full accounts list
+        onQueryTextChange(null);
     }
 
     // Crash on orientation change #7
@@ -366,72 +433,6 @@ public class SearchableListDialogFragment
         //
 
         final QualifiedAccountNameCursorAdapter listViewCursorAdapter = (QualifiedAccountNameCursorAdapter) _listView.getAdapter();
-
-        //
-        // Set a filter that rebuild Cursor by running a new query based on a LIKE criteria
-        //
-
-        listViewCursorAdapter.setFilterQueryProvider(new FilterQueryProvider() {
-
-            public Cursor runQuery(CharSequence constraint) {
-
-                final AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
-
-                final Cursor accountsCursor = accountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(DatabaseSchema.AccountEntry.COLUMN_HIDDEN
-                                                                                                          + " = 0"
-                                                                                                          + " AND "
-                                                                                                          + DatabaseSchema.AccountEntry.COLUMN_TYPE
-                                                                                                          + " != ?"
-                                                                                                          + " AND "
-                                                                                                          + DatabaseSchema.AccountEntry.COLUMN_FULL_NAME
-                                                                                                          + " LIKE ?"
-                                                                                                          + " AND "
-                                                                                                          + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER
-                                                                                                          + " = 0",
-                                                                                                          new String[]{AccountType.ROOT.name(),
-                                                                                                                       "%"
-                                                                                                                       + ((constraint
-                                                                                                                           != null)
-                                                                                                                          ? constraint.toString()
-                                                                                                                          : "")
-                                                                                                                       + "%"});
-                return accountsCursor;
-            }
-        });
-
-        //
-        // Register a Listener to close dialog if there is only one item remaining in the filtered list, and select it
-        // automatically
-        //
-
-        listViewCursorAdapter.registerDataSetObserver(new DataSetObserver() {
-
-            @Override
-            public void onChanged() {
-
-                super.onChanged();
-
-                final Cursor accountsCursor = listViewCursorAdapter.getCursor();
-
-                if (accountsCursor.getCount() == 1) {
-                    // only one account
-
-                    accountsCursor.moveToFirst();
-
-                    // Simulate a onSearchableItemClicked
-                    _onSearchableItemClickedListener.onSearchableItemClicked(accountsCursor.getString(accountsCursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME)),
-                                                                             1);
-
-                    dismissDialog();
-
-                } else {
-                    // only one account n' pas
-
-                    // RAF
-                }
-
-            }
-        });
 
         //
         // Start filtering thread
