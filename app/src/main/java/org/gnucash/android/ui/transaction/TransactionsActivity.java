@@ -477,6 +477,13 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         accountsCursor.close();
     }
 
+    /**
+     *
+     * @param accountsCursor
+     * @param accountUID
+     * @param spinner
+     */
+    // TODO TW C 2020-02-08 : A déplacer
     public static void selectSpinnerAccount(Cursor accountsCursor,
                                             final String accountUID,
                                             final Spinner spinner) {
