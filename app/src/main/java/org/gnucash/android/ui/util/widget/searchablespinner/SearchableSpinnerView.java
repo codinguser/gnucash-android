@@ -20,7 +20,7 @@ import static org.gnucash.android.ui.transaction.TransactionsActivity.selectSpin
 public class SearchableSpinnerView
         extends android.support.v7.widget.AppCompatSpinner
         implements View.OnTouchListener,
-                   SearchableListDialogFragment.OnSearchableItemClickedListener {
+                   SearchableListDialogFragment.OnSearchableItemClickedListener<String> {
 
     public static final int                  NO_ITEM_SELECTED = -1;
 
@@ -124,16 +124,13 @@ public class SearchableSpinnerView
     }
 
     @Override
-    public void onSearchableItemClicked(Object accountUID,
-                                        int position) {
+    public void onSearchableItemClicked(String itemAccountUID) {
 
         final Cursor cursor = ((QualifiedAccountNameCursorAdapter) getAdapter()).getCursor();
 
         selectSpinnerAccount(cursor,
-                             (String) accountUID,
+                             itemAccountUID,
                              this);
-
-//        setSelection(position);
     }
 
 
