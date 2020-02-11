@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.support.v4.widget.CursorAdapter;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,18 +36,21 @@ public class SearchableListDialogFragment
         implements SearchView.OnQueryTextListener,
                    SearchView.OnCloseListener {
 
+    // TODO TW C 2020-02-12 : Add Getter/Setters
+    private Cursor _accountsCursor;
+
     private DialogInterface.OnCancelListener _onCancelListener;
 
     /**
      * Listener to call when user clicks on an item
      *
      * @param <T>
+     *      item Type
      */
     public interface OnSearchableItemClickedListener<T>
             extends Serializable {
 
-        void onSearchableItemClicked(T item,
-                                     int position);
+        void onSearchableItemClicked(T item);
     }
 
     /**
@@ -72,7 +74,7 @@ public class SearchableListDialogFragment
 
     private OnSearchTextChangedListener _onSearchTextChangedListener;
 
-    private OnSearchableItemClickedListener _onSearchableItemClickedListener;
+    private OnSearchableItemClickedListener<String> _onSearchableItemClickedListener;
 
     private DialogInterface.OnClickListener _onPositiveBtnClickListener;
 
@@ -135,7 +137,7 @@ public class SearchableListDialogFragment
         // Description: As the instance was re initializing to null on rotating the device,
         // getting the instance from the saved instance
         if (null != savedInstanceState) {
-            _onSearchableItemClickedListener = (OnSearchableItemClickedListener) savedInstanceState.getSerializable("item");
+            _onSearchableItemClickedListener = (OnSearchableItemClickedListener<String>) savedInstanceState.getSerializable("item");
         }
         // Change End
 
@@ -228,29 +230,27 @@ public class SearchableListDialogFragment
         // (this is only a workaround because the setAdapter below does not work)
         //
 
-        QualifiedAccountNameCursorAdapter parentCursorAdapter =
-                (QualifiedAccountNameCursorAdapter) getParentAdapterView().getAdapter();
+        _accountsCursor = AccountsDbAdapter.getInstance()
+                                           .fetchAccountsOrderedByFavoriteAndFullName();
 
-        parentCursorAdapter.setViewResource(parentCursorAdapter.getSpinnerDropDownItemLayout());
+        QualifiedAccountNameCursorAdapter qualifiedAccountNameCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
+                                                                                                                    _accountsCursor,
+                                                                                                                    ((QualifiedAccountNameCursorAdapter) getParentAdapterView().getAdapter()).getSpinnerDropDownItemLayout(),
+                                                                                                                    // ListView utilise uniquement le Layout
+                                                                                                                    // ci-dessus pour les items
+                                                                                                                    ((QualifiedAccountNameCursorAdapter) getParentAdapterView().getAdapter()).getSpinnerDropDownItemLayout());
 
-
-        // Attach the adapter to the list
-        _listView.setAdapter((ListAdapter) parentCursorAdapter);
-
-        // This does not work
-//        _listView.setAdapter((ListAdapter) new QualifiedAccountNameCursorAdapter(getActivity(),
-//                                                                                 parentCursorAdapter.getCursor(),
-//                                                                                 parentCursorAdapter.getSpinnerDropDownItemLayout(),
-//                                                                                 // ListView utilise uniquement le Layout
-//                                                                                 // ci-dessus pour les items
-//                                                                                 parentCursorAdapter.getSpinnerDropDownItemLayout() //
-//                                                                                 ));
+        qualifiedAccountNameCursorAdapter.setViewResource(qualifiedAccountNameCursorAdapter.getSpinnerDropDownItemLayout());
 
         //
         // Set a filter that rebuild Cursor by running a new query based on a LIKE criteria
+        // with or without Placeholder accounts
         //
 
-        parentCursorAdapter.setFilterQueryProvider(new FilterQueryProvider() {
+//        // Enable filtering based on search text field
+//        _listView.setTextFilterEnabled(true);
+
+        qualifiedAccountNameCursorAdapter.setFilterQueryProvider(new FilterQueryProvider() {
 
             public Cursor runQuery(CharSequence constraint) {
 
@@ -285,14 +285,12 @@ public class SearchableListDialogFragment
         // automatically
         //
 
-        parentCursorAdapter.registerDataSetObserver(new DataSetObserver() {
+        qualifiedAccountNameCursorAdapter.registerDataSetObserver(new DataSetObserver() {
 
             @Override
             public void onChanged() {
 
-                super.onChanged();
-
-                final Cursor accountsCursor = parentCursorAdapter.getCursor();
+                final Cursor accountsCursor = qualifiedAccountNameCursorAdapter.getCursor();
 
                 if (accountsCursor.getCount() == 1) {
                     // only one account
@@ -302,8 +300,7 @@ public class SearchableListDialogFragment
                     final String accountUID = accountsCursor.getString(accountsCursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_UID));
 
                     // Simulate a onSearchableItemClicked
-                    _onSearchableItemClickedListener.onSearchableItemClicked(accountUID,
-                                                                             1);
+                    _onSearchableItemClickedListener.onSearchableItemClicked(accountUID);
 
                     dismissDialog();
 
@@ -316,9 +313,6 @@ public class SearchableListDialogFragment
             }
         });
 
-//        // Enable filtering based on search text field
-//        _listView.setTextFilterEnabled(false);
-
         // On item click listener
         _listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -328,20 +322,109 @@ public class SearchableListDialogFragment
                                     int position,
                                     long id) {
 
-                final CursorAdapter parentCursorAdapter = (CursorAdapter) getParentAdapterView().getAdapter();
-                final Cursor        cursor              = (Cursor) parentCursorAdapter.getItem(position);
-                final String        accountUID          = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
+                final Cursor cursor     = (Cursor) qualifiedAccountNameCursorAdapter.getItem(position);
+                final String accountUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
 
                 // Call Listener
-                _onSearchableItemClickedListener.onSearchableItemClicked(accountUID,
-                                                                         position);
+                _onSearchableItemClickedListener.onSearchableItemClicked(accountUID);
 
                 dismissDialog();
             }
         });
 
+        //
+        // Attach the adapter to the list
+        //
+
+        _listView.setAdapter((ListAdapter) qualifiedAccountNameCursorAdapter);
+
         // Simulate an empty search text field to build the full accounts list
         onQueryTextChange(null);
+    }
+
+
+    @Override
+    public boolean onQueryTextChange(String s) {
+
+//        _listView.setFilterText(s);
+
+        //
+        // Filter item list
+        //
+
+        final QualifiedAccountNameCursorAdapter listViewCursorAdapter = (QualifiedAccountNameCursorAdapter) _listView.getAdapter();
+
+        //
+        // Start filtering thread
+        //
+
+        if (TextUtils.isEmpty(s)) {
+
+            listViewCursorAdapter.getFilter()
+                                 .filter(null);
+
+        } else {
+
+            listViewCursorAdapter.getFilter()
+                                 .filter(s);
+        }
+
+        listViewCursorAdapter.notifyDataSetChanged();
+
+        //
+        // Call Search Text Change Listener
+        //
+
+        if (_onSearchTextChangedListener != null) {
+
+            // Call Listener
+            _onSearchTextChangedListener.onSearchTextChanged(s);
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String s) {
+
+        _searchTextEditView.clearFocus();
+
+        return true;
+    }
+
+
+    protected void dismissDialog() {
+
+        //
+        // Restore original Spinner Selected Item Layout
+        //
+
+        QualifiedAccountNameCursorAdapter parentCursorAdapter =
+                (QualifiedAccountNameCursorAdapter) getParentAdapterView().getAdapter();
+
+        parentCursorAdapter.setViewResource(parentCursorAdapter.getSpinnerSelectedItemLayout());
+
+        // TODO TW M 2020-02-02 : Génère une boucle infinie lorsque l'on tape parking, mais est nécessaire pour remettre le
+        //  "blanc"
+//        parentCursorAdapter.notifyDataSetChanged();
+
+        //
+        // Close cursor
+        //
+
+        _accountsCursor.close();
+
+        //
+        // Hide keyboard
+        //
+
+        KeyboardUtils.hideKeyboard(_searchTextEditView);
+
+        //
+        // Close Dialog
+        //
+
+        getDialog().dismiss();
     }
 
     // Crash on orientation change #7
@@ -373,7 +456,7 @@ public class SearchableListDialogFragment
         _onPositiveBtnClickListener = onClickListener;
     }
 
-    public void setOnSearchableItemClickListener(OnSearchableItemClickedListener onSearchableItemClickedListener) {
+    public void setOnSearchableItemClickListener(OnSearchableItemClickedListener<String> onSearchableItemClickedListener) {
 
         this._onSearchableItemClickedListener = onSearchableItemClickedListener;
     }
@@ -420,79 +503,6 @@ public class SearchableListDialogFragment
         super.onPause();
         dismiss();
     }
-
-    @Override
-    public boolean onQueryTextSubmit(String s) {
-
-        _searchTextEditView.clearFocus();
-        return true;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String s) {
-
-        //
-        // Filter item list
-        //
-
-        final QualifiedAccountNameCursorAdapter listViewCursorAdapter = (QualifiedAccountNameCursorAdapter) _listView.getAdapter();
-
-        //
-        // Start filtering thread
-        //
-
-        if (TextUtils.isEmpty(s)) {
-
-            listViewCursorAdapter.getFilter()
-                                 .filter(null);
-
-        } else {
-
-            listViewCursorAdapter.getFilter()
-                                 .filter(s);
-        }
-
-        //
-        // Call Search Text Change Listener
-        //
-
-        if (_onSearchTextChangedListener != null) {
-
-            // Call Listener
-            _onSearchTextChangedListener.onSearchTextChanged(s);
-        }
-
-        return true;
-    }
-
-    protected void dismissDialog() {
-
-        //
-        // Restore original Spinner Selected Item Layout
-        //
-
-        QualifiedAccountNameCursorAdapter parentCursorAdapter =
-                (QualifiedAccountNameCursorAdapter) getParentAdapterView().getAdapter();
-
-        parentCursorAdapter.setViewResource(parentCursorAdapter.getSpinnerSelectedItemLayout());
-
-        // TODO TW M 2020-02-02 : Génère une boucle infinie lorsque l'on tape parking, mais est nécessaire pour remettre le
-        //  "blanc"
-//        parentCursorAdapter.notifyDataSetChanged();
-
-        //
-        // Hide keyboard
-        //
-
-        KeyboardUtils.hideKeyboard(_searchTextEditView);
-
-        //
-        // Close Dialog
-        //
-
-        getDialog().dismiss();
-    }
-
     public AdapterView getParentAdapterView() {
 
         return _parentAdapterView;
