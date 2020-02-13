@@ -618,6 +618,15 @@ public class AccountFormFragment extends Fragment {
      */
     private void loadParentAccountList(AccountType accountType) {
 
+        mParentAccountSpinner.setAllowPlaceHolderAccounts(true);
+
+        // TODO TW C 2020-02-12 : La requête ci-dessous n'est plus utilisée, mais cela conduit peut-être à une erreur. Il
+        //  faudrait peut-être transmettre la condition et les whereargs jusqu'au SearchableListDialogFragment
+
+        //
+        // Build SQL request
+        //
+
         String condition = DatabaseSchema.SplitEntry.COLUMN_TYPE
                            + " IN ("
                            + getAllowedParentAccountTypes(accountType)
@@ -625,15 +634,20 @@ public class AccountFormFragment extends Fragment {
                            + DatabaseSchema.AccountEntry.COLUMN_HIDDEN
                            + "!=1 ";
 
-        if (mAccount != null) {  //if editing an account
+        if (mAccount != null) {
+            //if editing an account
+
             mDescendantAccountUIDs = mAccountsDbAdapter.getDescendantAccountUIDs(mAccount.getUID(),
                                                                                  null,
                                                                                  null);
+
             String       rootAccountUID        = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
             List<String> descendantAccountUIDs = new ArrayList<>(mDescendantAccountUIDs);
+
             if (rootAccountUID != null) {
                 descendantAccountUIDs.add(rootAccountUID);
             }
+
             // limit cyclic account hierarchies.
             condition += " AND ("
                          + DatabaseSchema.AccountEntry.COLUMN_UID
@@ -650,30 +664,45 @@ public class AccountFormFragment extends Fragment {
             mParentAccountCursor.close();
         }
 
-//                mParentAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition,
-//                                                                                         null);
         mParentAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(condition,
                                                                                             null);
 
+        //
+        // ?
+        //
+
         final View view = getView();
         assert view != null;
+
         if (mParentAccountCursor.getCount() <= 0) {
+            // No parent account
+
             mParentCheckBox.setChecked(false); //disable before hiding, else we can still read it when saving
+
             view.findViewById(R.id.layout_parent_account)
                 .setVisibility(View.GONE);
+
             view.findViewById(R.id.label_parent_account)
                 .setVisibility(View.GONE);
+
         } else {
+
             view.findViewById(R.id.layout_parent_account)
                 .setVisibility(View.VISIBLE);
+
             view.findViewById(R.id.label_parent_account)
                 .setVisibility(View.VISIBLE);
         }
 
+        //
+        // Build CursorAdapter
+        //
+
         mParentAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
-                                                                            mParentAccountCursor,
+                                                                            null,
                                                                             // TODO TW C 2020-02-08 : Améliorer la colorisation
                                                                             R.layout.account_spinner_dropdown_item);
+
         mParentAccountSpinner.setAdapter(mParentAccountCursorAdapter);
     }
 
