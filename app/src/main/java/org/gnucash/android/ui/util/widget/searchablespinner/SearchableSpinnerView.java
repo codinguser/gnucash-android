@@ -17,6 +17,7 @@ import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import static org.gnucash.android.ui.transaction.TransactionsActivity.selectSpinnerAccount;
 
+// TODO TW C 2020-02-13 : A renommer SearchableCursorSpinnerView
 public class SearchableSpinnerView
         extends android.support.v7.widget.AppCompatSpinner
         implements View.OnTouchListener,
@@ -24,7 +25,9 @@ public class SearchableSpinnerView
 
     public static final int                  NO_ITEM_SELECTED = -1;
 
-    private boolean _allowPlaceHolderAccounts;
+    // Clause WHERE du Cursor (en vue de pouvoir la rejouer pour la filtrer
+    private String   mCursorWhere;
+    private String[] mCursorWhereArgs;
 
     private SearchableListDialogFragment _searchableListDialogFragment;
 
@@ -92,9 +95,6 @@ public class SearchableSpinnerView
         // S'abonner aux clicks sur un item
         _searchableListDialogFragment.setOnSearchableItemClickListener(this);
 
-        // By default, don't allow PlaceHolderAccounts in spinners
-        setAllowPlaceHolderAccounts(false);
-
         // S'abonner aux évènements onTouch
         setOnTouchListener(this);
     }
@@ -134,11 +134,60 @@ public class SearchableSpinnerView
     }
 
 
+    /**
+     * Set the SpinnerAdapter and store the where clause
+     * in order to be able to filter by running the where clause
+     * completed with constraint on the account full name
+     *
+     * @param adapter
+     * @param cursorWhere
+     * @param cursorWhereArgs
+     */
+    public void setAdapter(SpinnerAdapter adapter,
+                           String cursorWhere,
+                           String[] cursorWhereArgs) {
+
+        // Use given adapter for spinner item (not drop down)
+        super.setAdapter(adapter);
+
+        // Store the WHERE clause associated with the Cursor
+        setCursorWhere(cursorWhere);
+        setCursorWhereArgs(cursorWhereArgs);
+    }
+
+    /**
+     * DO NOT USE this method.
+     *
+     * Use the above one
+     *
+     * @param adapter
+     */
     @Override
+    @Deprecated
     public void setAdapter(SpinnerAdapter adapter) {
 
         // Use given adapter for spinner item (not drop down)
         super.setAdapter(adapter);
+    }
+
+    String getCursorWhere() {
+
+        return mCursorWhere;
+    }
+
+    protected void setCursorWhere(final String cursorWhere) {
+
+        mCursorWhere = cursorWhere;
+    }
+
+    String[] getCursorWhereArgs() {
+
+        return mCursorWhereArgs;
+    }
+
+    protected void setCursorWhereArgs(final String[] cursorWhereArgs) {
+
+        mCursorWhereArgs = cursorWhereArgs;
     }
 
     public void setTitle(String strTitle) {
@@ -209,13 +258,4 @@ public class SearchableSpinnerView
         }
     }
 
-    public void setAllowPlaceHolderAccounts(boolean allowPlaceHolderAccounts) {
-
-        _allowPlaceHolderAccounts = allowPlaceHolderAccounts;
-    }
-
-    public boolean isAllowPlaceHolderAccounts() {
-
-        return _allowPlaceHolderAccounts;
-    }
 }
