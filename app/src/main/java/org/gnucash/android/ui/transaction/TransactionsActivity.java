@@ -52,6 +52,7 @@ import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
+import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.account.AccountsListFragment;
@@ -445,9 +446,9 @@ public class TransactionsActivity extends BaseDrawerActivity implements
                                                                                                  getAccountsCursor(),
                                                                                                  R.layout.transaction_account_spinner_item);
 
-        mToolbarSpinner.setAdapter(qualifiedAccountNameCursorAdapter);
-
-        mToolbarSpinner.setAllowPlaceHolderAccounts(true);
+        mToolbarSpinner.setAdapter(qualifiedAccountNameCursorAdapter,
+                                   AccountsDbAdapter.WHERE_NOT_HIDDEN_AND_NOT_ROOT_ACCOUNT,
+                                   new String[]{AccountType.ROOT.name()});
 
         mToolbarSpinner.setOnItemSelectedListener(mTransactionListNavigationListener);
 

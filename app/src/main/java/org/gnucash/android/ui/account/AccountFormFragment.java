@@ -578,6 +578,7 @@ public class AccountFormFragment extends Fragment {
      */
     private void loadDefaultTransferAccountList() {
 
+        // Get Accounts that are not hidden, nor Placeholder, nor root Account, nor the edited Account itself
         String condition = DatabaseSchema.AccountEntry.COLUMN_UID
                            + " != '"
                            + mAccountUID
@@ -593,11 +594,10 @@ public class AccountFormFragment extends Fragment {
                            + DatabaseSchema.AccountEntry.COLUMN_TYPE
                            + " != ?";
 
-        // TODO TW C 2020-02-08 : A remplacer par
-//        Cursor defaultTransferAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition,
-//                                                                                                new String[]{AccountType.ROOT.name()});
+        final String[] whereArgs = {AccountType.ROOT.name()};
+
         Cursor defaultTransferAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(condition,
-                                                                                                           new String[]{AccountType.ROOT.name()});
+                                                                                                           whereArgs);
 
         if (mDefaultTransferAccountSpinner.getCount() <= 0) {
             setDefaultTransferAccountInputsVisible(false);
@@ -608,7 +608,9 @@ public class AccountFormFragment extends Fragment {
                                                                                      // TODO TW C 2020-02-08 : Améliorer la colorisation
                                                                                      R.layout.account_spinner_dropdown_item);
 
-        mDefaultTransferAccountSpinner.setAdapter(mDefaultTransferAccountCursorAdapter);
+        mDefaultTransferAccountSpinner.setAdapter(mDefaultTransferAccountCursorAdapter,
+                                                  condition,
+                                                  whereArgs);
     }
 
     /**
@@ -617,11 +619,6 @@ public class AccountFormFragment extends Fragment {
      * @param accountType AccountType of account whose allowed parent list is to be loaded
      */
     private void loadParentAccountList(AccountType accountType) {
-
-        mParentAccountSpinner.setAllowPlaceHolderAccounts(true);
-
-        // TODO TW C 2020-02-12 : La requête ci-dessous n'est plus utilisée, mais cela conduit peut-être à une erreur. Il
-        //  faudrait peut-être transmettre la condition et les whereargs jusqu'au SearchableListDialogFragment
 
         //
         // Build SQL request
@@ -635,25 +632,35 @@ public class AccountFormFragment extends Fragment {
                            + "!=1 ";
 
         if (mAccount != null) {
-            //if editing an account
+            // An Account is defined
 
+            //
+            // Get descendant Accounts
+            //
+
+            // Get descendant Accounts UIDs
             mDescendantAccountUIDs = mAccountsDbAdapter.getDescendantAccountUIDs(mAccount.getUID(),
                                                                                  null,
                                                                                  null);
 
+            // Clone descendant Account UIDs
+            List<String> accountUIDsToExclude = new ArrayList<>(mDescendantAccountUIDs);
+
+            // Get root Account UID
             String       rootAccountUID        = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
-            List<String> descendantAccountUIDs = new ArrayList<>(mDescendantAccountUIDs);
 
             if (rootAccountUID != null) {
-                descendantAccountUIDs.add(rootAccountUID);
+
+                // Add root account to descendants
+                accountUIDsToExclude.add(rootAccountUID);
             }
 
-            // limit cyclic account hierarchies.
+            // Exclude Accounts to Exclude and edited Account itself
             condition += " AND ("
                          + DatabaseSchema.AccountEntry.COLUMN_UID
                          + " NOT IN ( '"
                          + TextUtils.join("','",
-                                          descendantAccountUIDs)
+                                          accountUIDsToExclude)
                          + "','"
                          + mAccountUID
                          + "' ) )";
@@ -686,6 +693,7 @@ public class AccountFormFragment extends Fragment {
                 .setVisibility(View.GONE);
 
         } else {
+            // There are potential parent accounts
 
             view.findViewById(R.id.layout_parent_account)
                 .setVisibility(View.VISIBLE);
@@ -699,11 +707,13 @@ public class AccountFormFragment extends Fragment {
         //
 
         mParentAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
-                                                                            null,
+                                                                            mParentAccountCursor,
                                                                             // TODO TW C 2020-02-08 : Améliorer la colorisation
                                                                             R.layout.account_spinner_dropdown_item);
 
-        mParentAccountSpinner.setAdapter(mParentAccountCursorAdapter);
+        mParentAccountSpinner.setAdapter(mParentAccountCursorAdapter,
+                                         condition,
+                                         null);
     }
 
     /**

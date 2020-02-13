@@ -619,9 +619,10 @@ public class TransactionFormFragment extends Fragment implements
         if (mCursor != null) {
             mCursor.close();
         }
+        final String[] whereArgs = {mAccountUID,
+                                    AccountType.ROOT.name()};
         mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(conditions,
-                                                                               new String[]{mAccountUID,
-                                                                                            AccountType.ROOT.name()});
+                                                                               whereArgs);
 
         mAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
                                                                       mCursor,
@@ -629,7 +630,9 @@ public class TransactionFormFragment extends Fragment implements
 //                                                                      android.R.layout.simple_spinner_item);
                                                                       R.layout.account_spinner_dropdown_item);
 
-        mTransferAccountSearchableSpinnerView.setAdapter(mAccountCursorAdapter);
+        mTransferAccountSearchableSpinnerView.setAdapter(mAccountCursorAdapter,
+                                                         conditions,
+                                                         whereArgs);
 	}
 
     /**

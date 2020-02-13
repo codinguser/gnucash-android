@@ -59,6 +59,7 @@ import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
 public class AccountsDbAdapter extends DatabaseAdapter<Account> {
+
     /**
      * Separator used for account name hierarchies between parent and child accounts
      */
@@ -71,7 +72,14 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      */
     public static final String ROOT_ACCOUNT_FULL_NAME = " ";
 
-	/**
+    /**
+     * Where clause to get non hidden nor root account
+     */
+    public static final String WHERE_NOT_HIDDEN_AND_NOT_ROOT_ACCOUNT =
+            AccountEntry.COLUMN_HIDDEN + " = 0 AND " + AccountEntry.COLUMN_TYPE + " != ?";
+
+
+    /**
 	 * Transactions database adapter for manipulating transactions associated with accounts
 	 */
     private final TransactionsDbAdapter mTransactionsAdapter;
@@ -794,9 +802,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      */
     public Cursor fetchAccountsOrderedByFavoriteAndFullName() {
 
-        String selection = AccountEntry.COLUMN_HIDDEN + " = 0 AND " + AccountEntry.COLUMN_TYPE + " != ?";
-
-        return fetchAccountsOrderedByFavoriteAndFullName(selection,
+        return fetchAccountsOrderedByFavoriteAndFullName(WHERE_NOT_HIDDEN_AND_NOT_ROOT_ACCOUNT,
                                                          new String[]{AccountType.ROOT.name()});
     }
 
