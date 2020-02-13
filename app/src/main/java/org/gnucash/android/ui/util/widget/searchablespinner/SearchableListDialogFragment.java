@@ -23,11 +23,13 @@ import android.widget.SearchView;
 import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
-import org.gnucash.android.model.AccountType;
 import org.gnucash.android.util.KeyboardUtils;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Pop-up that display a ListView with a search text field
@@ -77,7 +79,7 @@ public class SearchableListDialogFragment
     private DialogInterface.OnClickListener _onPositiveBtnClickListener;
 
     // Parent View
-    private AdapterView _parentAdapterView;
+    private SearchableSpinnerView _parentAdapterView;
 
 
     /**
@@ -92,7 +94,7 @@ public class SearchableListDialogFragment
      *
      * @return
      */
-    public static SearchableListDialogFragment makeInstance(AdapterView parentAdapterView) {
+    public static SearchableListDialogFragment makeInstance(SearchableSpinnerView parentAdapterView) {
 
         SearchableListDialogFragment searchableListDialogFragment = new SearchableListDialogFragment();
 
@@ -242,28 +244,39 @@ public class SearchableListDialogFragment
 
             public Cursor runQuery(CharSequence constraint) {
 
+                //
+                // Add %constraint% at the end of the whereArgs
+                //
+
+                // Convert WhereArgs into List
+                final String[] cursorWhereArgs = getParentAdapterView().getCursorWhereArgs();
+                final List<String> whereArgsAsList = (cursorWhereArgs != null)
+                                                     ? new ArrayList<String>(Arrays.asList(cursorWhereArgs))
+                                                     : new ArrayList<String>();
+
+                // Add the %constraint% for the LIKE added in the where clause
+                whereArgsAsList.add("%" + ((constraint != null)
+                                           ? constraint.toString()
+                                           : "") + "%");
+
+                // Convert List into WhereArgs
+                final String[] whereArgs = whereArgsAsList.toArray(new String[whereArgsAsList.size()]);
+
+
+                //
+                // Run the original query but constrained with full account name containing constraint
+                //
+
                 final AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
 
-                final Cursor accountsCursor = accountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(DatabaseSchema.AccountEntry.COLUMN_HIDDEN
-                                                                                                          + " = 0"
-                                                                                                          + " AND "
-                                                                                                          + DatabaseSchema.AccountEntry.COLUMN_TYPE
-                                                                                                          + " != ?"
-                                                                                                          + " AND "
-                                                                                                          + DatabaseSchema.AccountEntry.COLUMN_FULL_NAME
-                                                                                                          + " LIKE ?"
-                                                                                                          + (((SearchableSpinnerView) getParentAdapterView()).isAllowPlaceHolderAccounts()
-                                                                                                             ? ""
-                                                                                                             : " AND "
-                                                                                                               + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER
-                                                                                                               + " = 0"),
-                                                                                                          new String[]{AccountType.ROOT.name(),
-                                                                                                                       "%"
-                                                                                                                       + ((constraint
-                                                                                                                           != null)
-                                                                                                                          ? constraint.toString()
-                                                                                                                          : "")
-                                                                                                                       + "%"});
+                final String where = getParentAdapterView().getCursorWhere()
+                                     + " AND "
+                                     + DatabaseSchema.AccountEntry.COLUMN_FULL_NAME
+                                     + " LIKE ?";
+
+                final Cursor accountsCursor = accountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(where,
+                                                                                                          whereArgs);
+
                 return accountsCursor;
             }
         });
@@ -278,15 +291,14 @@ public class SearchableListDialogFragment
             @Override
             public void onChanged() {
 
-                // TODO TW C 2020-02-13 : A renommer filteredAccountsCursor
-                final Cursor accountsCursor = parentCursorAdapter.getCursor();
+                final Cursor filteredAccountsCursor = parentCursorAdapter.getCursor();
 
-                if (accountsCursor.getCount() == 1) {
+                if (filteredAccountsCursor.getCount() == 1) {
                     // only one account
 
-                    accountsCursor.moveToFirst();
+                    filteredAccountsCursor.moveToFirst();
 
-                    final String accountUID = accountsCursor.getString(accountsCursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_UID));
+                    final String accountUID = filteredAccountsCursor.getString(filteredAccountsCursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_UID));
 
                     // Simulate a onSearchableItemClicked
                     _onSearchableItemClickedListener.onSearchableItemClicked(accountUID);
@@ -483,12 +495,13 @@ public class SearchableListDialogFragment
         dismiss();
     }
 
-    public AdapterView getParentAdapterView() {
+    // TODO TW C 2020-02-13 : A renommer
+    public SearchableSpinnerView getParentAdapterView() {
 
         return _parentAdapterView;
     }
 
-    public void setParentAdapterView(AdapterView parentAdapterView) {
+    public void setParentAdapterView(SearchableSpinnerView parentAdapterView) {
 
         _parentAdapterView = parentAdapterView;
     }
