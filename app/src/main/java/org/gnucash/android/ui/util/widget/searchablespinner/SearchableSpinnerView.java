@@ -124,8 +124,7 @@ public class SearchableSpinnerView
     }
 
     @Override
-    public void onSearchableItemClicked(Object accountUID,
-                                        int position) {
+    public void onSearchableItemClicked(Object accountUID) {
 
         final Cursor cursor = ((QualifiedAccountNameCursorAdapter) getAdapter()).getCursor();
 
@@ -133,7 +132,6 @@ public class SearchableSpinnerView
                              (String) accountUID,
                              this);
 
-//        setSelection(position);
     }
 
 

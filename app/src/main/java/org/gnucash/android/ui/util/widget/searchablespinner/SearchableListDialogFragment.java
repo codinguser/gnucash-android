@@ -47,8 +47,7 @@ public class SearchableListDialogFragment
     public interface OnSearchableItemClickedListener<T>
             extends Serializable {
 
-        void onSearchableItemClicked(T item,
-                                     int position);
+        void onSearchableItemClicked(T item);
     }
 
     /**
@@ -233,19 +232,6 @@ public class SearchableListDialogFragment
 
         parentCursorAdapter.setViewResource(parentCursorAdapter.getSpinnerDropDownItemLayout());
 
-
-        // Attach the adapter to the list
-        _listView.setAdapter((ListAdapter) parentCursorAdapter);
-
-        // This does not work
-//        _listView.setAdapter((ListAdapter) new QualifiedAccountNameCursorAdapter(getActivity(),
-//                                                                                 parentCursorAdapter.getCursor(),
-//                                                                                 parentCursorAdapter.getSpinnerDropDownItemLayout(),
-//                                                                                 // ListView utilise uniquement le Layout
-//                                                                                 // ci-dessus pour les items
-//                                                                                 parentCursorAdapter.getSpinnerDropDownItemLayout() //
-//                                                                                 ));
-
         //
         // Set a filter that rebuild Cursor by running a new query based on a LIKE criteria
         //
@@ -302,8 +288,7 @@ public class SearchableListDialogFragment
                     final String accountUID = accountsCursor.getString(accountsCursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_UID));
 
                     // Simulate a onSearchableItemClicked
-                    _onSearchableItemClickedListener.onSearchableItemClicked(accountUID,
-                                                                             1);
+                    _onSearchableItemClickedListener.onSearchableItemClicked(accountUID);
 
                     dismissDialog();
 
@@ -316,8 +301,8 @@ public class SearchableListDialogFragment
             }
         });
 
-//        // Enable filtering based on search text field
-//        _listView.setTextFilterEnabled(false);
+        // Enable filtering based on search text field
+        _listView.setTextFilterEnabled(true);
 
         // On item click listener
         _listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -328,20 +313,95 @@ public class SearchableListDialogFragment
                                     int position,
                                     long id) {
 
-                final CursorAdapter parentCursorAdapter = (CursorAdapter) getParentAdapterView().getAdapter();
+//                final CursorAdapter parentCursorAdapter = (CursorAdapter) getParentAdapterView().getAdapter();
                 final Cursor        cursor              = (Cursor) parentCursorAdapter.getItem(position);
                 final String        accountUID          = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
 
                 // Call Listener
-                _onSearchableItemClickedListener.onSearchableItemClicked(accountUID,
-                                                                         position);
+                _onSearchableItemClickedListener.onSearchableItemClicked(accountUID);
 
                 dismissDialog();
             }
         });
 
+
+        // Attach the adapter to the list
+        _listView.setAdapter((ListAdapter) parentCursorAdapter);
+
         // Simulate an empty search text field to build the full accounts list
         onQueryTextChange(null);
+    }
+
+    @Override
+    public boolean onQueryTextChange(String s) {
+
+        //
+        // Start List filtering Thread
+        //
+
+        if (TextUtils.isEmpty(s)) {
+
+            // Force filtering with null string to get the full account list
+
+            final CursorAdapter listViewCursorAdapter = (QualifiedAccountNameCursorAdapter) _listView.getAdapter();
+
+            listViewCursorAdapter.getFilter()
+                                 .filter(null);
+
+        } else {
+
+            // Perform filtering
+
+            _listView.setFilterText(s);
+
+        }
+
+        //
+        // Call Search Text Change Listener
+        //
+
+        if (_onSearchTextChangedListener != null) {
+
+            // Call Listener
+            _onSearchTextChangedListener.onSearchTextChanged(s);
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String s) {
+
+        _searchTextEditView.clearFocus();
+
+        return true;
+    }
+
+    protected void dismissDialog() {
+
+        //
+        // Restore original Spinner Selected Item Layout
+        //
+
+        QualifiedAccountNameCursorAdapter parentCursorAdapter = (QualifiedAccountNameCursorAdapter) getParentAdapterView().getAdapter();
+
+        parentCursorAdapter.setViewResource(parentCursorAdapter.getSpinnerSelectedItemLayout());
+
+        // TODO TW M 2020-02-02 : Génère une boucle infinie lorsque l'on tape parking, mais est nécessaire pour remettre le
+        //  "blanc"
+//        parentCursorAdapter.notifyDataSetChanged();
+
+        //
+        // Hide keyboard
+        //
+
+        KeyboardUtils.hideKeyboard(_searchTextEditView);
+
+        //
+        // Close Dialog
+        //
+
+        getDialog().dismiss();
     }
 
     // Crash on orientation change #7
@@ -419,78 +479,6 @@ public class SearchableListDialogFragment
 
         super.onPause();
         dismiss();
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String s) {
-
-        _searchTextEditView.clearFocus();
-        return true;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String s) {
-
-        //
-        // Filter item list
-        //
-
-        final QualifiedAccountNameCursorAdapter listViewCursorAdapter = (QualifiedAccountNameCursorAdapter) _listView.getAdapter();
-
-        //
-        // Start filtering thread
-        //
-
-        if (TextUtils.isEmpty(s)) {
-
-            listViewCursorAdapter.getFilter()
-                                 .filter(null);
-
-        } else {
-
-            listViewCursorAdapter.getFilter()
-                                 .filter(s);
-        }
-
-        //
-        // Call Search Text Change Listener
-        //
-
-        if (_onSearchTextChangedListener != null) {
-
-            // Call Listener
-            _onSearchTextChangedListener.onSearchTextChanged(s);
-        }
-
-        return true;
-    }
-
-    protected void dismissDialog() {
-
-        //
-        // Restore original Spinner Selected Item Layout
-        //
-
-        QualifiedAccountNameCursorAdapter parentCursorAdapter =
-                (QualifiedAccountNameCursorAdapter) getParentAdapterView().getAdapter();
-
-        parentCursorAdapter.setViewResource(parentCursorAdapter.getSpinnerSelectedItemLayout());
-
-        // TODO TW M 2020-02-02 : Génère une boucle infinie lorsque l'on tape parking, mais est nécessaire pour remettre le
-        //  "blanc"
-//        parentCursorAdapter.notifyDataSetChanged();
-
-        //
-        // Hide keyboard
-        //
-
-        KeyboardUtils.hideKeyboard(_searchTextEditView);
-
-        //
-        // Close Dialog
-        //
-
-        getDialog().dismiss();
     }
 
     public AdapterView getParentAdapterView() {
