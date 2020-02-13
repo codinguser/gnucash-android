@@ -43,6 +43,7 @@ public class SearchableListDialogFragment
      * Listener to call when user clicks on an item
      *
      * @param <T>
+     *      item Type
      */
     public interface OnSearchableItemClickedListener<T>
             extends Serializable {
@@ -71,7 +72,7 @@ public class SearchableListDialogFragment
 
     private OnSearchTextChangedListener _onSearchTextChangedListener;
 
-    private OnSearchableItemClickedListener _onSearchableItemClickedListener;
+    private OnSearchableItemClickedListener<String> _onSearchableItemClickedListener;
 
     private DialogInterface.OnClickListener _onPositiveBtnClickListener;
 
@@ -134,7 +135,7 @@ public class SearchableListDialogFragment
         // Description: As the instance was re initializing to null on rotating the device,
         // getting the instance from the saved instance
         if (null != savedInstanceState) {
-            _onSearchableItemClickedListener = (OnSearchableItemClickedListener) savedInstanceState.getSerializable("item");
+            _onSearchableItemClickedListener = (OnSearchableItemClickedListener<String>) savedInstanceState.getSerializable("item");
         }
         // Change End
 
@@ -234,6 +235,7 @@ public class SearchableListDialogFragment
 
         //
         // Set a filter that rebuild Cursor by running a new query based on a LIKE criteria
+        // with or without Placeholder accounts
         //
 
         parentCursorAdapter.setFilterQueryProvider(new FilterQueryProvider() {
@@ -276,8 +278,7 @@ public class SearchableListDialogFragment
             @Override
             public void onChanged() {
 
-                super.onChanged();
-
+                // TODO TW C 2020-02-13 : A renommer filteredAccountsCursor
                 final Cursor accountsCursor = parentCursorAdapter.getCursor();
 
                 if (accountsCursor.getCount() == 1) {
@@ -313,7 +314,6 @@ public class SearchableListDialogFragment
                                     int position,
                                     long id) {
 
-//                final CursorAdapter parentCursorAdapter = (CursorAdapter) getParentAdapterView().getAdapter();
                 final Cursor        cursor              = (Cursor) parentCursorAdapter.getItem(position);
                 final String        accountUID          = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
 
@@ -324,8 +324,10 @@ public class SearchableListDialogFragment
             }
         });
 
-
+        //
         // Attach the adapter to the list
+        //
+
         _listView.setAdapter((ListAdapter) parentCursorAdapter);
 
         // Simulate an empty search text field to build the full accounts list
@@ -341,9 +343,9 @@ public class SearchableListDialogFragment
 
         if (TextUtils.isEmpty(s)) {
 
-            // Force filtering with null string to get the full account list
-
             final CursorAdapter listViewCursorAdapter = (QualifiedAccountNameCursorAdapter) _listView.getAdapter();
+
+            // Force filtering with null string to get the full account list
 
             listViewCursorAdapter.getFilter()
                                  .filter(null);
@@ -433,7 +435,7 @@ public class SearchableListDialogFragment
         _onPositiveBtnClickListener = onClickListener;
     }
 
-    public void setOnSearchableItemClickListener(OnSearchableItemClickedListener onSearchableItemClickedListener) {
+    public void setOnSearchableItemClickListener(OnSearchableItemClickedListener<String> onSearchableItemClickedListener) {
 
         this._onSearchableItemClickedListener = onSearchableItemClickedListener;
     }
