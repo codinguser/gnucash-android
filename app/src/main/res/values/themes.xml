@@ -40,8 +40,8 @@
     <style name="Theme.GnucashTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
 
         <!-- Set Spinner styles -->
-        <item name="android:spinnerItemStyle">@style/SpinnerItemTextView</item>
-        <item name="android:spinnerDropDownItemStyle">@style/SpinnerDropDownItemTextView</item>
+        <item name="android:spinnerItemStyle">@style/spinnerItemTextStyle</item>
+        <item name="android:spinnerDropDownItemStyle">@style/SpinnerDropDownItemText2Style</item>
 
         <!-- Set AppCompat’s color theming attrs -->
         <item name="colorPrimary">@color/theme_primary</item>

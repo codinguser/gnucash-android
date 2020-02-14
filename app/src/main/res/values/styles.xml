@@ -19,16 +19,21 @@
 
     <!-- Customize Spinner appearance -->
 
-    <style name="SpinnerItemTextView" parent="@android:style/Widget.TextView.SpinnerItem">
+    <style name="spinnerItemTextStyle" parent="@android:style/Widget.TextView.SpinnerItem">
         <item name="android:textColor">@color/bpWhite</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">start</item>
     </style>
 
-    <style name="SpinnerDropDownItemTextView" parent="Widget.AppCompat.DropDownItem.Spinner">
-        <item name="android:textColor">@color/bpblack</item>
-        <item name="android:textSize">18sp</item>
+    <style name="SpinnerDropDownItemText2Style" parent="spinnerItemTextStyle">
+        <item name="android:textColor">@color/theme_accent</item>
+        <item name="android:ellipsize">middle</item>
+    </style>
+
+    <style name="SpinnerDropDownItemText1Style" parent="spinnerItemTextStyle">
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textColor">@color/light_gray</item>
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">middle</item>
     </style>
@@ -52,7 +57,8 @@
         <item name="android:textColor">@android:color/black</item>
         <item name="android:gravity">center_vertical</item>
     </style>
-    
+
+    <!-- Spinner item with down arrow -->
     <style name="Dropdown.TextView" parent="@style/Widget.AppCompat.Spinner.DropDown.ActionBar">
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>

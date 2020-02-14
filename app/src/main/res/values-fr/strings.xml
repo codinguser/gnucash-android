@@ -446,5 +446,5 @@
   <string name="label_select_destination_after_export">Sélectionnez la destination une fois l\'exportation terminée</string>
   <string name="label_dropbox_export_destination">Exporter dans le dossier \'/Apps/GnuCash Android/\' sur Dropbox</string>
   <string name="title_section_preferences">Préférences</string>
-    <string name="select_transfer_account">Selectionner le Compte associé</string>
+    <string name="select_account">Selectionner un Compte</string>
 </resources>

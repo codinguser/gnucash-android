@@ -28,19 +28,18 @@ limitations under the License.
 
     <TextView
         android:id="@+id/text2"
+        tools:text="Account Simple Name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:singleLine="true"
+        style="?android:attr/spinnerDropDownItemStyle"
         android:ellipsize="end"
-        tools:text="Account Simple Name"
-        style="@style/ListItemText"/>
+        />
 
     <TextView
         android:id="@android:id/text1"
+        tools:text="Account Full Name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:singleLine="true"
-        android:ellipsize="middle"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        tools:text="Account Full Name"/>
+        style="@style/SpinnerDropDownItemText1Style"
+        />
 </LinearLayout>
