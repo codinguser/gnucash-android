@@ -138,7 +138,7 @@ public class QualifiedAccountNameCursorAdapter
      * @param isFavorite
      */
     public static void displayFavoriteAccountStarIcon(View view,
-                                                  Integer isFavorite) {
+                                                      Integer isFavorite) {
 
         // item text
         TextView text1 = (TextView) view.findViewById(android.R.id.text1);

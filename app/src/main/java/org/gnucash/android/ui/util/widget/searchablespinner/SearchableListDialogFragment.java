@@ -39,8 +39,6 @@ public class SearchableListDialogFragment
         implements SearchView.OnQueryTextListener,
                    SearchView.OnCloseListener {
 
-    private DialogInterface.OnCancelListener _onCancelListener;
-
     /**
      * Listener to call when user clicks on an item
      *
@@ -78,8 +76,13 @@ public class SearchableListDialogFragment
 
     private DialogInterface.OnClickListener _onPositiveBtnClickListener;
 
+    private DialogInterface.OnCancelListener _onCancelListener;
+
     // Parent View
     private SearchableSpinnerView _parentAdapterView;
+
+    private boolean mIsDismissing;
+
 
 
     /**
@@ -189,6 +192,8 @@ public class SearchableListDialogFragment
 
     private void configureView(View searchableListRootView) {
 
+        mIsDismissing=false;
+
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
 
         //
@@ -227,7 +232,6 @@ public class SearchableListDialogFragment
         //
         // Put temporarily DropDownItemLayout in selectedItemView,
         // because ListView use only selectedItemView for list item
-        // (this is only a workaround because the setAdapter below does not work)
         //
 
         QualifiedAccountNameCursorAdapter parentCursorAdapter =
@@ -300,10 +304,10 @@ public class SearchableListDialogFragment
 
                     final String accountUID = filteredAccountsCursor.getString(filteredAccountsCursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_UID));
 
+                    dismissDialog();
+
                     // Simulate a onSearchableItemClicked
                     _onSearchableItemClickedListener.onSearchableItemClicked(accountUID);
-
-                    dismissDialog();
 
                 } else {
                     // only one account n' pas
@@ -399,29 +403,41 @@ public class SearchableListDialogFragment
 
     protected void dismissDialog() {
 
-        //
-        // Restore original Spinner Selected Item Layout
-        //
+        if (!mIsDismissing) {
+            //
 
-        QualifiedAccountNameCursorAdapter parentCursorAdapter = (QualifiedAccountNameCursorAdapter) getParentAdapterView().getAdapter();
+            // Avoid infinite looping
+            mIsDismissing = true;
 
-        parentCursorAdapter.setViewResource(parentCursorAdapter.getSpinnerSelectedItemLayout());
+            //
+            // Restore original Spinner Selected Item Layout
+            //
 
-        // TODO TW M 2020-02-02 : Génère une boucle infinie lorsque l'on tape parking, mais est nécessaire pour remettre le
-        //  "blanc"
-//        parentCursorAdapter.notifyDataSetChanged();
+            QualifiedAccountNameCursorAdapter parentCursorAdapter = (QualifiedAccountNameCursorAdapter) getParentAdapterView().getAdapter();
 
-        //
-        // Hide keyboard
-        //
+            parentCursorAdapter.setViewResource(parentCursorAdapter.getSpinnerSelectedItemLayout());
 
-        KeyboardUtils.hideKeyboard(_searchTextEditView);
+            // Refresh spinner selected item using spinner selected item layout
+            parentCursorAdapter.notifyDataSetChanged();
 
-        //
-        // Close Dialog
-        //
+            //
+            // Hide keyboard
+            //
 
-        getDialog().dismiss();
+            KeyboardUtils.hideKeyboard(_searchTextEditView);
+
+            //
+            // Close Dialog
+            //
+
+            getDialog().dismiss();
+
+        } else {
+            //  n' pas
+
+            // RAF
+        }
+
     }
 
     // Crash on orientation change #7
@@ -472,6 +488,8 @@ public class SearchableListDialogFragment
     @Override
     public void onCancel(DialogInterface dialog) {
 
+        dismissDialog();
+
         if (_onCancelListener != null) {
             // There is a listener
 
@@ -483,8 +501,6 @@ public class SearchableListDialogFragment
 
             // RAF
         }
-
-        dismissDialog();
     }
 
 
