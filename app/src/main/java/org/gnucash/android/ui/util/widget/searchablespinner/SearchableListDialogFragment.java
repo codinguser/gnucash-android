@@ -314,8 +314,9 @@ public class SearchableListDialogFragment
             }
         });
 
-        // Enable filtering based on search text field
-        _listView.setTextFilterEnabled(true);
+        // Do not use this, because it makes a big black square appears when typing text
+//        // Enable filtering based on search text field
+//        _listView.setTextFilterEnabled(true);
 
         // On item click listener
         _listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -353,9 +354,10 @@ public class SearchableListDialogFragment
         // Start List filtering Thread
         //
 
+        final CursorAdapter listViewCursorAdapter = (QualifiedAccountNameCursorAdapter) _listView.getAdapter();
+
         if (TextUtils.isEmpty(s)) {
 
-            final CursorAdapter listViewCursorAdapter = (QualifiedAccountNameCursorAdapter) _listView.getAdapter();
 
             // Force filtering with null string to get the full account list
 
@@ -366,8 +368,12 @@ public class SearchableListDialogFragment
 
             // Perform filtering
 
-            _listView.setFilterText(s);
+            // Do not use this, because it makes a big black square appears when typing text
+//            _listView.setFilterText(s);
 
+            // instead, use this
+            listViewCursorAdapter.getFilter()
+                                 .filter(s);
         }
 
         //
