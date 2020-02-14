@@ -141,7 +141,7 @@ public class QualifiedAccountNameCursorAdapter
                                                   Integer isFavorite) {
 
         // item text
-        TextView text1 = (TextView) view.findViewById(R.id.primary_text);
+        TextView text1 = (TextView) view.findViewById(android.R.id.text1);
 
         if (text1 != null) {
             //
