@@ -293,7 +293,9 @@ public class AccountFormFragment extends Fragment {
         });
 
 
-		mParentAccountSpinner.setEnabled(false);
+        mParentAccountSpinner.setTitle(getString(R.string.select_account));
+
+        mParentAccountSpinner.setEnabled(false);
 
 		mParentCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
@@ -302,6 +304,8 @@ public class AccountFormFragment extends Fragment {
                 mParentAccountSpinner.setEnabled(isChecked);
             }
         });
+
+        mDefaultTransferAccountSpinner.setTitle(getString(R.string.select_account));
 
         mDefaultTransferAccountSpinner.setEnabled(false);
         mDefaultTransferAccountCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {

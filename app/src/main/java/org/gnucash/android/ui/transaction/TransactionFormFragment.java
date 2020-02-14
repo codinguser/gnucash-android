@@ -375,7 +375,7 @@ public class TransactionFormFragment extends Fragment implements
             }
         });
 
-        mTransferAccountSearchableSpinnerView.setTitle(getString(R.string.select_transfer_account));
+        mTransferAccountSearchableSpinnerView.setTitle(getString(R.string.select_account));
         mTransferAccountSearchableSpinnerView.setPositiveButton(getString(R.string.alert_dialog_cancel));
 
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
