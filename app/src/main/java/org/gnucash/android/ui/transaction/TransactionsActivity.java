@@ -42,7 +42,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
@@ -445,7 +444,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 
         SpinnerAdapter qualifiedAccountNameCursorAdapter = new QualifiedAccountNameCursorAdapter(getSupportActionBar().getThemedContext(),
                                                                                                  getAccountsCursor(),
-                                                                                                 R.layout.transaction_account_spinner_item);
+                                                                                                 R.layout.toolbar_spinner_selected_item);
 
         mToolbarSpinner.setAdapter(qualifiedAccountNameCursorAdapter,
                                    AccountsDbAdapter.WHERE_NOT_HIDDEN_AND_NOT_ROOT_ACCOUNT,
@@ -454,6 +453,8 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         mToolbarSpinner.setOnItemSelectedListener(mTransactionListNavigationListener);
 
         mToolbarSpinner.setOnCancelListener(mOnCancelListener);
+
+        mToolbarSpinner.setTitle(getString(R.string.select_account));
 
         // The "positive" button act as a Cancel button
         mToolbarSpinner.setPositiveButton(getString(R.string.alert_dialog_cancel),
@@ -472,71 +473,11 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 
         Cursor accountsCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName();
 
-        selectSpinnerAccount(accountsCursor,
-                             getCurrentAccountUID(),
-                             mToolbarSpinner);
+        SearchableSpinnerView.selectSpinnerAccount(accountsCursor,
+                                                   getCurrentAccountUID(),
+                                                   mToolbarSpinner);
 
         accountsCursor.close();
-    }
-
-    /**
-     *
-     * @param accountsCursor
-     * @param accountUID
-     * @param spinner
-     */
-    // TODO TW C 2020-02-08 : A déplacer
-    public static void selectSpinnerAccount(Cursor accountsCursor,
-                                            final String accountUID,
-                                            final Spinner spinner) {
-
-        //
-        // set the selected item in the spinner
-        //
-
-        int     spinnerSelectedPosition = 0;
-        boolean found                   = false;
-
-        for (accountsCursor.moveToFirst(); !accountsCursor.isAfterLast(); accountsCursor.moveToNext()) {
-
-            String uid  = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
-            String name = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
-
-            if (accountUID.equals(uid)) {
-                // Found
-
-                Log.d(LOG_TAG,
-                      "Account found in current Cursor for ("
-                      + accountUID
-                      + ") => ("
-                      + name
-                      + "), position ("
-                      + spinnerSelectedPosition
-                      + ")");
-
-                // Set Spinner selection
-                spinner.setSelection(spinnerSelectedPosition);
-
-                found = true;
-                break;
-            }
-
-            ++spinnerSelectedPosition;
-
-        } // for
-
-        if (found) {
-            // Account has found
-
-            // NTD
-
-        } else {
-            // Account has not been found
-
-            // Log message
-            Log.e(LOG_TAG,
-                  "No Account found in current Cursor for (" + accountUID + ")");
-        }
     }
 
     @Override

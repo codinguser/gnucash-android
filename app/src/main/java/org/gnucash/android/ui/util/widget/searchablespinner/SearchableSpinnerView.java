@@ -8,14 +8,15 @@ import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
 import org.gnucash.android.R;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
-
-import static org.gnucash.android.ui.transaction.TransactionsActivity.selectSpinnerAccount;
 
 // TODO TW C 2020-02-13 : A renommer SearchableCursorSpinnerView
 public class SearchableSpinnerView
@@ -24,6 +25,11 @@ public class SearchableSpinnerView
                    SearchableListDialogFragment.OnSearchableItemClickedListener<String> {
 
     public static final int                  NO_ITEM_SELECTED = -1;
+
+    /**
+     * Logging tag
+     */
+    protected static final String LOG_TAG = "SearchableSpinnerView";
 
     // Clause WHERE du Cursor (en vue de pouvoir la rejouer pour la filtrer
     private String   mCursorWhere;
@@ -133,6 +139,64 @@ public class SearchableSpinnerView
                              this);
     }
 
+    /**
+     *
+     * @param accountsCursor
+     * @param accountUID
+     * @param spinner
+     */
+    public static void selectSpinnerAccount(Cursor accountsCursor,
+                                            final String accountUID,
+                                            final Spinner spinner) {
+
+        //
+        // set the selected item in the spinner
+        //
+
+        int     spinnerSelectedPosition = 0;
+        boolean found                   = false;
+
+        for (accountsCursor.moveToFirst(); !accountsCursor.isAfterLast(); accountsCursor.moveToNext()) {
+
+            String uid  = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
+            String name = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
+
+            if (accountUID.equals(uid)) {
+                // Found
+
+                Log.d(LOG_TAG,
+                      "Account found in current Cursor for ("
+                      + accountUID
+                      + ") => ("
+                      + name
+                      + "), position ("
+                      + spinnerSelectedPosition
+                      + ")");
+
+                // Set Spinner selection
+                spinner.setSelection(spinnerSelectedPosition);
+
+                found = true;
+                break;
+            }
+
+            ++spinnerSelectedPosition;
+
+        } // for
+
+        if (found) {
+            // Account has found
+
+            // NTD
+
+        } else {
+            // Account has not been found
+
+            // Log message
+            Log.e(LOG_TAG,
+                  "No Account found in current Cursor for (" + accountUID + ")");
+        }
+    }
 
     /**
      * Set the SpinnerAdapter and store the where clause
