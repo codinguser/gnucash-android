@@ -160,7 +160,8 @@ public class TransactionsActivity extends BaseDrawerActivity implements
             }
 
             // Hide star in ToolBar Spinner
-            hideFavoriteAccountStarIcon((TextView) selectedItemView);
+            TextView text1 = (TextView) selectedItemView.findViewById(android.R.id.text1);
+            hideFavoriteAccountStarIcon(text1 );
 
             //refresh any fragments in the tab with the new account UID
             refresh();
@@ -296,7 +297,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         // TODO TW C 2020-02-02 : Il faudrait récupérer la couleur du Thème
         text1.setTextColor(Color.WHITE);
 
-        hideFavoriteAccountStarIcon((TextView) text1);
+        hideFavoriteAccountStarIcon(text1);
     }
 
 

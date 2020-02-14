@@ -58,10 +58,12 @@ public class QualifiedAccountNameCursorAdapter
                                             ) {
 
         super(context,
-              spinnerSelectedItemLayout,  // Layout of the closed spinner item
+              spinnerSelectedItemLayout,// Layout of the closed spinner item
               cursor,
-              new String[]{DatabaseSchema.AccountEntry.COLUMN_FULL_NAME},
-              new int[]{android.R.id.text1},
+              new String[]{DatabaseSchema.AccountEntry.COLUMN_FULL_NAME,
+                           DatabaseSchema.AccountEntry.COLUMN_NAME},
+              new int[]{android.R.id.text1,
+                        R.id.text2},
               0);
 
         // Store layout of each item in the open drop down of the spinner
@@ -88,7 +90,9 @@ public class QualifiedAccountNameCursorAdapter
         this(context,
              cursor,
              selectedSpinnerItemLayout,  // Layout of the closed spinner item
-             R.layout.account_spinner_dropdown_item
+//             R.layout.account_spinner_dropdown_item
+             R.layout.account_spinner_dropdown_item_2lines
+//             R.layout.list_item_2_lines
             );
     }
 
@@ -137,20 +141,30 @@ public class QualifiedAccountNameCursorAdapter
                                                   Integer isFavorite) {
 
         // item text
-        TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+        TextView text1 = (TextView) view.findViewById(R.id.primary_text);
 
-        if (isFavorite == 0) {
+        if (text1 != null) {
+            //
 
-            // Hide Favorite Account Star
-            hideFavoriteAccountStarIcon(text1);
+            //
+            if (isFavorite == 0) {
+
+                // Hide Favorite Account Star
+                hideFavoriteAccountStarIcon(text1);
+
+            } else {
+
+                // Display Favorite Account Star
+                text1.setCompoundDrawablesWithIntrinsicBounds(0,
+                                                              0,
+                                                              R.drawable.ic_star_black_18dp,
+                                                              0);
+            }
 
         } else {
+            //  n' pas
 
-            // Display Favorite Account Star
-            text1.setCompoundDrawablesWithIntrinsicBounds(0,
-                                                             0,
-                                                             R.drawable.ic_star_black_18dp,
-                                                             0);
+            // RAF
         }
     }
 

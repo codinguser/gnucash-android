@@ -347,7 +347,8 @@ public class TransactionFormFragment extends Fragment implements
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
 
-                hideFavoriteAccountStarIcon((TextView) view);
+                TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+                hideFavoriteAccountStarIcon(text1 );
 
                 if (mSplitsList.size() == 2) {
                     //when handling simple transfer to one account
