@@ -18,10 +18,12 @@ package org.gnucash.android.ui.transaction;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.inputmethodservice.KeyboardView;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -81,6 +83,7 @@ import org.gnucash.android.ui.util.RecurrenceParser;
 import org.gnucash.android.ui.util.RecurrenceViewClickListener;
 import org.gnucash.android.ui.util.widget.CalculatorEditText;
 import org.gnucash.android.ui.util.widget.TransactionTypeSwitch;
+import org.gnucash.android.ui.util.widget.searchablespinner.SearchableListDialogFragment;
 import org.gnucash.android.ui.util.widget.searchablespinner.SearchableSpinnerView;
 import org.gnucash.android.util.KeyboardUtils;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
@@ -335,8 +338,15 @@ public class TransactionFormFragment extends Fragment implements
 
         setListeners();
 
+        //
+        // mTransferAccountSearchableSpinnerView
+        //
+
         //updateTransferAccountsList must only be called after initializing mAccountsDbAdapter
         updateTransferAccountsList();
+
+        mTransferAccountSearchableSpinnerView.setTitle(getString(R.string.select_account));
+        mTransferAccountSearchableSpinnerView.setPositiveButton(getString(R.string.alert_dialog_cancel));
 
         mTransferAccountSearchableSpinnerView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             /**
@@ -387,8 +397,8 @@ public class TransactionFormFragment extends Fragment implements
             }
         });
 
-        mTransferAccountSearchableSpinnerView.setTitle(getString(R.string.select_account));
-        mTransferAccountSearchableSpinnerView.setPositiveButton(getString(R.string.alert_dialog_cancel));
+        mTransferAccountSearchableSpinnerView.setOnCancelListener(mOnCancelListener);
+
 
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         assert actionBar != null;
@@ -413,6 +423,49 @@ public class TransactionFormFragment extends Fragment implements
 
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 	}
+
+    private DialogInterface.OnCancelListener mOnCancelListener = new DialogInterface.OnCancelListener() {
+
+        @Override
+        public void onCancel(DialogInterface dialog) {
+
+            resetSpinnerItemAppearance(dialog);
+        }
+    };
+
+    private void resetSpinnerItemAppearance(DialogInterface dialog) {
+
+        // TODO TW C 2020-02-15 : A finir
+//        SearchableListDialogFragment searchableListDialogFragment = (SearchableListDialogFragment) dialog;
+//
+//        String accountFullName = (String) searchableListDialogFragment.getParentAdapterView()
+//                                                                      .getSelectedItem();
+//
+//        //
+//        // Set Account Color
+//        //
+//
+//        TextView accountFullNameTextView = (TextView) searchableListDialogFragment.getParentAdapterView()
+//                                                                                  .findViewById(android.R.id.text1);
+//
+//        if (accountFullNameTextView != null) {
+//            //
+//
+//            // Get Account color
+////                int iColor = AccountsDbAdapter.getActiveAccountColorResource(accountUID);
+//            int iColor = Color.RED;
+//
+//            // Override color
+//            accountFullNameTextView.setTextColor(iColor);
+//
+//        } else {
+//            //  n' pas
+//
+//            // RAF
+//        }
+
+    }
+
 
     // TODO TW C 2020-02-15 : Améliorer commentaires et déplacer
     public static void setAccountTextColor(final TextView accountTextView,
