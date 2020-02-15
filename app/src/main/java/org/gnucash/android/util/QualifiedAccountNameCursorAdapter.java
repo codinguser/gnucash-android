@@ -123,6 +123,68 @@ public class QualifiedAccountNameCursorAdapter
                        cursor);
 
         //
+        // Set Account Color
+        //
+
+        String accountUID = cursor.getString(cursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_UID));
+
+        // Get Account color
+        int iColor = AccountsDbAdapter.getActiveAccountColorResource(accountUID);
+
+
+        TextView simpleAcoountNameTextView = (TextView) view.findViewById(R.id.text2);
+
+        if (simpleAcoountNameTextView!=null) {
+            //
+
+            // Override color
+            simpleAcoountNameTextView.setTextColor(iColor);
+
+        } else {
+            //  n' pas
+
+            // RAF
+        }
+
+        //
+        // Put Parent Account Full Name in text3
+        //
+
+        TextView parentAccountFullNameTextView = (TextView) view.findViewById(R.id.text3);
+
+        if (parentAccountFullNameTextView != null) {
+            //
+
+            // TODO TW C 2020-02-15 : A factoriser et commenter
+
+            String accountFullName = cursor.getString(cursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
+
+            String parentAccountFullName;
+            int    index = accountFullName.lastIndexOf(AccountsDbAdapter.ACCOUNT_NAME_SEPARATOR);
+
+            if (index > 0) {
+                //
+
+                //
+                parentAccountFullName = accountFullName.substring(0,
+                                                                  index);
+
+            } else {
+                //  n' pas
+
+                parentAccountFullName="";
+            }
+
+            // Display Parent Account Full Name
+            parentAccountFullNameTextView.setText(parentAccountFullName);
+
+        } else {
+            //  n' pas
+
+            // RAF
+        }
+
+        //
         // Add or not Favorite Star Icon
         //
 
@@ -141,7 +203,7 @@ public class QualifiedAccountNameCursorAdapter
                                                       Integer isFavorite) {
 
         // item text
-        TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+        TextView text1 = (TextView) view.findViewById(R.id.text2);
 
         if (text1 != null) {
             //

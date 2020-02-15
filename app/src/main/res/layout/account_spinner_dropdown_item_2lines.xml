@@ -36,10 +36,20 @@ limitations under the License.
         />
 
     <TextView
+        android:id="@+id/text3"
+        tools:text="Parent Account Full Name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/SpinnerDropDownItemText1Style"
+        />
+
+    <TextView
         android:id="@android:id/text1"
         tools:text="Account Full Name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/SpinnerDropDownItemText1Style"
+        android:visibility="gone"
         />
+
 </LinearLayout>
