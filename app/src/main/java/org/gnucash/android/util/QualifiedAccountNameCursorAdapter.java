@@ -27,6 +27,7 @@ import android.widget.TextView;
 import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.ui.transaction.TransactionFormFragment;
 
 /**
  * Cursor adapter which looks up the fully qualified account name and returns that instead of just the simple name.
@@ -128,23 +129,10 @@ public class QualifiedAccountNameCursorAdapter
 
         String accountUID = cursor.getString(cursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_UID));
 
-        // Get Account color
-        int iColor = AccountsDbAdapter.getActiveAccountColorResource(accountUID);
+        TextView simpleAccountNameTextView = (TextView) view.findViewById(R.id.text2);
 
-
-        TextView simpleAcoountNameTextView = (TextView) view.findViewById(R.id.text2);
-
-        if (simpleAcoountNameTextView!=null) {
-            //
-
-            // Override color
-            simpleAcoountNameTextView.setTextColor(iColor);
-
-        } else {
-            //  n' pas
-
-            // RAF
-        }
+        TransactionFormFragment.setAccountTextColor(simpleAccountNameTextView,
+                                                    accountUID);
 
         //
         // Put Parent Account Full Name in text3
@@ -202,25 +190,24 @@ public class QualifiedAccountNameCursorAdapter
     public static void displayFavoriteAccountStarIcon(View view,
                                                       Integer isFavorite) {
 
-        // item text
-        TextView text1 = (TextView) view.findViewById(R.id.text2);
+        TextView simpleAccountNameTextView = (TextView) view.findViewById(R.id.text2);
 
-        if (text1 != null) {
+        if (simpleAccountNameTextView != null) {
             //
 
             //
             if (isFavorite == 0) {
 
                 // Hide Favorite Account Star
-                hideFavoriteAccountStarIcon(text1);
+                hideFavoriteAccountStarIcon(simpleAccountNameTextView);
 
             } else {
 
                 // Display Favorite Account Star
-                text1.setCompoundDrawablesWithIntrinsicBounds(0,
-                                                              0,
-                                                              R.drawable.ic_star_black_18dp,
-                                                              0);
+                simpleAccountNameTextView.setCompoundDrawablesWithIntrinsicBounds(0,
+                                                                                  0,
+                                                                                  R.drawable.ic_star_black_18dp,
+                                                                                  0);
             }
 
         } else {

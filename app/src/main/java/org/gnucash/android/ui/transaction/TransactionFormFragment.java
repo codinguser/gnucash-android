@@ -97,6 +97,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static org.gnucash.android.R.id.secondary_text;
 import static org.gnucash.android.util.QualifiedAccountNameCursorAdapter.hideFavoriteAccountStarIcon;
 
 /**
@@ -347,15 +348,26 @@ public class TransactionFormFragment extends Fragment implements
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
 
-                TextView text1 = (TextView) view.findViewById(android.R.id.text1);
-                hideFavoriteAccountStarIcon(text1 );
+                TextView accountFullNameTextView = (TextView) view.findViewById(android.R.id.text1);
+                hideFavoriteAccountStarIcon(accountFullNameTextView);
 
                 if (mSplitsList.size() == 2) {
                     //when handling simple transfer to one account
 
                     for (Split split : mSplitsList) {
+
                         if (!split.getAccountUID().equals(mAccountUID)) {
-                            split.setAccountUID(mAccountsDbAdapter.getUID(id));
+
+                            final String accountUID = mAccountsDbAdapter.getUID(id);
+
+                            split.setAccountUID(accountUID);
+
+                            //
+                            // Set Account Color
+                            //
+
+                            setAccountTextColor(accountFullNameTextView,
+                                                accountUID);
                         }
                         // else case is handled when saving the transactions
                     }
@@ -402,6 +414,26 @@ public class TransactionFormFragment extends Fragment implements
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 	}
 
+    // TODO TW C 2020-02-15 : Améliorer commentaires et déplacer
+    public static void setAccountTextColor(final TextView accountTextView,
+                                           final String accountUID) {
+
+        if (accountTextView != null) {
+            //
+
+            // Get Account color
+            int iColor = AccountsDbAdapter.getActiveAccountColorResource(accountUID);
+
+            // Override color
+            accountTextView.setTextColor(iColor);
+
+        } else {
+            //  n' pas
+
+            // RAF
+        }
+    }
+
     /**
      * Extension of SimpleCursorAdapter which is used to populate the fields for the list items
      * in the transactions suggestions (auto-complete transaction description).
@@ -413,16 +445,28 @@ public class TransactionFormFragment extends Fragment implements
         }
 
         @Override
-        public void bindView(View view, Context context, Cursor cursor) {
-            super.bindView(view, context, cursor);
+        public void bindView(View view,
+                             Context context,
+                             Cursor cursor) {
+
+            super.bindView(view,
+                           context,
+                           cursor);
+
             String transactionUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_UID));
-            Money balance = TransactionsDbAdapter.getInstance().getBalance(transactionUID, mAccountUID);
+
+            Money  balance        = TransactionsDbAdapter.getInstance()
+                                                         .getBalance(transactionUID,
+                                                                     mAccountUID);
 
             long timestamp = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_TIMESTAMP));
-            String dateString = DateUtils.formatDateTime(getActivity(), timestamp,
-                    DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR);
+            String dateString = DateUtils.formatDateTime(getActivity(),
+                                                         timestamp,
+                                                         DateUtils.FORMAT_SHOW_WEEKDAY
+                                                         | DateUtils.FORMAT_SHOW_DATE
+                                                         | DateUtils.FORMAT_SHOW_YEAR);
 
-            TextView secondaryTextView = (TextView) view.findViewById(R.id.secondary_text);
+            TextView secondaryTextView = (TextView) view.findViewById(secondary_text);
             secondaryTextView.setText(balance.formattedString() + " on " + dateString); //TODO: Extract string
         }
     }
@@ -729,10 +773,13 @@ public class TransactionFormFragment extends Fragment implements
      * @param accountId Database ID of the transfer account
      */
 	private void setSelectedTransferAccount(long accountId){
-        int position = mAccountCursorAdapter.getPosition(mAccountsDbAdapter.getUID(accountId));
+
+        final String accountUID = mAccountsDbAdapter.getUID(accountId);
+
+        int position = mAccountCursorAdapter.getPosition(accountUID);
         if (position >= 0)
             mTransferAccountSearchableSpinnerView.setSelection(position);
-	}
+    }
 
     /**
      * Returns a list of splits based on the input in the transaction form.
