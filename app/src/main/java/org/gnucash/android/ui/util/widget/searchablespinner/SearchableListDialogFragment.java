@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.DataSetObserver;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.CursorAdapter;
 import android.text.TextUtils;
@@ -19,6 +20,7 @@ import android.widget.FilterQueryProvider;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseSchema;

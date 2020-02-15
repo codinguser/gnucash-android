@@ -13,9 +13,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 // TODO TW C 2020-02-13 : A renommer SearchableCursorSpinnerView
@@ -143,11 +145,11 @@ public class SearchableSpinnerView
      *
      * @param accountsCursor
      * @param accountUID
-     * @param spinner
+     * @param spinnerView
      */
     public static void selectSpinnerAccount(Cursor accountsCursor,
                                             final String accountUID,
-                                            final Spinner spinner) {
+                                            final Spinner spinnerView) {
 
         //
         // set the selected item in the spinner
@@ -174,7 +176,7 @@ public class SearchableSpinnerView
                       + ")");
 
                 // Set Spinner selection
-                spinner.setSelection(spinnerSelectedPosition);
+                spinnerView.setSelection(spinnerSelectedPosition);
 
                 found = true;
                 break;
