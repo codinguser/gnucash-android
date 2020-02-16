@@ -352,13 +352,16 @@ public class TransactionFormFragment extends Fragment implements
                                                                     public void onClick(final DialogInterface dialog,
                                                                                         final int which) {
 
-                                                                        TextView accountFullNameTextView = (TextView) mTransferAccountSearchableSpinnerView.findViewById(android.R.id.text1);
-
-                                                                        setAccountTextColor(accountFullNameTextView,
-                                                                                            // TODO TW C 2020-02-16 : A
-                                                                                            //  corriger pour mettre le split
-                                                                                            //  account
-                                                                                            mAccountUID);
+                                                                        // TODO TW C 2020-02-16 : A faire fonctionner
+//                                                                        final View spinnerSelectedItemView = mTransferAccountSearchableSpinnerView.getSelectedView();
+//
+//                                                                        TextView accountFullNameTextView = (TextView) spinnerSelectedItemView.findViewById(android.R.id.text1);
+//
+//                                                                        setAccountTextColor(accountFullNameTextView,
+//                                                                                            // TODO TW C 2020-02-16 : A
+//                                                                                            //  corriger pour mettre le split
+//                                                                                            //  account
+//                                                                                            mAccountUID);
 
                                                                     }
                                                                 });
