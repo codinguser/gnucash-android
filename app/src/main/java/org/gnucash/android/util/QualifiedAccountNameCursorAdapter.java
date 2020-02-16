@@ -22,6 +22,7 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.View;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
@@ -184,13 +185,13 @@ public class QualifiedAccountNameCursorAdapter
     }
 
     /**
-     * @param view
+     * @param spinnerSelectedItemView
      * @param isFavorite
      */
-    public static void displayFavoriteAccountStarIcon(View view,
+    public static void displayFavoriteAccountStarIcon(View spinnerSelectedItemView,
                                                       Integer isFavorite) {
 
-        TextView simpleAccountNameTextView = (TextView) view.findViewById(R.id.text2);
+        TextView simpleAccountNameTextView = (TextView) spinnerSelectedItemView.findViewById(R.id.text2);
 
         if (simpleAccountNameTextView != null) {
             //
@@ -199,7 +200,7 @@ public class QualifiedAccountNameCursorAdapter
             if (isFavorite == 0) {
 
                 // Hide Favorite Account Star
-                hideFavoriteAccountStarIcon(simpleAccountNameTextView);
+                hideFavoriteAccountStarIcon(spinnerSelectedItemView);
 
             } else {
 
@@ -220,13 +221,15 @@ public class QualifiedAccountNameCursorAdapter
     /**
      * Removes the icon from view to avoid visual clutter
      *
-     * @param textView
+     * @param spinnerView
      */
-    public static void hideFavoriteAccountStarIcon(TextView textView) {
+    public static void hideFavoriteAccountStarIcon(View spinnerView) {
 
-        if (textView != null) {
+        TextView textViewWithStarIcon = (TextView) spinnerView.findViewById(R.id.text2);
 
-            textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+        if (textViewWithStarIcon != null) {
+
+            textViewWithStarIcon.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
         }
     }
 
