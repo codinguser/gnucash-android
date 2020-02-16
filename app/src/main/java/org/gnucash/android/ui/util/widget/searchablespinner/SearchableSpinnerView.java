@@ -13,11 +13,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
-import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 // TODO TW C 2020-02-13 : A renommer SearchableCursorSpinnerView
@@ -41,6 +39,7 @@ public class SearchableSpinnerView
 
     private boolean       _isDirty;
 
+    // TODO TW C 2020-02-16 : A supprimer
     private String                           _strHintText;
 
     public SearchableSpinnerView(Context context) {
@@ -56,6 +55,7 @@ public class SearchableSpinnerView
         super(context,
               attrs);
 
+        // TODO TW C 2020-02-16 : A supprimer ?
         //
         // Retrieve attribute value
         //
@@ -261,17 +261,14 @@ public class SearchableSpinnerView
         _searchableListDialogFragment.setTitle(strTitle);
     }
 
-    public void setPositiveButton(String strPositiveButtonText) {
-
-        _searchableListDialogFragment.setPositiveButton(strPositiveButtonText);
-    }
-
     public void setPositiveButton(String strPositiveButtonText,
                                   DialogInterface.OnClickListener onPositiveBtnClickListener) {
 
-        _searchableListDialogFragment.setPositiveButton(strPositiveButtonText,
-                                                        onPositiveBtnClickListener);
+        _searchableListDialogFragment.setPositiveButtonText(strPositiveButtonText);
+
+        _searchableListDialogFragment.setPositiveButtonClickListener(onPositiveBtnClickListener);
     }
+
 
     public void setOnSearchTextChangedListener(SearchableListDialogFragment.OnSearchTextChangedListener onSearchTextChangedListener) {
 
@@ -310,7 +307,9 @@ public class SearchableSpinnerView
         if (!TextUtils.isEmpty(_strHintText) && !_isDirty) {
             return NO_ITEM_SELECTED;
         } else {
+            // TODO TW M 2020-02-16 : Est-ce que ça devrait aller le chercher dans la SearchableListDialogFragment._listView ?
             return super.getSelectedItemPosition();
+//            return _searchableListDialogFragment._listView.getSelectedItemPosition();
         }
     }
 
@@ -320,7 +319,9 @@ public class SearchableSpinnerView
         if (!TextUtils.isEmpty(_strHintText) && !_isDirty) {
             return null;
         } else {
+            // TODO TW M 2020-02-16 : Est-ce que ça devrait aller le chercher dans la SearchableListDialogFragment._listView ?
             return super.getSelectedItem();
+//            return _searchableListDialogFragment._listView.getSelectedItem();
         }
     }
 

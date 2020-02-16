@@ -134,7 +134,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 	private AdapterView.OnItemSelectedListener mTransactionListNavigationListener = new AdapterView.OnItemSelectedListener() {
 
         @Override
-        public void onItemSelected(AdapterView<?> parent, View selectedItemView, int position, long id) {
+        public void onItemSelected(AdapterView<?> parent, View spinnerSelectedItemView, int position, long id) {
 
             mAccountUID = mAccountsDbAdapter.getUID(id);
             getIntent().putExtra(UxArgument.SELECTED_ACCOUNT_UID,
@@ -159,8 +159,8 @@ public class TransactionsActivity extends BaseDrawerActivity implements
             }
 
             // Hide star in ToolBar Spinner
-            TextView text1 = (TextView) selectedItemView.findViewById(android.R.id.text1);
-            hideFavoriteAccountStarIcon(text1 );
+//            TextView text1 = (TextView) selectedItemView.findViewById(android.R.id.text1);
+            hideFavoriteAccountStarIcon(spinnerSelectedItemView );
 
             //refresh any fragments in the tab with the new account UID
             refresh();
@@ -172,7 +172,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         }
 	};
 
-    private DialogInterface.OnCancelListener mOnCancelListener = new DialogInterface.OnCancelListener() {
+    private DialogInterface.OnCancelListener mSearchableSpinnerOnCancelListener = new DialogInterface.OnCancelListener() {
 
         @Override
         public void onCancel(DialogInterface dialog) {
@@ -181,7 +181,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         }
     };
 
-    private DialogInterface.OnClickListener mOnClickListener = new DialogInterface.OnClickListener() {
+    private DialogInterface.OnClickListener mSearchableSpinnerPositiveBtnOnClickListener = new DialogInterface.OnClickListener() {
 
         @Override
         public void onClick(DialogInterface dialog,
@@ -290,13 +290,12 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 
     protected void resetSpinnerItemAppearance() {
 
-        // item text
-        TextView text1 = (TextView) mToolbarSpinner.findViewById(android.R.id.text1);
-
-        // TODO TW C 2020-02-02 : Il faudrait récupérer la couleur du Thème
-        text1.setTextColor(Color.WHITE);
-
-        hideFavoriteAccountStarIcon(text1);
+//        // item text
+//        TextView accountFullClassName = (TextView) mToolbarSpinner.findViewById(android.R.id.text1);
+//
+//        // TODO TW C 2020-02-16 : Inutile ?
+//        // TODO TW C 2020-02-02 : Il faudrait récupérer la couleur du Thème
+//        accountFullClassName.setTextColor(Color.RED);
     }
 
 
@@ -436,7 +435,11 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 	 * Set up action bar navigation list and listener callbacks
 	 */
 	private void setupActionBarNavigation() {
+
+	    //
 		// set up spinner adapter for navigation list
+        //
+
         if (mAccountsCursor != null) {
             mAccountsCursor.close();
         }
@@ -452,16 +455,17 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 
         mToolbarSpinner.setOnItemSelectedListener(mTransactionListNavigationListener);
 
-        mToolbarSpinner.setOnCancelListener(mOnCancelListener);
+        mToolbarSpinner.setOnCancelListener(mSearchableSpinnerOnCancelListener);
 
         mToolbarSpinner.setTitle(getString(R.string.select_account));
 
         // The "positive" button act as a Cancel button
         mToolbarSpinner.setPositiveButton(getString(R.string.alert_dialog_cancel),
-                                          mOnClickListener);
+                                          mSearchableSpinnerPositiveBtnOnClickListener);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        // TODO TW m 2020-02-16 : A priori inutile, car fait dans TransactionsListFragment.onResume()
 		selectCurrentAccountInToolbarSpinner();
 	}
 	
