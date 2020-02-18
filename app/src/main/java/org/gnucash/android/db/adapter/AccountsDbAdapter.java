@@ -1268,22 +1268,33 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      * @return Android resource ID representing the color which can be directly set to a view
      */
     public static int getActiveAccountColorResource(@NonNull String accountUID) {
+
         AccountsDbAdapter accountsDbAdapter = getInstance();
 
-        String colorCode = null;
-        int iColor = -1;
+        String colorCode        = null;
+        int    iColor           = -1;
+
         String parentAccountUID = accountUID;
-        while (parentAccountUID != null ) {
+        while (parentAccountUID != null) {
+
             colorCode = accountsDbAdapter.getAccountColorCode(accountsDbAdapter.getID(parentAccountUID));
+
             if (colorCode != null) {
                 iColor = Color.parseColor(colorCode);
                 break;
             }
+
+            // Climb to parent account
             parentAccountUID = accountsDbAdapter.getParentAccountUID(parentAccountUID);
         }
 
         if (colorCode == null) {
-            iColor = GnuCashApplication.getAppContext().getResources().getColor(R.color.theme_primary);
+            // No color has been found defined in any ancestor
+
+            // Use black color
+            iColor = GnuCashApplication.getAppContext()
+                                       .getResources()
+                                       .getColor(R.color.bpblack);
         }
 
         return iColor;
