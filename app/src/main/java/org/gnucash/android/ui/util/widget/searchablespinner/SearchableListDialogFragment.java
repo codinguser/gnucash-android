@@ -8,9 +8,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.DataSetObserver;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,13 +20,10 @@ import android.widget.FilterQueryProvider;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.TextView;
 
 import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
-import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.util.KeyboardUtils;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
@@ -233,8 +230,12 @@ public class SearchableListDialogFragment
         _searchTextEditView.setOnQueryTextListener(this);
         _searchTextEditView.setOnCloseListener(this);
 
-        // TODO TW C 2020-01-30 : Add a Preference to choose
-        if (true) {
+        // Get Preference about double back button press to exit
+        boolean prefShallOpenKeyboard = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                                                         .getBoolean(getString(R.string.key_shall_open_keyboard_in_account_searchable_spinner),
+                                                                     true);
+
+        if (prefShallOpenKeyboard) {
             // Want to open keyboard
 
             // Set Focus on searchTextEditView to open cursor
@@ -246,6 +247,13 @@ public class SearchableListDialogFragment
 
             // Clear Focus
             _searchTextEditView.clearFocus();
+
+            //
+            // Hide keyboard after 500ms to let keyboard appeared before hiding it
+            //
+
+            KeyboardUtils.hideKeyboard(_searchTextEditView,
+                                       500);
         }
 
         //

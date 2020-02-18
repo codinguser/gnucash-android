@@ -501,4 +501,13 @@
         <item>Placeholder</item>
     </string-array>
     <string name="select_account">Select Account</string>
+
+    <string name="prefs_ui_category_title">User Interface Preferences</string>
+
+    <string name="prefs_ui_title_use_color_in_account_list">Use colors in Account Lists</string>
+    <string name="prefs_ui_summary_use_color_in_account_list">Use colors in Account Lists and in Transaction Lists</string>
+
+    <string name="prefs_ui_title_account_searchable_spinner_openkeyboard">Show keyboard in Searchable Account List</string>
+    <string name="prefs_ui_summary_account_searchable_spinner_openkeyboard">Show keyboard when opening a Searchable Account List</string>
+
 </resources>

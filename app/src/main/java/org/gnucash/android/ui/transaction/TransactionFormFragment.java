@@ -30,6 +30,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.Pair;
@@ -496,11 +497,26 @@ public class TransactionFormFragment extends Fragment implements
         if (accountTextView != null) {
             //
 
-            // Get Account color
-            int iColor = AccountsDbAdapter.getActiveAccountColorResource(accountUID);
+            // Get Preference about double back button press to exit
+            boolean prefShallUseColorInAccountList = PreferenceManager.getDefaultSharedPreferences(accountTextView.getContext())
+                                                                      .getBoolean(accountTextView.getContext()
+                                                                                                 .getString(R.string.key_use_color_in_account_list),
+                                                                                  true);
 
-            // Override color
-            accountTextView.setTextColor(iColor);
+            if (prefShallUseColorInAccountList) {
+                // Want to use colors for Accounts
+
+                // Get Account color
+                int iColor = AccountsDbAdapter.getActiveAccountColorResource(accountUID);
+
+                // Override color
+                accountTextView.setTextColor(iColor);
+
+            } else {
+                // Do not want to use colors for Accounts
+
+                // NTD
+            }
 
         } else {
             //  n' pas
