@@ -40,7 +40,7 @@ limitations under the License.
         tools:text="Parent Account Full Name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/SpinnerDropDownItemText1Style"
+        style="@style/SpinnerDropDownItemAccountFullNameTextStyle"
         />
 
     <TextView
@@ -48,7 +48,7 @@ limitations under the License.
         tools:text="Account Full Name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/SpinnerDropDownItemText1Style"
+        style="@style/SpinnerDropDownItemAccountFullNameTextStyle"
         android:visibility="gone"
         />
 

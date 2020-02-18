@@ -41,7 +41,7 @@
 
         <!-- Set Spinner styles -->
         <item name="android:spinnerItemStyle">@style/spinnerItemTextStyle</item>
-        <item name="android:spinnerDropDownItemStyle">@style/SpinnerDropDownItemText2Style</item>
+        <item name="android:spinnerDropDownItemStyle">@style/SpinnerDropDownItemAccountSimpleNameStyle</item>
 
         <!-- Set AppCompat’s color theming attrs -->
         <item name="colorPrimary">@color/theme_primary</item>

@@ -26,12 +26,12 @@
         <item name="android:ellipsize">start</item>
     </style>
 
-    <style name="SpinnerDropDownItemText2Style" parent="spinnerItemTextStyle">
-        <item name="android:textColor">@color/theme_accent</item>
+    <style name="SpinnerDropDownItemAccountSimpleNameStyle" parent="spinnerItemTextStyle">
+        <item name="android:textColor">@color/bpblack</item>
         <item name="android:ellipsize">middle</item>
     </style>
 
-    <style name="SpinnerDropDownItemText1Style" parent="spinnerItemTextStyle">
+    <style name="SpinnerDropDownItemAccountFullNameTextStyle" parent="spinnerItemTextStyle">
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
         <item name="android:textColor">@color/light_gray</item>
         <item name="android:singleLine">true</item>
