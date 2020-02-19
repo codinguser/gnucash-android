@@ -9,27 +9,24 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.support.v4.widget.CursorAdapter;
 import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.FilterQueryProvider;
+import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.util.KeyboardUtils;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -59,6 +56,9 @@ public class SearchableListDialogFragment
         void onSearchTextChanged(String strText);
     }
 
+
+//    private static final String ITEMS = "items";
+
     // Dialog Title
     private String _strTitle;
 
@@ -70,6 +70,10 @@ public class SearchableListDialogFragment
 
     // Bottom right button to close the pop-up
     private String _strPositiveButtonText;
+
+    private List<String> _allItems;
+
+    private ListAdapter mWithContainingTextArrayFilterArrayAdapter;
 
     private OnSearchTextChangedListener _onSearchTextChangedListener;
 
@@ -90,6 +94,8 @@ public class SearchableListDialogFragment
      * Constructor
      */
     public SearchableListDialogFragment() {
+
+        setAllItems(new ArrayList());
 
     }
 
@@ -233,7 +239,7 @@ public class SearchableListDialogFragment
         // Get Preference about double back button press to exit
         boolean prefShallOpenKeyboard = PreferenceManager.getDefaultSharedPreferences(getActivity())
                                                          .getBoolean(getString(R.string.key_shall_open_keyboard_in_account_searchable_spinner),
-                                                                     true);
+                                                                     false);
 
         if (prefShallOpenKeyboard) {
             // Want to open keyboard
@@ -260,8 +266,10 @@ public class SearchableListDialogFragment
         // Items list
         //
 
-        _listView = (ListView) searchableListRootView.findViewById(R.id.listItems);
+        setListView((ListView) searchableListRootView.findViewById(R.id.listItems));
 
+        // TODO TW C 2020-02-19 : A remplacer par une copie de la liste d'item plutôt qu'une désérialisation
+//        List items = (List) getArguments().getSerializable(ITEMS);
 
         //
         // Put temporarily DropDownItemLayout in selectedItemView,
@@ -270,115 +278,147 @@ public class SearchableListDialogFragment
 
         QualifiedAccountNameCursorAdapter parentCursorAdapter = (QualifiedAccountNameCursorAdapter) getParentSpinnerView().getAdapter();
 
-        parentCursorAdapter.setViewResource(parentCursorAdapter.getSpinnerDropDownItemLayout());
+//        parentCursorAdapter.setViewResource(parentCursorAdapter.getSpinnerDropDownItemLayout());
 
-        //
-        // Set a filter that rebuild Cursor by running a new query based on a LIKE criteria
-        // with or without Placeholder accounts
-        //
+        if (parentCursorAdapter != null) {
 
-        parentCursorAdapter.setFilterQueryProvider(new FilterQueryProvider() {
+            //
+            // Open Search & List Dialog
+            //
 
-            public Cursor runQuery(CharSequence constraint) {
+            // Refresh content #6
+            // Change Start
+            // Description: The items were only set initially, not reloading the data in the
+            // spinner every time it is loaded with items in the adapter.
+            getAllItems().clear();
 
-                //
-                // Add %constraint% at the end of the whereArgs
-                //
+            // Create items from DB Cursor
+            for (int i = 0; i < parentCursorAdapter.getCount(); i++) {
 
-                // Convert WhereArgs into List
-                final String[] cursorWhereArgs = getParentSpinnerView().getCursorWhereArgs();
-                final List<String> whereArgsAsList = (cursorWhereArgs != null)
-                                                     ? new ArrayList<String>(Arrays.asList(cursorWhereArgs))
-                                                     : new ArrayList<String>();
+                Cursor cursorOnRow = (Cursor) parentCursorAdapter.getItem(i);
 
-                // Add the %constraint% for the LIKE added in the where clause
-                whereArgsAsList.add("%" + ((constraint != null)
-                                           ? constraint.toString()
-                                           : "") + "%");
+                final String accountFullName = cursorOnRow.getString(cursorOnRow.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
 
-                // Convert List into WhereArgs
-                final String[] whereArgs = whereArgsAsList.toArray(new String[whereArgsAsList.size()]);
+                getAllItems().add(accountFullName);
 
+            } // for
 
-                //
-                // Run the original query but constrained with full account name containing constraint
-                //
+            // Create an ArrayAdapter for items, with filtering capablity based on item containing a text
+            mWithContainingTextArrayFilterArrayAdapter = new WithContainingTextArrayFilterArrayAdapter(getActivity(),
+//                                                                                                       parentCursorAdapter.getSpinnerDropDownItemLayout(),
+                                                                                                       android.R.layout.simple_list_item_1,
+                                                                                                       getAllItems());
 
-                final AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
+//        //
+//        // Set a filter that rebuild Cursor by running a new query based on a LIKE criteria
+//        // with or without Placeholder accounts
+//        //
+//
+//        parentCursorAdapter.setFilterQueryProvider(new FilterQueryProvider() {
+//
+//            public Cursor runQuery(CharSequence constraint) {
+//
+//                //
+//                // Add %constraint% at the end of the whereArgs
+//                //
+//
+//                // Convert WhereArgs into List
+//                final String[] cursorWhereArgs = getParentSpinnerView().getCursorWhereArgs();
+//                final List<String> whereArgsAsList = (cursorWhereArgs != null)
+//                                                     ? new ArrayList<String>(Arrays.asList(cursorWhereArgs))
+//                                                     : new ArrayList<String>();
+//
+//                // Add the %constraint% for the LIKE added in the where clause
+//                whereArgsAsList.add("%" + ((constraint != null)
+//                                           ? constraint.toString()
+//                                           : "") + "%");
+//
+//                // Convert List into WhereArgs
+//                final String[] whereArgs = whereArgsAsList.toArray(new String[whereArgsAsList.size()]);
+//
+//
+//                //
+//                // Run the original query but constrained with full account name containing constraint
+//                //
+//
+//                final AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
+//
+//                final String where = getParentSpinnerView().getCursorWhere()
+//                                     + " AND "
+//                                     + DatabaseSchema.AccountEntry.COLUMN_FULL_NAME
+//                                     + " LIKE ?";
+//
+//                final Cursor accountsCursor = accountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(where,
+//                                                                                                          whereArgs);
+//
+//                return accountsCursor;
+//            }
+//        });
 
-                final String where = getParentSpinnerView().getCursorWhere()
-                                     + " AND "
-                                     + DatabaseSchema.AccountEntry.COLUMN_FULL_NAME
-                                     + " LIKE ?";
+            //
+            // Register a Listener to close dialog if there is only one item remaining in the filtered list, and select it
+            // automatically
+            //
 
-                final Cursor accountsCursor = accountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(where,
-                                                                                                          whereArgs);
+            mWithContainingTextArrayFilterArrayAdapter.registerDataSetObserver(new DataSetObserver() {
 
-                return accountsCursor;
-            }
-        });
+                @Override
+                public void onChanged() {
 
-        //
-        // Register a Listener to close dialog if there is only one item remaining in the filtered list, and select it
-        // automatically
-        //
+//                final String accountUID = (String) mWithContainingTextArrayFilterArrayAdapter.getItem(position);
+//                final Cursor filteredAccountsCursor = parentCursorAdapter.getCursor();
 
-        parentCursorAdapter.registerDataSetObserver(new DataSetObserver() {
+                    if (getAllItems().size() == 1) {
+                        // only one account
 
-            @Override
-            public void onChanged() {
+//                    filteredAccountsCursor.moveToFirst();
 
-                final Cursor filteredAccountsCursor = parentCursorAdapter.getCursor();
+//                    final String accountUID = filteredAccountsCursor.getString(filteredAccountsCursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_UID));
+                        final String accountUID = (String) getAllItems().get(0);
 
-                if (filteredAccountsCursor.getCount() == 1) {
-                    // only one account
+                        dismissDialog();
 
-                    filteredAccountsCursor.moveToFirst();
+                        // Simulate a onSearchableItemClicked
+                        _onSearchableItemClickedListener.onSearchableItemClicked(accountUID);
 
-                    final String accountUID = filteredAccountsCursor.getString(filteredAccountsCursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_UID));
+                    } else {
+                        // only one account n' pas
+
+                        // RAF
+                    }
+
+                }
+            });
+
+            // On item click listener
+            getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                @Override
+                public void onItemClick(AdapterView<?> parent,
+                                        View view,
+                                        int position,
+                                        long id) {
+
+//                final String accountFullName = (String) mWithContainingTextArrayFilterArrayAdapter.getItem(position);
+                    final String accountUID = (String) mWithContainingTextArrayFilterArrayAdapter.getItem(position);
 
                     dismissDialog();
 
-                    // Simulate a onSearchableItemClicked
+                    // Call Listener
                     _onSearchableItemClickedListener.onSearchableItemClicked(accountUID);
-
-                } else {
-                    // only one account n' pas
-
-                    // RAF
                 }
+            });
 
-            }
-        });
+            //
+            // Attach the adapter to the list
+            //
 
-        // Do not use this, because it makes a big black square appears when typing text
+            getListView().setAdapter((ListAdapter) mWithContainingTextArrayFilterArrayAdapter);
+
+            // Do not use this, because it makes a big black square appears when typing text
 //        // Enable filtering based on search text field
-//        _listView.setTextFilterEnabled(true);
-
-        // On item click listener
-        _listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent,
-                                    View view,
-                                    int position,
-                                    long id) {
-
-                final Cursor        cursor              = (Cursor) parentCursorAdapter.getItem(position);
-                final String        accountUID          = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
-
-                dismissDialog();
-
-                // Call Listener
-                _onSearchableItemClickedListener.onSearchableItemClicked(accountUID);
-            }
-        });
-
-        //
-        // Attach the adapter to the list
-        //
-
-        _listView.setAdapter((ListAdapter) parentCursorAdapter);
+//        getListView().setTextFilterEnabled(true);
+        }
 
         // Simulate an empty search text field to build the full accounts list
         onQueryTextChange(null);
@@ -391,7 +431,7 @@ public class SearchableListDialogFragment
         // Start List filtering Thread
         //
 
-        final CursorAdapter listViewCursorAdapter = (QualifiedAccountNameCursorAdapter) _listView.getAdapter();
+        final ArrayAdapter listViewCursorAdapter = (WithContainingTextArrayFilterArrayAdapter) getListView().getAdapter();
 
         if (TextUtils.isEmpty(s)) {
 
@@ -406,7 +446,7 @@ public class SearchableListDialogFragment
             // Perform filtering
 
             // Do not use this, because it makes a big black square appears when typing text
-//            _listView.setFilterText(s);
+//            getListView().setFilterText(s);
 
             // instead, use this
             listViewCursorAdapter.getFilter()
@@ -557,4 +597,25 @@ public class SearchableListDialogFragment
 
         _parentSpinnerView = parentAdapterView;
     }
+
+    protected ListView getListView() {
+
+        return _listView;
+    }
+
+    protected void setListView(final ListView listView) {
+
+        this._listView = listView;
+    }
+
+    protected List getAllItems() {
+
+        return _allItems;
+    }
+
+    protected void setAllItems(final List allItems) {
+
+        this._allItems = allItems;
+    }
+
 }

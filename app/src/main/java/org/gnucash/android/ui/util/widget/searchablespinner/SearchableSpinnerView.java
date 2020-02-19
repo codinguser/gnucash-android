@@ -18,7 +18,9 @@ import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
-// TODO TW C 2020-02-13 : A renommer SearchableCursorSpinnerView
+import java.util.ArrayList;
+import java.util.List;
+
 public class SearchableSpinnerView
         extends android.support.v7.widget.AppCompatSpinner
         implements View.OnTouchListener,
@@ -35,6 +37,7 @@ public class SearchableSpinnerView
     private String   mCursorWhere;
     private String[] mCursorWhereArgs;
 
+    // Embedded DialogFragment
     private SearchableListDialogFragment _searchableListDialogFragment;
 
     private boolean       _isDirty;
@@ -161,16 +164,18 @@ public class SearchableSpinnerView
         for (accountsCursor.moveToFirst(); !accountsCursor.isAfterLast(); accountsCursor.moveToNext()) {
 
             String uid  = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
-            String name = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
+            String accountFullName = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
 
-            if (accountUID.equals(uid)) {
+            // TODO TW C 2020-02-20 : Remettre les UID
+//            if (accountUID.equals(uid)) {
+            if (accountUID.equals(accountFullName)) {
                 // Found
 
                 Log.d(LOG_TAG,
                       "Account found in current Cursor for ("
                       + accountUID
                       + ") => ("
-                      + name
+                      + accountFullName
                       + "), position ("
                       + spinnerSelectedPosition
                       + ")");
