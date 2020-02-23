@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.os.Bundle;
+import android.support.v4.widget.CursorAdapter;
 import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -272,25 +273,27 @@ public class SearchableListDialogFragment
 //        List items = (List) getArguments().getSerializable(ITEMS);
 
         //
-        // Put temporarily DropDownItemLayout in selectedItemView,
-        // because ListView use only selectedItemView for list item
+        // Open Search & List Dialog
         //
 
-        QualifiedAccountNameCursorAdapter parentCursorAdapter = (QualifiedAccountNameCursorAdapter) getParentSpinnerView().getAdapter();
+        // Refresh content #6
+        // Change Start
+        // Description: The items were only set initially, not reloading the data in the
+        // spinner every time it is loaded with items in the adapter.
+        getAllItems().clear();
+
+        if (CursorAdapter.class.isAssignableFrom(getParentSpinnerView().getAdapter()
+                                                                       .getClass())) {
+            // The Adapter is a CursorAdapter
+
+            QualifiedAccountNameCursorAdapter parentCursorAdapter = (QualifiedAccountNameCursorAdapter) getParentSpinnerView().getAdapter();
+
+            //
+            // Put temporarily DropDownItemLayout in selectedItemView,
+            // because ListView use only selectedItemView for list item
+            //
 
 //        parentCursorAdapter.setViewResource(parentCursorAdapter.getSpinnerDropDownItemLayout());
-
-        if (parentCursorAdapter != null) {
-
-            //
-            // Open Search & List Dialog
-            //
-
-            // Refresh content #6
-            // Change Start
-            // Description: The items were only set initially, not reloading the data in the
-            // spinner every time it is loaded with items in the adapter.
-            getAllItems().clear();
 
             // Create items from DB Cursor
             for (int i = 0; i < parentCursorAdapter.getCount(); i++) {
@@ -308,6 +311,33 @@ public class SearchableListDialogFragment
 //                                                                                                       parentCursorAdapter.getSpinnerDropDownItemLayout(),
                                                                                                        android.R.layout.simple_list_item_1,
                                                                                                        getAllItems());
+
+        } else if (getParentSpinnerView().getAdapter() instanceof ArrayAdapter) {
+            // The Adapter is a ListAdapter
+
+            ArrayAdapter parentArrayAdapter = (ArrayAdapter) getParentSpinnerView().getAdapter();
+
+            // Create items from DB Cursor
+            for (int i = 0; i < parentArrayAdapter.getCount(); i++) {
+
+                getAllItems().add(parentArrayAdapter.getItem(i));
+
+            } // for
+
+            // Create an ArrayAdapter for items, with filtering capablity based on item containing a text
+            mWithContainingTextArrayFilterArrayAdapter = new WithContainingTextArrayFilterArrayAdapter(getActivity(),
+//                                                                                                       parentCursorAdapter.getSpinnerDropDownItemLayout(),
+                                                                                                       android.R.layout.simple_list_item_1,
+                                                                                                       getAllItems());
+
+
+        } else {
+            // The Adapter is another Adapter
+
+            mWithContainingTextArrayFilterArrayAdapter = null;
+        }
+
+        if (mWithContainingTextArrayFilterArrayAdapter != null) {
 
 //        //
 //        // Set a filter that rebuild Cursor by running a new query based on a LIKE criteria
@@ -431,7 +461,7 @@ public class SearchableListDialogFragment
         // Start List filtering Thread
         //
 
-        final ArrayAdapter listViewCursorAdapter = (WithContainingTextArrayFilterArrayAdapter) getListView().getAdapter();
+        final ArrayAdapter listViewCursorAdapter = (ArrayAdapter) getListView().getAdapter();
 
         if (TextUtils.isEmpty(s)) {
 
@@ -486,12 +516,22 @@ public class SearchableListDialogFragment
             // Restore original Spinner Selected Item Layout
             //
 
-            QualifiedAccountNameCursorAdapter parentCursorAdapter = (QualifiedAccountNameCursorAdapter) getParentSpinnerView().getAdapter();
+            if (CursorAdapter.class.isAssignableFrom(getParentSpinnerView().getAdapter()
+                                                                           .getClass())) {
+                // The Adapter is a CursorAdapter
 
-            parentCursorAdapter.setViewResource(parentCursorAdapter.getSpinnerSelectedItemLayout());
+                QualifiedAccountNameCursorAdapter parentCursorAdapter = (QualifiedAccountNameCursorAdapter) getParentSpinnerView().getAdapter();
 
-            // Refresh spinner selected item using spinner selected item layout
-            parentCursorAdapter.notifyDataSetChanged();
+                parentCursorAdapter.setViewResource(parentCursorAdapter.getSpinnerSelectedItemLayout());
+
+                // Refresh spinner selected item using spinner selected item layout
+                parentCursorAdapter.notifyDataSetChanged();
+
+            } else {
+                // The Adapter is not a CursorAdapter
+
+                // NTD
+            }
 
             //
             // Hide keyboard

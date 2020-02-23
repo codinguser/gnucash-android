@@ -6,20 +6,19 @@ import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.database.Cursor;
+import android.support.v4.widget.CursorAdapter;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SearchableSpinnerView
         extends android.support.v7.widget.AppCompatSpinner
@@ -135,13 +134,25 @@ public class SearchableSpinnerView
     }
 
     @Override
-    public void onSearchableItemClicked(String itemAccountUID) {
+    public void onSearchableItemClicked(String item) {
 
-        final Cursor cursor = ((QualifiedAccountNameCursorAdapter) getAdapter()).getCursor();
+        if (CursorAdapter.class.isAssignableFrom(getAdapter().getClass())) {
+            // The Adapter is a CursorAdapter
 
-        selectSpinnerAccount(cursor,
-                             itemAccountUID,
-                             this);
+            final Cursor cursor = ((QualifiedAccountNameCursorAdapter) getAdapter()).getCursor();
+
+            selectSpinnerAccount(cursor,
+                                 item,
+                                 this);
+
+        } else if (getAdapter() instanceof ArrayAdapter) {
+            // The Adapter is a ListAdapter
+
+            setSelection(((ArrayAdapter) getAdapter()).getPosition(item));
+
+        } else {
+
+        }
     }
 
     /**
