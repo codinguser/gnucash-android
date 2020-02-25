@@ -24,9 +24,11 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleAdapter;
 import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.util.KeyboardUtils;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
@@ -54,6 +56,7 @@ public class SearchableListDialogFragment
     public static final String KEY_ACCOUNT_SIMPLE_NAME      = "key_accountName";
     public static final String KEY_ACCOUNT_FULL_NAME        = "key_accountFullName";
     public static final String KEY_PARENT_ACCOUNT_FULL_NAME = "key_parentAccountFullName";
+    public static final String KEY_IS_FAVORITE_ACCOUNT      = "key_isFavoriteAccount";
 
     /**
      * Listener to call when user clicks on an item
@@ -428,32 +431,38 @@ public class SearchableListDialogFragment
 //        parentCursorAdapter.setViewResource(parentCursorAdapter.getSpinnerDropDownItemLayout());
 
             setAllItems(new ArrayList<HashMap<String, String>>());
-            HashMap<String, String> dataSet;
+            HashMap<String, String> item;
 
             // Create items from DB Cursor
             for (int i = 0; i < parentCursorAdapter.getCount(); i++) {
 
-                dataSet = new HashMap<String, String>();
+                item = new HashMap<String, String>();
 
                 Cursor cursorOnRow = (Cursor) parentCursorAdapter.getItem(i);
 
-                final String accountUID = cursorOnRow.getString(cursorOnRow.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
-                dataSet.put(KEY_ACCOUNT_UID,
-                            accountUID);
+                String accountUID = cursorOnRow.getString(cursorOnRow.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
+                item.put(KEY_ACCOUNT_UID,
+                         accountUID);
 
-                final String accountSimpleName = cursorOnRow.getString(cursorOnRow.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_NAME));
-                dataSet.put(KEY_ACCOUNT_SIMPLE_NAME,
-                            accountSimpleName);
+                String accountSimpleName = cursorOnRow.getString(cursorOnRow.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_NAME));
+                item.put(KEY_ACCOUNT_SIMPLE_NAME,
+                         accountSimpleName);
 
-                final String parentAccountFullName = cursorOnRow.getString(cursorOnRow.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
-                dataSet.put(KEY_PARENT_ACCOUNT_FULL_NAME,
-                            parentAccountFullName);
+                String parentAccountFullName = cursorOnRow.getString(cursorOnRow.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
+                parentAccountFullName = QualifiedAccountNameCursorAdapter.getParentAccountFullName(parentAccountFullName);
+                item.put(KEY_PARENT_ACCOUNT_FULL_NAME,
+                         parentAccountFullName);
 
-                final String accountFullName = cursorOnRow.getString(cursorOnRow.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
-                dataSet.put(KEY_ACCOUNT_FULL_NAME,
-                            accountFullName);
+                String accountFullName = cursorOnRow.getString(cursorOnRow.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
+                item.put(KEY_ACCOUNT_FULL_NAME,
+                         accountFullName);
 
-                getAllItems().add(dataSet);
+                Integer isFavorite = cursorOnRow.getInt(cursorOnRow.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_FAVORITE));
+                item.put(KEY_IS_FAVORITE_ACCOUNT,
+                         isFavorite.toString());
+
+
+                getAllItems().add(item);
 
             } // for
 
@@ -487,6 +496,47 @@ public class SearchableListDialogFragment
                                                                      getAllItems());
                     }
                     return mFilter;
+                }
+
+                @Override
+                public View getView(final int position,
+                                    final View convertView,
+                                    final ViewGroup parent) {
+
+                    View view = super.getView(position,
+                                              convertView,
+                                              parent);
+
+                    Map<String, String> item = (HashMap<String, String>) getItem(position);
+
+                    String  accountUID = item.get(KEY_ACCOUNT_UID);
+                    Integer isFavorite = Integer.valueOf(item.get(KEY_IS_FAVORITE_ACCOUNT));
+
+                    // Get Account color
+                    int iColor = AccountsDbAdapter.getActiveAccountColorResource(accountUID);
+
+                    TextView simpleAcoountNameTextView = (TextView) view.findViewById(R.id.text2);
+
+                    if (simpleAcoountNameTextView != null) {
+                        //
+
+                        // Override color
+                        simpleAcoountNameTextView.setTextColor(iColor);
+
+                    } else {
+                        //  n' pas
+
+                        // RAF
+                    }
+
+                    //
+                    // Add or not Favorite Star Icon
+                    //
+
+                    QualifiedAccountNameCursorAdapter.displayFavoriteAccountStarIcon(view,
+                                                                                     isFavorite);
+
+                    return view;
                 }
             };
 
@@ -576,35 +626,12 @@ public class SearchableListDialogFragment
                 @Override
                 public void onChanged() {
 
-//                final String accountUID = (String) mBaseAdapter.getItem(position);
-//                final Cursor filteredAccountsCursor = parentCursorAdapter.getCursor();
-
                     if (getAllItems().size() == 1) {
                         // only one account
 
-                        String accountUID="";
-
-//                    filteredAccountsCursor.moveToFirst();
-
-//                    final String accountUID = filteredAccountsCursor.getString(filteredAccountsCursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_UID));
                         final Object itemAsObject = getAllItems().get(0);
 
-                        if (itemAsObject instanceof Map) {
-                            //
-
-                            HashMap<String, String> item = (HashMap<String, String>) itemAsObject;
-
-                            accountUID = item.get(KEY_ACCOUNT_UID);
-
-                        } else if (itemAsObject instanceof String) {
-
-                            accountUID = (String) itemAsObject;
-
-                        } else {
-                            //  n' pas
-
-                            // RAF
-                        }
+                        String accountUID = getAccountUidFromItem(itemAsObject);
 
                         dismissDialog();
 
@@ -629,8 +656,7 @@ public class SearchableListDialogFragment
                                         int position,
                                         long id) {
 
-//                final String accountFullName = (String) mBaseAdapter.getItem(position);
-                    final String accountUID = (String) mBaseAdapter.getItem(position);
+                    String accountUID = getAccountUidFromItem(mBaseAdapter.getItem(position));
 
                     dismissDialog();
 
@@ -643,22 +669,41 @@ public class SearchableListDialogFragment
             // Attach the adapter to the list
             //
 
-            getListView().
-
-                                 setAdapter(mBaseAdapter);
+            getListView().setAdapter(mBaseAdapter);
 
             //
             // Define Filter
             //
 
             // Enable filtering based on search text field
-            getListView().
-
-                                 setTextFilterEnabled(true);
+            getListView().setTextFilterEnabled(true);
         }
 
         // Simulate an empty search text field to build the full accounts list
         onQueryTextChange(null);
+    }
+
+    public String getAccountUidFromItem(final Object itemAsObject) {
+
+        String accountUID = "";
+
+        if (itemAsObject instanceof Map) {
+            //
+
+            HashMap<String, String> item = (HashMap<String, String>) itemAsObject;
+
+            accountUID = item.get(KEY_ACCOUNT_UID);
+
+        } else if (itemAsObject instanceof String) {
+
+            accountUID = (String) itemAsObject;
+
+        } else {
+            //  n' pas
+
+            // RAF
+        }
+        return accountUID;
     }
 
     protected void dismissDialog() {
