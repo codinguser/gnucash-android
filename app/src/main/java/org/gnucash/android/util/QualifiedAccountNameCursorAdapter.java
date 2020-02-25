@@ -22,13 +22,11 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.View;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
-import org.gnucash.android.ui.transaction.TransactionFormFragment;
 
 /**
  * Cursor adapter which looks up the fully qualified account name and returns that instead of just the simple name.
@@ -130,10 +128,8 @@ public class QualifiedAccountNameCursorAdapter
 
         String accountUID = cursor.getString(cursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_UID));
 
-        TextView simpleAccountNameTextView = (TextView) view.findViewById(R.id.text2);
-
-        TransactionFormFragment.setAccountTextColor(simpleAccountNameTextView,
-                                                    accountUID);
+        setTextColorAccordingToAccountUID(view,
+                                          accountUID);
 
         //
         // Put Parent Account Full Name in text3
@@ -144,25 +140,10 @@ public class QualifiedAccountNameCursorAdapter
         if (parentAccountFullNameTextView != null) {
             //
 
-            // TODO TW C 2020-02-15 : A factoriser et commenter
+            String accountFullName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
 
-            String accountFullName = cursor.getString(cursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
-
-            String parentAccountFullName;
-            int    index = accountFullName.lastIndexOf(AccountsDbAdapter.ACCOUNT_NAME_SEPARATOR);
-
-            if (index > 0) {
-                //
-
-                //
-                parentAccountFullName = accountFullName.substring(0,
-                                                                  index);
-
-            } else {
-                //  n' pas
-
-                parentAccountFullName="";
-            }
+            // Get Parent account Full Name
+            String parentAccountFullName = getParentAccountFullName(accountFullName);
 
             // Display Parent Account Full Name
             parentAccountFullNameTextView.setText(parentAccountFullName);
@@ -184,10 +165,55 @@ public class QualifiedAccountNameCursorAdapter
 
     }
 
+    // TODO TW C 2020-02-25 : A déplacer
+    public static String getParentAccountFullName(final String accountFullName) {
+
+        String parentAccountFullName;
+
+        int index = accountFullName.lastIndexOf(AccountsDbAdapter.ACCOUNT_NAME_SEPARATOR);
+
+        if (index > 0) {
+            //
+
+            //
+            parentAccountFullName = accountFullName.substring(0,
+                                                              index);
+
+        } else {
+            //  n' pas
+
+            parentAccountFullName = "";
+        }
+        return parentAccountFullName;
+    }
+
+    // TODO TW C 2020-02-25 : A déplacer
+    public static void setTextColorAccordingToAccountUID(final View view,
+                                                         final String accountUID) {
+
+        // Get Account color
+        int iColor = AccountsDbAdapter.getActiveAccountColorResource(accountUID);
+
+        TextView simpleAcoountNameTextView = (TextView) view.findViewById(R.id.text2);
+
+        if (simpleAcoountNameTextView != null) {
+            //
+
+            // Override color
+            simpleAcoountNameTextView.setTextColor(iColor);
+
+        } else {
+            //  n' pas
+
+            // RAF
+        }
+    }
+
     /**
      * @param spinnerSelectedItemView
      * @param isFavorite
      */
+    // TODO TW C 2020-02-25 : A déplacer
     public static void displayFavoriteAccountStarIcon(View spinnerSelectedItemView,
                                                       Integer isFavorite) {
 
