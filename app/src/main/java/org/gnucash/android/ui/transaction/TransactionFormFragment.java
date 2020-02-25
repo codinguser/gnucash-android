@@ -461,14 +461,14 @@ public class TransactionFormFragment extends Fragment implements
         // TODO TW C 2020-02-15 : A finir
 //        SearchableListDialogFragment searchableListDialogFragment = (SearchableListDialogFragment) dialog;
 //
-//        String accountFullName = (String) searchableListDialogFragment.getParentSpinnerView()
+//        String accountFullName = (String) searchableListDialogFragment.getParentSearchableSpinnerView()
 //                                                                      .getSelectedItem();
 //
 //        //
 //        // Set Account Color
 //        //
 //
-//        TextView accountFullNameTextView = (TextView) searchableListDialogFragment.getParentSpinnerView()
+//        TextView accountFullNameTextView = (TextView) searchableListDialogFragment.getParentSearchableSpinnerView()
 //                                                                                  .findViewById(android.R.id.text1);
 //
 //        if (accountFullNameTextView != null) {

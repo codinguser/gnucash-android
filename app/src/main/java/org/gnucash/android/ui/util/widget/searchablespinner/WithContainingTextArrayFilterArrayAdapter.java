@@ -20,10 +20,21 @@ public class WithContainingTextArrayFilterArrayAdapter<T>
     private class ItemContaingTextArrayFilter
             extends Filter {
 
+        /**
+         * Build filtered results, which is a structure containing
+         *      filtered items (whose text contains textToSearch)
+         *      count of filtered items
+         *
+         * @param textToSearch
+         *          text to search to retain item
+         *
+         * @return
+         *      structure containing filtered items and count
+         */
         @Override
         protected FilterResults performFiltering(CharSequence textToSearch) {
 
-            final FilterResults filteredItems = new FilterResults();
+            final FilterResults filterResults = new FilterResults();
 
             // Get copy of all items
             final ArrayList<T> allItems = getCopyOfAllItems();
@@ -31,8 +42,8 @@ public class WithContainingTextArrayFilterArrayAdapter<T>
             if (textToSearch == null || textToSearch.length() == 0) {
                 // Nothing to search
 
-                filteredItems.values = allItems;
-                filteredItems.count = allItems.size();
+                filterResults.values = allItems;
+                filterResults.count = allItems.size();
 
             } else {
                 // There is something to search
@@ -44,7 +55,7 @@ public class WithContainingTextArrayFilterArrayAdapter<T>
                 // Filter items
                 //
 
-                final ArrayList<T> tmpFilteredItems = new ArrayList<>();
+                final ArrayList<T> filteredItems = new ArrayList<>();
 
                 final int count = allItems.size();
 
@@ -59,7 +70,7 @@ public class WithContainingTextArrayFilterArrayAdapter<T>
                     if (itemTextLowerCase.contains(textToSearchLowerCase)) {
                         // It matches
 
-                        tmpFilteredItems.add(item);
+                        filteredItems.add(item);
 
                     } else {
                         // It doesen't match
@@ -68,28 +79,34 @@ public class WithContainingTextArrayFilterArrayAdapter<T>
                     }
                 }
 
-                filteredItems.values = tmpFilteredItems;
-                filteredItems.count = tmpFilteredItems.size();
+                filterResults.values = filteredItems;
+                filterResults.count = filteredItems.size();
             }
 
-            return filteredItems;
+            return filterResults;
         }
 
         @Override
         protected void publishResults(CharSequence constraint,
-                                      FilterResults filteredItems) {
+                                      FilterResults filteredResults) {
 
             // Replace items in ArrayAdapter with filtered ones
             clear();
-            addAll((List<T>) filteredItems.values);
+            addAll((List<T>) filteredResults.values);
 
-            if (filteredItems.count > 0) {
+            if (filteredResults.count > 0) {
+                // There are filtered items
+
                 notifyDataSetChanged();
+
             } else {
+                // There is none filtered items
+
                 notifyDataSetInvalidated();
             }
         }
 
+        // TODO TW C 2020-02-25 : Vérifier si ça fait vraiment une copie ou juste une autre liste
         private ArrayList<T> getCopyOfAllItems() {
 
             final ArrayList<T> allItemsCopy;
@@ -135,6 +152,8 @@ public class WithContainingTextArrayFilterArrayAdapter<T>
               itemView,
               items);
 
+        // TODO TW C 2020-02-25 : Pas sûr que ça fait une copie des éléments, c'est peut-être juste une autre liste qui pointe
+        //  vers les mêmes éléments
         // Make a copy of all the items (before filtering them)
         this._allItems = new ArrayList<T>();
         this._allItems.addAll(items);
