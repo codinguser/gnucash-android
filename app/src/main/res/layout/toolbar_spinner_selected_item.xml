@@ -19,4 +19,6 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           style="?android:attr/spinnerItemStyle"
-          android:textAlignment="inherit"/>
+          android:textAlignment="inherit"
+          android:textColor="@color/bpWhite"
+    />
