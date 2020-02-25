@@ -130,6 +130,7 @@ public class SearchableSpinnerView
         } else {
             // There is no DialogFragment defined
 
+            // NTD
         }
 
         return handled;
@@ -196,9 +197,7 @@ public class SearchableSpinnerView
             String uid  = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
             String accountFullName = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
 
-            // TODO TW C 2020-02-20 : Remettre les UID
-//            if (accountUID.equals(uid)) {
-            if (accountUID.equals(accountFullName)) {
+            if (accountUID.equals(uid)) {
                 // Found
 
                 Log.d(LOG_TAG,
