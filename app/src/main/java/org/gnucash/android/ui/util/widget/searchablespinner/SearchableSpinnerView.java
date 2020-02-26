@@ -106,6 +106,7 @@ public class SearchableSpinnerView
 
         boolean handled = false;
 
+        // TODO TW C 2020-02-26 : A enlever si j'ai réussi à génériciser même pour Pie Chart
         if (_searchableListDialogFragment != null) {
             // There is a DialogFragment defined
 
@@ -154,6 +155,12 @@ public class SearchableSpinnerView
 
     @Override
     public void onSearchableItemClicked(String item) {
+
+        // TODO TW C 2020-02-26 : Il faut chercher dans la liste du spinner (pas dans la ListView du Dialog) l'item fourni en
+        //  paramètre. Pas besoin de passer le Cursor, car l'Adapter sait naviguer dans ses items, peu importe d'où ils viennent
+        // parcourir les items, regarder si ça matche. En déduire la position, puis la sélectionner
+//        Object itemAsObject = getAdapter().getItem(0);
+//        setSelection(0);
 
         if (CursorAdapter.class.isAssignableFrom(getAdapter().getClass())) {
             // The Adapter is a CursorAdapter

@@ -13,7 +13,7 @@ import java.util.List;
  * The default search criteria consist to find the lower case text to search in
  * the lower case of the item.toString()
  *
- * @author Thierry
+ * @author JeanGarf
  */
 public class ItemContainingTextFilter<T_ITEM>
         extends Filter {
