@@ -17,10 +17,12 @@ import android.widget.SpinnerAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
-public class SearchableSpinnerView
+import java.util.HashMap;
+
+public class SearchableSpinnerView<T_ITEM>
         extends android.support.v7.widget.AppCompatSpinner
         implements View.OnTouchListener,
-                   SearchableListDialogFragment.OnSearchableItemClickedListener<String> {
+                   SearchableListDialogFragment.OnSearchableItemClickedListener<T_ITEM> {
 
     /**
      * Logging tag
@@ -33,7 +35,7 @@ public class SearchableSpinnerView
     private String[] mCursorWhereArgs;
 
     // Embedded DialogFragment
-    private SearchableListDialogFragment _searchableListDialogFragment;
+    private SearchableListDialogFragment<T_ITEM> _searchableListDialogFragment;
 
     public SearchableSpinnerView(Context context) {
 
@@ -94,11 +96,64 @@ public class SearchableSpinnerView
         _searchableListDialogFragment = SearchableListDialogFragment.makeInstance(this);
 
         // S'abonner aux clicks sur un item
-        _searchableListDialogFragment.setOnSearchableItemClickListener(this);
+        _searchableListDialogFragment.setOnSearchableListItemClickListener(this);
 
         // S'abonner aux évènements onTouch
         setOnTouchListener(this);
     }
+
+    /**
+     * Set the SpinnerAdapter and store the where clause
+     * in order to be able to filter by running the where clause
+     * completed with constraint on the account full name
+     *
+     * @param adapter
+     * @param cursorWhere
+     * @param cursorWhereArgs
+     */
+    public void setAdapter(SpinnerAdapter adapter,
+                           String cursorWhere,
+                           String[] cursorWhereArgs) {
+
+        // Use given adapter for spinner item (not drop down)
+        setAdapter(adapter);
+
+        // Store the WHERE clause associated with the Cursor
+        setCursorWhere(cursorWhere);
+        setCursorWhereArgs(cursorWhereArgs);
+    }
+
+    /**
+     * DO NOT USE this method.
+     *
+     * Use the above one
+     *
+     * @param adapter
+     */
+    @Override
+    @Deprecated
+    public void setAdapter(SpinnerAdapter adapter) {
+
+        // Use given adapter for spinner item (not drop down)
+        super.setAdapter(adapter);
+
+        if (QualifiedAccountNameCursorAdapter.class.isAssignableFrom(getAdapter().getClass())) {
+            // The SpinnerAdapter is a QualifiedAccountNameCursorAdapter
+
+            // NTD
+
+        } else {
+            // The SpinnerAdapter is not a QualifiedAccountNameCursorAdapter
+
+            // Remove DialogFragment
+            _searchableListDialogFragment = null;
+        }
+
+    }
+
+    //
+    // Listeners
+    //
 
     @Override
     public boolean onTouch(View v,
@@ -154,142 +209,117 @@ public class SearchableSpinnerView
     }
 
     @Override
-    public void onSearchableItemClicked(String item) {
+    public void onSearchableListItemClicked(T_ITEM item) {
 
         // TODO TW C 2020-02-26 : Il faut chercher dans la liste du spinner (pas dans la ListView du Dialog) l'item fourni en
         //  paramètre. Pas besoin de passer le Cursor, car l'Adapter sait naviguer dans ses items, peu importe d'où ils viennent
         // parcourir les items, regarder si ça matche. En déduire la position, puis la sélectionner
-//        Object itemAsObject = getAdapter().getItem(0);
-//        setSelection(0);
 
-        if (CursorAdapter.class.isAssignableFrom(getAdapter().getClass())) {
-            // The Adapter is a CursorAdapter
+        int itemsCount = getAdapter().getCount();
 
-            final Cursor cursor = ((CursorAdapter) getAdapter()).getCursor();
+        for (int position = 0; position < itemsCount; position++) {
 
-            selectSpinnerAccount(cursor,
-                                 item,
-                                 this);
+            T_ITEM itemAtPosition = (T_ITEM) getAdapter().getItem(position);
 
-            // TODO TW C 2020-02-25 : A enlever ?
-        } else if (getAdapter() instanceof ArrayAdapter) {
-            // The Adapter is a ListAdapter
+            if (item == itemAtPosition) {
+                //
 
-            setSelection(((ArrayAdapter) getAdapter()).getPosition(item));
+                //
+                setSelection(position);
 
-        } else {
-
-            // NTD
-        }
-    }
-
-    /**
-     *
-     * @param accountsCursor
-     * @param accountUID
-     * @param spinnerView
-     */
-    public static void selectSpinnerAccount(Cursor accountsCursor,
-                                            final String accountUID,
-                                            final Spinner spinnerView) {
-
-        //
-        // set the selected item in the spinner
-        //
-
-        int     spinnerSelectedPosition = 0;
-        boolean found                   = false;
-
-        for (accountsCursor.moveToFirst(); !accountsCursor.isAfterLast(); accountsCursor.moveToNext()) {
-
-            String uid  = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
-            String accountFullName = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
-
-            if (accountUID.equals(uid)) {
-                // Found
-
-                Log.d(LOG_TAG,
-                      "Account found in current Cursor for ("
-                      + accountUID
-                      + ") => ("
-                      + accountFullName
-                      + "), position ("
-                      + spinnerSelectedPosition
-                      + ")");
-
-                // Set Spinner selection
-                spinnerView.setSelection(spinnerSelectedPosition);
-
-                found = true;
                 break;
+
+            } else {
+                //  n' pas
+
+                // RAF
             }
 
-            ++spinnerSelectedPosition;
-
-        } // for
-
-        if (found) {
-            // Account has found
-
-            // NTD
-
-        } else {
-            // Account has not been found
-
-            // Log message
-            Log.e(LOG_TAG,
-                  "No Account found in current Cursor for (" + accountUID + ")");
-        }
-    }
-
-    /**
-     * Set the SpinnerAdapter and store the where clause
-     * in order to be able to filter by running the where clause
-     * completed with constraint on the account full name
-     *
-     * @param adapter
-     * @param cursorWhere
-     * @param cursorWhereArgs
-     */
-    public void setAdapter(SpinnerAdapter adapter,
-                           String cursorWhere,
-                           String[] cursorWhereArgs) {
-
-        // Use given adapter for spinner item (not drop down)
-        setAdapter(adapter);
-
-        // Store the WHERE clause associated with the Cursor
-        setCursorWhere(cursorWhere);
-        setCursorWhereArgs(cursorWhereArgs);
-    }
-
-    /**
-     * DO NOT USE this method.
-     *
-     * Use the above one
-     *
-     * @param adapter
-     */
-    @Override
-    @Deprecated
-    public void setAdapter(SpinnerAdapter adapter) {
-
-        // Use given adapter for spinner item (not drop down)
-        super.setAdapter(adapter);
-
-        if (QualifiedAccountNameCursorAdapter.class.isAssignableFrom(getAdapter().getClass())) {
-            // The SpinnerAdapter is a QualifiedAccountNameCursorAdapter
-
-            // NTD
-
-        } else {
-            // The SpinnerAdapter is not a QualifiedAccountNameCursorAdapter
-
-            // Remove DialogFragment
-            _searchableListDialogFragment = null;
         }
 
+//        if (CursorAdapter.class.isAssignableFrom(getAdapter().getClass())) {
+//            // The Adapter is a CursorAdapter
+//
+//            final Cursor cursor = ((CursorAdapter) getAdapter()).getCursor();
+//
+//            selectSpinnerAccount(cursor,
+//                                 item,
+//                                 this);
+//
+//            // TODO TW C 2020-02-25 : A enlever ?
+//        } else if (getAdapter() instanceof ArrayAdapter) {
+//            // The Adapter is a ListAdapter
+//
+//            setSelection(((ArrayAdapter) getAdapter()).getPosition(item));
+//
+//        } else {
+//
+//            // NTD
+//        }
     }
+
+//    /**
+//     *
+//     * @param accountsCursor
+//     * @param accountUID
+//     * @param spinnerView
+//     */
+//    public static void selectSpinnerAccount(Cursor accountsCursor,
+//                                            final String accountUID,
+//                                            final Spinner spinnerView) {
+//
+//        //
+//        // set the selected item in the spinner
+//        //
+//
+//        int     spinnerSelectedPosition = 0;
+//        boolean found                   = false;
+//
+//        for (accountsCursor.moveToFirst(); !accountsCursor.isAfterLast(); accountsCursor.moveToNext()) {
+//
+//            String uid  = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
+//            String accountFullName = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
+//
+//            if (accountUID.equals(uid)) {
+//                // Found
+//
+//                Log.d(LOG_TAG,
+//                      "Account found in current Cursor for ("
+//                      + accountUID
+//                      + ") => ("
+//                      + accountFullName
+//                      + "), position ("
+//                      + spinnerSelectedPosition
+//                      + ")");
+//
+//                // Set Spinner selection
+//                spinnerView.setSelection(spinnerSelectedPosition);
+//
+//                found = true;
+//                break;
+//            }
+//
+//            ++spinnerSelectedPosition;
+//
+//        } // for
+//
+//        if (found) {
+//            // Account has found
+//
+//            // NTD
+//
+//        } else {
+//            // Account has not been found
+//
+//            // Log message
+//            Log.e(LOG_TAG,
+//                  "No Account found in current Cursor for (" + accountUID + ")");
+//        }
+//    }
+
+    //
+    // Getters/Setters
+    //
 
     String getCursorWhere() {
 
