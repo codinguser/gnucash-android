@@ -40,7 +40,7 @@ import java.util.Map;
 /**
  * Pop-up that display a ListView with a search text field
  */
-public class SearchableListDialogFragment
+public class SearchableListDialogFragment<T_ITEM>
         extends DialogFragment
         implements SearchView.OnQueryTextListener,
                    SearchView.OnCloseListener,
@@ -60,13 +60,13 @@ public class SearchableListDialogFragment
     /**
      * Listener to call when user clicks on an item
      *
-     * @param <T>
+     * @param <T_ITEM>
      *      item Type
      */
-    public interface OnSearchableItemClickedListener<T>
+    public interface OnSearchableItemClickedListener<T_ITEM>
             extends Serializable {
 
-        void onSearchableItemClicked(T item);
+        void onSearchableListItemClicked(T_ITEM item);
     }
 
     /**
@@ -103,7 +103,7 @@ public class SearchableListDialogFragment
     //
 
     // items (all or filtered) given to the mListViewAdapter to be displayed in the _listView
-    private List<?> mItems;
+    private List<T_ITEM> mItems;
 
     // Adapter for the _listView
     private BaseAdapter mListViewAdapter;
@@ -114,7 +114,7 @@ public class SearchableListDialogFragment
 
     private OnSearchTextChangedListener _onSearchTextChangedListener;
 
-    private OnSearchableItemClickedListener<String> _onSearchableItemClickedListener;
+    private OnSearchableItemClickedListener<T_ITEM> mOnSearchableListItemClickedListener;
 
     private DialogInterface.OnClickListener _onPositiveBtnClickListener;
 
@@ -179,7 +179,7 @@ public class SearchableListDialogFragment
         // Description: As the instance was re initializing to null on rotating the device,
         // getting the instance from the saved instance
         if (null != savedInstanceState) {
-            _onSearchableItemClickedListener = (OnSearchableItemClickedListener<String>) savedInstanceState.getSerializable("item");
+            setOnSearchableListItemClickListener((OnSearchableItemClickedListener<T_ITEM>) savedInstanceState.getSerializable("item"));
         }
         // Change End
 
@@ -335,7 +335,7 @@ public class SearchableListDialogFragment
     public void onSaveInstanceState(Bundle outState) {
 
         outState.putSerializable("item",
-                                 _onSearchableItemClickedListener);
+                                 getOnSearchableListItemClickedListener());
         super.onSaveInstanceState(outState);
     }
     // Change End
@@ -607,12 +607,12 @@ public class SearchableListDialogFragment
 
                         dismissDialog();
 
-                        final Object itemAsObject = getItems().get(0);
+                        final T_ITEM item = (T_ITEM) getItems().get(0);
 
-                        String accountUID = getAccountUidFromItem(itemAsObject);
+//                        String accountUID = getAccountUidFromItem(itemAsObject);
 
-                        // Simulate a onSearchableItemClicked
-                        _onSearchableItemClickedListener.onSearchableItemClicked(accountUID);
+                        // Simulate a onSearchableListItemClicked
+                        getOnSearchableListItemClickedListener().onSearchableListItemClicked(item);
 
                     } else {
                         // only one account n' pas
@@ -634,10 +634,12 @@ public class SearchableListDialogFragment
 
                     dismissDialog();
 
-                    String accountUID = getAccountUidFromItem(mListViewAdapter.getItem(position));
+                    final T_ITEM item = (T_ITEM) mListViewAdapter.getItem(position);
+
+//                    String accountUID = getAccountUidFromItem(mListViewAdapter.getItem(position));
 
                     // Call Listener
-                    _onSearchableItemClickedListener.onSearchableItemClicked(accountUID);
+                    getOnSearchableListItemClickedListener().onSearchableListItemClicked(item);
                 }
             });
 
@@ -655,7 +657,7 @@ public class SearchableListDialogFragment
         onQueryTextChange(null);
     }
 
-    public String getAccountUidFromItem(final Object itemAsObject) {
+    protected String getAccountUidFromItem(final Object itemAsObject) {
 
         String accountUID = "";
 
@@ -776,9 +778,14 @@ public class SearchableListDialogFragment
         _onPositiveBtnClickListener = onClickListener;
     }
 
-    protected void setOnSearchableItemClickListener(OnSearchableItemClickedListener<String> onSearchableItemClickedListener) {
+    protected void setOnSearchableListItemClickListener(OnSearchableItemClickedListener<T_ITEM> onSearchableListItemClickedListener) {
 
-        this._onSearchableItemClickedListener = onSearchableItemClickedListener;
+        this.mOnSearchableListItemClickedListener = onSearchableListItemClickedListener;
+    }
+
+    protected OnSearchableItemClickedListener<T_ITEM> getOnSearchableListItemClickedListener() {
+
+        return mOnSearchableListItemClickedListener;
     }
 
     protected void setOnCancelListener(DialogInterface.OnCancelListener onCancelListener) {
