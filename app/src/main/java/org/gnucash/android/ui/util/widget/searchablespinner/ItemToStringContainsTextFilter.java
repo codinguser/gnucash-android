@@ -7,27 +7,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Filter items whose item.toString() contains a text to search
+ * Generic filter that retain items whose item.toString() contains a text to search
  *
  * @author Thierry
  */
 public class ItemToStringContainsTextFilter<T>
         extends Filter {
 
-    //    /**
-//     * Lock used to modify the content of {@link #_allItems}. Any write operation
-//     * performed on the array should be synchronized on this lock. This lock is also
-//     * used by the filter (see {@link #getFilter()} to make a synchronized copy of
-//     * the original array of data.
-//     */
-    private final Object _lock = new Object();
+    /**
+     * Adapter whose this filter belongs to
+     */
+    private Adapter mParentAdapter;
 
     /**
      * Copy of all items before filtering
      */
     private List<T> mAllItems;
 
-    private Adapter mParentAdapter;
+    //     * Lock used to modify the content of {@link #mAllItems}. Any write operation
+    //     * performed on the array should be synchronized on this lock. This lock is also
+    //     * used by the filter (see {@link #getFilter()} to make a synchronized copy of
+    //     * the original array of data.
+    private final Object _lock = new Object();
+
+
 
     /**
      * Constructor
@@ -37,6 +40,7 @@ public class ItemToStringContainsTextFilter<T>
 
         mParentAdapter = parentAdapter;
 
+        // TODO TW M 2020-02-25 : Mettre un synchronize(_lock) ?
         mAllItems = allItems;
     }
 
@@ -111,20 +115,18 @@ public class ItemToStringContainsTextFilter<T>
     protected void publishResults(CharSequence constraint,
                                   FilterResults filteredResults) {
 
-//        // Replace items in ArrayAdapter with filtered ones
-//        clear();
-//        addAll((List<T>) filteredResults.values);
-
+        // Replace items with filtered ones
         mAllItems.clear();
         mAllItems.addAll((List<T>) filteredResults.values);
     }
 
-    // TODO TW C 2020-02-25 : Vérifier si ça fait vraiment une copie ou juste une autre liste
+    // TODO TW C 2020-02-25 : Vérifier si ça fait vraiment une copie ou juste une autre liste : getNewListOfAllItems() ?
     private List<T> getCopyOfAllItems() {
 
         final List<T> allItemsCopy;
 
         synchronized (_lock) {
+
             allItemsCopy = new ArrayList<>();
 
             for (int i = 0; i < mParentAdapter.getCount(); i++) {

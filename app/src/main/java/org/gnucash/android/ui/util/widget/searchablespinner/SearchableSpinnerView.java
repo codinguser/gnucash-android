@@ -27,6 +27,7 @@ public class SearchableSpinnerView
      */
     protected static final String LOG_TAG = "SearchableSpinnerView";
 
+    // TODO TW C 2020-02-25 : A supprimer
     // Clause WHERE du Cursor (en vue de pouvoir la rejouer pour la filtrer
     private String   mCursorWhere;
     private String[] mCursorWhereArgs;

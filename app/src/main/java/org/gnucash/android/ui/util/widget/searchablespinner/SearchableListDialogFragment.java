@@ -507,6 +507,7 @@ public class SearchableListDialogFragment
                                               convertView,
                                               parent);
 
+                    // Get the item (which is a Map in a SimpleAdapter)
                     Map<String, String> item = (HashMap<String, String>) getItem(position);
 
                     String  accountUID = item.get(KEY_ACCOUNT_UID);
@@ -540,25 +541,6 @@ public class SearchableListDialogFragment
                 }
             };
 
-            // TODO TW C 2020-02-25 : A supprimer
-        } else if (ArrayAdapter.class.isAssignableFrom(parentSpinnerAdapter.getClass())) {
-            // The parentSpinnerAdapter is an ArrayAdapter
-
-            ArrayAdapter parentArrayAdapter = (ArrayAdapter) parentSpinnerAdapter;
-
-            // Create items from ArrayAdapter's items
-            for (int i = 0; i < parentArrayAdapter.getCount(); i++) {
-
-                getAllItems().add(parentArrayAdapter.getItem(i));
-
-            } // for
-
-            // Create an ArrayAdapter for items, with filtering capablity based on item containing a text
-            mBaseAdapter = new WithContainingTextArrayFilterArrayAdapter(getActivity(),
-//                                                                                                       parentCursorAdapter.getSpinnerDropDownItemLayout(),
-                                                                         android.R.layout.simple_list_item_1,
-                                                                         getAllItems());
-
         } else {
             // The parentSpinnerAdapter is another Adapter
 
@@ -569,52 +551,6 @@ public class SearchableListDialogFragment
         }
 
         if (mBaseAdapter != null) {
-
-//        //
-//        // Set a filter that rebuild Cursor by running a new query based on a LIKE criteria
-//        // with or without Placeholder accounts
-//        //
-//
-//        parentCursorAdapter.setFilterQueryProvider(new FilterQueryProvider() {
-//
-//            public Cursor runQuery(CharSequence constraint) {
-//
-//                //
-//                // Add %constraint% at the end of the whereArgs
-//                //
-//
-//                // Convert WhereArgs into List
-//                final String[] cursorWhereArgs = getParentSearchableSpinnerView().getCursorWhereArgs();
-//                final List<String> whereArgsAsList = (cursorWhereArgs != null)
-//                                                     ? new ArrayList<String>(Arrays.asList(cursorWhereArgs))
-//                                                     : new ArrayList<String>();
-//
-//                // Add the %constraint% for the LIKE added in the where clause
-//                whereArgsAsList.add("%" + ((constraint != null)
-//                                           ? constraint.toString()
-//                                           : "") + "%");
-//
-//                // Convert List into WhereArgs
-//                final String[] whereArgs = whereArgsAsList.toArray(new String[whereArgsAsList.size()]);
-//
-//
-//                //
-//                // Run the original query but constrained with full account name containing constraint
-//                //
-//
-//                final AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
-//
-//                final String where = getParentSearchableSpinnerView().getCursorWhere()
-//                                     + " AND "
-//                                     + DatabaseSchema.AccountEntry.COLUMN_FULL_NAME
-//                                     + " LIKE ?";
-//
-//                final Cursor accountsCursor = accountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(where,
-//                                                                                                          whereArgs);
-//
-//                return accountsCursor;
-//            }
-//        });
 
             //
             // Register a Listener to close dialog if there is only one item remaining in the filtered list, and select it
@@ -629,11 +565,11 @@ public class SearchableListDialogFragment
                     if (getAllItems().size() == 1) {
                         // only one account
 
+                        dismissDialog();
+
                         final Object itemAsObject = getAllItems().get(0);
 
                         String accountUID = getAccountUidFromItem(itemAsObject);
-
-                        dismissDialog();
 
                         // Simulate a onSearchableItemClicked
                         _onSearchableItemClickedListener.onSearchableItemClicked(accountUID);
@@ -656,9 +592,9 @@ public class SearchableListDialogFragment
                                         int position,
                                         long id) {
 
-                    String accountUID = getAccountUidFromItem(mBaseAdapter.getItem(position));
-
                     dismissDialog();
+
+                    String accountUID = getAccountUidFromItem(mBaseAdapter.getItem(position));
 
                     // Call Listener
                     _onSearchableItemClickedListener.onSearchableItemClicked(accountUID);
@@ -670,10 +606,6 @@ public class SearchableListDialogFragment
             //
 
             getListView().setAdapter(mBaseAdapter);
-
-            //
-            // Define Filter
-            //
 
             // Enable filtering based on search text field
             getListView().setTextFilterEnabled(true);
