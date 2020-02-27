@@ -352,7 +352,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
             prefs.edit().putBoolean(getString(R.string.key_use_double_entry), true).apply();
 
             // Default preference to open keyboard in account searchable spinners
-            prefs.edit().putBoolean(getString(R.string.key_shall_open_keyboard_in_account_searchable_spinner), true).apply();
+            prefs.edit().putBoolean(getString(R.string.key_shall_open_keyboard_in_account_searchable_spinner), false).apply();
 
             // Default preference to use colors in account lists
             prefs.edit().putBoolean(getString(R.string.key_use_color_in_account_list),true).apply();
