@@ -1291,10 +1291,10 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         if (colorCode == null) {
             // No color has been found defined in any ancestor
 
-            // Use black color
+            // Use default theme color
             iColor = GnuCashApplication.getAppContext()
                                        .getResources()
-                                       .getColor(R.color.bpblack);
+                                       .getColor(R.color.theme_primary);
         }
 
         return iColor;
