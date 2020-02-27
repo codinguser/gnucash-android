@@ -102,6 +102,7 @@ public class SearchableListDialogFragment<T_ITEM>
     // ListView Adapter
     //
 
+    // TODO TW C 2020-02-27 : A supprimer ?
     // items (all or filtered) given to the mListViewAdapter to be displayed in the _listView
     private List<T_ITEM> mItems;
 
