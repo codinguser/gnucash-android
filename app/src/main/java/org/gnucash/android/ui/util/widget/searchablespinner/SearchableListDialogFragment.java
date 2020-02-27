@@ -105,6 +105,7 @@ public class SearchableListDialogFragment<T_ITEM>
     // items (all or filtered) given to the mListViewAdapter to be displayed in the _listView
     private List<T_ITEM> mItems;
 
+    // TODO TW C 2020-02-26 : A enlever
     // Adapter for the _listView
     private BaseAdapter mListViewAdapter;
 
@@ -129,7 +130,7 @@ public class SearchableListDialogFragment<T_ITEM>
      */
     public SearchableListDialogFragment() {
 
-        setItems(new ArrayList());
+        setItems(new ArrayList<T_ITEM>());
     }
 
     /**
@@ -425,10 +426,14 @@ public class SearchableListDialogFragment<T_ITEM>
 
         setListView((ListView) searchableListRootView.findViewById(R.id.listItems));
 
-        // Clear items
-        getItems().clear();
+//        // Clear items
+//        getItems().clear();
 
-        final SpinnerAdapter parentSpinnerAdapter = getParentSearchableSpinnerView().getAdapter();
+        // TODO TW C 2020-02-26 : Ajouter un test de cast
+
+        final BaseAdapter parentSpinnerAdapter = (BaseAdapter) getParentSearchableSpinnerView().getAdapter();
+
+        mListViewAdapter = parentSpinnerAdapter;
 
         if (QualifiedAccountNameCursorAdapter.class.isAssignableFrom(parentSpinnerAdapter.getClass())) {
             // The parentSpinnerAdapter is a QualifiedAccountNameCursorAdapter
@@ -440,154 +445,154 @@ public class SearchableListDialogFragment<T_ITEM>
             // because ListView use only selectedItemView for list item
             //
 
-//        parentCursorAdapter.setViewResource(parentCursorAdapter.getSpinnerDropDownItemLayout());
-
-            setItems(new ArrayList<HashMap<String, String>>());
-            HashMap<String, String> item;
-
-            // Create items from DB Cursor
-            for (int i = 0; i < parentCursorAdapter.getCount(); i++) {
-
-                item = new HashMap<String, String>();
-
-                Cursor cursorOnRow = (Cursor) parentCursorAdapter.getItem(i);
-
-                String accountUID = cursorOnRow.getString(cursorOnRow.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
-                item.put(KEY_ACCOUNT_UID,
-                         accountUID);
-
-                String accountSimpleName = cursorOnRow.getString(cursorOnRow.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_NAME));
-                item.put(KEY_ACCOUNT_SIMPLE_NAME,
-                         accountSimpleName);
-
-                String parentAccountFullName = cursorOnRow.getString(cursorOnRow.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
-                parentAccountFullName = QualifiedAccountNameCursorAdapter.getParentAccountFullName(parentAccountFullName);
-                item.put(KEY_PARENT_ACCOUNT_FULL_NAME,
-                         parentAccountFullName);
-
-                String accountFullName = cursorOnRow.getString(cursorOnRow.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
-                item.put(KEY_ACCOUNT_FULL_NAME,
-                         accountFullName);
-
-                Integer isFavorite = cursorOnRow.getInt(cursorOnRow.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_FAVORITE));
-                item.put(KEY_IS_FAVORITE_ACCOUNT,
-                         isFavorite.toString());
-
-
-                getItems().add(item);
-
-            } // for
-
-            //
-            // Instanciate a customized SimpleAdapter which can :
-            //   1) Filter on Account Full Name
-            //   2) Display items in account_spinner_dropdown_item_2lines
-            //
-            mListViewAdapter = new SimpleAdapter(getActivity(),
-                                                 getItems(),
-                                                 // Layout englobant de chaque item
-//                                                 parentCursorAdapter.getSpinnerDropDownItemLayout(),
-                                                 R.layout.account_spinner_dropdown_item_2lines,
-                                                 // Keys
-                                                 new String[]{KEY_ACCOUNT_SIMPLE_NAME,
-                                                          KEY_PARENT_ACCOUNT_FULL_NAME,
-                                                          KEY_ACCOUNT_FULL_NAME},
-                                                 // Layout de chaque TextView englobé
-                                                 new int[]{R.id.text2,
-                                                       R.id.text3,
-                                                           // TODO TW C 2020-02-26 : A supprimer
-                                                       android.R.id.text1}) {
-
-                protected Filter mFilter = null;
-
-                @Override
-                public Filter getFilter() {
-
-                    if (mFilter == null) {
-                        mFilter = new ItemContainingTextFilter<HashMap<String, String>>(getItems()) {
-
-                            /**
-                             * Return true if textToSearch has been found in item
-                             * <p>
-                             * In this implementation, the text is found
-                             * if the lower case text
-                             * is found in the lower cases of the item's account full name
-                             *
-                             * @param textToSearch
-                             * @param item
-                             *
-                             * @return
-                             */
-                            @Override
-                            protected boolean isFoundInItem(final CharSequence textToSearch,
-                                                            final HashMap<String, String> item) {
-
-                                // get the item full name
-                                final String itemTextLowerCase = item.get(KEY_ACCOUNT_FULL_NAME)
-                                                                     .toLowerCase();
-
-                                final String textToSearchLowerCase = textToSearch.toString()
-                                                                                 .toLowerCase();
-
-                                // First match against the whole, non-splitted value
-                                return itemTextLowerCase.contains(textToSearchLowerCase);
-                            }
-
-                        };
-                    }
-                    return mFilter;
-                }
-
-                @Override
-                public View getView(final int position,
-                                    final View convertView,
-                                    final ViewGroup parent) {
-
-                    View view = super.getView(position,
-                                              convertView,
-                                              parent);
-
-                    // Get the item (which is a Map in a SimpleAdapter)
-                    Map<String, String> item = (HashMap<String, String>) getItem(position);
-
-                    String  accountUID = item.get(KEY_ACCOUNT_UID);
-                    Integer isFavorite = Integer.valueOf(item.get(KEY_IS_FAVORITE_ACCOUNT));
-
-                    // Get Account color
-                    int iColor = AccountsDbAdapter.getActiveAccountColorResource(accountUID);
-
-                    TextView simpleAcoountNameTextView = (TextView) view.findViewById(R.id.text2);
-
-                    if (simpleAcoountNameTextView != null) {
-                        //
-
-                        // Override color
-                        simpleAcoountNameTextView.setTextColor(iColor);
-
-                    } else {
-                        //  n' pas
-
-                        // RAF
-                    }
-
-                    //
-                    // Add or not Favorite Star Icon
-                    //
-
-                    QualifiedAccountNameCursorAdapter.displayFavoriteAccountStarIcon(view,
-                                                                                     isFavorite);
-
-                    return view;
-                }
-            };
+        parentCursorAdapter.setViewResource(parentCursorAdapter.getSpinnerDropDownItemLayout());
+//
+//            setItems(new ArrayList<HashMap<String, String>>());
+//            HashMap<String, String> item;
+//
+//            // Create items from DB Cursor
+//            for (int i = 0; i < parentCursorAdapter.getCount(); i++) {
+//
+//                item = new HashMap<String, String>();
+//
+//                Cursor cursorOnRow = (Cursor) parentCursorAdapter.getItem(i);
+//
+//                String accountUID = cursorOnRow.getString(cursorOnRow.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
+//                item.put(KEY_ACCOUNT_UID,
+//                         accountUID);
+//
+//                String accountSimpleName = cursorOnRow.getString(cursorOnRow.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_NAME));
+//                item.put(KEY_ACCOUNT_SIMPLE_NAME,
+//                         accountSimpleName);
+//
+//                String parentAccountFullName = cursorOnRow.getString(cursorOnRow.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
+//                parentAccountFullName = QualifiedAccountNameCursorAdapter.getParentAccountFullName(parentAccountFullName);
+//                item.put(KEY_PARENT_ACCOUNT_FULL_NAME,
+//                         parentAccountFullName);
+//
+//                String accountFullName = cursorOnRow.getString(cursorOnRow.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
+//                item.put(KEY_ACCOUNT_FULL_NAME,
+//                         accountFullName);
+//
+//                Integer isFavorite = cursorOnRow.getInt(cursorOnRow.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_FAVORITE));
+//                item.put(KEY_IS_FAVORITE_ACCOUNT,
+//                         isFavorite.toString());
+//
+//
+//                getItems().add(item);
+//
+//            } // for
+//
+//            //
+//            // Instanciate a customized SimpleAdapter which can :
+//            //   1) Filter on Account Full Name
+//            //   2) Display items in account_spinner_dropdown_item_2lines
+//            //
+//            mListViewAdapter = new SimpleAdapter(getActivity(),
+//                                                 getItems(),
+//                                                 // Layout englobant de chaque item
+////                                                 parentCursorAdapter.getSpinnerDropDownItemLayout(),
+//                                                 R.layout.account_spinner_dropdown_item_2lines,
+//                                                 // Keys
+//                                                 new String[]{KEY_ACCOUNT_SIMPLE_NAME,
+//                                                          KEY_PARENT_ACCOUNT_FULL_NAME,
+//                                                          KEY_ACCOUNT_FULL_NAME},
+//                                                 // Layout de chaque TextView englobé
+//                                                 new int[]{R.id.text2,
+//                                                       R.id.text3,
+//                                                           // TODO TW C 2020-02-26 : A supprimer
+//                                                       android.R.id.text1}) {
+//
+//                protected Filter mFilter = null;
+//
+//                @Override
+//                public Filter getFilter() {
+//
+//                    if (mFilter == null) {
+//                        mFilter = new ItemContainingTextFilter<HashMap<String, String>>(getItems()) {
+//
+//                            /**
+//                             * Return true if textToSearch has been found in item
+//                             * <p>
+//                             * In this implementation, the text is found
+//                             * if the lower case text
+//                             * is found in the lower cases of the item's account full name
+//                             *
+//                             * @param textToSearch
+//                             * @param item
+//                             *
+//                             * @return
+//                             */
+//                            @Override
+//                            protected boolean isFoundInItem(final CharSequence textToSearch,
+//                                                            final HashMap<String, String> item) {
+//
+//                                // get the item full name
+//                                final String itemTextLowerCase = item.get(KEY_ACCOUNT_FULL_NAME)
+//                                                                     .toLowerCase();
+//
+//                                final String textToSearchLowerCase = textToSearch.toString()
+//                                                                                 .toLowerCase();
+//
+//                                // First match against the whole, non-splitted value
+//                                return itemTextLowerCase.contains(textToSearchLowerCase);
+//                            }
+//
+//                        };
+//                    }
+//                    return mFilter;
+//                }
+//
+//                @Override
+//                public View getView(final int position,
+//                                    final View convertView,
+//                                    final ViewGroup parent) {
+//
+//                    View view = super.getView(position,
+//                                              convertView,
+//                                              parent);
+//
+//                    // Get the item (which is a Map in a SimpleAdapter)
+//                    Map<String, String> item = (HashMap<String, String>) getItem(position);
+//
+//                    String  accountUID = item.get(KEY_ACCOUNT_UID);
+//                    Integer isFavorite = Integer.valueOf(item.get(KEY_IS_FAVORITE_ACCOUNT));
+//
+//                    // Get Account color
+//                    int iColor = AccountsDbAdapter.getActiveAccountColorResource(accountUID);
+//
+//                    TextView simpleAcoountNameTextView = (TextView) view.findViewById(R.id.text2);
+//
+//                    if (simpleAcoountNameTextView != null) {
+//                        //
+//
+//                        // Override color
+//                        simpleAcoountNameTextView.setTextColor(iColor);
+//
+//                    } else {
+//                        //  n' pas
+//
+//                        // RAF
+//                    }
+//
+//                    //
+//                    // Add or not Favorite Star Icon
+//                    //
+//
+//                    QualifiedAccountNameCursorAdapter.displayFavoriteAccountStarIcon(view,
+//                                                                                     isFavorite);
+//
+//                    return view;
+//                }
+//            };
 
         } else {
             // The parentSpinnerAdapter is another Adapter
 
-            mListViewAdapter = null;
-
-            Log.e(LOG_TAG,
-                  "parentSpinnerAdapter is neither QualifiedAccountNameCursorAdapter nor ArrayAdapter");
+//            mListViewAdapter = null;
+//
+//            Log.e(LOG_TAG,
+//                  "parentSpinnerAdapter is neither QualifiedAccountNameCursorAdapter nor ArrayAdapter");
         }
 
         if (mListViewAdapter != null) {
@@ -602,14 +607,12 @@ public class SearchableListDialogFragment<T_ITEM>
                 @Override
                 public void onChanged() {
 
-                    if (getItems().size() == 1) {
+                    if (mListViewAdapter.getCount() == 1) {
                         // only one account
 
                         dismissDialog();
 
-                        final T_ITEM item = (T_ITEM) getItems().get(0);
-
-//                        String accountUID = getAccountUidFromItem(itemAsObject);
+                        final T_ITEM item = (T_ITEM) mListViewAdapter.getItem(0);
 
                         // Simulate a onSearchableListItemClicked
                         getOnSearchableListItemClickedListener().onSearchableListItemClicked(item);
@@ -635,8 +638,6 @@ public class SearchableListDialogFragment<T_ITEM>
                     dismissDialog();
 
                     final T_ITEM item = (T_ITEM) mListViewAdapter.getItem(position);
-
-//                    String accountUID = getAccountUidFromItem(mListViewAdapter.getItem(position));
 
                     // Call Listener
                     getOnSearchableListItemClickedListener().onSearchableListItemClicked(item);
@@ -688,26 +689,26 @@ public class SearchableListDialogFragment<T_ITEM>
             // Avoid infinite looping
             mIsDismissing = true;
 
-//            //
-//            // Restore original Spinner Selected Item Layout
-//            //
-//
-//            if (QualifiedAccountNameCursorAdapter.class.isAssignableFrom(getParentSearchableSpinnerView().getAdapter()
-//                                                                                                         .getClass())) {
-//                // The Adapter is a QualifiedAccountNameCursorAdapter
-//
-//                QualifiedAccountNameCursorAdapter parentCursorAdapter = (QualifiedAccountNameCursorAdapter) getParentSearchableSpinnerView().getAdapter();
-//
-//                parentCursorAdapter.setViewResource(parentCursorAdapter.getSpinnerSelectedItemLayout());
-//
-//                // Refresh spinner selected item using spinner selected item layout
-//                parentCursorAdapter.notifyDataSetChanged();
-//
-//            } else {
-//                // The Adapter is not a QualifiedAccountNameCursorAdapter
-//
-//                // NTD
-//            }
+            //
+            // Restore original Spinner Selected Item Layout
+            //
+
+            if (QualifiedAccountNameCursorAdapter.class.isAssignableFrom(getParentSearchableSpinnerView().getAdapter()
+                                                                                                         .getClass())) {
+                // The Adapter is a QualifiedAccountNameCursorAdapter
+
+                QualifiedAccountNameCursorAdapter parentCursorAdapter = (QualifiedAccountNameCursorAdapter) getParentSearchableSpinnerView().getAdapter();
+
+                parentCursorAdapter.setViewResource(parentCursorAdapter.getSpinnerSelectedItemLayout());
+
+                // Refresh spinner selected item using spinner selected item layout
+                parentCursorAdapter.notifyDataSetChanged();
+
+            } else {
+                // The Adapter is not a QualifiedAccountNameCursorAdapter
+
+                // NTD
+            }
 
             //
             // Hide keyboard
@@ -758,7 +759,7 @@ public class SearchableListDialogFragment<T_ITEM>
         return mItems;
     }
 
-    protected void setItems(final List items) {
+    protected void setItems(final List<T_ITEM> items) {
 
         this.mItems = items;
     }

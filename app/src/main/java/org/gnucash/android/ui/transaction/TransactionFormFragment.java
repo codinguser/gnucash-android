@@ -762,13 +762,13 @@ public class TransactionFormFragment extends Fragment implements
 
         mAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
                                                                       mCursor,
+                                                                      conditions,
+                                                                      whereArgs,
 //                                                                      R.layout.account_spinner_dropdown_item);
 //                                                                      android.R.layout.simple_spinner_item);
                                                                       R.layout.account_spinner_dropdown_item);
 
-        mTransferAccountSearchableSpinnerView.setAdapter(mAccountCursorAdapter,
-                                                         conditions,
-                                                         whereArgs);
+        mTransferAccountSearchableSpinnerView.setAdapter(mAccountCursorAdapter);
 	}
 
     /**

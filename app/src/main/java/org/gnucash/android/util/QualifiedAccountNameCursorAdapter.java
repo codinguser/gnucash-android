@@ -22,11 +22,19 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.View;
+import android.widget.Filter;
+import android.widget.FilterQueryProvider;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.ui.util.widget.searchablespinner.ItemContainingTextFilter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Cursor adapter which looks up the fully qualified account name and returns that instead of just the simple name.
@@ -41,6 +49,10 @@ public class QualifiedAccountNameCursorAdapter
     private int _spinnerSelectedItemLayout;
     private int _spinnerDropDownItemLayout;
 
+    // Clause WHERE du Cursor (en vue de pouvoir la rejouer pour la filtrer)
+    private String   mCursorWhere;
+    private String[] mCursorWhereArgs;
+
     /**
      * Overloaded constructor. Specifies the view to use for displaying selected spinner text
      *
@@ -53,12 +65,14 @@ public class QualifiedAccountNameCursorAdapter
      */
     public QualifiedAccountNameCursorAdapter(Context context,
                                              Cursor cursor,
+                                             String cursorWhere,
+                                             String[] cursorWhereArgs,
                                              @LayoutRes int spinnerSelectedItemLayout,
                                              @LayoutRes int spinnerDropDownItemLayout
                                             ) {
 
         super(context,
-              spinnerSelectedItemLayout,// Layout of the closed spinner item
+              spinnerSelectedItemLayout,// Layout of the selected spinner item
               cursor,
               new String[]{DatabaseSchema.AccountEntry.COLUMN_FULL_NAME,
                            DatabaseSchema.AccountEntry.COLUMN_NAME},
@@ -71,6 +85,52 @@ public class QualifiedAccountNameCursorAdapter
 
         // Store layout of each item in the open drop down of the spinner
         setSpinnerDropDownItemLayout(spinnerDropDownItemLayout);
+
+        // Store the WHERE clause associated with the Cursor
+        setCursorWhere(cursorWhere);
+        setCursorWhereArgs(cursorWhereArgs);
+
+        // Define filter
+        setFilterQueryProvider(new FilterQueryProvider() {
+
+            public Cursor runQuery(CharSequence constraint) {
+
+                //
+                // Add %constraint% at the end of the whereArgs
+                //
+
+                // Convert WhereArgs into List
+                final String[] cursorWhereArgs = getCursorWhereArgs();
+                final List<String> whereArgsAsList = (cursorWhereArgs != null)
+                                                     ? new ArrayList<String>(Arrays.asList(cursorWhereArgs))
+                                                     : new ArrayList<String>();
+
+                // Add the %constraint% for the LIKE added in the where clause
+                whereArgsAsList.add("%" + ((constraint != null)
+                                           ? constraint.toString()
+                                           : "") + "%");
+
+                // Convert List into WhereArgs
+                final String[] whereArgs = whereArgsAsList.toArray(new String[whereArgsAsList.size()]);
+
+
+                //
+                // Run the original query but constrained with full account name containing constraint
+                //
+
+                final AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
+
+                final String where = getCursorWhere()
+                                     + " AND "
+                                     + DatabaseSchema.AccountEntry.COLUMN_FULL_NAME
+                                     + " LIKE ?";
+
+                final Cursor accountsCursor = accountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(where,
+                                                                                                          whereArgs);
+
+                return accountsCursor;
+            }
+        });
     }
 
     /**
@@ -85,14 +145,16 @@ public class QualifiedAccountNameCursorAdapter
      */
     public QualifiedAccountNameCursorAdapter(Context context,
                                              Cursor cursor,
+                                             String cursorWhere,
+                                             String[] cursorWhereArgs,
                                              @LayoutRes int selectedSpinnerItemLayout) {
 
         this(context,
              cursor,
+             cursorWhere,
+             cursorWhereArgs,
              selectedSpinnerItemLayout,  // Layout of the closed spinner item
-//             R.layout.account_spinner_dropdown_item
              R.layout.account_spinner_dropdown_item_2lines
-//             R.layout.list_item_2_lines
             );
     }
 
@@ -109,6 +171,8 @@ public class QualifiedAccountNameCursorAdapter
 
         this(context,
              cursor,
+             null,
+             null,
              android.R.layout.simple_spinner_item  // Layout of the closed spinner item
             );
     }
@@ -130,6 +194,7 @@ public class QualifiedAccountNameCursorAdapter
 
         setTextColorAccordingToAccountUID(view,
                                           accountUID);
+
 
         //
         // Put Parent Account Full Name in text3
@@ -187,7 +252,7 @@ public class QualifiedAccountNameCursorAdapter
         return parentAccountFullName;
     }
 
-    // TODO TW C 2020-02-25 : A déplacer
+    // TODO TW C 2020-02-25 : A déplacer (AC)
     public static void setTextColorAccordingToAccountUID(final View view,
                                                          final String accountUID) {
 
@@ -280,6 +345,30 @@ public class QualifiedAccountNameCursorAdapter
         }
         
         return -1;
+    }
+
+    //
+    // Getters/Setters
+    //
+
+    String getCursorWhere() {
+
+        return mCursorWhere;
+    }
+
+    protected void setCursorWhere(final String cursorWhere) {
+
+        mCursorWhere = cursorWhere;
+    }
+
+    String[] getCursorWhereArgs() {
+
+        return mCursorWhereArgs;
+    }
+
+    protected void setCursorWhereArgs(final String[] cursorWhereArgs) {
+
+        mCursorWhereArgs = cursorWhereArgs;
     }
 
     public int getSpinnerSelectedItemLayout() {

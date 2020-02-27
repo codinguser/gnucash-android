@@ -609,12 +609,12 @@ public class AccountFormFragment extends Fragment {
 
         mDefaultTransferAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
                                                                                      defaultTransferAccountCursor,
+                                                                                     condition,
+                                                                                     whereArgs,
                                                                                      // TODO TW C 2020-02-08 : Améliorer la colorisation
                                                                                      R.layout.account_spinner_dropdown_item);
 
-        mDefaultTransferAccountSpinner.setAdapter(mDefaultTransferAccountCursorAdapter,
-                                                  condition,
-                                                  whereArgs);
+        mDefaultTransferAccountSpinner.setAdapter(mDefaultTransferAccountCursorAdapter);
     }
 
     /**
@@ -712,12 +712,12 @@ public class AccountFormFragment extends Fragment {
 
         mParentAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
                                                                             mParentAccountCursor,
+                                                                            condition,
+                                                                            null,
                                                                             // TODO TW C 2020-02-08 : Améliorer la colorisation
                                                                             R.layout.account_spinner_dropdown_item);
 
-        mParentAccountSpinner.setAdapter(mParentAccountCursorAdapter,
-                                         condition,
-                                         null);
+        mParentAccountSpinner.setAdapter(mParentAccountCursorAdapter);
     }
 
     /**

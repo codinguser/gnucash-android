@@ -118,7 +118,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 
     @BindView(R.id.pager)                 ViewPager             mViewPager;
     @BindView(R.id.toolbar_spinner)
-    SearchableSpinnerView mToolbarSpinner;
+    SearchableSpinnerView<Cursor> mToolbarSpinner;
     @BindView(R.id.tab_layout)            TabLayout             mTabLayout;
     @BindView(R.id.transactions_sum)      TextView              mSumTextView;
     @BindView(R.id.fab_create_transaction)FloatingActionButton  mCreateFloatingButton;
@@ -447,11 +447,11 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 
         SpinnerAdapter qualifiedAccountNameCursorAdapter = new QualifiedAccountNameCursorAdapter(getSupportActionBar().getThemedContext(),
                                                                                                  getAccountsCursor(),
+                                                                                                 AccountsDbAdapter.WHERE_NOT_HIDDEN_AND_NOT_ROOT_ACCOUNT,
+                                                                                                 new String[]{AccountType.ROOT.name()},
                                                                                                  R.layout.toolbar_spinner_selected_item);
 
-        mToolbarSpinner.setAdapter(qualifiedAccountNameCursorAdapter,
-                                   AccountsDbAdapter.WHERE_NOT_HIDDEN_AND_NOT_ROOT_ACCOUNT,
-                                   new String[]{AccountType.ROOT.name()});
+        mToolbarSpinner.setAdapter(qualifiedAccountNameCursorAdapter);
 
         mToolbarSpinner.setOnItemSelectedListener(mTransactionListNavigationListener);
 

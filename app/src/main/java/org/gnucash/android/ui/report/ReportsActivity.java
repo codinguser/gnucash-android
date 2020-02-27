@@ -32,10 +32,12 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
@@ -76,9 +78,12 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
     };
     private static final String STATE_REPORT_TYPE = "STATE_REPORT_TYPE";
 
-    @BindView(R.id.time_range_spinner) Spinner mTimeRangeSpinner;
-    @BindView(R.id.report_account_type_spinner) Spinner mAccountTypeSpinner;
-    @BindView(R.id.toolbar_spinner) Spinner mReportTypeSpinner;
+    @BindView(R.id.time_range_spinner)
+    Spinner mTimeRangeSpinner;
+    @BindView(R.id.report_account_type_spinner)
+    Spinner mAccountTypeSpinner;
+    @BindView(R.id.toolbar_spinner)
+    Spinner mReportsToolbarSpinner;
 
     private TransactionsDbAdapter mTransactionsDbAdapter;
     private AccountType mAccountType = AccountType.EXPENSE;
@@ -202,14 +207,64 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
         mReportType = reportType;
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(actionBar.getThemedContext(),
-                android.R.layout.simple_list_item_1,
-                mReportType.getReportNames());
+
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(actionBar.getThemedContext(),
+                                                                     R.layout.toolbar_spinner_selected_item,
+                                                                     mReportType.getReportNames()) {
+            /**
+             * @param position
+             * @param convertView
+             * @param parent
+             *
+             * @return
+             */
+            @Override
+            public View getView(final int position,
+                                final View convertView,
+                                final ViewGroup parent) {
+
+                View view = super.getView(position,
+                                          convertView,
+                                          parent);
+
+                if (parent.getId() == R.id.listItems ) {
+                    // parent view is the list of the SearchableSpinnerView Dialog
+
+                    //
+                    // Set item text color according to Report's type
+                    //
+
+                    TextView reportTextView = (TextView) view.findViewById(android.R.id.text1);
+
+                    if (reportTextView != null) {
+                        //
+
+                        String reportName = (String) getItem(position);
+
+                        final ReportType reportType = ReportType.getReportType(reportName);
+
+                        reportTextView.setTextColor(getResources().getColor(reportType.getTitleColor()));
+
+                    } else {
+                        //  n' pas
+
+                        // RAF
+                    }
+
+                } else {
+                    // parent view is not the list of the SearchableSpinnerView Dialog, probably the Toolbar Spinner View
+
+                    // RAF
+                }
+
+                return view;
+            }
+        };
 
         mSkipNextReportTypeSelectedRun = true; //selection event will be fired again
-        mReportTypeSpinner.setAdapter(arrayAdapter);
-        mReportTypeSpinner.setSelection(arrayAdapter.getPosition(reportName));
-        mReportTypeSpinner.setOnItemSelectedListener(mReportTypeSelectedListener);
+        mReportsToolbarSpinner.setAdapter(arrayAdapter);
+        mReportsToolbarSpinner.setSelection(arrayAdapter.getPosition(reportName));
+        mReportsToolbarSpinner.setOnItemSelectedListener(mReportTypeSelectedListener);
 
 
         toggleToolbarTitleVisibility();
@@ -220,9 +275,9 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
         assert actionBar != null;
 
         if (mReportType == ReportType.NONE){
-            mReportTypeSpinner.setVisibility(View.GONE);
+            mReportsToolbarSpinner.setVisibility(View.GONE);
         } else {
-            mReportTypeSpinner.setVisibility(View.VISIBLE);
+            mReportsToolbarSpinner.setVisibility(View.VISIBLE);
         }
         actionBar.setDisplayShowTitleEnabled(mReportType == ReportType.NONE);
     }
