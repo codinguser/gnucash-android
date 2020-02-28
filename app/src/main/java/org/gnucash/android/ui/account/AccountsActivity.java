@@ -176,8 +176,9 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
-            super.destroyItem(container, position, object);
-            mFragmentPageReferenceMap.remove(position);
+            // #586 By putting this in comment, there is no more crash, but I don't know if there are side effects
+//            super.destroyItem(container, position, object);
+//            mFragmentPageReferenceMap.remove(position);
         }
 
         @Override
