@@ -172,22 +172,13 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         }
 	};
 
-    private DialogInterface.OnCancelListener mSearchableSpinnerOnCancelListener = new DialogInterface.OnCancelListener() {
-
-        @Override
-        public void onCancel(DialogInterface dialog) {
-
-            resetSpinnerItemAppearance();
-        }
-    };
-
     private DialogInterface.OnClickListener mSearchableSpinnerPositiveBtnOnClickListener = new DialogInterface.OnClickListener() {
 
         @Override
         public void onClick(DialogInterface dialog,
                             int which) {
 
-            resetSpinnerItemAppearance();
+            // NTD
         }
     };
 
@@ -287,17 +278,6 @@ public class TransactionsActivity extends BaseDrawerActivity implements
             return transactionsListFragment;
         }
     }
-
-    protected void resetSpinnerItemAppearance() {
-
-// TODO TW m 2020-02-16 : Useless ?
-
-//        // item text
-//        TextView accountFullClassName = (TextView) mToolbarSpinner.findViewById(android.R.id.text1);
-//
-//        accountFullClassName.setTextColor(Color.RED);
-    }
-
 
     /**
      * Refreshes the fragments currently in the transactions activity
@@ -454,8 +434,6 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         mToolbarSpinner.setAdapter(qualifiedAccountNameCursorAdapter);
 
         mToolbarSpinner.setOnItemSelectedListener(mTransactionListNavigationListener);
-
-        mToolbarSpinner.setOnCancelListener(mSearchableSpinnerOnCancelListener);
 
         mToolbarSpinner.setTitle(getString(R.string.select_account));
 

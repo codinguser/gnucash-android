@@ -346,28 +346,6 @@ public class TransactionFormFragment extends Fragment implements
 
         mTransferAccountSearchableSpinnerView.setTitle(getString(R.string.select_account));
 
-        mTransferAccountSearchableSpinnerView.setPositiveButton(getString(R.string.alert_dialog_cancel),
-                                                                new DialogInterface.OnClickListener() {
-
-                                                                    @Override
-                                                                    public void onClick(final DialogInterface dialog,
-                                                                                        final int which) {
-
-                                                                        // TODO TW M 2020-02-16 : TBD
-
-//                                                                        final View spinnerSelectedItemView = mTransferAccountSearchableSpinnerView.getSelectedView();
-//
-//                                                                        TextView accountFullNameTextView = (TextView) spinnerSelectedItemView.findViewById(android.R.id.text1);
-//
-//                                                                        setAccountTextColor(accountFullNameTextView,
-//                                                                                            // TODO TW M 2020-02-16 : TBD
-//                                                                                            //  corriger pour mettre le split
-//                                                                                            //  account
-//                                                                                            mAccountUID);
-
-                                                                    }
-                                                                });
-
         mTransferAccountSearchableSpinnerView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             /**
              * Flag for ignoring first call to this listener.
@@ -421,9 +399,6 @@ public class TransactionFormFragment extends Fragment implements
             }
         });
 
-        mTransferAccountSearchableSpinnerView.setOnCancelListener(mOnCancelListener);
-
-
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         assert actionBar != null;
 //        actionBar.setSubtitle(mAccountsDbAdapter.getFullyQualifiedAccountName(mAccountUID));
@@ -447,49 +422,6 @@ public class TransactionFormFragment extends Fragment implements
 
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 	}
-
-    private DialogInterface.OnCancelListener mOnCancelListener = new DialogInterface.OnCancelListener() {
-
-        @Override
-        public void onCancel(DialogInterface dialog) {
-
-            resetSpinnerItemAppearance(dialog);
-        }
-    };
-
-    private void resetSpinnerItemAppearance(DialogInterface dialog) {
-
-        // TODO TW m 2020-02-15 : TBD
-
-//        SearchableListDialogFragment searchableListDialogFragment = (SearchableListDialogFragment) dialog;
-//
-//        String accountFullName = (String) searchableListDialogFragment.getParentSearchableSpinnerView()
-//                                                                      .getSelectedItem();
-//
-//        //
-//        // Set Account Color
-//        //
-//
-//        TextView accountFullNameTextView = (TextView) searchableListDialogFragment.getParentSearchableSpinnerView()
-//                                                                                  .findViewById(android.R.id.text1);
-//
-//        if (accountFullNameTextView != null) {
-//            //
-//
-//            // Get Account color
-////                int iColor = AccountsDbAdapter.getActiveAccountColorResource(accountUID);
-//            int iColor = Color.RED;
-//
-//            // Override color
-//            accountFullNameTextView.setTextColor(iColor);
-//
-//        } else {
-//            //  n' pas
-//
-//            // RAF
-//        }
-
-    }
 
     /**
      * Extension of SimpleCursorAdapter which is used to populate the fields for the list items
