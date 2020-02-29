@@ -196,7 +196,7 @@
     <string name="msg_confirm_create_default_accounts_setting">A new book will be opened with the default accounts\n\nYour current accounts and transactions will not be modified!</string>
     <string name="title_scheduled_transactions">Transactions</string>
     <string name="title_select_export_destination">Select destination for export</string>
-    <string name="hint_split_memo">Memo</string>
+    <string name="hint_split_memo">Memo (Click to add)</string>
     <string name="label_spend">Spend</string>
     <string name="label_receive">Receive</string>
     <string name="label_withdrawal">Withdrawal</string>

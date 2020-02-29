@@ -186,7 +186,7 @@
   <string name="msg_confirm_create_default_accounts_setting">Un nouveau livre sera ouvert avec les comptes courants par défaut\n\n Vos comptes et opérations actuels ne seront pas modifiés !</string>
   <string name="title_scheduled_transactions">Transactions planifiées</string>
   <string name="title_select_export_destination">Selectionnez une destination pour l\'export</string>
-  <string name="hint_split_memo">Memo</string>
+  <string name="hint_split_memo">Memo (Cliquez pour ajouter)</string>
   <string name="label_spend">Dépenser</string>
   <string name="label_receive">Recevoir</string>
   <string name="label_withdrawal">Retrait</string>

@@ -29,7 +29,7 @@ limitations under the License.
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:gravity="center_vertical"
             android:text="@string/label_imbalance"/>
 
@@ -37,7 +37,7 @@ limitations under the License.
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:gravity="right|center_vertical"
             tools:text="$200"/>
     </LinearLayout>

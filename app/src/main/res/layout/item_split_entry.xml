@@ -20,6 +20,7 @@ limitations under the License.
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:orientation="vertical">
+
     <LinearLayout
             android:layout_width="match_parent"
             android:minHeight="40dp"
@@ -72,26 +73,16 @@ limitations under the License.
             android:paddingTop="6dp"
             android:paddingRight="6dp"
             android:paddingLeft="22dp"
-            android:paddingBottom="22dp"
+            android:paddingBottom="@dimen/dialog_padding"
             android:src="@drawable/ic_close_black_24dp"
             tools:ignore="ContentDescription" />
     </LinearLayout>
 
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/name_text_input_layout"
+    <TextView android:id="@+id/split_transfer_account_label"
         android:layout_width="match_parent"
-        android:layout_marginLeft="7dp"
-        android:layout_height="wrap_content">
-        <EditText android:id="@+id/input_split_memo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:singleLine="false"
-            android:hint="@string/hint_split_memo"
-            android:textSize="15sp"
-            android:inputType="textMultiLine|textCapSentences"
-            android:background="@android:color/transparent"
-            android:gravity="top" />
-    </android.support.design.widget.TextInputLayout>
+        android:layout_height="wrap_content"
+        android:hint="@string/label_account_name"
+        />
 
     <org.gnucash.android.ui.util.widget.searchablespinner.SearchableSpinnerView
             android:id="@+id/input_accounts_spinner"
@@ -104,10 +95,31 @@ limitations under the License.
             android:layout_height="wrap_content"
             android:visibility="gone"/>
 
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/name_text_input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dialog_padding"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="@dimen/dialog_padding"
+        >
+
+        <EditText android:id="@+id/input_split_memo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="false"
+            android:hint="@string/hint_split_memo"
+            android:textSize="15sp"
+            android:inputType="textMultiLine|textCapSentences"
+            android:background="@android:color/transparent"
+            android:gravity="top" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <!-- Split Separator -->
     <View
           android:layout_width="match_parent"
           android:layout_height="2dp"
-          android:layout_marginTop="@dimen/dialog_padding"
           android:layout_marginBottom="@dimen/dialog_padding"
           android:background="@color/theme_accent"/>
 
