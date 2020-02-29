@@ -216,11 +216,12 @@ public class SplitEditorFragment extends Fragment {
         mAccountUID = ((FormActivity) getActivity()).getCurrentAccountUID();
         mBaseAmount = new BigDecimal(args.getString(UxArgument.AMOUNT_STRING));
 
-        String conditions = "("
+        String where = "("
                 + DatabaseSchema.AccountEntry.COLUMN_HIDDEN + " = 0 AND "
                 + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
                 + ")";
-        mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions, null);
+        mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(where, null);
+
         mCommodity = CommoditiesDbAdapter.getInstance().getCommodity(mAccountsDbAdapter.getCurrencyCode(mAccountUID));
     }
 
@@ -340,7 +341,9 @@ public class SplitEditorFragment extends Fragment {
      * Only accounts with the same currency can be transferred to
      */
     private void updateTransferAccountsList(Spinner transferAccountSpinner){
+
         mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), mCursor);
+
         transferAccountSpinner.setAdapter(mCursorAdapter);
     }
 
