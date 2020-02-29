@@ -186,13 +186,33 @@ public class QualifiedAccountNameCursorAdapter
      *         Cursor to accounts
      */
     public QualifiedAccountNameCursorAdapter(Context context,
+                                             Cursor cursor,
+                                             String cursorWhere,
+                                             String[] cursorWhereArgs) {
+
+        this(context,
+             cursor,
+             cursorWhere,
+             cursorWhereArgs,
+             android.R.layout.simple_spinner_item  // Layout of the closed spinner item
+            );
+    }
+
+    /**
+     * Initialize the Cursor adapter for account names using default spinner views
+     *
+     * @param context
+     *         Application context
+     * @param cursor
+     *         Cursor to accounts
+     */
+    public QualifiedAccountNameCursorAdapter(Context context,
                                              Cursor cursor) {
 
         this(context,
              cursor,
              null,
-             null,
-             android.R.layout.simple_spinner_item  // Layout of the closed spinner item
+             null
             );
     }
 

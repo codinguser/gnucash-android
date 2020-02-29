@@ -342,7 +342,27 @@ public class SplitEditorFragment extends Fragment {
      */
     private void updateTransferAccountsList(Spinner transferAccountSpinner){
 
-        mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), mCursor);
+        String where = "("
+                       + DatabaseSchema.AccountEntry.COLUMN_UID
+                       + " != ?"
+                       + " AND "
+                       + DatabaseSchema.AccountEntry.COLUMN_TYPE
+                       + " != ?"
+                       + " AND "
+                       + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER
+                       + " = 0"
+                       + ")";
+
+//        if (mCursor != null) {
+//            mCursor.close();
+//        }
+        final String[] whereArgs = {mAccountUID,
+                                    AccountType.ROOT.name()};
+
+        mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
+                                                               mCursor,
+                                                               where,
+                                                               whereArgs);
 
         transferAccountSpinner.setAdapter(mCursorAdapter);
     }
