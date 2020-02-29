@@ -335,7 +335,20 @@ public class QualifiedAccountNameCursorAdapter
     void setTextColorAccordingToAccountUID(final View view,
                                            final String accountUID) {
 
-        TextView simpleAccountNameTextView = (TextView) view.findViewById(R.id.text2);
+        //
+        // Set color on text1 (selected spinner item)
+        //
+
+        TextView simpleAccountNameTextView = (TextView) view.findViewById(android.R.id.text1);
+
+        AccountUtils.setAccountTextColor(simpleAccountNameTextView,
+                                         accountUID);
+
+        //
+        // Set color on text2
+        //
+
+        simpleAccountNameTextView = (TextView) view.findViewById(R.id.text2);
 
         AccountUtils.setAccountTextColor(simpleAccountNameTextView,
                                          accountUID);
