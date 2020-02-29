@@ -422,30 +422,61 @@ public class SplitEditorFragment extends Fragment {
 
         @Override
         public void afterTextChanged(Editable editable) {
+
+            //
+            // Compute Split balance
+            //
+
             BigDecimal imbalance = BigDecimal.ZERO;
 
             for (View splitItem : mSplitItemViewList) {
                 SplitViewHolder viewHolder = (SplitViewHolder) splitItem.getTag();
-                BigDecimal amount = viewHolder.getAmountValue().abs();
+
+                // Get the absolute value of the amount
+                BigDecimal absAmount = viewHolder.getAmountValue()
+                                                 .abs();
+
                 long accountId = viewHolder.accountsSpinner.getSelectedItemId();
-                boolean hasDebitNormalBalance = AccountsDbAdapter.getInstance()
-                        .getAccountType(accountId).hasDebitNormalBalance();
+
+                // #876 May be usefull for debug
+//                String accountFullName = AccountsDbAdapter.getInstance()
+//                                                          .getAccountFullName(AccountsDbAdapter.getInstance()
+//                                                                                               .getUID(accountId));
+
+                // #876
+//                boolean hasDebitNormalBalance = AccountsDbAdapter.getInstance()
+//                                                                 .getAccountType(accountId)
+//                                                                 .hasDebitNormalBalance();
 
                 if (viewHolder.splitTypeSwitch.isChecked()) {
-                    if (hasDebitNormalBalance)
-                        imbalance = imbalance.add(amount);
-                    else
-                        imbalance = imbalance.subtract(amount);
+                    // Switch is CREDIT
+
+                    // #876
+//                    if (hasDebitNormalBalance) {
+//                        imbalance = imbalance.add(absAmount);
+//                    } else {
+//                        imbalance = imbalance.subtract(absAmount);
+//                    }
+                    imbalance = imbalance.add(absAmount);
+
                 } else {
-                    if (hasDebitNormalBalance)
-                        imbalance = imbalance.subtract(amount);
-                    else
-                        imbalance = imbalance.add(amount);
+                    // Switch is DEBIT
+
+                    // #876
+//                    if (hasDebitNormalBalance) {
+//                        imbalance = imbalance.subtract(absAmount);
+//                    } else {
+//                        imbalance = imbalance.add(absAmount);
+//                    }
+                    imbalance = imbalance.subtract(absAmount);
+
                 }
 
-            }
+            } // for
 
-            TransactionsActivity.displayBalance(mImbalanceTextView, new Money(imbalance, mCommodity));
+            TransactionsActivity.displayBalance(mImbalanceTextView,
+                                                new Money(imbalance,
+                                                          mCommodity));
         }
     }
 
