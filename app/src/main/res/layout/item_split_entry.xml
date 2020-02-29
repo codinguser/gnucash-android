@@ -93,7 +93,7 @@ limitations under the License.
             android:gravity="top" />
     </android.support.design.widget.TextInputLayout>
 
-    <Spinner
+    <org.gnucash.android.ui.util.widget.searchablespinner.SearchableSpinnerView
             android:id="@+id/input_accounts_spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
