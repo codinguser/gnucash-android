@@ -196,6 +196,10 @@ public class QualifiedAccountNameCursorAdapter
             );
     }
 
+    //
+    // Overrides
+    //
+
     @Override
     public void bindView(View view,
                          Context context,
@@ -248,6 +252,26 @@ public class QualifiedAccountNameCursorAdapter
                                        isFavorite);
 
     }
+
+    /**
+     * To avoid "attempt to re-open an already-closed object" exception
+     * due to use of runQuery()
+     *
+     * See
+     *      https://stackoverflow.com/questions/17458251/android-attempt-to-re-open-an-already-closed-object-sqlitequery-using-loaderm
+     *
+     * @param cursor
+     */
+    @Override
+    public void changeCursor(final Cursor cursor) {
+
+        // Do not close cursor
+        super.swapCursor(cursor);
+    }
+
+    //
+    // Local methods
+    //
 
     /**
      * Extract parent account full name
