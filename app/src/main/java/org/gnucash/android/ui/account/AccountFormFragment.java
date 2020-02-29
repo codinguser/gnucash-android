@@ -67,6 +67,7 @@ import org.gnucash.android.ui.colorpicker.ColorPickerSwatch;
 import org.gnucash.android.ui.colorpicker.ColorSquare;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.settings.PreferenceActivity;
+import org.gnucash.android.ui.util.AccountUtils;
 import org.gnucash.android.ui.util.widget.searchablespinner.SearchableSpinnerView;
 import org.gnucash.android.util.CommoditiesCursorAdapter;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
@@ -581,25 +582,10 @@ public class AccountFormFragment extends Fragment {
     private void loadDefaultTransferAccountList() {
 
         // Get Accounts that are not hidden, nor Placeholder, nor root Account, nor the edited Account itself
-        String condition = DatabaseSchema.AccountEntry.COLUMN_UID
-                           + " != '"
-                           + mAccountUID
-                           + "' "
-                           //when creating a new account mAccountUID is null, so don't use whereArgs
-                           + " AND "
-                           + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER
-                           + "=0"
-                           + " AND "
-                           + DatabaseSchema.AccountEntry.COLUMN_HIDDEN
-                           + "=0"
-                           + " AND "
-                           + DatabaseSchema.AccountEntry.COLUMN_TYPE
-                           + " != ?";
+        String where = AccountUtils.getTransfertAccountWhereClause(mAccountUID);
 
-        final String[] whereArgs = {AccountType.ROOT.name()};
-
-        Cursor defaultTransferAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(condition,
-                                                                                                           whereArgs);
+        Cursor defaultTransferAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(where,
+                                                                                                           null);
 
         if (mDefaultTransferAccountSpinner.getCount() <= 0) {
             setDefaultTransferAccountInputsVisible(false);
@@ -607,8 +593,8 @@ public class AccountFormFragment extends Fragment {
 
         mDefaultTransferAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
                                                                                      defaultTransferAccountCursor,
-                                                                                     condition,
-                                                                                     whereArgs,
+                                                                                     where,
+                                                                                     null,
                                                                                      R.layout.account_spinner_dropdown_item);
 
         mDefaultTransferAccountSpinner.setAdapter(mDefaultTransferAccountCursorAdapter);

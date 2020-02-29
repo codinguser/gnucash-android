@@ -60,6 +60,7 @@ import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.transaction.dialog.TransferFundsDialogFragment;
+import org.gnucash.android.ui.util.AccountUtils;
 import org.gnucash.android.ui.util.widget.CalculatorEditText;
 import org.gnucash.android.ui.util.widget.CalculatorKeyboard;
 import org.gnucash.android.ui.util.widget.TransactionTypeSwitch;
@@ -342,27 +343,13 @@ public class SplitEditorFragment extends Fragment {
      */
     private void updateTransferAccountsList(Spinner transferAccountSpinner){
 
-        String where = "("
-                       + DatabaseSchema.AccountEntry.COLUMN_UID
-                       + " != ?"
-                       + " AND "
-                       + DatabaseSchema.AccountEntry.COLUMN_TYPE
-                       + " != ?"
-                       + " AND "
-                       + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER
-                       + " = 0"
-                       + ")";
-
-//        if (mCursor != null) {
-//            mCursor.close();
-//        }
-        final String[] whereArgs = {mAccountUID,
-                                    AccountType.ROOT.name()};
+        // In Splits, an account is allowed to appear many times, therefore there is no restriction on uid
+        String where = AccountUtils.getTransfertAccountWhereClause(null);
 
         mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
                                                                mCursor,
                                                                where,
-                                                               whereArgs);
+                                                               null);
 
         transferAccountSpinner.setAdapter(mCursorAdapter);
     }

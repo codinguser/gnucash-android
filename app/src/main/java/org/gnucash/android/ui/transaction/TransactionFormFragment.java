@@ -30,7 +30,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.PreferenceManager;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.Pair;
@@ -714,23 +713,20 @@ public class TransactionFormFragment extends Fragment implements
      */
 	private void updateTransferAccountsList(){
 
-		String where = "(" + DatabaseSchema.AccountEntry.COLUMN_UID + " != ?"
-                            + " AND " + DatabaseSchema.AccountEntry.COLUMN_TYPE + " != ?"
-                            + " AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
-                            + ")";
+        // Get Accounts that are not hidden, nor Placeholder, nor root Account, nor the Account itself
+        String where = AccountUtils.getTransfertAccountWhereClause(mAccountUID);
 
         if (mCursor != null) {
             mCursor.close();
         }
-        final String[] whereArgs = {mAccountUID,
-                                    AccountType.ROOT.name()};
+
         mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(where,
-                                                                               whereArgs);
+                                                                               null);
 
         mAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
                                                                       mCursor,
                                                                       where,
-                                                                      whereArgs,
+                                                                      null,
                                                                       R.layout.account_spinner_dropdown_item);
 
         mTransferAccountSearchableSpinnerView.setAdapter(mAccountCursorAdapter);
