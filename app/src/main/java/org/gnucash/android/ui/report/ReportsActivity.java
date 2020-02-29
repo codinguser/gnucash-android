@@ -227,8 +227,8 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
                                           convertView,
                                           parent);
 
-                if (parent.getId() == R.id.listItems ) {
-                    // parent view is the list of the SearchableSpinnerView Dialog
+                if (parent.getId() != R.id.toolbar_spinner) {
+                    // Parent view is not the Toolbar Spinner
 
                     //
                     // Set item text color according to Report's type
@@ -252,9 +252,9 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
                     }
 
                 } else {
-                    // parent view is not the list of the SearchableSpinnerView Dialog, probably the Toolbar Spinner View
+                    // Parent view is the Toolbar
 
-                    // RAF
+                    // NTD (White by default)
                 }
 
                 return view;

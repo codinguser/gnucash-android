@@ -22,6 +22,7 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FilterQueryProvider;
 import android.widget.TextView;
 
@@ -220,24 +221,35 @@ public class QualifiedAccountNameCursorAdapter
     // Overrides
     //
 
+
     @Override
-    public void bindView(View view,
-                         Context context,
-                         Cursor cursor) {
+    public View getView(final int position,
+                        final View convertView,
+                        final ViewGroup parent) {
 
-        super.bindView(view,
-                       context,
-                       cursor);
+        View view = super.getView(position,
+                                  convertView,
+                                  parent);
 
-        //
-        // Set Account Color
-        //
+        Cursor cursor = getCursor();
 
-        String accountUID = cursor.getString(cursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_UID));
+        if (parent.getId() != R.id.toolbar_spinner) {
+            // Parent view is not the Toolbar Spinner
 
-        setTextColorAccordingToAccountUID(view,
-                                          accountUID);
+            //
+            // Set Account Color
+            //
 
+            String accountUID = cursor.getString(cursor.getColumnIndex(DatabaseSchema.AccountEntry.COLUMN_UID));
+
+            setTextColorAccordingToAccountUID(view,
+                                              accountUID);
+
+        } else {
+            // Parent view is the Toolbar Spinner
+
+            // NTD (White by default)
+        }
 
         //
         // Put Parent Account Full Name in text3
@@ -271,6 +283,7 @@ public class QualifiedAccountNameCursorAdapter
         displayFavoriteAccountStarIcon(view,
                                        isFavorite);
 
+        return view;
     }
 
     /**
