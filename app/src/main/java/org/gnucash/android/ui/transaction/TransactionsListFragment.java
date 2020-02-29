@@ -58,6 +58,7 @@ import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.ui.transaction.dialog.BulkMoveDialogFragment;
+import org.gnucash.android.ui.util.AccountUtils;
 import org.gnucash.android.ui.util.CursorRecyclerAdapter;
 import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
 import org.gnucash.android.util.BackupManager;
@@ -306,8 +307,8 @@ public class TransactionsListFragment extends Fragment implements
 							text = AccountsDbAdapter.getInstance().getFullyQualifiedAccountName(split.getAccountUID());
 
 							// Set color according to Account
-							TransactionFormFragment.setAccountTextColor(holder.secondaryText,
-																		split.getAccountUID());
+							AccountUtils.setAccountTextColor(holder.secondaryText,
+															  split.getAccountUID());
 
 							break;
 						}

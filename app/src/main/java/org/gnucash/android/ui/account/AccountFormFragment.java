@@ -181,8 +181,6 @@ public class AccountFormFragment extends Fragment {
     /**
      * Spinner for selecting the default transfer account
      */
-    // TODO TW C 2020-01-18 : A remplacer par un SearchableSpinner + Vérifier exclure Placeholder + Etoile des Favoris + 1
-    //  seule ligne
     @BindView(R.id.input_default_transfer_account)
     SearchableSpinnerView mDefaultTransferAccountSpinner;
 
@@ -611,7 +609,6 @@ public class AccountFormFragment extends Fragment {
                                                                                      defaultTransferAccountCursor,
                                                                                      condition,
                                                                                      whereArgs,
-                                                                                     // TODO TW C 2020-02-08 : Améliorer la colorisation
                                                                                      R.layout.account_spinner_dropdown_item);
 
         mDefaultTransferAccountSpinner.setAdapter(mDefaultTransferAccountCursorAdapter);
@@ -628,7 +625,7 @@ public class AccountFormFragment extends Fragment {
         // Build SQL request
         //
 
-        String condition = DatabaseSchema.SplitEntry.COLUMN_TYPE
+        String where = DatabaseSchema.SplitEntry.COLUMN_TYPE
                            + " IN ("
                            + getAllowedParentAccountTypes(accountType)
                            + ") AND "
@@ -660,7 +657,7 @@ public class AccountFormFragment extends Fragment {
             }
 
             // Exclude Accounts to Exclude and edited Account itself
-            condition += " AND ("
+            where += " AND ("
                          + DatabaseSchema.AccountEntry.COLUMN_UID
                          + " NOT IN ( '"
                          + TextUtils.join("','",
@@ -675,7 +672,7 @@ public class AccountFormFragment extends Fragment {
             mParentAccountCursor.close();
         }
 
-        mParentAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(condition,
+        mParentAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(where,
                                                                                             null);
 
         //
@@ -712,9 +709,8 @@ public class AccountFormFragment extends Fragment {
 
         mParentAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
                                                                             mParentAccountCursor,
-                                                                            condition,
+                                                                            where,
                                                                             null,
-                                                                            // TODO TW C 2020-02-08 : Améliorer la colorisation
                                                                             R.layout.account_spinner_dropdown_item);
 
         mParentAccountSpinner.setAdapter(mParentAccountCursorAdapter);

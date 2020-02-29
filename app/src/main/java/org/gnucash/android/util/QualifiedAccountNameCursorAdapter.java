@@ -22,18 +22,16 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.View;
-import android.widget.Filter;
 import android.widget.FilterQueryProvider;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
-import org.gnucash.android.ui.util.widget.searchablespinner.ItemContainingTextFilter;
+import org.gnucash.android.ui.util.AccountUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -45,11 +43,31 @@ import java.util.List;
 public class QualifiedAccountNameCursorAdapter
         extends SimpleCursorAdapter {
 
-    //
-    private int _spinnerSelectedItemLayout;
-    private int _spinnerDropDownItemLayout;
+    /**
+     * Removes the icon from view to avoid visual clutter
+     *
+     * @param spinnerView
+     */
+    public static void hideFavoriteAccountStarIcon(View spinnerView) {
 
-    // Clause WHERE du Cursor (en vue de pouvoir la rejouer pour la filtrer)
+        TextView textViewWithStarIcon = (TextView) spinnerView.findViewById(R.id.text2);
+
+        if (textViewWithStarIcon != null) {
+
+            textViewWithStarIcon.setCompoundDrawablesWithIntrinsicBounds(0,
+                                                                         0,
+                                                                         0,
+                                                                         0);
+        }
+    }
+
+    // Layout of the selected spinner item (the one with down arrow)
+    private int mSpinnerSelectedItemLayout;
+
+    // Layout of items in the drop down list
+    private int mSpinnerDropDownItemLayout;
+
+    // Clause WHERE du Cursor (in order to be replayed by the item filter)
     private String   mCursorWhere;
     private String[] mCursorWhereArgs;
 
@@ -120,8 +138,9 @@ public class QualifiedAccountNameCursorAdapter
 
                 final AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
 
-                final String where = getCursorWhere()
-                                     + " AND "
+                final String where = ((getCursorWhere() != null)
+                                      ? getCursorWhere() + " AND "
+                                      : "")
                                      + DatabaseSchema.AccountEntry.COLUMN_FULL_NAME
                                      + " LIKE ?";
 
@@ -203,7 +222,7 @@ public class QualifiedAccountNameCursorAdapter
         TextView parentAccountFullNameTextView = (TextView) view.findViewById(R.id.text3);
 
         if (parentAccountFullNameTextView != null) {
-            //
+            // The field exists
 
             String accountFullName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FULL_NAME));
 
@@ -214,9 +233,9 @@ public class QualifiedAccountNameCursorAdapter
             parentAccountFullNameTextView.setText(parentAccountFullName);
 
         } else {
-            //  n' pas
+            // The field does not exist
 
-            // RAF
+            // NTD
         }
 
         //
@@ -230,70 +249,76 @@ public class QualifiedAccountNameCursorAdapter
 
     }
 
-    // TODO TW C 2020-02-25 : A déplacer
-    public static String getParentAccountFullName(final String accountFullName) {
+    /**
+     * Extract parent account full name
+     *
+     * @param accountFullName
+     *         Account full name
+     *
+     * @return parent account full name
+     */
+    String getParentAccountFullName(final String accountFullName) {
 
         String parentAccountFullName;
 
+        // Look for last separator
         int index = accountFullName.lastIndexOf(AccountsDbAdapter.ACCOUNT_NAME_SEPARATOR);
 
         if (index > 0) {
-            //
+            // An account separator has been found
 
-            //
+            // parent full name is before the account separator
             parentAccountFullName = accountFullName.substring(0,
                                                               index);
 
         } else {
-            //  n' pas
+            // No account separator has been found
 
+            // Do not display anything for parent
             parentAccountFullName = "";
         }
         return parentAccountFullName;
     }
 
-    // TODO TW C 2020-02-25 : A déplacer (AC)
-    public static void setTextColorAccordingToAccountUID(final View view,
-                                                         final String accountUID) {
+    /**
+     * Set text color according to account one
+     *
+     * @param view
+     *         View containing text field to colorize
+     * @param accountUID
+     *         Account UID
+     */
+    void setTextColorAccordingToAccountUID(final View view,
+                                           final String accountUID) {
 
-        // Get Account color
-        int iColor = AccountsDbAdapter.getActiveAccountColorResource(accountUID);
+        TextView simpleAccountNameTextView = (TextView) view.findViewById(R.id.text2);
 
-        TextView simpleAcoountNameTextView = (TextView) view.findViewById(R.id.text2);
-
-        if (simpleAcoountNameTextView != null) {
-            //
-
-            // Override color
-            simpleAcoountNameTextView.setTextColor(iColor);
-
-        } else {
-            //  n' pas
-
-            // RAF
-        }
+        AccountUtils.setAccountTextColor(simpleAccountNameTextView,
+                                         accountUID);
     }
 
     /**
+     * Display or hide star icon according to favorite account status
+     *
      * @param spinnerSelectedItemView
-     * @param isFavorite
+     * @param isFavoriteAccount
      */
-    // TODO TW C 2020-02-25 : A déplacer
-    public static void displayFavoriteAccountStarIcon(View spinnerSelectedItemView,
-                                                      Integer isFavorite) {
+    void displayFavoriteAccountStarIcon(View spinnerSelectedItemView,
+                                        Integer isFavoriteAccount) {
 
         TextView simpleAccountNameTextView = (TextView) spinnerSelectedItemView.findViewById(R.id.text2);
 
         if (simpleAccountNameTextView != null) {
-            //
+            // The field exists
 
-            //
-            if (isFavorite == 0) {
+            if (isFavoriteAccount == 0) {
+                // It is not a Favorite account
 
                 // Hide Favorite Account Star
                 hideFavoriteAccountStarIcon(spinnerSelectedItemView);
 
             } else {
+                // It is a Favorite account
 
                 // Display Favorite Account Star
                 simpleAccountNameTextView.setCompoundDrawablesWithIntrinsicBounds(0,
@@ -303,24 +328,9 @@ public class QualifiedAccountNameCursorAdapter
             }
 
         } else {
-            //  n' pas
+            // The field does not exists
 
-            // RAF
-        }
-    }
-
-    /**
-     * Removes the icon from view to avoid visual clutter
-     *
-     * @param spinnerView
-     */
-    public static void hideFavoriteAccountStarIcon(View spinnerView) {
-
-        TextView textViewWithStarIcon = (TextView) spinnerView.findViewById(R.id.text2);
-
-        if (textViewWithStarIcon != null) {
-
-            textViewWithStarIcon.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+            // NTD
         }
     }
 
@@ -373,22 +383,22 @@ public class QualifiedAccountNameCursorAdapter
 
     public int getSpinnerSelectedItemLayout() {
 
-        return _spinnerSelectedItemLayout;
+        return mSpinnerSelectedItemLayout;
     }
 
     public void setSpinnerSelectedItemLayout(int spinnerSelectedItemLayout) {
 
-        _spinnerSelectedItemLayout = spinnerSelectedItemLayout;
+        mSpinnerSelectedItemLayout = spinnerSelectedItemLayout;
     }
 
     public int getSpinnerDropDownItemLayout() {
 
-        return _spinnerDropDownItemLayout;
+        return mSpinnerDropDownItemLayout;
     }
 
     public void setSpinnerDropDownItemLayout(int spinnerDropDownItemLayout) {
 
-        _spinnerDropDownItemLayout = spinnerDropDownItemLayout;
+        mSpinnerDropDownItemLayout = spinnerDropDownItemLayout;
 
         setDropDownViewResource(getSpinnerDropDownItemLayout());
     }

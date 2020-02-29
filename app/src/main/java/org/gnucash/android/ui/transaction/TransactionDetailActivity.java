@@ -25,6 +25,7 @@ import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.passcode.PasscodeLockActivity;
+import org.gnucash.android.ui.util.AccountUtils;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -112,8 +113,8 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
             accountName.setText(accountsDbAdapter.getAccountFullName(split.getAccountUID()));
 
             // Set color according to Account
-            TransactionFormFragment.setAccountTextColor(accountName,
-                                                        split.getAccountUID());
+            AccountUtils.setAccountTextColor(accountName,
+                                             split.getAccountUID());
 
 
             Money    quantity    = split.getFormattedQuantity();

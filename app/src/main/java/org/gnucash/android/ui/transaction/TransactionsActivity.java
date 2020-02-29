@@ -290,11 +290,11 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 
     protected void resetSpinnerItemAppearance() {
 
+// TODO TW m 2020-02-16 : Useless ?
+
 //        // item text
 //        TextView accountFullClassName = (TextView) mToolbarSpinner.findViewById(android.R.id.text1);
 //
-//        // TODO TW C 2020-02-16 : Inutile ?
-//        // TODO TW C 2020-02-02 : Il faudrait récupérer la couleur du Thème
 //        accountFullClassName.setTextColor(Color.RED);
     }
 
@@ -465,7 +465,6 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // TODO TW m 2020-02-16 : A priori inutile, car fait dans TransactionsListFragment.onResume()
 		selectCurrentAccountInToolbarSpinner();
 	}
 	

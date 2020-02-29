@@ -28,20 +28,10 @@ public class ItemContainingTextFilter<T_ITEM>
      */
     private List<T_ITEM> mAdaptersItemsList;
 
-//    //     * Lock used to modify the content of {@link #mOriginalNonFilteredItemsList}. Any write operation
-//    //     * performed on the array should be synchronized on this lock. This lock is also
-//    //     * used by the filter (see {@link #getFilter()} to make a synchronized copy of
-//    //     * the original array of data.
-//    private final Object _lock = new Object();
-
-
-
     /**
      * Constructor
      */
     public ItemContainingTextFilter(final List<T_ITEM> adaptersItemsList) {
-
-//        mParentAdapter = parentAdapter;
 
         // Store a pointer to adapter's item list
         setAdaptersItemsList(adaptersItemsList);
@@ -101,7 +91,7 @@ public class ItemContainingTextFilter<T_ITEM>
                     filteredItems.add(item);
 
                 } else {
-                    // It doesen't match
+                    // It does not match
 
                     // NTD
                 }
@@ -153,27 +143,6 @@ public class ItemContainingTextFilter<T_ITEM>
         // First match against the whole, non-splitted value
         return itemTextLowerCase.contains(textToSearchLowerCase);
     }
-
-    //
-    // Local methods
-    //
-
-//    private List<T_ITEM> getCopyOfAdaptersAllItems() {
-//
-//        final List<T_ITEM> allItemsCopy;
-//
-//        synchronized (_lock) {
-//
-//            allItemsCopy = new ArrayList<>();
-//
-//            for (int i = 0; i < mParentAdapter.getCount(); i++) {
-//
-//                allItemsCopy.add((T_ITEM) mParentAdapter.getItem(i));
-//            }
-//        }
-//
-//        return allItemsCopy;
-//    }
 
     //
     // Getters/Setters

@@ -79,6 +79,7 @@ import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.ui.transaction.dialog.TransferFundsDialogFragment;
+import org.gnucash.android.ui.util.AccountUtils;
 import org.gnucash.android.ui.util.RecurrenceParser;
 import org.gnucash.android.ui.util.RecurrenceViewClickListener;
 import org.gnucash.android.ui.util.widget.CalculatorEditText;
@@ -353,13 +354,14 @@ public class TransactionFormFragment extends Fragment implements
                                                                     public void onClick(final DialogInterface dialog,
                                                                                         final int which) {
 
-                                                                        // TODO TW C 2020-02-16 : A faire fonctionner
+                                                                        // TODO TW M 2020-02-16 : TBD
+
 //                                                                        final View spinnerSelectedItemView = mTransferAccountSearchableSpinnerView.getSelectedView();
 //
 //                                                                        TextView accountFullNameTextView = (TextView) spinnerSelectedItemView.findViewById(android.R.id.text1);
 //
 //                                                                        setAccountTextColor(accountFullNameTextView,
-//                                                                                            // TODO TW C 2020-02-16 : A
+//                                                                                            // TODO TW M 2020-02-16 : TBD
 //                                                                                            //  corriger pour mettre le split
 //                                                                                            //  account
 //                                                                                            mAccountUID);
@@ -399,8 +401,8 @@ public class TransactionFormFragment extends Fragment implements
 
                             TextView accountFullNameTextView = (TextView) spinnerSelectedItemView.findViewById(android.R.id.text1);
 
-                            setAccountTextColor(accountFullNameTextView,
-                                                accountUID);
+                            AccountUtils.setAccountTextColor(accountFullNameTextView,
+                                                             accountUID);
                         }
                         // else case is handled when saving the transactions
                     }
@@ -458,7 +460,8 @@ public class TransactionFormFragment extends Fragment implements
 
     private void resetSpinnerItemAppearance(DialogInterface dialog) {
 
-        // TODO TW C 2020-02-15 : A finir
+        // TODO TW m 2020-02-15 : TBD
+
 //        SearchableListDialogFragment searchableListDialogFragment = (SearchableListDialogFragment) dialog;
 //
 //        String accountFullName = (String) searchableListDialogFragment.getParentSearchableSpinnerView()
@@ -487,42 +490,6 @@ public class TransactionFormFragment extends Fragment implements
 //            // RAF
 //        }
 
-    }
-
-
-    // TODO TW C 2020-02-15 : Améliorer commentaires et déplacer
-    public static void setAccountTextColor(final TextView accountTextView,
-                                           final String accountUID) {
-
-        if (accountTextView != null) {
-            //
-
-            // Get Preference about double back button press to exit
-            boolean prefShallUseColorInAccountList = PreferenceManager.getDefaultSharedPreferences(accountTextView.getContext())
-                                                                      .getBoolean(accountTextView.getContext()
-                                                                                                 .getString(R.string.key_use_color_in_account_list),
-                                                                                  true);
-
-            if (prefShallUseColorInAccountList) {
-                // Want to use colors for Accounts
-
-                // Get Account color
-                int iColor = AccountsDbAdapter.getActiveAccountColorResource(accountUID);
-
-                // Override color
-                accountTextView.setTextColor(iColor);
-
-            } else {
-                // Do not want to use colors for Accounts
-
-                // NTD
-            }
-
-        } else {
-            //  n' pas
-
-            // RAF
-        }
     }
 
     /**
@@ -747,7 +714,7 @@ public class TransactionFormFragment extends Fragment implements
      */
 	private void updateTransferAccountsList(){
 
-		String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID + " != ?"
+		String where = "(" + DatabaseSchema.AccountEntry.COLUMN_UID + " != ?"
                             + " AND " + DatabaseSchema.AccountEntry.COLUMN_TYPE + " != ?"
                             + " AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
                             + ")";
@@ -757,15 +724,13 @@ public class TransactionFormFragment extends Fragment implements
         }
         final String[] whereArgs = {mAccountUID,
                                     AccountType.ROOT.name()};
-        mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(conditions,
+        mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(where,
                                                                                whereArgs);
 
         mAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
                                                                       mCursor,
-                                                                      conditions,
+                                                                      where,
                                                                       whereArgs,
-//                                                                      R.layout.account_spinner_dropdown_item);
-//                                                                      android.R.layout.simple_spinner_item);
                                                                       R.layout.account_spinner_dropdown_item);
 
         mTransferAccountSearchableSpinnerView.setAdapter(mAccountCursorAdapter);
