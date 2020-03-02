@@ -290,36 +290,64 @@ public class Transaction extends BaseModel{
      * @return Money list of splits
      */
     public static Money computeBalance(String accountUID, List<Split> splitList) {
+
         AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
         AccountType accountType = accountsDbAdapter.getAccountType(accountUID);
         String accountCurrencyCode = accountsDbAdapter.getAccountCurrencyCode(accountUID);
 
-        boolean isDebitAccount = accountType.hasDebitNormalBalance();
+//        boolean isDebitAccount = accountType.hasDebitNormalBalance();
+
         Money balance = Money.createZeroInstance(accountCurrencyCode);
+
         for (Split split : splitList) {
+
             if (!split.getAccountUID().equals(accountUID))
                 continue;
+
+            //
+            // Get Amount absolute value
+            //
+
             Money amount;
             if (split.getValue().getCommodity().getCurrencyCode().equals(accountCurrencyCode)){
                 amount = split.getValue();
             } else { //if this split belongs to the account, then either its value or quantity is in the account currency
                 amount = split.getQuantity();
             }
+
+            //
+            // Compute balance
+            //
+
             boolean isDebitSplit = split.getType() == TransactionType.DEBIT;
-            if (isDebitAccount) {
-                if (isDebitSplit) {
-                    balance = balance.add(amount);
-                } else {
-                    balance = balance.subtract(amount);
-                }
+
+            // #876
+//            if (isDebitAccount) {
+//                if (isDebitSplit) {
+//                    balance = balance.add(amount);
+//                } else {
+//                    balance = balance.subtract(amount);
+//                }
+//            } else {
+//                if (isDebitSplit) {
+//                    balance = balance.subtract(amount);
+//                } else {
+//                    balance = balance.add(amount);
+//                }
+//            }
+            if (isDebitSplit) {
+                // DEBIT
+
+                balance = balance.add(amount);
+
             } else {
-                if (isDebitSplit) {
-                    balance = balance.subtract(amount);
-                } else {
-                    balance = balance.add(amount);
-                }
+                // CREDIT
+
+                balance = balance.subtract(amount);
             }
-        }
+
+        } // for
+
         return balance;
     }
 
@@ -420,16 +448,27 @@ public class Transaction extends BaseModel{
         return type;
     }
 
+    // #876
     /**
      * Returns true if the transaction type represents a decrease for the account balance for the <code>accountType</code>, false otherwise
      * @return true if the amount represents a decrease in the account balance, false otherwise
      * @see #getTypeForBalance(AccountType, boolean)
      */
-    public static boolean shouldDecreaseBalance(AccountType accountType, TransactionType transactionType) {
-        if (accountType.hasDebitNormalBalance()) {
-            return transactionType == TransactionType.CREDIT;
-        } else
-            return transactionType == TransactionType.DEBIT;
+    public static boolean wouldDecreaseBalance(AccountType accountType,
+                                               TransactionType transactionType) {
+
+        // TODO TW M 2020-03-02 : TBC
+//        if (accountType.hasDebitNormalBalance()) {
+//            // Account usually with DEBIT > CREDIT
+//
+//            return transactionType == TransactionType.CREDIT;
+//
+//        } else {
+//            // Account usually with DEBIT < CREDIT
+//
+//            return transactionType == TransactionType.DEBIT;
+//        }
+        return transactionType == TransactionType.CREDIT;
     }
 
 	/**
