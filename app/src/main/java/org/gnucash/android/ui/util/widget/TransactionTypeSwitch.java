@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A special type of {@link android.widget.ToggleButton} which displays the appropriate CREDIT/DEBIT labels for the
+ * A special type of {@link android.widget.ToggleButton} which displays the appropriate DEBIT/CREDIT labels for the
  * different account types.
  * @author Ngewi Fet <ngewif@gmail.com>
  */
@@ -59,49 +59,55 @@ public class TransactionTypeSwitch extends SwitchCompat {
         Context context = getContext().getApplicationContext();
         switch (mAccountType) {
             case CASH:
-                setTextOn(context.getString(R.string.label_spend));
-                setTextOff(context.getString(R.string.label_receive));
+                setTextOff(context.getString(R.string.label_receive)); // DEBIT
+                setTextOn(context.getString(R.string.label_spend)); // CREDIT
                 break;
             case BANK:
-                setTextOn(context.getString(R.string.label_withdrawal));
-                setTextOff(context.getString(R.string.label_deposit));
+                setTextOff(context.getString(R.string.label_deposit)); // DEBIT
+                setTextOn(context.getString(R.string.label_withdrawal)); // CREDIT
                 break;
             case CREDIT:
-                setTextOn(context.getString(R.string.label_payment));
-                setTextOff(context.getString(R.string.label_charge));
+                // #876 Change according to GnuCash on Windows
+                setTextOff(context.getString(R.string.label_payment)); // DEBIT
+                setTextOn(context.getString(R.string.label_charge)); // CREDIT
                 break;
             case ASSET:
             case EQUITY:
             case LIABILITY:
-                setTextOn(context.getString(R.string.label_decrease));
-                setTextOff(context.getString(R.string.label_increase));
+                // #876 Change according to GnuCash on Windows
+                setTextOff(context.getString(R.string.label_decrease)); // DEBIT
+                setTextOn(context.getString(R.string.label_increase)); // CREDIT
                 break;
             case INCOME:
-                setTextOn(context.getString(R.string.label_charge));
-                setTextOff(context.getString(R.string.label_income));
+                // #876 Change according to GnuCash on Windows
+                setTextOff(context.getString(R.string.label_charge)); // DEBIT
+                setTextOn(context.getString(R.string.label_income)); // CREDIT
                 break;
             case EXPENSE:
-                setTextOn(context.getString(R.string.label_rebate));
-                setTextOff(context.getString(R.string.label_expense));
+                setTextOff(context.getString(R.string.label_expense)); // DEBIT
+                setTextOn(context.getString(R.string.label_rebate)); // CREDIT
                 break;
             case PAYABLE:
-                setTextOn(context.getString(R.string.label_payment));
-                setTextOff(context.getString(R.string.label_bill));
+                // #876 Change according to GnuCash on Windows
+                setTextOff(context.getString(R.string.label_payment)); // DEBIT
+                setTextOn(context.getString(R.string.label_bill)); // CREDIT
                 break;
             case RECEIVABLE:
-                setTextOn(context.getString(R.string.label_payment));
-                setTextOff(context.getString(R.string.label_invoice));
+                setTextOff(context.getString(R.string.label_invoice)); // DEBIT
+                setTextOn(context.getString(R.string.label_payment)); // CREDIT
                 break;
             case STOCK:
             case MUTUAL:
-                setTextOn(context.getString(R.string.label_buy));
-                setTextOff(context.getString(R.string.label_sell));
+                // #876 Change according to GnuCash on Windows
+                setTextOff(context.getString(R.string.label_buy)); // DEBIT
+                setTextOn(context.getString(R.string.label_sell)); // CREDIT
                 break;
             case CURRENCY:
             case ROOT:
             default:
-                setTextOn(context.getString(R.string.label_debit));
-                setTextOff(context.getString(R.string.label_credit));
+                // #876 Change according to GnuCash on Windows
+                setTextOff(context.getString(R.string.label_debit)); // DEBIT
+                setTextOn(context.getString(R.string.label_credit)); // CREDIT
                 break;
         }
         setText(isChecked() ? getTextOn() : getTextOff());
@@ -130,7 +136,9 @@ public class TransactionTypeSwitch extends SwitchCompat {
      * @param transactionType {@link org.gnucash.android.model.TransactionType} of the split
      */
     public void setChecked(TransactionType transactionType){
-        setChecked(Transaction.shouldDecreaseBalance(mAccountType, transactionType));
+        // #876
+//        setChecked(Transaction.shouldDecreaseBalance(mAccountType, transactionType));
+        setChecked(TransactionType.CREDIT.equals(transactionType));
     }
 
     /**
@@ -141,12 +149,24 @@ public class TransactionTypeSwitch extends SwitchCompat {
         return mAccountType;
     }
 
-    public TransactionType getTransactionType(){
-        if (mAccountType.hasDebitNormalBalance()){
-            return isChecked() ? TransactionType.CREDIT : TransactionType.DEBIT;
-        } else {
-            return isChecked() ? TransactionType.DEBIT : TransactionType.CREDIT;
-        }
+    public TransactionType getTransactionType() {
+
+        // #876
+//        if (mAccountType.hasDebitNormalBalance()) {
+//
+//            return isChecked()
+//                   ? TransactionType.CREDIT
+//                   : TransactionType.DEBIT;
+//
+//        } else {
+//
+//            return isChecked()
+//                   ? TransactionType.DEBIT
+//                   : TransactionType.CREDIT;
+//        }
+        return isChecked()
+               ? TransactionType.CREDIT
+               : TransactionType.DEBIT;
     }
 
     private class OnTypeChangedListener implements OnCheckedChangeListener{
@@ -163,32 +183,53 @@ public class TransactionTypeSwitch extends SwitchCompat {
         }
 
         @Override
-        public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-            setText(isChecked ? getTextOn() : getTextOff());
-            if (isChecked){
-                int red = ContextCompat.getColor(getContext(), R.color.debit_red);
-                TransactionTypeSwitch.this.setTextColor(red);
-                mAmountEditText.setTextColor(red);
-                mCurrencyTextView.setTextColor(red);
+        public void onCheckedChanged(CompoundButton compoundButton,
+                                     boolean isChecked) {
+
+            setText(isChecked
+                    ? getTextOn() // CREDIT
+                    : getTextOff() // DEBIT
+                   );
+
+            if (isChecked) {
+                // CREDIT
+
+                // RED
+                int red = ContextCompat.getColor(getContext(),
+                                                 R.color.debit_red);
+                setTextColor(red);
+
+            } else {
+                // DEBIT
+
+                // GREEN
+                int green = ContextCompat.getColor(getContext(),
+                                                   R.color.credit_green);
+                setTextColor(green);
             }
-            else {
-                int green = ContextCompat.getColor(getContext(), R.color.credit_green);
-                TransactionTypeSwitch.this.setTextColor(green);
-                mAmountEditText.setTextColor(green);
-                mCurrencyTextView.setTextColor(green);
-            }
+
             BigDecimal amount = mAmountEditText.getValue();
-            if (amount != null){
+
+            if (amount != null) {
                 if ((isChecked && amount.signum() > 0) //we switched to debit but the amount is +ve
-                        || (!isChecked && amount.signum() < 0)){ //credit but amount is -ve
+                    || (!isChecked && amount.signum() < 0)) { //credit but amount is -ve
+
                     mAmountEditText.setValue(amount.negate());
                 }
 
             }
 
             for (OnCheckedChangeListener listener : mOnCheckedChangeListeners) {
-                listener.onCheckedChanged(compoundButton, isChecked);
+                listener.onCheckedChanged(compoundButton,
+                                          isChecked);
             }
+        }
+
+        private void setTextColor(final int color) {
+
+            TransactionTypeSwitch.this.setTextColor(color);
+            mAmountEditText.setTextColor(color);
+            mCurrencyTextView.setTextColor(color);
         }
     }
 }
