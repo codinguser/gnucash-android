@@ -179,20 +179,35 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
     }
 
 
-    private Money calculateSplitBalance(List<String> accountUIDList, String currencyCode, boolean hasDebitNormalBalance,
-                          long startTimestamp, long endTimestamp){
-        if (accountUIDList.size() == 0){
-            return new Money("0", currencyCode);
+    private Money calculateSplitBalance(List<String> accountUIDList,
+                                        String currencyCode,
+                                        boolean hasDebitNormalBalance,
+                                        long startTimestamp,
+                                        long endTimestamp) {
+
+        if (accountUIDList.size() == 0) {
+            return new Money("0",
+                             currencyCode);
         }
 
-        Cursor cursor;
+        Cursor   cursor;
         String[] selectionArgs = null;
-        String selection = DatabaseSchema.AccountEntry.TABLE_NAME + "_" + DatabaseSchema.CommonColumns.COLUMN_UID + " in ( '" + TextUtils.join("' , '", accountUIDList) + "' ) AND " +
-                TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TEMPLATE + " = 0";
+        String selection = DatabaseSchema.AccountEntry.TABLE_NAME
+                           + "_"
+                           + DatabaseSchema.CommonColumns.COLUMN_UID
+                           + " in ( '"
+                           + TextUtils.join("' , '",
+                                            accountUIDList)
+                           + "' ) AND "
+                           + TransactionEntry.TABLE_NAME
+                           + "_"
+                           + TransactionEntry.COLUMN_TEMPLATE
+                           + " = 0";
 
         if (startTimestamp != -1 && endTimestamp != -1) {
             selection += " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TIMESTAMP + " BETWEEN ? AND ? ";
-            selectionArgs = new String[]{String.valueOf(startTimestamp), String.valueOf(endTimestamp)};
+            selectionArgs = new String[]{String.valueOf(startTimestamp),
+                                         String.valueOf(endTimestamp)};
         } else if (startTimestamp == -1 && endTimestamp != -1) {
             selection += " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TIMESTAMP + " <= ?";
             selectionArgs = new String[]{String.valueOf(endTimestamp)};
@@ -202,34 +217,57 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
         }
 
         cursor = mDb.query("trans_split_acct",
-                new String[]{"TOTAL ( CASE WHEN " + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_TYPE + " = 'DEBIT' THEN " +
-                        SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_QUANTITY_NUM + " ELSE - " +
-                        SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_QUANTITY_NUM + " END )",
-                        SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_QUANTITY_DENOM,
-                        DatabaseSchema.AccountEntry.TABLE_NAME + "_" + DatabaseSchema.AccountEntry.COLUMN_CURRENCY},
-                selection, selectionArgs, DatabaseSchema.AccountEntry.TABLE_NAME + "_" + DatabaseSchema.AccountEntry.COLUMN_CURRENCY, null, null);
+                           new String[]{"TOTAL ( CASE WHEN "
+                                        + SplitEntry.TABLE_NAME
+                                        + "_"
+                                        + SplitEntry.COLUMN_TYPE
+                                        + " = 'DEBIT' THEN "
+                                        + SplitEntry.TABLE_NAME
+                                        + "_"
+                                        + SplitEntry.COLUMN_QUANTITY_NUM
+                                        + " ELSE - "
+                                        + SplitEntry.TABLE_NAME
+                                        + "_"
+                                        + SplitEntry.COLUMN_QUANTITY_NUM
+                                        + " END )",
+                                        SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_QUANTITY_DENOM,
+                                        DatabaseSchema.AccountEntry.TABLE_NAME
+                                        + "_"
+                                        + DatabaseSchema.AccountEntry.COLUMN_CURRENCY},
+                           selection,
+                           selectionArgs,
+                           DatabaseSchema.AccountEntry.TABLE_NAME + "_" + DatabaseSchema.AccountEntry.COLUMN_CURRENCY,
+                           null,
+                           null);
 
         try {
-            Money total = Money.createZeroInstance(currencyCode);
+            Money                total                = Money.createZeroInstance(currencyCode);
             CommoditiesDbAdapter commoditiesDbAdapter = null;
-            PricesDbAdapter pricesDbAdapter = null;
-            Commodity commodity = null;
-            String currencyUID = null;
+            PricesDbAdapter      pricesDbAdapter      = null;
+            Commodity            commodity            = null;
+            String               currencyUID          = null;
+
             while (cursor.moveToNext()) {
-                long amount_num = cursor.getLong(0);
-                long amount_denom = cursor.getLong(1);
+                long   amount_num    = cursor.getLong(0);
+                long   amount_denom  = cursor.getLong(1);
                 String commodityCode = cursor.getString(2);
+
                 //Log.d(getClass().getName(), commodity + " " + amount_num + "/" + amount_denom);
                 if (commodityCode.equals("XXX") || amount_num == 0) {
                     // ignore custom currency
                     continue;
                 }
-                if (!hasDebitNormalBalance) {
-                    amount_num = -amount_num;
-                }
+
+                // #876
+//                if (!hasDebitNormalBalance) {
+//                    amount_num = -amount_num;
+//                }
+
                 if (commodityCode.equals(currencyCode)) {
                     // currency matches
-                    total = total.add(new Money(amount_num, amount_denom, currencyCode));
+                    total = total.add(new Money(amount_num,
+                                                amount_denom,
+                                                currencyCode));
                     //Log.d(getClass().getName(), "currency " + commodity + " sub - total " + total);
                 } else {
                     // there is a second currency involved
@@ -241,18 +279,23 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
                     }
                     // get price
                     String commodityUID = commoditiesDbAdapter.getCommodityUID(commodityCode);
-                    Pair<Long, Long> price = pricesDbAdapter.getPrice(commodityUID, currencyUID);
+                    Pair<Long, Long> price = pricesDbAdapter.getPrice(commodityUID,
+                                                                      currencyUID);
                     if (price.first <= 0 || price.second <= 0) {
                         // no price exists, just ignore it
                         continue;
                     }
-                    BigDecimal amount = Money.getBigDecimal(amount_num, amount_denom);
+                    BigDecimal amount = Money.getBigDecimal(amount_num,
+                                                            amount_denom);
                     BigDecimal amountConverted = amount.multiply(new BigDecimal(price.first))
-                            .divide(new BigDecimal(price.second), commodity.getSmallestFractionDigits(), BigDecimal.ROUND_HALF_EVEN);
-                    total = total.add(new Money(amountConverted, commodity));
+                                                       .divide(new BigDecimal(price.second),
+                                                               commodity.getSmallestFractionDigits(),
+                                                               BigDecimal.ROUND_HALF_EVEN);
+                    total = total.add(new Money(amountConverted,
+                                                commodity));
                     //Log.d(getClass().getName(), "currency " + commodity + " sub - total " + total);
                 }
-            }
+            } // while
             return total;
         } finally {
             cursor.close();
