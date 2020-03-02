@@ -197,7 +197,7 @@
   <string name="label_increase">Augmenter</string>
   <string name="label_income">Revenu</string>
   <string name="label_rebate">Remboursement</string>
-  <string name="label_expense">Frais</string>
+  <string name="label_expense">Dépense</string>
   <string name="label_bill">Facture</string>
   <string name="label_invoice">Facture d\'achat</string>
   <string name="label_buy">Achat</string>
