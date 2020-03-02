@@ -6,9 +6,21 @@ package org.gnucash.android.model;
  * they are currently not used except for exporting
  */
 public enum AccountType {
-    CASH(TransactionType.DEBIT), BANK(TransactionType.DEBIT), CREDIT, ASSET(TransactionType.DEBIT), LIABILITY,
-    INCOME, EXPENSE(TransactionType.DEBIT), PAYABLE, RECEIVABLE(TransactionType.DEBIT), EQUITY, CURRENCY,
-    STOCK(TransactionType.DEBIT), MUTUAL(TransactionType.DEBIT), TRADING, ROOT;
+    CASH(TransactionType.DEBIT),
+    BANK(TransactionType.DEBIT),
+    CREDIT,
+    ASSET(TransactionType.DEBIT),
+    LIABILITY,
+    INCOME,
+    EXPENSE(TransactionType.DEBIT),
+    PAYABLE,
+    RECEIVABLE(TransactionType.DEBIT),
+    EQUITY,
+    CURRENCY,
+    STOCK(TransactionType.DEBIT),
+    MUTUAL(TransactionType.DEBIT),
+    TRADING,
+    ROOT;
 
     /**
      * Indicates that this type of normal balance the account type has

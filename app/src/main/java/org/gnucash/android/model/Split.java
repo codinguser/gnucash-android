@@ -41,7 +41,7 @@ public class Split extends BaseModel implements Parcelable{
 
 
     /**
-     * Amount value of this split which is in the currency of the transaction
+     * Amount absolute value of this split which is in the currency of the transaction
      */
     private Money mValue;
 

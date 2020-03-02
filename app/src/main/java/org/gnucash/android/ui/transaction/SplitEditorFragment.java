@@ -239,11 +239,22 @@ public class SplitEditorFragment extends Fragment {
         View splitView;
         Money quantity;
 
-        public SplitViewHolder(View splitView, Split split){
-            ButterKnife.bind(this, splitView);
+        public SplitViewHolder(View splitView,
+                               Split split) {
+
+            ButterKnife.bind(this,
+                             splitView);
+
             this.splitView = splitView;
-            if (split != null && !split.getQuantity().equals(split.getValue()))
+
+            if (split != null && !split.getQuantity()
+                                       .equals(split.getValue())) {
                 this.quantity = split.getQuantity();
+            }
+
+            // #876 Set the splitTypeSwitch according to split type
+            this.splitTypeSwitch.setChecked(split.getType());
+
             setListeners(split);
         }
 
@@ -381,27 +392,49 @@ public class SplitEditorFragment extends Fragment {
      * Extracts the input from the views and builds {@link org.gnucash.android.model.Split}s to correspond to the input.
      * @return List of {@link org.gnucash.android.model.Split}s represented in the view
      */
-    private ArrayList<Split> extractSplitsFromView(){
+    private ArrayList<Split> extractSplitsFromView() {
+
         ArrayList<Split> splitList = new ArrayList<>();
+
         for (View splitView : mSplitItemViewList) {
+
             SplitViewHolder viewHolder = (SplitViewHolder) splitView.getTag();
-            if (viewHolder.splitAmountEditText.getValue() == null)
+
+            if (viewHolder.splitAmountEditText.getValue() == null) {
+                //
+
                 continue;
 
-            BigDecimal amountBigDecimal = viewHolder.splitAmountEditText.getValue();
+            } else {
+                //
 
-            String currencyCode = mAccountsDbAdapter.getCurrencyCode(mAccountUID);
-            Money valueAmount = new Money(amountBigDecimal.abs(), Commodity.getInstance(currencyCode));
+                BigDecimal amountBigDecimal = viewHolder.splitAmountEditText.getValue();
 
-            String accountUID = mAccountsDbAdapter.getUID(viewHolder.accountsSpinner.getSelectedItemId());
-            Split split = new Split(valueAmount, accountUID);
-            split.setMemo(viewHolder.splitMemoEditText.getText().toString());
-            split.setType(viewHolder.splitTypeSwitch.getTransactionType());
-            split.setUID(viewHolder.splitUidTextView.getText().toString().trim());
-            if (viewHolder.quantity != null)
-                split.setQuantity(viewHolder.quantity.abs());
-            splitList.add(split);
-        }
+                String currencyCode = mAccountsDbAdapter.getCurrencyCode(mAccountUID);
+
+                Money  valueAmount  = new Money(amountBigDecimal.abs(),
+                                                Commodity.getInstance(currencyCode));
+
+                String accountUID = mAccountsDbAdapter.getUID(viewHolder.accountsSpinner.getSelectedItemId());
+
+                Split  split      = new Split(valueAmount,
+                                              accountUID);
+
+                split.setMemo(viewHolder.splitMemoEditText.getText()
+                                                          .toString());
+                split.setType(viewHolder.splitTypeSwitch.getTransactionType());
+                split.setUID(viewHolder.splitUidTextView.getText()
+                                                        .toString()
+                                                        .trim());
+                if (viewHolder.quantity != null) {
+                    split.setQuantity(viewHolder.quantity.abs());
+                }
+
+                splitList.add(split);
+            }
+
+        } // for
+
         return splitList;
     }
 

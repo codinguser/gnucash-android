@@ -602,33 +602,60 @@ public class TransactionFormFragment extends Fragment implements
     /**
      * Opens the split editor dialog
      */
-    private void openSplitEditor(){
-        if (mAmountEditText.getValue() == null){
-            Toast.makeText(getActivity(), R.string.toast_enter_amount_to_split, Toast.LENGTH_SHORT).show();
-            return;
-        }
+    private void openSplitEditor() {
 
-        String baseAmountString;
+        if (mAmountEditText.getValue() == null) {
 
-        if (mTransaction == null){ //if we are creating a new transaction (not editing an existing one)
-            BigDecimal enteredAmount = mAmountEditText.getValue();
-            baseAmountString = enteredAmount.toPlainString();
+            Toast.makeText(getActivity(),
+                           R.string.toast_enter_amount_to_split,
+                           Toast.LENGTH_SHORT)
+                 .show();
+
         } else {
-            Money biggestAmount = Money.createZeroInstance(mTransaction.getCurrencyCode());
-            for (Split split : mTransaction.getSplits()) {
-                if (split.getValue().asBigDecimal().compareTo(biggestAmount.asBigDecimal()) > 0)
-                    biggestAmount = split.getValue();
+
+            String baseAmountString;
+
+            if (mTransaction == null) {
+                // we are creating a new transaction (not editing an existing one)
+
+                BigDecimal enteredAmount = mAmountEditText.getValue();
+
+                baseAmountString = enteredAmount.toPlainString();
+
+            } else {
+                // we are editing an existing transaction
+
+                //
+                // Find splits biggest amount (in absolute value)
+                //
+
+                Money biggestAmount = Money.createZeroInstance(mTransaction.getCurrencyCode());
+
+                for (Split split : mTransaction.getSplits()) {
+                    if (split.getValue()
+                             .asBigDecimal()
+                             .compareTo(biggestAmount.asBigDecimal()) > 0) {
+                        biggestAmount = split.getValue();
+                    }
+                } // for
+
+                baseAmountString = biggestAmount.toPlainString();
             }
-            baseAmountString = biggestAmount.toPlainString();
+
+            Intent intent = new Intent(getActivity(),
+                                       FormActivity.class);
+            intent.putExtra(UxArgument.FORM_TYPE,
+                            FormActivity.FormType.SPLIT_EDITOR.name());
+            intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID,
+                            mAccountUID);
+            intent.putExtra(UxArgument.AMOUNT_STRING,
+                            baseAmountString);
+            intent.putParcelableArrayListExtra(UxArgument.SPLIT_LIST,
+                                               (ArrayList<Split>) extractSplitsFromView());
+
+            startActivityForResult(intent,
+                                   REQUEST_SPLIT_EDITOR);
         }
-
-        Intent intent = new Intent(getActivity(), FormActivity.class);
-        intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.SPLIT_EDITOR.name());
-        intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
-        intent.putExtra(UxArgument.AMOUNT_STRING, baseAmountString);
-        intent.putParcelableArrayListExtra(UxArgument.SPLIT_LIST, (ArrayList<Split>) extractSplitsFromView());
-
-        startActivityForResult(intent, REQUEST_SPLIT_EDITOR);
     }
 
 	/**
