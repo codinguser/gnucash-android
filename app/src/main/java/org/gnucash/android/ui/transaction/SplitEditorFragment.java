@@ -60,7 +60,6 @@ import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.transaction.dialog.TransferFundsDialogFragment;
-import org.gnucash.android.ui.util.AccountUtils;
 import org.gnucash.android.ui.util.widget.CalculatorEditText;
 import org.gnucash.android.ui.util.widget.CalculatorKeyboard;
 import org.gnucash.android.ui.util.widget.TransactionTypeSwitch;
@@ -430,8 +429,7 @@ public class SplitEditorFragment extends Fragment {
             //
 
             // Set a ColorizeOnTransactionTypeChange listener
-            splitTypeSwitch.setColorizeOnCheckedChangeListener(splitAmountEditText,
-                                                               splitCurrencyTextView);
+            splitTypeSwitch.setColorizeOnCheckedChangeListener();
 
             splitTypeSwitch.addOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -448,6 +446,9 @@ public class SplitEditorFragment extends Fragment {
             //
             // splitTypeSwitch
             //
+
+            splitTypeSwitch.setViewsToColorize(splitAmountEditText,
+                                               splitCurrencyTextView);
 
             // TODO TW C 2020-03-03 : A enlever ou mettre dans un else ?
             // Switch on/off according to amount signum
@@ -651,8 +652,11 @@ public class SplitEditorFragment extends Fragment {
         public SplitTransferAccountSelectedListener(TransactionTypeSwitch typeToggleButton,
                                                     SplitViewHolder viewHolder) {
 
-            this.mTypeToggleButton = typeToggleButton;
             this.mSplitViewHolder = viewHolder;
+
+            this.mTypeToggleButton = typeToggleButton;
+            this.mTypeToggleButton.setViewsToColorize(mSplitViewHolder.splitAmountEditText,
+                                                      mSplitViewHolder.splitCurrencyTextView);
         }
 
         /**
