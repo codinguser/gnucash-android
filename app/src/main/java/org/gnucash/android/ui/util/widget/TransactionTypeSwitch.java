@@ -33,7 +33,11 @@ import java.util.List;
 
 /**
  * A special type of {@link android.widget.ToggleButton} which displays the appropriate DEBIT/CREDIT labels for the
- * different account types.
+ * linked account type
+ *
+ * checked means CREDIT
+ * unchecked means DEBIT
+ *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 // TODO TW C 2020-03-03 : A renommer SplitTypeSwitch (AC)
@@ -70,6 +74,23 @@ public class TransactionTypeSwitch extends SwitchCompat {
     }
 
     /**
+     * Store views to colorize (green/red) accordingly to TransactionType and AccountType
+     * in addition to the current switch button
+     *
+     * @param amountEditText
+     *         EditText displaying the amount value
+     *
+     * @param currencyTextView
+     *         Currency symbol text view
+     */
+    public void setViewsToColorize(CalculatorEditText amountEditText,
+                                   TextView currencyTextView) {
+
+        mAmountEditText = amountEditText;
+        mCurrencyTextView = currencyTextView;
+    }
+
+    /**
      * Store the accountType
      * and define switch on/off texts accordingly
      *
@@ -77,7 +98,7 @@ public class TransactionTypeSwitch extends SwitchCompat {
      */
     public void setAccountType(AccountType accountType) {
 
-        this.mAccountType = accountType;
+        mAccountType = accountType;
 
         Context context = getContext().getApplicationContext();
 
@@ -148,15 +169,10 @@ public class TransactionTypeSwitch extends SwitchCompat {
      * Bind a ColorizeOnTransactionTypeChangeListener as a switch checked change listener
      * to update the signum of amount view, colorize amount,
      * currency and switch views accordingly
-     *
-     * @param amoutView Amount string {@link android.widget.EditText}
-     * @param currencyTextView Currency symbol text view
      */
-    public void setColorizeOnCheckedChangeListener(CalculatorEditText amoutView,
-                                                   TextView currencyTextView) {
+    public void setColorizeOnCheckedChangeListener() {
 
-        setOnCheckedChangeListener(new ColorizeOnTransactionTypeChangeListener(amoutView,
-                                                                               currencyTextView));
+        setOnCheckedChangeListener(new ColorizeOnTransactionTypeChangeListener());
     }
 
     /**
@@ -260,13 +276,9 @@ public class TransactionTypeSwitch extends SwitchCompat {
 
         /**
          * Constructor with the amount view
-         * @param amountEditText EditText displaying the amount value
-         * @param currencyTextView Currency symbol text view
          */
-        public ColorizeOnTransactionTypeChangeListener(CalculatorEditText amountEditText, TextView currencyTextView){
+        public ColorizeOnTransactionTypeChangeListener(){
 
-            mAmountEditText = amountEditText;
-            mCurrencyTextView = currencyTextView;
         }
 
         @Override
