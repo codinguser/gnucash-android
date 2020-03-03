@@ -37,7 +37,8 @@ public enum AccountType {
         //nothing to see here, move along
     }
 
-    public boolean hasDebitNormalBalance(){
+    public boolean hasDebitNormalBalance() {
+
         return mNormalBalance == TransactionType.DEBIT;
     }
 
@@ -45,7 +46,15 @@ public enum AccountType {
      * Returns the type of normal balance this account possesses
      * @return TransactionType balance of the account type
      */
-    public TransactionType getNormalBalanceType(){
+    public TransactionType getNormalBalanceType() {
+
         return mNormalBalance;
     }
+
+    // TODO TW C 2020-03-03 : A renommer en anglais
+    public boolean isResultAccount() {
+
+        return EXPENSE.equals(this) || INCOME.equals(this);
+    }
+
 }

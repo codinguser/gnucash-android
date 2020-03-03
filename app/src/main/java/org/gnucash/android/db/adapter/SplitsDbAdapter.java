@@ -158,8 +158,15 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
      * @param hasDebitNormalBalance Does the final balance has normal debit credit meaning
      * @return Balance of the splits for this account
      */
-    public Money computeSplitBalance(List<String> accountUIDList, String currencyCode, boolean hasDebitNormalBalance){
-        return calculateSplitBalance(accountUIDList, currencyCode, hasDebitNormalBalance, -1, -1);
+    public Money computeSplitBalance(List<String> accountUIDList,
+                                     String currencyCode,
+                                     boolean hasDebitNormalBalance) {
+
+        return computeSplitBalance(accountUIDList,
+                                   currencyCode,
+                                   hasDebitNormalBalance,
+                                   -1,
+                                   -1);
     }
 
     /**
@@ -173,9 +180,17 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
      * @param endTimestamp the end timestamp of the time range
      * @return Balance of the splits for this account within the specified time range
      */
-    public Money computeSplitBalance(List<String> accountUIDList, String currencyCode, boolean hasDebitNormalBalance,
-                                     long startTimestamp, long endTimestamp){
-        return calculateSplitBalance(accountUIDList, currencyCode, hasDebitNormalBalance, startTimestamp, endTimestamp);
+    public Money computeSplitBalance(List<String> accountUIDList,
+                                     String currencyCode,
+                                     boolean hasDebitNormalBalance,
+                                     long startTimestamp,
+                                     long endTimestamp) {
+
+        return calculateSplitBalance(accountUIDList,
+                                     currencyCode,
+                                     hasDebitNormalBalance,
+                                     startTimestamp,
+                                     endTimestamp);
     }
 
 
@@ -260,23 +275,30 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
 
                 // #876
 //                if (!hasDebitNormalBalance) {
+//                    // The account has usually DEBIT < CREDIT
+//
+//                    // Invert signum to get a positive amount
 //                    amount_num = -amount_num;
 //                }
 
                 if (commodityCode.equals(currencyCode)) {
                     // currency matches
+
                     total = total.add(new Money(amount_num,
                                                 amount_denom,
                                                 currencyCode));
                     //Log.d(getClass().getName(), "currency " + commodity + " sub - total " + total);
+
                 } else {
                     // there is a second currency involved
+
                     if (commoditiesDbAdapter == null) {
                         commoditiesDbAdapter = new CommoditiesDbAdapter(mDb);
                         pricesDbAdapter = new PricesDbAdapter(mDb);
                         commodity = commoditiesDbAdapter.getCommodity(currencyCode);
                         currencyUID = commoditiesDbAdapter.getCommodityUID(currencyCode);
                     }
+
                     // get price
                     String commodityUID = commoditiesDbAdapter.getCommodityUID(commodityCode);
                     Pair<Long, Long> price = pricesDbAdapter.getPrice(commodityUID,
@@ -296,7 +318,9 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
                     //Log.d(getClass().getName(), "currency " + commodity + " sub - total " + total);
                 }
             } // while
+
             return total;
+
         } finally {
             cursor.close();
         }

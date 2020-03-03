@@ -766,7 +766,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      * @return Account Balance of an account including sub-accounts
      */
     public Money getAccountBalance(String accountUID){
-        return computeBalance(accountUID, -1, -1);
+        return getAccountBalance(accountUID, -1, -1);
     }
 
     /**

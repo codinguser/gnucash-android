@@ -662,7 +662,9 @@ public class TransactionFormFragment extends Fragment implements
 	 * Sets click listeners for the dialog buttons
 	 */
 	private void setListeners() {
-		mTransactionTypeSwitch.setAmountFormattingListener(mAmountEditText, mCurrencyTextView);
+
+        mTransactionTypeSwitch.setColorizeOnCheckedChangeListener(mAmountEditText,
+                                                                  mCurrencyTextView);
 
 		mDateTextView.setOnClickListener(new View.OnClickListener() {
 
