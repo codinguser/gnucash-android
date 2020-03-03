@@ -40,7 +40,7 @@ import java.util.List;
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-// TODO TW C 2020-03-03 : A renommer SplitTypeSwitch (AC)
+// TODO TW m 2020-03-03 : Should be named SplitTypeToggleButton (or SplitTypeSwitch) instead of TransactionTypeSwitch
 public class TransactionTypeSwitch extends SwitchCompat {
 
     private AccountType mAccountType = AccountType.EXPENSE;

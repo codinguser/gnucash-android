@@ -641,7 +641,7 @@ public class SplitEditorFragment extends Fragment {
     private class SplitTransferAccountSelectedListener
             implements AdapterView.OnItemSelectedListener {
 
-        private TransactionTypeSwitch mTypeToggleButton;
+        private TransactionTypeSwitch mTransactionTypeSwitch;
         private SplitViewHolder       mSplitViewHolder;
 
         /**
@@ -649,14 +649,14 @@ public class SplitEditorFragment extends Fragment {
          */
         boolean userInteraction = false;
 
-        public SplitTransferAccountSelectedListener(TransactionTypeSwitch typeToggleButton,
+        public SplitTransferAccountSelectedListener(TransactionTypeSwitch transactionTypeSwitch,
                                                     SplitViewHolder viewHolder) {
 
             this.mSplitViewHolder = viewHolder;
 
-            this.mTypeToggleButton = typeToggleButton;
-            this.mTypeToggleButton.setViewsToColorize(mSplitViewHolder.splitAmountEditText,
-                                                      mSplitViewHolder.splitCurrencyTextView);
+            this.mTransactionTypeSwitch = transactionTypeSwitch;
+            this.mTransactionTypeSwitch.setViewsToColorize(mSplitViewHolder.splitAmountEditText,
+                                                           mSplitViewHolder.splitCurrencyTextView);
         }
 
         /**
@@ -676,8 +676,7 @@ public class SplitEditorFragment extends Fragment {
 
             AccountType accountType = mAccountsDbAdapter.getAccountType(id);
 
-            // TODO TW C 2020-03-03 : A renommer mTransactionTypeSwitch ou mSplitTypeSwitch
-            mTypeToggleButton.setAccountType(accountType);
+            mTransactionTypeSwitch.setAccountType(accountType);
 
             //refresh the imbalance amount if we change the account
             mImbalanceWatcher.afterTextChanged(null);
