@@ -41,6 +41,10 @@ public class TransactionTypeSwitch extends SwitchCompat {
 
     private AccountType mAccountType = AccountType.EXPENSE;
 
+    // View to update and colorize
+    private CalculatorEditText mAmountEditText;
+    private TextView mCurrencyTextView;
+
     // Listeners to call in case of change in Transaction Type switch
     List<OnCheckedChangeListener> mOnCheckedChangeListeners = new ArrayList<>();
 
@@ -135,9 +139,7 @@ public class TransactionTypeSwitch extends SwitchCompat {
         // Set switch text and color
         //
 
-        // TODO TW C 2020-03-03 : A remettre
-        setText(isChecked() ? getTextOn() : getTextOff());
-//        setSwitchTextAndColor(isChecked());
+        setSwitchTextAndColor(isChecked());
 
         invalidate();
     }
@@ -204,6 +206,47 @@ public class TransactionTypeSwitch extends SwitchCompat {
                : TransactionType.DEBIT;
     }
 
+    private void setSwitchTextAndColor(final boolean isCredit) {
+
+        //
+        // Set switch text
+        //
+
+        setText(isCredit
+                ? getTextOn() // CREDIT
+                : getTextOff() // DEBIT
+               );
+
+        //
+        // Set text color
+        //
+
+        // TODO TW C 2020-03-02 : A renommer et commenter
+        if ((mAccountType.isResultAccount() && !isCredit) || (!mAccountType.isResultAccount() && isCredit)) {
+            // CREDIT
+
+            // RED
+            int red = ContextCompat.getColor(getContext(),
+                                             R.color.debit_red);
+            setAllTextsColor(red);
+
+        } else {
+            // DEBIT
+
+            // GREEN
+            int green = ContextCompat.getColor(getContext(),
+                                               R.color.credit_green);
+            setAllTextsColor(green);
+        }
+    }
+
+    private void setAllTextsColor(final int color) {
+
+        TransactionTypeSwitch.this.setTextColor(color);
+        mAmountEditText.setTextColor(color);
+        mCurrencyTextView.setTextColor(color);
+    }
+
     //
     // Inner Class OnTypeChangedListener
     //
@@ -215,10 +258,6 @@ public class TransactionTypeSwitch extends SwitchCompat {
     private class ColorizeOnTransactionTypeChangeListener
             implements OnCheckedChangeListener{
 
-        // View to update and colorize
-        private CalculatorEditText mAmountEditText;
-        private TextView mCurrencyTextView;
-
         /**
          * Constructor with the amount view
          * @param amountEditText EditText displaying the amount value
@@ -226,8 +265,8 @@ public class TransactionTypeSwitch extends SwitchCompat {
          */
         public ColorizeOnTransactionTypeChangeListener(CalculatorEditText amountEditText, TextView currencyTextView){
 
-            this.mAmountEditText = amountEditText;
-            this.mCurrencyTextView = currencyTextView;
+            mAmountEditText = amountEditText;
+            mCurrencyTextView = currencyTextView;
         }
 
         @Override
@@ -267,45 +306,5 @@ public class TransactionTypeSwitch extends SwitchCompat {
             } // for
         }
 
-        public void setSwitchTextAndColor(final boolean isCredit) {
-
-            //
-            // Set switch text
-            //
-
-            setText(isCredit
-                    ? getTextOn() // CREDIT
-                    : getTextOff() // DEBIT
-                   );
-
-            //
-            // Set text color
-            //
-
-            // TODO TW C 2020-03-02 : A renommer et commenter
-            if ((mAccountType.isResultAccount() && !isCredit) || (!mAccountType.isResultAccount() && isCredit)) {
-                // CREDIT
-
-                // RED
-                int red = ContextCompat.getColor(getContext(),
-                                                 R.color.debit_red);
-                setTextColor(red);
-
-            } else {
-                // DEBIT
-
-                // GREEN
-                int green = ContextCompat.getColor(getContext(),
-                                                   R.color.credit_green);
-                setTextColor(green);
-            }
-        }
-
-        private void setTextColor(final int color) {
-
-            TransactionTypeSwitch.this.setTextColor(color);
-            mAmountEditText.setTextColor(color);
-            mCurrencyTextView.setTextColor(color);
-        }
     }
 }
