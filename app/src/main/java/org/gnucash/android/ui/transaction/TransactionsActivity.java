@@ -24,6 +24,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -50,6 +51,7 @@ import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
+import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.account.AccountsListFragment;
@@ -78,7 +80,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 	/**
 	 * Logging tag
 	 */
-	protected static final String TAG = "TransactionsActivity";
+    protected static final String LOG_TAG = "TransactionsActivity";
 
     /**
      * ViewPager index for sub-accounts fragment
@@ -120,7 +122,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
     private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<>();
 
     /**
-     * Flag for determining is the currently displayed account is a placeholder account or not.
+     * Flag for determining if the currently displayed account is a placeholder account or not.
      * This will determine if the transactions tab is displayed or not
      */
     private boolean mIsPlaceholderAccount;
@@ -128,10 +130,18 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 	private AdapterView.OnItemSelectedListener mTransactionListNavigationListener = new AdapterView.OnItemSelectedListener() {
 
         @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        public void onItemSelected(AdapterView<?> parent, View spinnerSelectedItemView, int position, long id) {
+
             mAccountUID = mAccountsDbAdapter.getUID(id);
-            getIntent().putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID); //update the intent in case the account gets rotated
-            mIsPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(mAccountUID);
+            getIntent().putExtra(UxArgument.SELECTED_ACCOUNT_UID,
+                                 getCurrentAccountUID()); //update the intent in case the account gets rotated
+
+            //
+            // Show Transaction Page if not a PlaceHolder, hide otherwise
+            //
+
+            mIsPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(getCurrentAccountUID());
+
             if (mIsPlaceholderAccount){
                 if (mTabLayout.getTabCount() > 1) {
                     mPagerAdapter.notifyDataSetChanged();
@@ -143,9 +153,9 @@ public class TransactionsActivity extends BaseDrawerActivity implements
                     mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_transactions));
                 }
             }
-            if (view != null) {
+            if (spinnerSelectedItemView != null) {
                 // Hide the favorite icon of the selected account to avoid clutter
-                ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                ((TextView) spinnerSelectedItemView).setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
             }
             //refresh any fragments in the tab with the new account UID
             refresh();
@@ -229,7 +239,8 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         private AccountsListFragment prepareSubAccountsListFragment(){
             AccountsListFragment subAccountsListFragment = new AccountsListFragment();
             Bundle args = new Bundle();
-            args.putString(UxArgument.PARENT_ACCOUNT_UID, mAccountUID);
+            args.putString(UxArgument.PARENT_ACCOUNT_UID,
+                           getCurrentAccountUID());
             subAccountsListFragment.setArguments(args);
             return subAccountsListFragment;
         }
@@ -238,12 +249,17 @@ public class TransactionsActivity extends BaseDrawerActivity implements
          * Creates and initializes fragment for displaying transactions
          * @return {@link TransactionsListFragment} initialized with the current account transactions
          */
-        private TransactionsListFragment prepareTransactionsListFragment(){
+        private TransactionsListFragment prepareTransactionsListFragment() {
+
             TransactionsListFragment transactionsListFragment = new TransactionsListFragment();
-            Bundle args = new Bundle();
-            args.putString(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
+            Bundle                   args                     = new Bundle();
+            args.putString(UxArgument.SELECTED_ACCOUNT_UID,
+                           getCurrentAccountUID());
             transactionsListFragment.setArguments(args);
-            Log.i(TAG, "Opening transactions for account:  " +  mAccountUID);
+
+            Log.i(LOG_TAG,
+                  "Opening transactions for account:  " + getCurrentAccountUID());
+
             return transactionsListFragment;
         }
     }
@@ -260,13 +276,15 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         if (mPagerAdapter != null)
             mPagerAdapter.notifyDataSetChanged();
 
-        new AccountBalanceTask(mSumTextView).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mAccountUID);
+        new AccountBalanceTask(mSumTextView).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
+                                                               getCurrentAccountUID());
 
     }
 
     @Override
     public void refresh(){
-        refresh(mAccountUID);
+
+        refresh(getCurrentAccountUID());
         setTitleIndicatorColor();
     }
 
@@ -282,6 +300,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -289,7 +308,11 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 		mAccountUID = getIntent().getStringExtra(UxArgument.SELECTED_ACCOUNT_UID);
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
-        mIsPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(mAccountUID);
+        //
+        // Add Tranbsaction Page
+        //
+
+        mIsPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(getCurrentAccountUID());
 
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_subaccounts));
         if (!mIsPlaceholderAccount) {
@@ -320,8 +343,9 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         });
 
         //if there are no transactions, and there are sub-accounts, show the sub-accounts
-        if (TransactionsDbAdapter.getInstance().getTransactionsCount(mAccountUID) == 0
-                && mAccountsDbAdapter.getSubAccountCount(mAccountUID) > 0){
+        if (TransactionsDbAdapter.getInstance()
+                                 .getTransactionsCount(getCurrentAccountUID()) == 0
+            && mAccountsDbAdapter.getSubAccountCount(getCurrentAccountUID()) > 0) {
             mViewPager.setCurrentItem(INDEX_SUB_ACCOUNTS_FRAGMENT);
         } else {
             mViewPager.setCurrentItem(INDEX_TRANSACTIONS_FRAGMENT);
@@ -335,13 +359,14 @@ public class TransactionsActivity extends BaseDrawerActivity implements
                         Intent addAccountIntent = new Intent(TransactionsActivity.this, FormActivity.class);
                         addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
                         addAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.ACCOUNT.name());
-                        addAccountIntent.putExtra(UxArgument.PARENT_ACCOUNT_UID, mAccountUID);
+                        addAccountIntent.putExtra(UxArgument.PARENT_ACCOUNT_UID,
+                                                  getCurrentAccountUID());
                         startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
                         ;
                         break;
 
                     case INDEX_TRANSACTIONS_FRAGMENT:
-                        createNewTransaction(mAccountUID);
+                        createNewTransaction(getCurrentAccountUID());
                         break;
 
                 }
@@ -359,7 +384,8 @@ public class TransactionsActivity extends BaseDrawerActivity implements
      * Sets the color for the ViewPager title indicator to match the account color
      */
     private void setTitleIndicatorColor() {
-        int iColor = AccountsDbAdapter.getActiveAccountColorResource(mAccountUID);
+
+        int iColor = AccountsDbAdapter.getActiveAccountColorResource(getCurrentAccountUID());
 
         mTabLayout.setBackgroundColor(iColor);
 
@@ -374,7 +400,11 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 	 * Set up action bar navigation list and listener callbacks
 	 */
 	private void setupActionBarNavigation() {
+
+	    //
 		// set up spinner adapter for navigation list
+        //
+
         if (mAccountsCursor != null) {
             mAccountsCursor.close();
         }
@@ -387,17 +417,17 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         mToolbarSpinner.setOnItemSelectedListener(mTransactionListNavigationListener);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-		updateNavigationSelection();
+		selectCurrentAccountInToolbarSpinner();
 	}
 	
 	/**
 	 * Updates the action bar navigation list selection to that of the current account
 	 * whose transactions are being displayed/manipulated
 	 */
-	public void updateNavigationSelection() {
-		// set the selected item in the spinner
-		int i = 0;
-		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
+    public void selectCurrentAccountInToolbarSpinner() {
+        // set the selected item in the spinner
+        int i = 0;
+        Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
         while (accountsCursor.moveToNext()) {
             String uid = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
             if (mAccountUID.equals(uid)) {
@@ -407,7 +437,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
             ++i;
         }
         accountsCursor.close();
-	}
+    }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -416,7 +446,8 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         if (favoriteAccountMenuItem == null) //when the activity is used to edit a transaction
             return super.onPrepareOptionsMenu(menu);
 
-        boolean isFavoriteAccount = AccountsDbAdapter.getInstance().isFavoriteAccount(mAccountUID);
+        boolean isFavoriteAccount = AccountsDbAdapter.getInstance()
+                                                     .isFavoriteAccount(getCurrentAccountUID());
 
         int favoriteIcon = isFavoriteAccount ? R.drawable.ic_star_white_24dp : R.drawable.ic_star_border_white_24dp;
         favoriteAccountMenuItem.setIcon(favoriteIcon);
@@ -432,8 +463,8 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 
             case R.id.menu_favorite_account:
                 AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
-                long accountId = accountsDbAdapter.getID(mAccountUID);
-                boolean isFavorite = accountsDbAdapter.isFavoriteAccount(mAccountUID);
+                long accountId = accountsDbAdapter.getID(getCurrentAccountUID());
+                boolean isFavorite = accountsDbAdapter.isFavoriteAccount(getCurrentAccountUID());
                 //toggle favorite preference
                 accountsDbAdapter.updateAccount(accountId, DatabaseSchema.AccountEntry.COLUMN_FAVORITE, isFavorite ? "0" : "1");
                 supportInvalidateOptionsMenu();
@@ -442,7 +473,8 @@ public class TransactionsActivity extends BaseDrawerActivity implements
             case R.id.menu_edit_account:
                 Intent editAccountIntent = new Intent(this, FormActivity.class);
                 editAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-                editAccountIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
+                editAccountIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID,
+                                           getCurrentAccountUID());
                 editAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.ACCOUNT.name());
                 startActivityForResult(editAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
                 return true;
@@ -465,7 +497,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
     @Override
 	protected void onDestroy() {
 		super.onDestroy();
-        mAccountsCursor.close();
+        getAccountsCursor().close();
 	}
 
 	/**
@@ -476,28 +508,55 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 		return mAccountUID;
 	}
 
+    public Cursor getAccountsCursor() {
+
+        return mAccountsCursor;
+    }
+
+    // TODO TW C 2020-03-06 : A mettre ailleurs, car c'est pas spécifique de cette Activité
     /**
      * Display the balance of a transaction in a text view and format the text color to match the sign of the amount
      * @param balanceTextView {@link android.widget.TextView} where balance is to be displayed
      * @param balance {@link org.gnucash.android.model.Money} balance to display
      */
-    public static void displayBalance(TextView balanceTextView,
-                                      Money balance) {
+    public static void displayBalance(final TextView balanceTextView,
+                                      final Money balance,
+                                      final AccountType accountType) {
 
+        //
+        // Display amount
+        //
+
+        // TODO TW C 2020-03-06 : Déterminer qui doit dire s'il faut afficher un nombre négatif ou sa valeur absolue
         balanceTextView.setText(balance.formattedString());
 
-        Context context = GnuCashApplication.getAppContext();
+        //
+        // Define amount color
+        //
 
-        int fontColor = balance.isNegative()
-                        ? context.getResources()
-                                 .getColor(R.color.debit_red)
-                        : context.getResources()
-                                 .getColor(R.color.credit_green);
+        @ColorInt int fontColor;
 
         if (balance.asBigDecimal()
                    .compareTo(BigDecimal.ZERO) == 0) {
+            // balance is null
+
+            Context context = GnuCashApplication.getAppContext();
+
             fontColor = context.getResources()
                                .getColor(android.R.color.black);
+
+        } else {
+            // balance is not null
+
+            final boolean isCredit = balance.isNegative();
+
+//         fontColor = isCredit
+//                        ? context.getResources()
+//                                 .getColor(R.color.debit_red)
+//                        : context.getResources()
+//                                 .getColor(R.color.credit_green);
+            fontColor = AccountType.getAmountColor(isCredit,
+                                                             accountType);
         }
 
         balanceTextView.setTextColor(fontColor);
@@ -539,7 +598,8 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 	public void editTransaction(String transactionUID){
         Intent createTransactionIntent = new Intent(this.getApplicationContext(), FormActivity.class);
         createTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-        createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
+        createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID,
+                                         getCurrentAccountUID());
         createTransactionIntent.putExtra(UxArgument.SELECTED_TRANSACTION_UID, transactionUID);
         createTransactionIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION.name());
         startActivity(createTransactionIntent);
