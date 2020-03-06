@@ -78,6 +78,8 @@ public class BalanceSheetFragment extends BaseReportFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        // TODO TW C 2020-03-06 : A mettre dans AccountType sous formes de constantes
         mAssetAccountTypes = new ArrayList<>();
         mAssetAccountTypes.add(AccountType.ASSET);
         mAssetAccountTypes.add(AccountType.CASH);
@@ -109,11 +111,15 @@ public class BalanceSheetFragment extends BaseReportFragment {
 
     @Override
     protected void displayReport() {
+
         loadAccountViews(mAssetAccountTypes, mAssetsTableLayout);
         loadAccountViews(mLiabilityAccountTypes, mLiabilitiesTableLayout);
         loadAccountViews(mEquityAccountTypes, mEquityTableLayout);
 
-        TransactionsActivity.displayBalance(mNetWorth, mAssetsBalance.subtract(mLiabilitiesBalance));
+        TransactionsActivity.displayBalance(mNetWorth,
+                                            // #8xx
+                                            mAssetsBalance.add(mLiabilitiesBalance),
+                                            null);
     }
 
     @Override
@@ -128,6 +134,7 @@ public class BalanceSheetFragment extends BaseReportFragment {
      * @param tableLayout Table layout into which to load the rows
      */
     private void loadAccountViews(List<AccountType> accountTypes, TableLayout tableLayout){
+
         LayoutInflater inflater = LayoutInflater.from(getActivity());
 
         Cursor cursor = mAccountsDbAdapter.fetchAccounts(DatabaseSchema.AccountEntry.COLUMN_TYPE
@@ -135,14 +142,19 @@ public class BalanceSheetFragment extends BaseReportFragment {
                         + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0",
                 null, DatabaseSchema.AccountEntry.COLUMN_FULL_NAME + " ASC");
 
+        AccountType accountType = null;
+
         while (cursor.moveToNext()){
             String accountUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
             String name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_NAME));
             Money balance = mAccountsDbAdapter.getAccountBalance(accountUID);
             View view = inflater.inflate(R.layout.row_balance_sheet, tableLayout, false);
             ((TextView)view.findViewById(R.id.account_name)).setText(name);
-            TextView balanceTextView = (TextView) view.findViewById(R.id.account_balance);
-            TransactionsActivity.displayBalance(balanceTextView, balance);
+            TextView    balanceTextView = (TextView) view.findViewById(R.id.account_balance);
+            accountType     = AccountType.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_TYPE)));
+            TransactionsActivity.displayBalance(balanceTextView,
+                                                balance,
+                                                accountType);
             tableLayout.addView(view);
         }
 
@@ -157,7 +169,11 @@ public class BalanceSheetFragment extends BaseReportFragment {
         TextView accountBalance = (TextView) totalView.findViewById(R.id.account_balance);
         accountBalance.setTextSize(16);
         accountBalance.setTypeface(null, Typeface.BOLD);
-        TransactionsActivity.displayBalance(accountBalance, mAccountsDbAdapter.getAccountBalance(accountTypes, -1, System.currentTimeMillis()));
+        TransactionsActivity.displayBalance(accountBalance,
+                                            mAccountsDbAdapter.getAccountBalance(accountTypes,
+                                                                                 -1,
+                                                                                 System.currentTimeMillis()),
+                                            accountType);
 
         tableLayout.addView(totalView);
     }
