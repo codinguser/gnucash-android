@@ -220,13 +220,18 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
                            + " = 0";
 
         if (startTimestamp != -1 && endTimestamp != -1) {
+
             selection += " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TIMESTAMP + " BETWEEN ? AND ? ";
             selectionArgs = new String[]{String.valueOf(startTimestamp),
                                          String.valueOf(endTimestamp)};
+
         } else if (startTimestamp == -1 && endTimestamp != -1) {
+
             selection += " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TIMESTAMP + " <= ?";
             selectionArgs = new String[]{String.valueOf(endTimestamp)};
+
         } else if (startTimestamp != -1/* && endTimestamp == -1*/) {
+
             selection += " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TIMESTAMP + " >= ?";
             selectionArgs = new String[]{String.valueOf(startTimestamp)};
         }
