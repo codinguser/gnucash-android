@@ -17,7 +17,7 @@
 package org.gnucash.android.ui.util.widget;
 
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
+import android.support.annotation.ColorInt;
 import android.support.v7.widget.SwitchCompat;
 import android.util.AttributeSet;
 import android.widget.CompoundButton;
@@ -234,29 +234,11 @@ public class TransactionTypeSwitch extends SwitchCompat {
                );
 
         //
-        // Set text color
+        // Set text color of views
         //
 
-        // TODO TW C 2020-03-02 : A renommer et commenter
-        if ((mAccountType.isResultAccount() && !isCredit) || (!mAccountType.isResultAccount() && isCredit)) {
-            // CREDIT
-
-            // RED
-            int red = ContextCompat.getColor(getContext(),
-                                             R.color.debit_red);
-            setAllTextsColor(red);
-
-        } else {
-            // DEBIT
-
-            // GREEN
-            int green = ContextCompat.getColor(getContext(),
-                                               R.color.credit_green);
-            setAllTextsColor(green);
-        }
-    }
-
-    private void setAllTextsColor(final int color) {
+        @ColorInt final int color = AccountType.getAmountColor(isCredit,
+                                                               getAccountType());
 
         TransactionTypeSwitch.this.setTextColor(color);
         mAmountEditText.setTextColor(color);

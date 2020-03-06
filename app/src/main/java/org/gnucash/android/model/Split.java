@@ -302,37 +302,6 @@ public class Split extends BaseModel implements Parcelable{
     }
 
     /**
-     * Splits are saved as absolute values to the database, with no negative numbers.
-     * The type of movement the split causes to the balance of an account determines
-     * its sign, and that depends on the split type and the account type
-     * @param amount Money amount to format
-     * @param accountUID GUID of the account
-     * @param splitType Transaction type of the split
-     * @return -{@code amount} if the amount would reduce the balance of
-     *   {@code account}, otherwise +{@code amount}
-     */
-    private static Money getFormattedAmount(Money amount, String accountUID, TransactionType
-            splitType){
-        boolean isDebitAccount = AccountsDbAdapter.getInstance().getAccountType(accountUID).hasDebitNormalBalance();
-        Money absAmount = amount.abs();
-
-        boolean isDebitSplit = splitType == TransactionType.DEBIT;
-        if (isDebitAccount) {
-            if (isDebitSplit) {
-                return absAmount;
-            } else {
-                return absAmount.negate();
-            }
-        } else {
-            if (isDebitSplit) {
-                return absAmount.negate();
-            } else {
-                return absAmount;
-            }
-        }
-    }
-
-    /**
      * Return the reconciled state of this split
      * <p>
      *     The reconciled state is one of the following values:
@@ -349,6 +318,54 @@ public class Split extends BaseModel implements Parcelable{
      */
     public char getReconcileState() {
         return mReconcileState;
+    }
+
+    /**
+     * Splits are saved as absolute values to the database, with no negative numbers.
+     * The type of movement the split causes to the balance of an account determines
+     * its sign, and that depends on the split type and the account type
+     * @param amount Money amount to format
+     * @param accountUID GUID of the account
+     * @param splitType Transaction type of the split
+     * @return -{@code amount} if the amount would reduce the balance of
+     *   {@code account}, otherwise +{@code amount}
+     */
+    private static Money getFormattedAmount(Money amount,
+                                            String accountUID,
+                                            TransactionType splitType) {
+
+//        boolean isDebitAccount = AccountsDbAdapter.getInstance()
+//                                                  .getAccountType(accountUID)
+//                                                  .hasDebitNormalBalance();
+
+        Money   absAmount      = amount.abs();
+
+        boolean isDebitSplit = splitType == TransactionType.DEBIT;
+
+//        if (isDebitAccount) {
+//            if (isDebitSplit) {
+//                return absAmount;
+//            } else {
+//                return absAmount.negate();
+//            }
+//        } else {
+//            if (isDebitSplit) {
+//                return absAmount.negate();
+//            } else {
+//                return absAmount;
+//            }
+//        }
+
+        if (isDebitSplit) {
+            // It is a Debit Split
+
+            return absAmount;
+
+        } else {
+            // It is not a Debit Split
+
+            return absAmount.negate();
+        }
     }
 
     /**
@@ -394,7 +411,16 @@ public class Split extends BaseModel implements Parcelable{
 
     @Override
     public String toString() {
-        return mSplitType.name() + " of " + mValue.toString() + " in account: " + mAccountUID;
+
+        return mSplitType.name()
+               + " of "
+               + mValue.toString()
+               + " in account: "
+               + mAccountUID
+               + " ("
+               + AccountsDbAdapter.getInstance()
+                                  .getAccountFullName(mAccountUID)
+               + ")";
     }
 
     /**
