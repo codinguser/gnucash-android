@@ -24,8 +24,8 @@ import android.widget.TextView;
 import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.ui.transaction.TransactionsActivity;
 
 import java.lang.ref.WeakReference;
 
@@ -76,9 +76,10 @@ public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
 
             if (balanceTextView != null) {
 
-                TransactionsActivity.displayBalance(balanceTextView,
-                                                    balance,
-                                                    accountsDbAdapter.getAccountType(mAccountUID));
+                final AccountType accountType = accountsDbAdapter.getAccountType(mAccountUID);
+
+                accountType.displayBalance(balanceTextView,
+                                           balance);
             }
         }
     }

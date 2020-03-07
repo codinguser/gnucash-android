@@ -49,6 +49,7 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
+import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -275,10 +276,12 @@ public class TransactionsListFragment extends Fragment implements
 
 			final String transactionUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_UID));
 			Money amount = mTransactionsDbAdapter.getBalance(transactionUID, mAccountUID);
-			TransactionsActivity.displayBalance(holder.transactionAmount,
-												amount,
-												GnuCashApplication.getAccountsDbAdapter()
-																  .getAccountType(mAccountUID));
+
+			final AccountType accountType = GnuCashApplication.getAccountsDbAdapter()
+															  .getAccountType(mAccountUID);
+
+			accountType.displayBalance(holder.transactionAmount,
+									   amount);
 
 			long dateMillis = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_TIMESTAMP));
 			String dateText = TransactionsActivity.getPrettyDateFormat(getActivity(), dateMillis);

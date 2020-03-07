@@ -152,10 +152,9 @@ public class SplitEditorFragment extends Fragment {
             view.findViewById(R.id.input_accounts_spinner).setEnabled(false);
             view.findViewById(R.id.btn_remove_split).setVisibility(View.GONE);
 
-            TransactionsActivity.displayBalance(mImbalanceTextView,
-                                                new Money(mBaseAmount.negate(),
-                                                          mCommodity),
-                                                accountType);
+            accountType.displayBalance(mImbalanceTextView,
+                                       new Money(mBaseAmount.negate(),
+                                                 mCommodity));
         }
 
     }
@@ -628,10 +627,9 @@ public class SplitEditorFragment extends Fragment {
 
             } // for
 
-            TransactionsActivity.displayBalance(mImbalanceTextView,
-                                                new Money(imbalance,
-                                                          mCommodity),
-                                                null);
+            AccountType.ASSET.displayBalance(mImbalanceTextView,
+                                             new Money(imbalance,
+                                                       mCommodity));
         }
     }
 

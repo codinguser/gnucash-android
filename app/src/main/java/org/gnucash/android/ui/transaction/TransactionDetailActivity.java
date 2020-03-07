@@ -18,6 +18,7 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
+import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
@@ -26,7 +27,6 @@ import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.passcode.PasscodeLockActivity;
-import org.gnucash.android.ui.util.AccountUtils;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -75,10 +75,11 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
                                    ? splitCreditView
                                    : splitDebitView;
 
-            TransactionsActivity.displayBalance(balanceView,
-                                                quantity,
-                                                AccountsDbAdapter.getInstance()
-                                                                 .getAccountType(split.getAccountUID()));
+            final AccountType accountType = AccountsDbAdapter.getInstance()
+                                                             .getAccountType(split.getAccountUID());
+
+            accountType.displayBalance(balanceView,
+                                       quantity);
         }
 
     } // Class SplitAmountViewHolder
@@ -161,9 +162,10 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
         // Define in which field (Debit or Credit) the balance shall be displayed
         TextView balanceTextView = accountBalance.isNegative() ? mCreditBalance : mDebitBalance ;
 
-        TransactionsActivity.displayBalance(balanceTextView,
-                                            accountBalance,
-                                            accountsDbAdapter.getAccountType(mAccountUID));
+        final AccountType accountType = accountsDbAdapter.getAccountType(mAccountUID);
+
+        accountType.displayBalance(balanceTextView,
+                                   accountBalance);
 
         //
         // Détails

@@ -213,10 +213,10 @@ public class ReportsOverviewFragment extends BaseReportFragment {
         mChart.highlightValues(null);
         mChart.invalidate();
 
-        TransactionsActivity.displayBalance(mTotalAssets, mAssetsBalance, AccountType.ASSET);
-        TransactionsActivity.displayBalance(mTotalLiabilities, mLiabilitiesBalance, AccountType.LIABILITY);
+        AccountType.ASSET.displayBalance(mTotalAssets, mAssetsBalance);
+        AccountType.LIABILITY.displayBalance(mTotalLiabilities, mLiabilitiesBalance);
         // #8xx
-        TransactionsActivity.displayBalance(mNetWorth, mAssetsBalance.add(mLiabilitiesBalance), null);
+        AccountType.ASSET.displayBalance(mNetWorth, mAssetsBalance.add(mLiabilitiesBalance));
     }
 
     /**

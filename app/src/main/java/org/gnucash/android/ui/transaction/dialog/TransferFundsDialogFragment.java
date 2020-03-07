@@ -35,14 +35,13 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.adapter.PricesDbAdapter;
+import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Price;
 import org.gnucash.android.ui.transaction.OnTransferFundsListener;
-import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.util.AmountParser;
 
 import java.math.BigDecimal;
@@ -98,10 +97,9 @@ public class TransferFundsDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.dialog_transfer_funds, container, false);
         ButterKnife.bind(this, view);
 
-        TransactionsActivity.displayBalance(mStartAmountLabel,
-                                            mOriginAmount,
-                                            // TODO TW C 2020-03-05 : A vérifier
-                                            null);
+        // TODO TW C 2020-03-05 : A vérifier
+        AccountType.ASSET.displayBalance(mStartAmountLabel,
+                                         mOriginAmount);
 
         String fromCurrencyCode = mOriginAmount.getCommodity().getCurrencyCode();
         mFromCurrencyLabel.setText(fromCurrencyCode);

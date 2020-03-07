@@ -33,9 +33,7 @@ import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.report.BaseReportFragment;
 import org.gnucash.android.ui.report.ReportType;
-import org.gnucash.android.ui.transaction.TransactionsActivity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -104,10 +102,9 @@ public class BalanceSheetFragment extends BaseReportFragment {
         loadAccountViews(LIABLITY_ACCOUNT_TYPES, mLiabilitiesTableLayout);
         loadAccountViews(EQUITY_ACCOUNT_TYPES, mEquityTableLayout);
 
-        TransactionsActivity.displayBalance(mNetWorth,
-                                            // #8xx
-                                            mAssetsBalance.add(mLiabilitiesBalance),
-                                            null);
+        AccountType.ASSET.displayBalance(mNetWorth,
+                                         // #8xx
+                                         mAssetsBalance.add(mLiabilitiesBalance));
     }
 
     @Override
@@ -140,9 +137,8 @@ public class BalanceSheetFragment extends BaseReportFragment {
             ((TextView)view.findViewById(R.id.account_name)).setText(name);
             TextView    balanceTextView = (TextView) view.findViewById(R.id.account_balance);
             accountType     = AccountType.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_TYPE)));
-            TransactionsActivity.displayBalance(balanceTextView,
-                                                balance,
-                                                accountType);
+            accountType.displayBalance(balanceTextView,
+                                       balance);
             tableLayout.addView(view);
         }
 
@@ -157,11 +153,10 @@ public class BalanceSheetFragment extends BaseReportFragment {
         TextView accountBalance = (TextView) totalView.findViewById(R.id.account_balance);
         accountBalance.setTextSize(16);
         accountBalance.setTypeface(null, Typeface.BOLD);
-        TransactionsActivity.displayBalance(accountBalance,
-                                            mAccountsDbAdapter.getAccountBalance(accountTypes,
-                                                                                 -1,
-                                                                                 System.currentTimeMillis()),
-                                            accountType);
+        accountType.displayBalance(accountBalance,
+                                   mAccountsDbAdapter.getAccountBalance(accountTypes,
+                                                                        -1,
+                                                                        System.currentTimeMillis()));
 
         tableLayout.addView(totalView);
     }
