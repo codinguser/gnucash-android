@@ -65,7 +65,7 @@ public enum AccountType {
     /**
      * Display the balance of a transaction in a text view and format the text color to match the sign of the amount
      * @param balanceTextView {@link android.widget.TextView} where balance is to be displayed
-     * @param balance {@link org.gnucash.android.model.Money} balance to display
+     * @param balance {@link org.gnucash.android.model.Money} balance (>0 or <0) to display
      */
     public void displayBalance(final TextView balanceTextView,
                                final Money balance) {
@@ -97,11 +97,6 @@ public enum AccountType {
 
             final boolean isCreditBalance = balance.isNegative();
 
-//         fontColor = isCreditBalance
-//                        ? context.getResources()
-//                                 .getColor(R.color.debit_red)
-//                        : context.getResources()
-//                                 .getColor(R.color.credit_green);
             fontColor = getAmountColor(isCreditBalance);
         }
 

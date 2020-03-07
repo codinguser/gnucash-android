@@ -25,6 +25,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:background="?attr/colorPrimary"
@@ -34,10 +35,12 @@
             android:gravity="bottom"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+
                 <TextView android:id="@+id/trn_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -64,94 +67,111 @@
                     android:textColor="@android:color/white"
                     tools:text="Expenses:Computer"/>
             </LinearLayout>
+
         </android.support.v7.widget.Toolbar>
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        <TableLayout android:id="@+id/fragment_transaction_details"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/dialog_padding"
-            android:layout_marginTop="20dp"
-            android:stretchColumns="1"
-            android:orientation="vertical" >
 
-            <TableRow android:layout_width="match_parent"
+            <TableLayout
+                android:id="@+id/fragment_transaction_details"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:weightSum="5"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:layout_marginLeft="6dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="2"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical|right"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:text="@string/account_balance"
-                    android:textColor="@android:color/black" />
-
-                <TextView
-                    android:id="@+id/balance_debit"
-                    android:layout_width="0dp"
-                    android:layout_weight="1.5"
-                    android:layout_height="wrap_content"
-                    android:gravity="right"
-                    android:layout_gravity="center"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    tools:text="$ 2000"
-                    android:textColor="@android:color/black" />
-
-                <TextView
-                    android:id="@+id/balance_credit"
-                    android:layout_width="0dp"
-                    android:layout_weight="1.5"
-                    android:layout_height="wrap_content"
-                    android:gravity="right"
-                    android:layout_gravity="center"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    tools:text="$ 2000"
-                    android:textColor="@android:color/black" />
-            </TableRow>
-
-            <TableRow android:id="@+id/row_time_and_date"
+                android:padding="@dimen/dialog_padding"
                 android:layout_marginTop="20dp"
-                style="@style/FormRow" >
+                android:stretchColumns="1"
+                android:orientation="vertical">
 
-                <ImageView style="@style/FormIcon"
-                    android:src="@drawable/ic_action_time"/>
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="5"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:layout_marginLeft="6dp">
 
-                <TextView android:id="@+id/trn_time_and_date"
-                    style="@style/TransactionInfo" />
-            </TableRow>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical|right"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:text="@string/account_balance"
+                        android:textColor="@android:color/black" />
 
-            <TableRow android:id="@+id/row_trn_notes"
-                style="@style/FormRow">
-                <ImageView style="@style/FormIcon"
-                    android:src="@drawable/ic_action_sort_by_size"/>
+                    <TextView
+                        android:id="@+id/balance_debit"
+                        android:layout_width="0dp"
+                        android:layout_weight="1.5"
+                        android:layout_height="wrap_content"
+                        android:gravity="right"
+                        android:layout_gravity="center"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        tools:text="$ 2000"
+                        android:textColor="@android:color/black" />
 
-                <TextView android:id="@+id/trn_notes"
-                    style="@style/TransactionInfo" />
-            </TableRow>
+                    <TextView
+                        android:id="@+id/balance_credit"
+                        android:layout_width="0dp"
+                        android:layout_weight="1.5"
+                        android:layout_height="wrap_content"
+                        android:gravity="right"
+                        android:layout_gravity="center"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        tools:text="$ 2000"
+                        android:textColor="@android:color/black" />
+                </TableRow>
 
-            <TableRow android:id="@+id/row_trn_recurrence"
-                style="@style/FormRow">
+                <TableRow
+                    android:id="@+id/row_time_and_date"
+                    android:layout_marginTop="20dp"
+                    style="@style/FormRow">
 
-                <ImageView style="@style/FormIcon"
-                    android:src="@drawable/ic_action_rotate_right"/>
+                    <ImageView
+                        style="@style/FormIcon"
+                        android:src="@drawable/ic_action_time" />
 
-                <TextView android:id="@+id/trn_recurrence"
-                    style="@style/TransactionInfo" />
-            </TableRow>
+                    <TextView
+                        android:id="@+id/trn_time_and_date"
+                        style="@style/TransactionInfo" />
+                </TableRow>
 
-        </TableLayout>
+                <TableRow
+                    android:id="@+id/row_trn_notes"
+                    style="@style/FormRow">
+
+                    <ImageView
+                        style="@style/FormIcon"
+                        android:src="@drawable/ic_action_sort_by_size" />
+
+                    <TextView
+                        android:id="@+id/trn_notes"
+                        style="@style/TransactionInfo" />
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/row_trn_recurrence"
+                    style="@style/FormRow">
+
+                    <ImageView
+                        style="@style/FormIcon"
+                        android:src="@drawable/ic_action_rotate_right" />
+
+                    <TextView
+                        android:id="@+id/trn_recurrence"
+                        style="@style/TransactionInfo" />
+                </TableRow>
+
+            </TableLayout>
+
         </ScrollView>
+
     </LinearLayout>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_edit_transaction"
         android:layout_height="40dp"

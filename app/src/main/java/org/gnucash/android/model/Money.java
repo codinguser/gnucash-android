@@ -50,7 +50,7 @@ public final class Money implements Comparable<Money>{
 	private Commodity mCommodity;
 
 	/**
-	 * Amount value held by this object
+	 * Amount value held by this object (can be > 0 or < 0)
 	 */
 	private BigDecimal mAmount;
 

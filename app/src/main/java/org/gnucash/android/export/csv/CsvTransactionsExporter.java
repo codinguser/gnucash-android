@@ -26,7 +26,6 @@ import com.crashlytics.android.Crashlytics;
 import org.gnucash.android.R;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
-import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;

@@ -483,6 +483,7 @@ public class SplitEditorFragment extends Fragment {
 
                 splitAmountEditText.setCommodity(split.getValue()
                                                       .getCommodity());
+
                 splitAmountEditText.setValue(split.getFormattedValue()
                                                   .asBigDecimal());
 
