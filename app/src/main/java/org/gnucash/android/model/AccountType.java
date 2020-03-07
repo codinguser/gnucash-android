@@ -59,23 +59,28 @@ public enum AccountType {
     }
 
     AccountType() {
+
         this(TransactionType.CREDIT);
     }
 
     /**
      * Display the balance of a transaction in a text view and format the text color to match the sign of the amount
+     *
      * @param balanceTextView {@link android.widget.TextView} where balance is to be displayed
      * @param balance {@link org.gnucash.android.model.Money} balance (>0 or <0) to display
      */
     public void displayBalance(final TextView balanceTextView,
-                               final Money balance) {
+                               final Money balance,
+                               final boolean shallDisplayAbsValue) {
 
         //
         // Display amount
         //
 
-        // TODO TW C 2020-03-06 : Déterminer qui doit dire s'il faut afficher un nombre négatif ou sa valeur absolue
-        balanceTextView.setText(balance.formattedString());
+        balanceTextView.setText(shallDisplayAbsValue
+                                ? balance.abs()
+                                         .formattedString()
+                                : balance.formattedString());
 
         //
         // Define amount color
@@ -103,6 +108,21 @@ public enum AccountType {
         balanceTextView.setTextColor(fontColor);
     }
 
+    /**
+     * Display the balance of a transaction in a text view and format the text color to match the sign of the amount
+     *
+     * @param balanceTextView
+     *         {@link android.widget.TextView} where balance is to be displayed
+     * @param balance
+     *         {@link org.gnucash.android.model.Money} balance (>0 or <0) to display
+     */
+    public void displayBalance(final TextView balanceTextView,
+                               final Money balance) {
+
+        displayBalance(balanceTextView,
+                       balance,
+                       false);
+    }
     /**
      * Compute red/green color according to accountType and isCreditAmount
      *
