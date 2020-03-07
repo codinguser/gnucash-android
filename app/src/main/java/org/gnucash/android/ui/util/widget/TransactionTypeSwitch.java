@@ -33,14 +33,13 @@ import java.util.List;
 
 /**
  * A special type of {@link android.widget.ToggleButton} which displays the appropriate DEBIT/CREDIT labels for the
- * linked account type
+ * linked account type and update the color of the amount and currency fields as well
  *
  * checked means CREDIT
  * unchecked means DEBIT
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-// TODO TW m 2020-03-03 : Should be named SplitTypeToggleButton (or SplitTypeSwitch) instead of TransactionTypeSwitch
 public class TransactionTypeSwitch extends SwitchCompat {
 
     private AccountType mAccountType = AccountType.EXPENSE;
@@ -234,6 +233,21 @@ public class TransactionTypeSwitch extends SwitchCompat {
                );
 
         //
+        // Change signum if needed
+        //
+
+//        BigDecimal amount = mAmountEditText.getValue();
+//
+//        if (amount != null) {
+//            if ((isCredit && amount.signum() > 0) //we switched to debit but the amount is +ve
+//                || (!isCredit && amount.signum() < 0)) { //credit but amount is -ve
+//
+//                mAmountEditText.setValue(amount.negate());
+//            }
+//
+//        }
+
+        //
         // Set text color of views
         //
 
@@ -273,21 +287,6 @@ public class TransactionTypeSwitch extends SwitchCompat {
             //
 
             setSwitchTextAndColor(isCredit);
-
-            //
-            // Change signum if needed
-            //
-
-            BigDecimal amount = mAmountEditText.getValue();
-
-            if (amount != null) {
-                if ((isCredit && amount.signum() > 0) //we switched to debit but the amount is +ve
-                    || (!isCredit && amount.signum() < 0)) { //credit but amount is -ve
-
-                    mAmountEditText.setValue(amount.negate());
-                }
-
-            }
 
             //
             // Call other listeners
