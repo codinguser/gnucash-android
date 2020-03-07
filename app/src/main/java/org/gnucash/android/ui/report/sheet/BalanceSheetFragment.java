@@ -40,6 +40,10 @@ import java.util.List;
 
 import butterknife.BindView;
 
+import static org.gnucash.android.model.AccountType.ASSET_ACCOUNT_TYPES;
+import static org.gnucash.android.model.AccountType.EQUITY_ACCOUNT_TYPES;
+import static org.gnucash.android.model.AccountType.LIABLITY_ACCOUNT_TYPES;
+
 /**
  * Balance sheet report fragment
  * @author Ngewi Fet <ngewif@gmail.com>
@@ -56,9 +60,6 @@ public class BalanceSheetFragment extends BaseReportFragment {
 
     private Money mAssetsBalance;
     private Money mLiabilitiesBalance;
-    private List<AccountType> mAssetAccountTypes;
-    private List<AccountType> mLiabilityAccountTypes;
-    private List<AccountType> mEquityAccountTypes;
 
     @Override
     public int getLayoutResource() {
@@ -78,19 +79,6 @@ public class BalanceSheetFragment extends BaseReportFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        // TODO TW C 2020-03-06 : A mettre dans AccountType sous formes de constantes
-        mAssetAccountTypes = new ArrayList<>();
-        mAssetAccountTypes.add(AccountType.ASSET);
-        mAssetAccountTypes.add(AccountType.CASH);
-        mAssetAccountTypes.add(AccountType.BANK);
-
-        mLiabilityAccountTypes = new ArrayList<>();
-        mLiabilityAccountTypes.add(AccountType.LIABILITY);
-        mLiabilityAccountTypes.add(AccountType.CREDIT);
-
-        mEquityAccountTypes = new ArrayList<>();
-        mEquityAccountTypes.add(AccountType.EQUITY);
     }
 
     @Override
@@ -105,16 +93,16 @@ public class BalanceSheetFragment extends BaseReportFragment {
 
     @Override
     protected void generateReport() {
-        mAssetsBalance = mAccountsDbAdapter.getAccountBalance(mAssetAccountTypes, -1, System.currentTimeMillis());
-        mLiabilitiesBalance = mAccountsDbAdapter.getAccountBalance(mLiabilityAccountTypes, -1, System.currentTimeMillis());
+        mAssetsBalance = mAccountsDbAdapter.getAccountBalance(ASSET_ACCOUNT_TYPES, -1, System.currentTimeMillis());
+        mLiabilitiesBalance = mAccountsDbAdapter.getAccountBalance(LIABLITY_ACCOUNT_TYPES, -1, System.currentTimeMillis());
     }
 
     @Override
     protected void displayReport() {
 
-        loadAccountViews(mAssetAccountTypes, mAssetsTableLayout);
-        loadAccountViews(mLiabilityAccountTypes, mLiabilitiesTableLayout);
-        loadAccountViews(mEquityAccountTypes, mEquityTableLayout);
+        loadAccountViews(ASSET_ACCOUNT_TYPES, mAssetsTableLayout);
+        loadAccountViews(LIABLITY_ACCOUNT_TYPES, mLiabilitiesTableLayout);
+        loadAccountViews(EQUITY_ACCOUNT_TYPES, mEquityTableLayout);
 
         TransactionsActivity.displayBalance(mNetWorth,
                                             // #8xx

@@ -6,12 +6,17 @@ import android.support.annotation.ColorRes;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * The type of account
  * This are the different types specified by the OFX format and
  * they are currently not used except for exporting
  */
 public enum AccountType {
+
     CASH(TransactionType.DEBIT),
     BANK(TransactionType.DEBIT),
     CREDIT,
@@ -28,19 +33,30 @@ public enum AccountType {
     TRADING,
     ROOT;
 
+    public final static List<AccountType> ASSET_ACCOUNT_TYPES = new ArrayList<AccountType>(Arrays.asList(AccountType.ASSET,
+                                                                                                         AccountType.CASH,
+                                                                                                         AccountType.BANK));
+
+    public final static List<AccountType> LIABLITY_ACCOUNT_TYPES = new ArrayList<AccountType>(Arrays.asList(AccountType.LIABILITY,
+                                                                                                         AccountType.CREDIT));
+
+    public final static List<AccountType> EQUITY_ACCOUNT_TYPES = new ArrayList<AccountType>(Arrays.asList(AccountType.EQUITY));
+
+
     /**
      * Indicates that this type of normal balance the account type has
      * <p>To increase the value of an account with normal balance of credit, one would credit the account.
      * To increase the value of an account with normal balance of debit, one would likewise debit the account.</p>
      */
-    private TransactionType mNormalBalance = TransactionType.CREDIT;
+    private TransactionType mNormalBalance;
 
-    AccountType(TransactionType normalBalance){
+    AccountType(TransactionType normalBalance) {
+
         this.mNormalBalance = normalBalance;
     }
 
     AccountType() {
-        //nothing to see here, move along
+        this(TransactionType.CREDIT);
     }
 
     // TODO TW C 2020-03-06 : Enlever le static
