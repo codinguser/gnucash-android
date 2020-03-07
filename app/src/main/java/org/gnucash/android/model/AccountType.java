@@ -60,17 +60,16 @@ public enum AccountType {
     }
 
     // TODO TW C 2020-03-06 : Enlever le static
-
     /**
-     * Compute red/green color according to accountType and isCredit
+     * Compute red/green color according to accountType and isCreditAmount
      *
-     * @param isCredit
+     * @param isCreditAmount
      * @param accountType
      *
      * @return
      */
     @ColorInt
-    public static int getAmountColor(final boolean isCredit,
+    public static int getAmountColor(final boolean isCreditAmount,
                                      final AccountType accountType) {
 
         AccountType tmpAccountType = ((accountType != null)
@@ -79,18 +78,17 @@ public enum AccountType {
 
         @ColorRes final int colorRes;
 
-        // TODO TW C 2020-03-06 : Trouver un meilleur nom
-        final boolean specialAccountType = tmpAccountType.isEquityAccount() || tmpAccountType.isResultAccount();
+        // Accounts for which
+        final boolean debitCreditInvertedColorAccountType = tmpAccountType.isExpenseOrIncomeAccount() || tmpAccountType.isEquityAccount();
 
-        if ((!specialAccountType && isCredit) || (specialAccountType && !isCredit)) {
-            // TODO TW C 2020-03-02 : commenter
-            // CREDIT
+        if ((isCreditAmount && !debitCreditInvertedColorAccountType) || (!isCreditAmount && debitCreditInvertedColorAccountType)) {
+            // Credit amount and account like Assets, Bank, Cash..., or Debit amount and account like Expense/Income
 
             // RED
             colorRes = R.color.debit_red;
 
         } else {
-            // DEBIT
+            // Credit amount and account like Expense/Income, or Debit amount and account like Assets, Bank, Cash...)
 
             // GREEN
             colorRes = R.color.credit_green;
@@ -125,8 +123,7 @@ public enum AccountType {
         return EQUITY.equals(this);
     }
 
-    // TODO TW C 2020-03-03 : A renommer en anglais
-    public boolean isResultAccount() {
+    public boolean isExpenseOrIncomeAccount() {
 
         return EXPENSE.equals(this) || INCOME.equals(this);
     }

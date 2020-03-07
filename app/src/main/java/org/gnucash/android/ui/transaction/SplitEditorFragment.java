@@ -454,7 +454,6 @@ public class SplitEditorFragment extends Fragment {
             splitTypeSwitch.setViewsToColorize(splitAmountEditText,
                                                splitCurrencyTextView);
 
-            // TODO TW C 2020-03-03 : A enlever ou mettre dans un else ?
             // Switch on/off according to amount signum
             splitTypeSwitch.setChecked(mBaseAmount.signum() > 0);
 
