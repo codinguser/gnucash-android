@@ -475,7 +475,7 @@ public class SplitEditorFragment extends Fragment {
             splitUidTextView.setText(BaseModel.generateUID());
 
             //
-            // Handle split
+            // Fill views from Split data
             //
 
             if (split != null) {
@@ -484,8 +484,10 @@ public class SplitEditorFragment extends Fragment {
                 splitAmountEditText.setCommodity(split.getValue()
                                                       .getCommodity());
 
-                splitAmountEditText.setValue(split.getFormattedValue()
-                                                  .asBigDecimal());
+                // TODO TW C 2020-03-07 : Mettre une préférence pour le signe
+                // Display abs value because switch button is visible
+                splitAmountEditText.setValue(split.getValueWithSignum()
+                                                  .asBigDecimal().abs());
 
                 splitCurrencyTextView.setText(split.getValue()
                                                    .getCommodity()

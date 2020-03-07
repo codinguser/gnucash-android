@@ -23,7 +23,6 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.passcode.PasscodeLockActivity;
@@ -63,23 +62,22 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
 
             accountName.setText(accountsDbAdapter.getAccountFullName(accountUID));
 
-            // quantity (positive or negative number)
-            Money    quantity    = split.getFormattedQuantity();
+            // splitSignedAmount (positive or negative number)
+            Money splitSignedAmount = split.getValueWithSignum();
 
             // Define debit or credit view
-            // #8xx
-//            TextView balanceView = quantity.isNegative()
-//                                   ? splitDebitView
-//                                   : splitCreditView;
-            TextView balanceView = TransactionType.CREDIT.equals(split.getType())
+            TextView balanceView = splitSignedAmount.isNegative()
                                    ? splitCreditView
                                    : splitDebitView;
 
             final AccountType accountType = AccountsDbAdapter.getInstance()
                                                              .getAccountType(split.getAccountUID());
 
+            // Display absolute value because it is displayed either in debit or credit column
             accountType.displayBalance(balanceView,
-                                       quantity);
+                                       splitSignedAmount,
+                                       // TODO TW C 2020-03-07 : Mettre une préférence pour le signe
+                                       true);
         }
 
     } // Class SplitAmountViewHolder
@@ -139,7 +137,8 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
     /**
      * Reads the transaction information from the database and binds it to the views
      */
-    private void bindViews(){
+    private void bindViews() {
+
         TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
         Transaction transaction = transactionsDbAdapter.getRecord(mTransactionUID);
 
@@ -150,45 +149,67 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
         mTransactionAccount.setText(getString(R.string.label_inside_account_with_name, AccountsDbAdapter.getInstance().getAccountFullName(mAccountUID)));
 
         //
-        // Account balance
+        // Add Debit/Credit Labels
         //
 
-        AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
+        mDetailTableRows = mDetailTableLayout.getChildCount();
+        int index = 0;
 
-        // Compute balance at Transaction time
-        Money accountBalance = accountsDbAdapter.getAccountBalance(mAccountUID, -1, transaction.getTimeMillis());
-
-        // #8xx
-        // Define in which field (Debit or Credit) the balance shall be displayed
-        TextView balanceTextView = accountBalance.isNegative() ? mCreditBalance : mDebitBalance ;
-
-        final AccountType accountType = accountsDbAdapter.getAccountType(mAccountUID);
-
-        accountType.displayBalance(balanceTextView,
-                                   accountBalance);
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View           view     = inflater.inflate(R.layout.item_split_amount_info,
+                                                   mDetailTableLayout,
+                                                   false);
+        ((TextView) view.findViewById(R.id.split_debit)).setText(getString(R.string.label_debit));
+        ((TextView) view.findViewById(R.id.split_credit)).setText(getString(R.string.label_credit));
+        mDetailTableLayout.addView(view,
+                                   index++);
 
         //
         // Détails
         //
 
-        mDetailTableRows = mDetailTableLayout.getChildCount();
+        AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
 
         boolean useDoubleEntry = GnuCashApplication.isDoubleEntryEnabled();
-        LayoutInflater inflater = LayoutInflater.from(this);
-        int index = 0;
 
         for (Split split : transaction.getSplits()) {
 
-            if (!useDoubleEntry && split.getAccountUID().equals(
-                    accountsDbAdapter.getImbalanceAccountUID(split.getValue().getCommodity()))) {
-                //do now show imbalance accounts for single entry use case
-                continue;
-            }
+            if (!useDoubleEntry && split.getAccountUID()
+                                        .equals(accountsDbAdapter.getImbalanceAccountUID(split.getValue()
+                                                                                              .getCommodity()))) {
+                //do not show imbalance accounts for single entry use case
 
-            View view = inflater.inflate(R.layout.item_split_amount_info, mDetailTableLayout, false);
-            SplitAmountViewHolder viewHolder = new SplitAmountViewHolder(view, split);
-            mDetailTableLayout.addView(viewHolder.itemView, index++);
-        }
+            } else {
+
+                view = inflater.inflate(R.layout.item_split_amount_info,
+                                        mDetailTableLayout,
+                                        false);
+                SplitAmountViewHolder viewHolder = new SplitAmountViewHolder(view,
+                                                                             split);
+                mDetailTableLayout.addView(viewHolder.itemView,
+                                           index++);
+            }
+        } // for
+
+        //
+        // Account balance at Transaction time
+        //
+
+        // Compute balance at Transaction time
+        Money accountBalance = accountsDbAdapter.getAccountBalance(mAccountUID,
+                                                                   -1,
+                                                                   transaction.getTimeMillis());
+
+        // #8xx
+        // Define in which field (Debit or Credit) the balance shall be displayed
+        TextView balanceTextView = accountBalance.isNegative()
+                                   ? mCreditBalance
+                                   : mDebitBalance;
+
+        final AccountType accountType = accountsDbAdapter.getAccountType(mAccountUID);
+
+        accountType.displayBalance(balanceTextView,
+                                   accountBalance);
 
         //
         // Date
