@@ -446,4 +446,6 @@
   <string name="label_select_destination_after_export">Sélectionnez la destination une fois l\'exportation terminée</string>
   <string name="label_dropbox_export_destination">Exporter dans le dossier \'/Apps/GnuCash Android/\' sur Dropbox</string>
   <string name="title_section_preferences">Préférences</string>
+  <string name="title_display_negative_signum_in_splits">Afficher le signe - dans les transactions splittées</string>
+  <string name="summary_display_negative_signum_in_splits">Autoriser l\'affichage du signe - même lorsque le bouton Débit/Crédit est affiché</string>
 </resources>

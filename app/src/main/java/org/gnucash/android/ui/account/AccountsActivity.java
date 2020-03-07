@@ -221,6 +221,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         final Intent intent = getIntent();
@@ -333,18 +334,29 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
      * <p>Also handles displaying the What's New dialog</p>
      */
     private void init() {
-        PreferenceManager.setDefaultValues(this, BooksDbAdapter.getInstance().getActiveBookUID(),
-                Context.MODE_PRIVATE, R.xml.fragment_transaction_preferences, true);
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);
+        PreferenceManager.setDefaultValues(this,
+                                           BooksDbAdapter.getInstance()
+                                                         .getActiveBookUID(),
+                                           Context.MODE_PRIVATE,
+                                           R.xml.fragment_transaction_preferences,
+                                           true);
+
+        SharedPreferences prefs    = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean           firstRun = prefs.getBoolean(getString(R.string.key_first_run),
+                                                      true);
 
         if (firstRun){
             startActivity(new Intent(GnuCashApplication.getAppContext(), FirstRunWizardActivity.class));
 
-            //default to using double entry and save the preference explicitly
+            // Default Preference to using double entry and save the preference explicitly
             prefs.edit().putBoolean(getString(R.string.key_use_double_entry), true).apply();
+
+            // Default preference not to show negative number in splits
+            prefs.edit().putBoolean(getString(R.string.key_display_negative_signum_in_splits), false).apply();
+
             finish();
+
             return;
         }
 

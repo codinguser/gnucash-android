@@ -107,24 +107,58 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat implemen
     }
 
     @Override
-    public boolean onPreferenceChange(Preference preference, Object newValue) {
-        if (preference.getKey().equals(getString(R.string.key_enable_passcode))) {
+    public boolean onPreferenceChange(Preference preference,
+                                      Object newValue) {
+
+        if (preference.getKey()
+                      .equals(getString(R.string.key_enable_passcode))) {
+
             if ((Boolean) newValue) {
-                startActivityForResult(new Intent(getActivity(), PasscodePreferenceActivity.class),
-                        GeneralPreferenceFragment.PASSCODE_REQUEST_CODE);
+
+                startActivityForResult(new Intent(getActivity(),
+                                                  PasscodePreferenceActivity.class),
+                                       GeneralPreferenceFragment.PASSCODE_REQUEST_CODE);
+
             } else {
-                Intent passIntent = new Intent(getActivity(), PasscodeLockScreenActivity.class);
-                passIntent.putExtra(UxArgument.DISABLE_PASSCODE, UxArgument.DISABLE_PASSCODE);
-                startActivityForResult(passIntent, GeneralPreferenceFragment.REQUEST_DISABLE_PASSCODE);
+
+                Intent passIntent = new Intent(getActivity(),
+                                               PasscodeLockScreenActivity.class);
+                passIntent.putExtra(UxArgument.DISABLE_PASSCODE,
+                                    UxArgument.DISABLE_PASSCODE);
+                startActivityForResult(passIntent,
+                                       GeneralPreferenceFragment.REQUEST_DISABLE_PASSCODE);
             }
         }
 
-        if (preference.getKey().equals(getString(R.string.key_use_account_color))) {
+        //
+        // Set Preference : use_color_in_reports
+        //
+
+        if (preference.getKey()
+                      .equals(getString(R.string.key_use_account_color))) {
+
             getPreferenceManager().getSharedPreferences()
-                    .edit()
-                    .putBoolean(getString(R.string.key_use_account_color), Boolean.valueOf(newValue.toString()))
-                    .commit();
+                                  .edit()
+                                  .putBoolean(getString(R.string.key_use_account_color),
+                                              Boolean.valueOf(newValue.toString()))
+                                  .commit();
         }
+
+        //
+        // Preference : key_display_negative_signum_in_splits
+        //
+
+        if (preference.getKey()
+                      .equals(getString(R.string.key_display_negative_signum_in_splits))) {
+
+            // Store the new value of the Preference
+            getPreferenceManager().getSharedPreferences()
+                                  .edit()
+                                  .putBoolean(getString(R.string.key_display_negative_signum_in_splits),
+                                              Boolean.valueOf(newValue.toString()))
+                                  .commit();
+        }
+
         return true;
     }
 
