@@ -513,55 +513,6 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         return mAccountsCursor;
     }
 
-    // TODO TW C 2020-03-06 : A mettre ailleurs, car c'est pas spécifique de cette Activité
-    /**
-     * Display the balance of a transaction in a text view and format the text color to match the sign of the amount
-     * @param balanceTextView {@link android.widget.TextView} where balance is to be displayed
-     * @param balance {@link org.gnucash.android.model.Money} balance to display
-     */
-    public static void displayBalance(final TextView balanceTextView,
-                                      final Money balance,
-                                      final AccountType accountType) {
-
-        //
-        // Display amount
-        //
-
-        // TODO TW C 2020-03-06 : Déterminer qui doit dire s'il faut afficher un nombre négatif ou sa valeur absolue
-        balanceTextView.setText(balance.formattedString());
-
-        //
-        // Define amount color
-        //
-
-        @ColorInt int fontColor;
-
-        if (balance.asBigDecimal()
-                   .compareTo(BigDecimal.ZERO) == 0) {
-            // balance is null
-
-            Context context = GnuCashApplication.getAppContext();
-
-            fontColor = context.getResources()
-                               .getColor(android.R.color.black);
-
-        } else {
-            // balance is not null
-
-            final boolean isCredit = balance.isNegative();
-
-//         fontColor = isCredit
-//                        ? context.getResources()
-//                                 .getColor(R.color.debit_red)
-//                        : context.getResources()
-//                                 .getColor(R.color.credit_green);
-            fontColor = AccountType.getAmountColor(isCredit,
-                                                             accountType);
-        }
-
-        balanceTextView.setTextColor(fontColor);
-    }
-
     /**
      * Formats the date to show the the day of the week if the {@code dateMillis} is within 7 days
      * of today. Else it shows the actual date formatted as short string. <br>

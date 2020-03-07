@@ -1,11 +1,14 @@
 package org.gnucash.android.model;
 
+import android.content.Context;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
+import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,27 +62,66 @@ public enum AccountType {
         this(TransactionType.CREDIT);
     }
 
-    // TODO TW C 2020-03-06 : Enlever le static
+    /**
+     * Display the balance of a transaction in a text view and format the text color to match the sign of the amount
+     * @param balanceTextView {@link android.widget.TextView} where balance is to be displayed
+     * @param balance {@link org.gnucash.android.model.Money} balance to display
+     */
+    public void displayBalance(final TextView balanceTextView,
+                               final Money balance) {
+
+        //
+        // Display amount
+        //
+
+        // TODO TW C 2020-03-06 : Déterminer qui doit dire s'il faut afficher un nombre négatif ou sa valeur absolue
+        balanceTextView.setText(balance.formattedString());
+
+        //
+        // Define amount color
+        //
+
+        @ColorInt int fontColor;
+
+        if (balance.asBigDecimal()
+                   .compareTo(BigDecimal.ZERO) == 0) {
+            // balance is null
+
+            Context context = GnuCashApplication.getAppContext();
+
+            fontColor = context.getResources()
+                               .getColor(android.R.color.black);
+
+        } else {
+            // balance is not null
+
+            final boolean isCreditBalance = balance.isNegative();
+
+//         fontColor = isCreditBalance
+//                        ? context.getResources()
+//                                 .getColor(R.color.debit_red)
+//                        : context.getResources()
+//                                 .getColor(R.color.credit_green);
+            fontColor = getAmountColor(isCreditBalance);
+        }
+
+        balanceTextView.setTextColor(fontColor);
+    }
+
     /**
      * Compute red/green color according to accountType and isCreditAmount
      *
      * @param isCreditAmount
-     * @param accountType
      *
      * @return
      */
     @ColorInt
-    public static int getAmountColor(final boolean isCreditAmount,
-                                     final AccountType accountType) {
-
-        AccountType tmpAccountType = ((accountType != null)
-                                      ? accountType
-                                      : AccountType.ASSET);
+    public int getAmountColor(final boolean isCreditAmount) {
 
         @ColorRes final int colorRes;
 
         // Accounts for which
-        final boolean debitCreditInvertedColorAccountType = tmpAccountType.isExpenseOrIncomeAccount() || tmpAccountType.isEquityAccount();
+        final boolean debitCreditInvertedColorAccountType = isExpenseOrIncomeAccount() || isEquityAccount();
 
         if ((isCreditAmount && !debitCreditInvertedColorAccountType) || (!isCreditAmount && debitCreditInvertedColorAccountType)) {
             // Credit amount and account like Assets, Bank, Cash..., or Debit amount and account like Expense/Income
@@ -99,20 +141,6 @@ public enum AccountType {
                                  .getColor(colorRes);
     }
 
-    public boolean hasDebitNormalBalance() {
-
-        return mNormalBalance == TransactionType.DEBIT;
-    }
-
-    /**
-     * Returns the type of normal balance this account possesses
-     * @return TransactionType balance of the account type
-     */
-    public TransactionType getNormalBalanceType() {
-
-        return mNormalBalance;
-    }
-
     public boolean isAssetAccount() {
 
         return ASSET.equals(this) || BANK.equals(this) || CASH.equals(this);
@@ -126,6 +154,24 @@ public enum AccountType {
     public boolean isExpenseOrIncomeAccount() {
 
         return EXPENSE.equals(this) || INCOME.equals(this);
+    }
+
+    public boolean hasDebitNormalBalance() {
+
+        return mNormalBalance == TransactionType.DEBIT;
+    }
+
+    //
+    // Getters/Setters
+    //
+
+    /**
+     * Returns the type of normal balance this account possesses
+     * @return TransactionType balance of the account type
+     */
+    public TransactionType getNormalBalanceType() {
+
+        return mNormalBalance;
     }
 
 }
