@@ -29,6 +29,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.Pair;
@@ -258,6 +259,7 @@ public class TransactionFormFragment extends Fragment implements
         View v = inflater.inflate(R.layout.fragment_transaction_form,
                                   container,
                                   false);
+
         ButterKnife.bind(this,
                          v);
 
@@ -271,7 +273,7 @@ public class TransactionFormFragment extends Fragment implements
             }
         });
         return v;
-	}
+    }
 
     /**
      * Starts the transfer of funds from one currency to another
@@ -304,7 +306,9 @@ public class TransactionFormFragment extends Fragment implements
 
     @Override
 	public void onActivityCreated(Bundle savedInstanceState) {
+
 		super.onActivityCreated(savedInstanceState);
+
 		setHasOptionsMenu(true);
 
 		SharedPreferences sharedPrefs = PreferenceActivity.getActiveBookSharedPreferences();
@@ -538,8 +542,12 @@ public class TransactionFormFragment extends Fragment implements
             final BigDecimal signedTransactionBalance = mTransaction.getBalance(mAccountUID)
                                                                     .asBigDecimal();
 
-            // TODO TW C 2020-03-07 : Mettre une préférence pour le signe
-            mAmountEditText.setValue(isSimpleSplit
+            // Get Preference about showing signum in Splits
+            boolean shallDisplayNegativeSignumInSplits = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                                                                          .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
+                                                                                      false);
+
+            mAmountEditText.setValue(isSimpleSplit && !shallDisplayNegativeSignumInSplits
                                      ? signedTransactionBalance.abs() // Display abs value because switch button is visible
                                      : signedTransactionBalance); // Display signed value because switch button is hidden
         }

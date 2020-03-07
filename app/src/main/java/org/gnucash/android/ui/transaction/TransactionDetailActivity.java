@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -73,11 +74,15 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
             final AccountType accountType = AccountsDbAdapter.getInstance()
                                                              .getAccountType(split.getAccountUID());
 
+            // Get Preference about showing signum in Splits
+            boolean shallDisplayNegativeSignumInSplits = PreferenceManager.getDefaultSharedPreferences(GnuCashApplication.getAppContext())
+                                                                          .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
+                                                                                      false);
+
             // Display absolute value because it is displayed either in debit or credit column
             accountType.displayBalance(balanceView,
                                        splitSignedAmount,
-                                       // TODO TW C 2020-03-07 : Mettre une préférence pour le signe
-                                       true);
+                                       !shallDisplayNegativeSignumInSplits);
         }
 
     } // Class SplitAmountViewHolder

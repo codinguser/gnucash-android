@@ -25,6 +25,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -484,9 +485,16 @@ public class SplitEditorFragment extends Fragment {
                 splitAmountEditText.setCommodity(split.getValue()
                                                       .getCommodity());
 
-                // TODO TW C 2020-03-07 : Mettre une préférence pour le signe
+                // Get Preference about showing signum in Splits
+                boolean shallDisplayNegativeSignumInSplits = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                                                                              .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
+                                                                                          false);
+
                 // Display abs value because switch button is visible
-                splitAmountEditText.setValue(split.getValueWithSignum()
+                splitAmountEditText.setValue(shallDisplayNegativeSignumInSplits
+                                             ? split.getValueWithSignum()
+                                                    .asBigDecimal()
+                                             : split.getValueWithSignum()
                                                   .asBigDecimal().abs());
 
                 splitCurrencyTextView.setText(split.getValue()
