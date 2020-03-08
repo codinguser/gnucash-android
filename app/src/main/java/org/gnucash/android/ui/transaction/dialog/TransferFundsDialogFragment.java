@@ -97,7 +97,6 @@ public class TransferFundsDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.dialog_transfer_funds, container, false);
         ButterKnife.bind(this, view);
 
-        // TODO TW C 2020-03-05 : A vérifier
         AccountType.ASSET.displayBalance(mStartAmountLabel,
                                          mOriginAmount);
 

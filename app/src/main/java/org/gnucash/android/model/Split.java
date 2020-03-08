@@ -314,31 +314,6 @@ public class Split extends BaseModel implements Parcelable{
                                                                           .equals(other.mSplitType);
     }
 
-    // TODO TW m 2020-03-07 : To clean
-//    /**
-//     * Returns the formatted amount (with or without negation sign) for the split value
-//     * @return Money amount of value
-//     * @see #getFormattedAmount(Money, String, TransactionType)
-//     */
-//    public Money getFormattedAmount() {
-//
-//        return getFormattedAmount(mValue,
-//                                  mAccountUID,
-//                                  mSplitType);
-//    }
-//
-//    /**
-//     * Returns the formatted amount (with or without negation sign) for the quantity
-//     * @return Money amount of quantity
-//     * @see #getFormattedAmount(Money, String, TransactionType)
-//     */
-//    public Money getFormattedQuantity(){
-//
-//        return getFormattedAmount(mQuantity,
-//                                  mAccountUID,
-//                                  mSplitType);
-//    }
-
     /**
      * Return the reconciled state of this split
      * <p>
@@ -357,65 +332,6 @@ public class Split extends BaseModel implements Parcelable{
     public char getReconcileState() {
         return mReconcileState;
     }
-
-    // TODO TW C 2020-03-07 : To Clean
-//    /**
-//     * Splits are saved as absolute values to the database, with no negative numbers.
-//     *
-//     * The type of movement the split causes to the balance of an account determines
-//     * its sign, and that depends on the split type and the account type
-//     *
-//     * @return -{@code amount} if the amount would reduce the balance of
-//     *   {@code account}, otherwise +{@code amount}
-//     */
-//    public Money getFormattedValue() {
-//
-//        // Get absolute value of the split amount
-//        Money amount = getValue();
-//
-//        // TODO TW M 2020-03-07 : Utiliser une Préférence pour afficher ou pas les nombres négatifs dans les Splits
-//        if (true) {
-//            // Preference tells to display only positive amounts in Splits
-//
-//            // NTD
-//
-//        } else {
-//            // Preference tells to display positive or négative amounts in Splits
-//
-//            boolean isDebitSplit = mSplitType == TransactionType.DEBIT;
-//
-////        boolean isDebitAccount = AccountsDbAdapter.getInstance()
-////                                                  .getAccountType(mAccountUID)
-////                                                  .hasDebitNormalBalance();
-////
-////        if (isDebitAccount) {
-////            if (isDebitSplit) {
-////                return amount;
-////            } else {
-////                return amount.negate();
-////            }
-////        } else {
-////            if (isDebitSplit) {
-////                return amount.negate();
-////            } else {
-////                return amount;
-////            }
-////        }
-//
-//            if (isDebitSplit) {
-//                // DEBIT
-//
-//                // NTD
-//
-//            } else {
-//                // CREDIT
-//
-//                amount = amount.negate();
-//            }
-//        }
-//
-//        return amount;
-//    }
 
     /**
      * Check if this split is reconciled

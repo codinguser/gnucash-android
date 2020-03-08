@@ -258,7 +258,6 @@ public final class Money implements Comparable<Money>{
 		return toPlainString();
 	}
 
-	// TODO TW C 2020-03-06 : A factoriser avec Split.getFormattedAmount
 	/**
 	 * Returns a string representation of the Money object formatted according to 
 	 * the <code>locale</code> and includes the currency symbol. 
