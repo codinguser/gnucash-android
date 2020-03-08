@@ -23,11 +23,10 @@ import android.util.AttributeSet;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import org.gnucash.android.R;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.TransactionType;
+import org.gnucash.android.ui.util.AccountTypeUtils;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,67 +98,18 @@ public class TransactionTypeSwitch extends SwitchCompat {
 
         mAccountType = accountType;
 
-        Context context = getContext().getApplicationContext();
+        //
+        // Set switch button text
+        //
 
-        switch (mAccountType) {
-            case CASH:
-                setTextOff(context.getString(R.string.label_receive)); // DEBIT
-                setTextOn(context.getString(R.string.label_spend)); // CREDIT
-                break;
-            case BANK:
-                setTextOff(context.getString(R.string.label_deposit)); // DEBIT
-                setTextOn(context.getString(R.string.label_withdrawal)); // CREDIT
-                break;
-            case CREDIT:
-                // #876 Change according to GnuCash on Windows
-                setTextOff(context.getString(R.string.label_payment)); // DEBIT
-                setTextOn(context.getString(R.string.label_charge)); // CREDIT
-                break;
-            case ASSET:
-            case EQUITY:
-            case LIABILITY:
-                // #876 Change according to GnuCash on Windows
-                setTextOff(context.getString(R.string.label_decrease)); // DEBIT
-                setTextOn(context.getString(R.string.label_increase)); // CREDIT
-                break;
-            case INCOME:
-                // #876 Change according to GnuCash on Windows
-                setTextOff(context.getString(R.string.label_charge)); // DEBIT
-                setTextOn(context.getString(R.string.label_income)); // CREDIT
-                break;
-            case EXPENSE:
-                setTextOff(context.getString(R.string.label_expense)); // DEBIT
-                setTextOn(context.getString(R.string.label_rebate)); // CREDIT
-                break;
-            case PAYABLE:
-                // #876 Change according to GnuCash on Windows
-                setTextOff(context.getString(R.string.label_payment)); // DEBIT
-                setTextOn(context.getString(R.string.label_bill)); // CREDIT
-                break;
-            case RECEIVABLE:
-                setTextOff(context.getString(R.string.label_invoice)); // DEBIT
-                setTextOn(context.getString(R.string.label_payment)); // CREDIT
-                break;
-            case STOCK:
-            case MUTUAL:
-                // #876 Change according to GnuCash on Windows
-                setTextOff(context.getString(R.string.label_buy)); // DEBIT
-                setTextOn(context.getString(R.string.label_sell)); // CREDIT
-                break;
-            case CURRENCY:
-            case ROOT:
-            default:
-                // #876 Change according to GnuCash on Windows
-                setTextOff(context.getString(R.string.label_debit)); // DEBIT
-                setTextOn(context.getString(R.string.label_credit)); // CREDIT
-                break;
-        }
+        setTextOff(AccountTypeUtils.getLabelDebit(mAccountType)); // DEBIT
+        setTextOn(AccountTypeUtils.getLabelCredit(mAccountType)); // CREDIT
 
         //
         // Set switch text and color
         //
 
-        setSwitchTextAndColor(isChecked());
+        setWidgetTextColor(isChecked());
 
         invalidate();
     }
@@ -221,7 +171,15 @@ public class TransactionTypeSwitch extends SwitchCompat {
                : TransactionType.DEBIT;
     }
 
-    private void setSwitchTextAndColor(final boolean isCredit) {
+    /**
+     * Set the text color of the 3 views of the widget
+     * according to is a Credit amount
+     * and the Account type
+     *
+     * @param isCredit
+     *      true if amount is negative
+     */
+    private void setWidgetTextColor(final boolean isCredit) {
 
         //
         // Set switch text
@@ -286,7 +244,7 @@ public class TransactionTypeSwitch extends SwitchCompat {
             // Set switch text and color
             //
 
-            setSwitchTextAndColor(isCredit);
+            setWidgetTextColor(isCredit);
 
             //
             // Call other listeners
