@@ -27,6 +27,7 @@ import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.passcode.PasscodeLockActivity;
+import org.gnucash.android.ui.util.AccountTypeUtils;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -186,9 +187,30 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
 
             } else {
 
+//                //
+//                // Add Account Specific Debit/Credit Labels
+//                //
+//
+//                view = inflater.inflate(R.layout.item_split_amount_info,
+//                                        mDetailTableLayout,
+//                                        false);
+//
+//                AccountType accountType = AccountsDbAdapter.getInstance().getAccountType(split.getAccountUID());
+//
+//                ((TextView) view.findViewById(R.id.split_debit)).setText(AccountTypeUtils.getLabelDebit(accountType));
+//                ((TextView) view.findViewById(R.id.split_credit)).setText(AccountTypeUtils.getLabelCredit(accountType));
+//
+//                mDetailTableLayout.addView(view,
+//                                           index++);
+
+                //
+                // Display Debit/Credit amount
+                //
+
                 view = inflater.inflate(R.layout.item_split_amount_info,
                                         mDetailTableLayout,
                                         false);
+
                 SplitAmountViewHolder viewHolder = new SplitAmountViewHolder(view,
                                                                              split);
                 mDetailTableLayout.addView(viewHolder.itemView,
