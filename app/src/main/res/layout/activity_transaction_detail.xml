@@ -61,7 +61,7 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
-                    android:maxLines="1"
+                    android:singleLine="true"
                     android:ellipsize="start"
                     android:textStyle="italic"
                     android:textColor="@android:color/white"
@@ -82,6 +82,22 @@
                 android:layout_marginTop="20dp"
                 android:stretchColumns="1"
                 android:orientation="vertical">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="20dp"
+                    android:paddingBottom="20dp"
+                    >
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_span="3"
+                        android:background="@color/theme_accent"
+                        />
+
+                </TableRow>
 
                 <TableRow
                     android:layout_width="match_parent"
