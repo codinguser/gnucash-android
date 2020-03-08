@@ -109,7 +109,7 @@
   <string name="summary_default_export_email">Email par défaut pour les exports. Vous pourrez toujours le changer lors de votre prochain export.</string>
   <string name="summary_use_double_entry">Toutes les transactions seront un transfert d’un compte à un autre</string>
   <string name="title_use_double_entry">Activer la Double entrée</string>
-  <string name="account_balance">Solde à la date indiquée ci-dessous</string>
+  <string name="account_balance">Solde du Compte à la date indiquée ci-dessous</string>
   <string name="toast_no_account_name_entered">Entrer un nom de compte pour créer un compte</string>
   <string name="label_account_currency">Monnaie</string>
   <string name="label_parent_account">Compte parent</string>
