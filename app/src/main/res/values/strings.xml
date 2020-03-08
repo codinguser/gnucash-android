@@ -54,7 +54,7 @@
     <string name="btn_export">Export</string>
     <string name="option_delete_after_export">Delete transactions after export</string>
     <string name="hint_delete_after_export">All exported transactions will be deleted when exporting is completed</string>
-    <string name="title_settings">Preferences</string>
+    <string name="title_settings">Preferences / Maintenance</string>
     <string-array name="export_destinations">
         <item>Save As&#8230;</item>
         <item>Dropbox</item>
@@ -95,7 +95,7 @@
 	<string name="title_transaction_preferences">Transaction Preferences</string>
 	<string name="title_account_preferences">Account Preferences</string>
 	<string name="title_default_transaction_type">Default Transaction Type</string>
-	<string name="summary_default_transaction_type">The type of transaction to use by default, CREDIT or DEBIT</string>
+	<string name="summary_default_transaction_type">CREDIT</string>
 	<string-array name="transaction_types">
 		<item>CREDIT</item>
 		<item>DEBIT</item>
@@ -109,7 +109,7 @@
 	<string name="summary_default_export_email">The default email address to send exports to. You can still change this when you export.</string>
     <string name="summary_use_double_entry">All transactions will be a transfer from one account to another</string>
 	<string name="title_use_double_entry">Activate Double Entry</string>
-	<string name="account_balance">Balance</string>
+	<string name="account_balance">Account Balance at Date below</string>
 	<string name="toast_no_account_name_entered">Enter an account name to create an account</string>
 	<string name="label_account_currency">Currency</string>
 	<string name="label_parent_account">Parent account</string>
@@ -196,7 +196,7 @@
     <string name="msg_confirm_create_default_accounts_setting">A new book will be opened with the default accounts\n\nYour current accounts and transactions will not be modified!</string>
     <string name="title_scheduled_transactions">Transactions</string>
     <string name="title_select_export_destination">Select destination for export</string>
-    <string name="hint_split_memo">Memo</string>
+    <string name="hint_split_memo">Memo (Click to add)</string>
     <string name="label_spend">Spend</string>
     <string name="label_receive">Receive</string>
     <string name="label_withdrawal">Withdrawal</string>
@@ -268,7 +268,7 @@
     <string name="nav_menu_open">Open…</string>
     <string name="nav_menu_reports">Reports</string>
     <string name="nav_menu_export">Export…</string>
-    <string name="nav_menu_settings">Preferences</string>
+    <string name="nav_menu_settings">Preferences / Maintenance</string>
     <string name="username">User Name</string>
     <string name="password">Password</string>
     <string name="owncloud_pref">owncloud</string>
