@@ -95,7 +95,7 @@
   <string name="title_transaction_preferences">Préférences des transactions</string>
   <string name="title_account_preferences">Préférences du compte</string>
   <string name="title_default_transaction_type">Type de transaction par défaut</string>
-  <string name="summary_default_transaction_type">Le type de transaction à utiliser par défaut, CRÉDIT ou DÉBIT</string>
+  <string name="summary_default_transaction_type">CRÉDIT</string>
   <string-array name="transaction_types">
     <item>CRÉDIT</item>
     <item>DÉBIT</item>

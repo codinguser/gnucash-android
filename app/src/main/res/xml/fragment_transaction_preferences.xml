@@ -18,8 +18,8 @@
 
     <android.support.v7.preference.SwitchPreferenceCompat
         android:key="@string/key_default_transaction_type_switch"
-        android:title="@string/title_display_negative_signum_in_splits"
-        android:summary="@string/title_display_negative_signum_in_splits"
+        android:title="@string/title_default_transaction_type"
+        android:summary="@string/summary_default_transaction_type"
         />
 
     <android.support.v7.preference.SwitchPreferenceCompat
