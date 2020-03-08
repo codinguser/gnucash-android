@@ -144,21 +144,6 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat implemen
                                   .commit();
         }
 
-        //
-        // Preference : key_display_negative_signum_in_splits
-        //
-
-        if (preference.getKey()
-                      .equals(getString(R.string.key_display_negative_signum_in_splits))) {
-
-            // Store the new value of the Preference
-            getPreferenceManager().getSharedPreferences()
-                                  .edit()
-                                  .putBoolean(getString(R.string.key_display_negative_signum_in_splits),
-                                              Boolean.valueOf(newValue.toString()))
-                                  .commit();
-        }
-
         return true;
     }
 

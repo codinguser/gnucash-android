@@ -3,12 +3,6 @@
 
     <PreferenceCategory android:title="@string/title_passcode_preferences">
 
-        <android.support.v7.preference.SwitchPreferenceCompat
-            android:key="@string/key_display_negative_signum_in_splits"
-            android:title="@string/title_display_negative_signum_in_splits"
-            android:summary="@string/summary_display_negative_signum_in_splits"
-            />
-
         <CheckBoxPreference android:key="@string/key_enable_passcode"
             android:title="@string/title_enable_passcode"/>
 
