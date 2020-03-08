@@ -612,8 +612,10 @@ public class TransactionFormFragment extends Fragment implements
 
         mTransactionTypeSwitch.setAccountType(mAccountType);
 
-		String typePref = PreferenceActivity.getActiveBookSharedPreferences().getString(getString(R.string.key_default_transaction_type), "DEBIT");
-        mTransactionTypeSwitch.setChecked(TransactionType.valueOf(typePref));
+        Boolean isCredit = PreferenceActivity.getActiveBookSharedPreferences()
+                                            .getBoolean(getString(R.string.key_default_transaction_type_switch),
+                                                       true);
+        mTransactionTypeSwitch.setChecked(isCredit);
 
 		String code = GnuCashApplication.getDefaultCurrencyCode();
 		if (mAccountUID != null){

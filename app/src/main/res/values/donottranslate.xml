@@ -6,7 +6,7 @@
     <string name="key_enable_passcode" translatable="false">enable_passcode</string>
     <string name="key_change_passcode" translatable="false">change_passcode</string>
     <string name="key_about_gnucash" translatable="false">about_gnucash</string>
-    <string name="key_default_transaction_type" translatable="false">default_transaction_type</string>
+    <string name="key_default_transaction_type_switch" translatable="false">default_transaction_type_switch</string>
     <string name="key_export_all_transactions" translatable="false">export_all_transactions</string>
     <string name="key_delete_transactions_after_export" translatable="false">delete_transactions_after_export</string>
     <string name="key_default_export_email" translatable="false">export_email_target</string>
