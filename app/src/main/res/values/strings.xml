@@ -95,10 +95,14 @@
 	<string name="title_transaction_preferences">Transaction Preferences</string>
 	<string name="title_account_preferences">Account Preferences</string>
 	<string name="title_default_transaction_type">Default Transaction Type</string>
-	<string name="summary_default_transaction_type">CREDIT</string>
+	<string name="summary_default_transaction_type">@string/label_credit</string>
+    <string name="label_use_account_usual_balance_expense_mode">Use Account usual Balance (Exept for Assets)</string>
+    <string name="label_use_account_usual_balance_income_mode">Use Account usual Balance</string>
 	<string-array name="transaction_types">
-		<item>CREDIT</item>
-		<item>DEBIT</item>
+        <item>@string/label_use_account_usual_balance_expense_mode</item>
+        <item>@string/label_use_account_usual_balance_income_mode</item>
+        <item>@string/label_debit</item>
+        <item>@string/label_credit</item>
 	</string-array>
 	<string name="msg_delete_all_transactions_confirmation">Are you sure you want to delete ALL transactions?</string>
 	<string name="msg_delete_transaction_confirmation">Are you sure you want to delete this transaction?</string>

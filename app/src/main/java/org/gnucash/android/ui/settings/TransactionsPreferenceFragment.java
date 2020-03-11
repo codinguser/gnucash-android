@@ -30,6 +30,7 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
+import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.ui.settings.dialog.DeleteAllTransactionsConfirmationDialog;
 
@@ -67,30 +68,50 @@ public class TransactionsPreferenceFragment extends PreferenceFragmentCompat imp
 
 		super.onResume();
 
-//		SharedPreferences sharedPreferences = getPreferenceManager().getSharedPreferences();
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(GnuCashApplication.getAppContext());
 
-		String keyDefaultTransactionType = getString(R.string.key_default_transaction_type_switch);
-		boolean isCredit = sharedPreferences.getBoolean(keyDefaultTransactionType,
-														true);
-		SwitchPreferenceCompat switchPref = (SwitchPreferenceCompat) findPreference(keyDefaultTransactionType);
-		setLocalizedSummary(switchPref,
-							isCredit);
-		switchPref.setChecked(isCredit);
-		switchPref.setOnPreferenceChangeListener(this);
+		//
+		// Default Transaction Type computing mode
+		//
 
-		Preference pref = findPreference(getString(R.string.key_use_double_entry));
-        pref.setOnPreferenceChangeListener(this);
+		String keyDefaultTransactionType = getString(R.string.key_default_transaction_type);
+		String defaultTransactionTypeKey = sharedPreferences.getString(keyDefaultTransactionType,
+																	   AccountType.KEY_USE_NORMAL_BALANCE_EXPENSE);
 
-		String keyCompactView = getString(R.string.key_use_compact_list);
-		switchPref = (SwitchPreferenceCompat) findPreference(keyCompactView);
+		Preference pref = findPreference(keyDefaultTransactionType);
+		setPrefSummary(pref,
+					   defaultTransactionTypeKey);
+
+		pref.setOnPreferenceChangeListener(this);
+
+		//
+		// Double entry
+		//
+
+		pref = findPreference(getString(R.string.key_use_double_entry));
+		pref.setOnPreferenceChangeListener(this);
+
+		//
+		// Compact list
+		//
+
+		String                 keyCompactView = getString(R.string.key_use_compact_list);
+		SwitchPreferenceCompat switchPref     = (SwitchPreferenceCompat) findPreference(keyCompactView);
 		switchPref.setChecked(sharedPreferences.getBoolean(keyCompactView, false));
+
+		//
+		// Display negative signums
+		//
 
 		String keyDisplayNegativeSignumInSplits = getString(R.string.key_display_negative_signum_in_splits);
 		switchPref = (SwitchPreferenceCompat) findPreference(keyDisplayNegativeSignumInSplits);
 		switchPref.setChecked(sharedPreferences.getBoolean(keyDisplayNegativeSignumInSplits,
 														   false));
 		switchPref.setOnPreferenceChangeListener(this);
+
+		//
+		// Save opening balance
+		//
 
 		String keySaveBalance = getString(R.string.key_save_opening_balances);
 		switchPref = (SwitchPreferenceCompat) findPreference(keySaveBalance);
@@ -121,16 +142,16 @@ public class TransactionsPreferenceFragment extends PreferenceFragmentCompat imp
 		//
 
 		if (preference.getKey()
-					  .equals(getString(R.string.key_default_transaction_type_switch))) {
+					  .equals(getString(R.string.key_default_transaction_type))) {
 
 			// Store the new value of the Preference
 			sharedPreferences.edit()
-							 .putBoolean(getString(R.string.key_default_transaction_type_switch),
-										 Boolean.valueOf(newValue.toString()))
+							 .putString(getString(R.string.key_default_transaction_type),
+										newValue.toString())
 							 .commit();
 
-			setLocalizedSummary(preference,
-								((boolean) newValue));
+			setPrefSummary(preference,
+						   ((String) newValue));
 		}
 
 		//
@@ -188,16 +209,22 @@ public class TransactionsPreferenceFragment extends PreferenceFragmentCompat imp
 		}
 	}
     /**
-     * Localizes the label for DEBIT/CREDIT in the settings summary
+	 * Localizes the label for AUTOMATIC/DEBIT/CREDIT in the settings summary
+	 *
      * @param preference Preference whose summary is to be localized
-	 * @param isCredit New isCredit for the preference summary
+	 * @param defaultTransactionTypeKey New defaultTransactionTypeKey for the preference summary
      */
-	private void setLocalizedSummary(Preference preference,
-									 boolean isCredit) {
+	private void setPrefSummary(Preference preference,
+								String defaultTransactionTypeKey) {
 
-		String localizedLabel = isCredit
-								? getString(R.string.label_credit)
-								: getString(R.string.label_debit);
+		String localizedLabel = AccountType.KEY_USE_NORMAL_BALANCE_EXPENSE.equals(defaultTransactionTypeKey)
+								? getString(R.string.label_use_account_usual_balance_expense_mode)
+								: AccountType.KEY_USE_NORMAL_BALANCE_INCOME.equals(defaultTransactionTypeKey)
+								  ? getString(R.string.label_use_account_usual_balance_income_mode)
+								  : AccountType.KEY_DEBIT.equals(defaultTransactionTypeKey)
+									? getString(R.string.label_debit)
+									: getString(R.string.label_credit);
+
 
 		preference.setSummary(localizedLabel);
 	}
