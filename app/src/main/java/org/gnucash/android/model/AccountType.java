@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -41,9 +42,18 @@ public enum AccountType {
                                                                                                          AccountType.BANK));
 
     public final static List<AccountType> LIABLITY_ACCOUNT_TYPES = new ArrayList<AccountType>(Arrays.asList(AccountType.LIABILITY,
-                                                                                                         AccountType.CREDIT));
+                                                                                                            AccountType.CREDIT));
 
     public final static List<AccountType> EQUITY_ACCOUNT_TYPES = new ArrayList<AccountType>(Arrays.asList(AccountType.EQUITY));
+
+    //
+    // Preference Key (must be the same as in donottranslate.xml)
+    //
+
+    public static final String KEY_USE_NORMAL_BALANCE_EXPENSE = "KEY_USE_NORMAL_BALANCE_EXPENSE";
+    public static final String KEY_USE_NORMAL_BALANCE_INCOME  = "KEY_USE_NORMAL_BALANCE_INCOME";
+    public static final String KEY_DEBIT                      = "KEY_DEBIT";
+    public static final String KEY_CREDIT                     = "KEY_CREDIT";
 
 
     /**
@@ -62,6 +72,45 @@ public enum AccountType {
 
         this(TransactionType.CREDIT);
     }
+
+    /**
+     * @return
+     */
+    public TransactionType getDefaultTransactionType() {
+
+
+        String transactionTypePref = PreferenceActivity.getActiveBookSharedPreferences()
+                                                       .getString(GnuCashApplication.getAppContext()
+                                                                                    .getString(R.string.key_default_transaction_type),
+                                                                  KEY_USE_NORMAL_BALANCE_EXPENSE);
+
+        final TransactionType transactionType;
+
+        if (KEY_USE_NORMAL_BALANCE_EXPENSE.equals(transactionTypePref)) {
+            // Use Normal Balance (Expense Mode)
+
+            // Use Account Normal Balance as default, except for Asset which are CREDIT by default
+            transactionType = isAssetAccount()
+                              ? TransactionType.CREDIT
+                              : getNormalBalanceType();
+
+        } else if (KEY_USE_NORMAL_BALANCE_INCOME.equals(transactionTypePref)) {
+            // Use Normal Balance (Income Mode)
+
+            // Use Account Normal Balance as default
+            transactionType = getNormalBalanceType();
+
+        } else {
+            // Not Automatic mode
+
+            // Convert String to Enum
+            transactionType = KEY_DEBIT.equals(transactionTypePref)
+                              ? TransactionType.DEBIT
+                              : TransactionType.CREDIT;
+        }
+        return transactionType;
+    }
+
 
     /**
      * Display the balance of a transaction in a text view and format the text color to match the sign of the amount

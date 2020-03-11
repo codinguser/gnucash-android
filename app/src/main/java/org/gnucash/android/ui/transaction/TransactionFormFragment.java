@@ -602,6 +602,7 @@ public class TransactionFormFragment extends Fragment implements
 	 * Initialize views with default data for new transactions
 	 */
 	private void initalizeViews() {
+
 		Date time = new Date(System.currentTimeMillis());
 		mDateTextView.setText(DATE_FORMATTER.format(time));
 		mTimeTextView.setText(TIME_FORMATTER.format(time));
@@ -612,10 +613,14 @@ public class TransactionFormFragment extends Fragment implements
 
         mTransactionTypeSwitch.setAccountType(mAccountType);
 
-        Boolean isCredit = PreferenceActivity.getActiveBookSharedPreferences()
-                                            .getBoolean(getString(R.string.key_default_transaction_type_switch),
-                                                       true);
-        mTransactionTypeSwitch.setChecked(isCredit);
+        //
+        // According to the Default Transaction Type Preference and the AccountType
+        // Check or Uncheck the TransactionTypeSwitch
+        //
+
+        final TransactionType transactionType = mAccountType.getDefaultTransactionType();
+
+        mTransactionTypeSwitch.setChecked(transactionType);
 
 		String code = GnuCashApplication.getDefaultCurrencyCode();
 		if (mAccountUID != null){
