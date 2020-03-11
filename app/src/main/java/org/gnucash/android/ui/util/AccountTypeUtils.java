@@ -41,12 +41,15 @@ public class AccountTypeUtils {
                 label = context.getString(R.string.label_deposit); // DEBIT
                 break;
 
-            case CREDIT:
+            case ASSET:
                 // #876 Change according to GnuCash on Windows
+                label = context.getString(R.string.label_increase); // DEBIT
+                break;
+
+            case CREDIT:
                 label = context.getString(R.string.label_payment); // DEBIT
                 break;
 
-            case ASSET:
             case EQUITY:
             case LIABILITY:
                 // #876 Change according to GnuCash on Windows
@@ -115,12 +118,15 @@ public class AccountTypeUtils {
                 label = context.getString(R.string.label_withdrawal); // CREDIT
                 break;
 
-            case CREDIT:
+            case ASSET:
                 // #876 Change according to GnuCash on Windows
+                label = context.getString(R.string.label_decrease); // CREDIT
+                break;
+
+            case CREDIT:
                 label = context.getString(R.string.label_charge); // CREDIT
                 break;
 
-            case ASSET:
             case EQUITY:
             case LIABILITY:
                 // #876 Change according to GnuCash on Windows
