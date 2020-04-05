@@ -190,14 +190,35 @@ public enum AccountType {
         if ((isCreditAmount && !debitCreditInvertedColorAccountType) || (!isCreditAmount && debitCreditInvertedColorAccountType)) {
             // Credit amount and account like Assets, Bank, Cash..., or Debit amount and account like Expense/Income
 
-            // RED
-            colorRes = R.color.debit_red;
+            if (!isExpenseOrIncomeAccount()) {
+                // It is not an Expense/Income account
+
+                // RED
+                colorRes = R.color.debit_red;
+
+            } else {
+                // It is an Expense/Income account
+
+                // PURPLE
+                colorRes = R.color.debit_expense_income;
+            }
 
         } else {
             // Credit amount and account like Expense/Income, or Debit amount and account like Assets, Bank, Cash...)
 
-            // GREEN
-            colorRes = R.color.credit_green;
+            if (!isExpenseOrIncomeAccount()) {
+                // It is not an Expense/Income account
+
+                // GREEN
+                colorRes = R.color.credit_green;
+
+            } else {
+                // It is an Expense/Income account
+
+                // BLUE
+                colorRes = R.color.credit_expense_income;
+            }
+
         }
 
         return GnuCashApplication.getAppContext()
