@@ -17,8 +17,8 @@
 <resources>
     <color name="debit_red">#c11b17</color>
     <color name="credit_green">#4cc552</color>
-    <color name="debit_expense_income">#FF9800</color>
-    <color name="credit_expense_income">#00BCD4</color>
+    <color name="debit_expense_income">#F4511E</color>
+    <color name="credit_expense_income">#00897B</color>
     <color name="light_gray">#FFAAAAAA</color>
     <color name="transparent">#00000000</color>
     <color name="abs__holo_blue_light">#ff33b5e5</color>
