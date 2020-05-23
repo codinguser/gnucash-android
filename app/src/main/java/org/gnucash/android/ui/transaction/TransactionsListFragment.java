@@ -27,6 +27,7 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -280,8 +281,14 @@ public class TransactionsListFragment extends Fragment implements
 			final AccountType accountType = GnuCashApplication.getAccountsDbAdapter()
 															  .getAccountType(mAccountUID);
 
+			// Get Preference about showing signum in Splits
+			boolean shallDisplayNegativeSignumInSplits = PreferenceManager.getDefaultSharedPreferences(getActivity())
+																		  .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
+																					  false);
+
 			accountType.displayBalance(holder.transactionAmount,
-									   amount);
+									   amount,
+									   shallDisplayNegativeSignumInSplits);
 
 			long dateMillis = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_TIMESTAMP));
 			String dateText = TransactionsActivity.getPrettyDateFormat(getActivity(), dateMillis);

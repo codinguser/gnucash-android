@@ -22,6 +22,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.AppCompatButton;
 import android.view.Menu;
 import android.view.View;
@@ -44,7 +45,6 @@ import org.gnucash.android.ui.report.barchart.StackedBarChartFragment;
 import org.gnucash.android.ui.report.linechart.CashFlowLineChartFragment;
 import org.gnucash.android.ui.report.piechart.PieChartFragment;
 import org.gnucash.android.ui.report.sheet.BalanceSheetFragment;
-import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
@@ -213,10 +213,21 @@ public class ReportsOverviewFragment extends BaseReportFragment {
         mChart.highlightValues(null);
         mChart.invalidate();
 
-        AccountType.ASSET.displayBalance(mTotalAssets, mAssetsBalance);
-        AccountType.LIABILITY.displayBalance(mTotalLiabilities, mLiabilitiesBalance);
+        // Get Preference about showing signum in Splits
+        boolean shallDisplayNegativeSignumInSplits = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                                                                      .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
+                                                                                  false);
+
+        AccountType.ASSET.displayBalance(mTotalAssets,
+                                         mAssetsBalance,
+                                         shallDisplayNegativeSignumInSplits);
+        AccountType.LIABILITY.displayBalance(mTotalLiabilities,
+                                             mLiabilitiesBalance,
+                                             shallDisplayNegativeSignumInSplits);
         // #8xx
-        AccountType.ASSET.displayBalance(mNetWorth, mAssetsBalance.add(mLiabilitiesBalance));
+        AccountType.ASSET.displayBalance(mNetWorth,
+                                         mAssetsBalance.add(mLiabilitiesBalance),
+                                         shallDisplayNegativeSignumInSplits);
     }
 
     /**

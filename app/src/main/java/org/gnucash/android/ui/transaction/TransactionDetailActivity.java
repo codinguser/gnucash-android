@@ -27,7 +27,6 @@ import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.passcode.PasscodeLockActivity;
-import org.gnucash.android.ui.util.AccountTypeUtils;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -67,7 +66,7 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
             // splitSignedAmount (positive or negative number)
             Money splitSignedAmount = split.getValueWithSignum();
 
-            // Define debit or credit view
+            // Use debit or credit view
             TextView balanceView = splitSignedAmount.isNegative()
                                    ? splitCreditView
                                    : splitDebitView;
@@ -83,7 +82,7 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
             // Display absolute value because it is displayed either in debit or credit column
             accountType.displayBalance(balanceView,
                                        splitSignedAmount,
-                                       !shallDisplayNegativeSignumInSplits);
+                                       shallDisplayNegativeSignumInSplits);
         }
 
     } // Class SplitAmountViewHolder
@@ -235,8 +234,13 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
 
         final AccountType accountType = accountsDbAdapter.getAccountType(mAccountUID);
 
+        // Get Preference about showing signum in Splits
+        boolean shallDisplayNegativeSignumInSplits = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                                                                      .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
+                                                                                  false);
         accountType.displayBalance(balanceTextView,
-                                   accountBalance);
+                                   accountBalance,
+                                   shallDisplayNegativeSignumInSplits);
 
         //
         // Date

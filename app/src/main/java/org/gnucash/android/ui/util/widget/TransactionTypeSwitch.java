@@ -211,7 +211,10 @@ public class TransactionTypeSwitch extends SwitchCompat {
 
         @ColorInt final int color = getAccountType().getAmountColor(isCredit);
 
+        // Set switch color
         TransactionTypeSwitch.this.setTextColor(color);
+
+        // Set Currency color
         mAmountEditText.setTextColor(color);
         mCurrencyTextView.setTextColor(color);
     }

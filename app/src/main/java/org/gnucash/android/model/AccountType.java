@@ -3,6 +3,7 @@ package org.gnucash.android.model;
 import android.content.Context;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
+import android.support.v7.preference.PreferenceManager;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
@@ -120,16 +121,18 @@ public enum AccountType {
      */
     public void displayBalance(final TextView balanceTextView,
                                final Money balance,
-                               final boolean shallDisplayAbsValue) {
+                               final boolean shallDisplayNegativeSignumInSplits) {
 
         //
         // Display amount
         //
 
-        balanceTextView.setText(shallDisplayAbsValue
-                                ? balance.abs()
-                                         .formattedString()
-                                : balance.formattedString());
+        final Money balanceToDisplay = getBalanceWithSignumForDisplay(balance);
+
+        balanceTextView.setText(!shallDisplayNegativeSignumInSplits
+                                ? balanceToDisplay.abs()
+                                                  .formattedString()
+                                : balanceToDisplay.formattedString());
 
         //
         // Define amount color
@@ -157,21 +160,6 @@ public enum AccountType {
         balanceTextView.setTextColor(fontColor);
     }
 
-    /**
-     * Display the balance of a transaction in a text view and format the text color to match the sign of the amount
-     *
-     * @param balanceTextView
-     *         {@link android.widget.TextView} where balance is to be displayed
-     * @param balance
-     *         {@link org.gnucash.android.model.Money} balance (>0 or <0) to display
-     */
-    public void displayBalance(final TextView balanceTextView,
-                               final Money balance) {
-
-        displayBalance(balanceTextView,
-                       balance,
-                       false);
-    }
     /**
      * Compute red/green color according to accountType and isCreditAmount
      *
@@ -255,6 +243,45 @@ public enum AccountType {
 
         return mNormalBalance == TransactionType.DEBIT;
     }
+
+    /**
+     * Returns balance with the right signum to be displayed
+     *
+     * A Debit is always the addition of a positive amount
+     * A credit is always the substraction of a positive amount
+     * The balance is always Debit - Credit
+     * Therefore :
+     * Debit > Credit => balance is > 0
+     * Debit < Credit => balance is < 0
+     *
+     * But for display, habit is to reduce the use of negative numbers
+     * To achieve this, for accounts which USUALLY have :
+     * Debit > Credit => compute balance as usual
+     * Debit < Credit => negate balance
+     *
+     * @return
+     *      balance with the right signum to be displayed
+     */
+    public Money getBalanceWithSignumForDisplay(final Money balance) {
+
+        final Money balanceWithSignumForDisplay;
+
+        if (hasDebitNormalBalance()) {
+            // Account usually debitor
+
+            // balance = debit - credit => usually > 0 if hasDebitNormalBalance()
+            balanceWithSignumForDisplay = balance;
+
+        } else {
+            // account usually creditor
+
+            // balance = debit - credit => usually < 0 if !hasDebitNormalBalance() => negate() to get a usually > 0 value
+            balanceWithSignumForDisplay = balance.negate();
+        }
+
+        return balanceWithSignumForDisplay;
+    }
+
 
     //
     // Getters/Setters

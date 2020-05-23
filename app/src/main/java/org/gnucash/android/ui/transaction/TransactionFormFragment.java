@@ -587,24 +587,26 @@ public class TransactionFormFragment extends Fragment implements
                                                                       .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
                                                                                   false);
 
-        // Compute balance signed value and display it
+        // Compute balance signed value of saved transaction
         final Money signedTransactionBalance = mTransaction.getBalance(mAccountUID);
 
-        // Unsigned transaction balance
-        final Money unsignedTransactionBalance = signedTransactionBalance.abs();
+        final boolean isCredit = signedTransactionBalance.isNegative();
 
-        // signed ou unsigned transaction balance to display
-        final Money signedTransactionBalanceToDisplay;
+        //
+        // Negate balance if account is usually creditor
+        //
 
-        signedTransactionBalanceToDisplay = mTransactionTypeSwitch.isChecked()
-                                            ? unsignedTransactionBalance.negate()
-                                            : unsignedTransactionBalance;
+        AccountType accountType = GnuCashApplication.getAccountsDbAdapter()
+                                                    .getAccountType(mAccountUID);
 
-        mAmountEditText.setValue(!shallDisplayNegativeSignumInSplits
-                                 ? signedTransactionBalanceToDisplay.asBigDecimal()
-                                                                    .abs()
-                                 // Display abs value because switch button is visible
-                                 : signedTransactionBalanceToDisplay.asBigDecimal()); // Display signed value because switch button is hidden
+        // New signed transaction balance if typeSwitch has changed
+        final Money newSignedTransactionBalance = mTransactionTypeSwitch.isChecked() != isCredit
+                                                  ? signedTransactionBalance.negate()
+                                                  : signedTransactionBalance;
+
+        accountType.displayBalance(mAmountEditText,
+                                   newSignedTransactionBalance,
+                                   shallDisplayNegativeSignumInSplits);
     }
 
     private void setDoubleEntryViewsVisibility(int visibility) {

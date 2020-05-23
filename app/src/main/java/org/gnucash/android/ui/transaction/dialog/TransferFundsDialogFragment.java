@@ -22,6 +22,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Pair;
@@ -97,8 +98,14 @@ public class TransferFundsDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.dialog_transfer_funds, container, false);
         ButterKnife.bind(this, view);
 
+        // Get Preference about showing signum in Splits
+        boolean shallDisplayNegativeSignumInSplits = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                                                                      .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
+                                                                                  false);
+
         AccountType.ASSET.displayBalance(mStartAmountLabel,
-                                         mOriginAmount);
+                                         mOriginAmount,
+                                         shallDisplayNegativeSignumInSplits);
 
         String fromCurrencyCode = mOriginAmount.getCommodity().getCurrencyCode();
         mFromCurrencyLabel.setText(fromCurrencyCode);

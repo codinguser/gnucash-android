@@ -40,10 +40,13 @@ public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
     private final WeakReference<TextView> accountBalanceTextViewReference;
     private final AccountsDbAdapter       accountsDbAdapter;
     private       String                  mAccountUID;
+    private       boolean                 mShallDisplayNegativeSignumInSplits;
 
-    public AccountBalanceTask(TextView balanceTextView){
+    public AccountBalanceTask(TextView balanceTextView,
+                              boolean shallDisplayNegativeSignumInSplits) {
         accountBalanceTextViewReference = new WeakReference<>(balanceTextView);
         accountsDbAdapter = AccountsDbAdapter.getInstance();
+        mShallDisplayNegativeSignumInSplits = shallDisplayNegativeSignumInSplits;
     }
 
     @Override
@@ -78,8 +81,10 @@ public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
 
                 final AccountType accountType = accountsDbAdapter.getAccountType(mAccountUID);
 
+                // Get Preference about showing signum in Splits
                 accountType.displayBalance(balanceTextView,
-                                           balance);
+                                           balance,
+                                           mShallDisplayNegativeSignumInSplits);
             }
         }
     }
