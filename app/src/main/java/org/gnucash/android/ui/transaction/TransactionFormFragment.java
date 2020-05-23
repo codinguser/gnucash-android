@@ -551,7 +551,11 @@ public class TransactionFormFragment extends Fragment implements
         if (!mAmountEditText.isInputModified()) {
             //when autocompleting, only change the amount if the user has not manually changed it already
 
-            updateAmountEditText();
+            // Compute balance signed value of saved transaction
+            final Money signedTransactionBalance = Transaction.computeBalance(mAccountUID,
+                                                                              mSplitsList);
+
+            updateAmountEditText(signedTransactionBalance);
         }
 
         String    currencyCode     = mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID);
@@ -580,15 +584,12 @@ public class TransactionFormFragment extends Fragment implements
 
     }
 
-    private void updateAmountEditText() {
+    private void updateAmountEditText(final Money signedTransactionBalance) {
 
         // Get Preference about showing signum in Splits
         boolean shallDisplayNegativeSignumInSplits = PreferenceManager.getDefaultSharedPreferences(getActivity())
                                                                       .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
                                                                                   false);
-
-        // Compute balance signed value of saved transaction
-        final Money signedTransactionBalance = mTransaction.getBalance(mAccountUID);
 
         final boolean isCredit = signedTransactionBalance.isNegative();
 
@@ -782,8 +783,11 @@ public class TransactionFormFragment extends Fragment implements
             public void onCheckedChanged(CompoundButton buttonView,
                                          boolean isChecked) {
 
+                // Compute balance signed value of saved transaction
+                final Money signedTransactionBalance = mTransaction.getBalance(mAccountUID);
+
                 // Update Amount Signum
-                updateAmountEditText();
+                updateAmountEditText(signedTransactionBalance);
             }
         });
 
@@ -1014,6 +1018,7 @@ public class TransactionFormFragment extends Fragment implements
 	 * and save a transaction
 	 */
 	private void saveNewTransaction() {
+
         mAmountEditText.getCalculatorKeyboard().hideCustomKeyboard();
 
         //determine whether we need to do currency conversion
@@ -1165,8 +1170,7 @@ public class TransactionFormFragment extends Fragment implements
 
         mTransactionTypeSwitch.setChecked(balance.isNegative());
 
-//        mAmountEditText.setValue(balance.asBigDecimal());
-        updateAmountEditText();
+        updateAmountEditText(balance);
     }
 
 
@@ -1259,7 +1263,9 @@ public class TransactionFormFragment extends Fragment implements
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         if (resultCode == Activity.RESULT_OK){
+
             List<Split> splitList = data.getParcelableArrayListExtra(UxArgument.SPLIT_LIST);
             setSplitList(splitList);
 
