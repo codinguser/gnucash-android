@@ -48,6 +48,7 @@ import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
@@ -527,11 +528,13 @@ public class SplitEditorFragment extends Fragment {
 
             final Money splitValueWithSignum = split.getValueWithSignum();
 
+            AccountType accountType = GnuCashApplication.getAccountsDbAdapter()
+                                                        .getAccountType(split.getAccountUID());
+
             // Display abs value because switch button is visible
-            splitAmountEditText.setValue(!shallDisplayNegativeSignumInSplits
-                                         ? splitValueWithSignum.asBigDecimal()
-                                                               .abs()
-                                         : splitValueWithSignum.asBigDecimal());
+            accountType.displayBalanceWithoutCurrency(splitAmountEditText,
+                                                      splitValueWithSignum,
+                                                      shallDisplayNegativeSignumInSplits);
         }
 
         /**

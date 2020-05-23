@@ -604,9 +604,10 @@ public class TransactionFormFragment extends Fragment implements
                                                   ? signedTransactionBalance.negate()
                                                   : signedTransactionBalance;
 
-        accountType.displayBalance(mAmountEditText,
-                                   newSignedTransactionBalance,
-                                   shallDisplayNegativeSignumInSplits);
+        accountType.displayBalanceWithoutCurrency(mAmountEditText,
+                                                  newSignedTransactionBalance,
+                                                  shallDisplayNegativeSignumInSplits || (mTransactionTypeSwitch.getVisibility()
+                                                                                         == View.GONE));
     }
 
     private void setDoubleEntryViewsVisibility(int visibility) {
