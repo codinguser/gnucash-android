@@ -3,7 +3,6 @@ package org.gnucash.android.model;
 import android.content.Context;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
-import android.support.v7.preference.PreferenceManager;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
@@ -121,7 +120,8 @@ public enum AccountType {
      */
     public void displayBalance(final TextView balanceTextView,
                                final Money balance,
-                               final boolean shallDisplayNegativeSignumInSplits) {
+                               final boolean shallDisplayNegativeSignum,
+                               final boolean shallDisplayCurrency) {
 
         //
         // Display amount
@@ -129,10 +129,24 @@ public enum AccountType {
 
         final Money balanceToDisplay = getBalanceWithSignumForDisplay(balance);
 
-        balanceTextView.setText(!shallDisplayNegativeSignumInSplits
-                                ? balanceToDisplay.abs()
-                                                  .formattedString()
-                                : balanceToDisplay.formattedString());
+        if (shallDisplayCurrency) {
+            // Shall currency
+
+            // Display currency
+            balanceTextView.setText(!shallDisplayNegativeSignum
+                                    ? balanceToDisplay.abs()
+                                                      .formattedString()
+                                    : balanceToDisplay.formattedString());
+
+        } else {
+            // Shall not display currency
+
+            // Display value without currency and without decimals
+            balanceTextView.setText(!shallDisplayNegativeSignum
+                                    ? balanceToDisplay.abs()
+                                                      .toShortString()
+                                    : balanceToDisplay.toShortString());
+        }
 
         //
         // Define amount color
@@ -160,6 +174,42 @@ public enum AccountType {
         balanceTextView.setTextColor(fontColor);
     }
 
+    /**
+     * Display the balance of an account in a text view and format the text color to match the sign of the amount
+     *
+     * @param balanceTextView
+     *         {@link android.widget.TextView} where balance is to be displayed
+     * @param balance
+     *         {@link org.gnucash.android.model.Money} balance (>0 or <0) to display
+     */
+    public void displayBalance(final TextView balanceTextView,
+                               final Money balance,
+                               // TODO TW C 2020-05-23 : A supprimer
+                               final boolean shallDisplayNegativeSignumInSplits) {
+
+        displayBalance(balanceTextView,
+                       balance,
+                       true,
+                       true);
+    }
+
+    /**
+     * Display the balance of a transaction in a text view and format the text color to match the sign of the amount
+     *
+     * @param transactionBalanceTextView
+     *         {@link android.widget.TextView} where balance is to be displayed
+     * @param transactionBalance
+     *         {@link org.gnucash.android.model.Money} balance (>0 or <0) to display
+     */
+    public void displayBalanceWithoutCurrency(final TextView transactionBalanceTextView,
+                                              final Money transactionBalance,
+                                              final boolean shallDisplayNegativeSignumInSplits) {
+
+        displayBalance(transactionBalanceTextView,
+                       transactionBalance,
+                       shallDisplayNegativeSignumInSplits,
+                       false);
+    }
     /**
      * Compute red/green color according to accountType and isCreditAmount
      *
