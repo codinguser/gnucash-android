@@ -289,7 +289,6 @@ public class Transaction extends BaseModel{
      * @param splitList List of splits
      * @return Money list of splits
      */
-    // TODO TW C 2020-04-07 : A renommer computeSplitListBalance()
     public static Money computeBalance(String accountUID, List<Split> splitList) {
 
         AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
@@ -303,7 +302,6 @@ public class Transaction extends BaseModel{
             if (!split.getAccountUID()
                       .equals(accountUID)) {
 
-                // TODO TW M 2020-05-23 : Pourrait être supprimé ?
                 continue;
 
             } else {
@@ -479,17 +477,6 @@ public class Transaction extends BaseModel{
     public static boolean wouldDecreaseBalance(AccountType accountType,
                                                TransactionType transactionType) {
 
-        // TODO TW M 2020-03-02 : TBC
-//        if (accountType.hasDebitNormalBalance()) {
-//            // Account usually with DEBIT > CREDIT
-//
-//            return transactionType == TransactionType.CREDIT;
-//
-//        } else {
-//            // Account usually with DEBIT < CREDIT
-//
-//            return transactionType == TransactionType.DEBIT;
-//        }
         return transactionType == TransactionType.CREDIT;
     }
 
