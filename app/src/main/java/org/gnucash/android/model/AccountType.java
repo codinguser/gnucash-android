@@ -256,44 +256,6 @@ public enum AccountType {
         return mNormalBalance == TransactionType.DEBIT;
     }
 
-    /**
-     * Returns balance with the right signum to be displayed
-     *
-     * A Debit is always the addition of a positive amount
-     * A credit is always the substraction of a positive amount
-     * The balance is always Debit - Credit
-     * Therefore :
-     * Debit > Credit => balance is > 0
-     * Debit < Credit => balance is < 0
-     *
-     * But for display, habit is to reduce the use of negative numbers
-     * To achieve this, for accounts which USUALLY have :
-     * Debit > Credit => compute balance as usual
-     * Debit < Credit => negate balance
-     *
-     * @return
-     *      balance with the right signum to be displayed
-     */
-    public Money getBalanceWithSignumForDisplay(final Money balance) {
-
-        final Money balanceWithSignumForDisplay;
-
-        if (hasDebitNormalBalance()) {
-            // Account usually debitor
-
-            balanceWithSignumForDisplay = balance;
-
-        } else {
-            // account usually creditor
-
-            // Negate
-            balanceWithSignumForDisplay = balance.negate();
-        }
-
-        return balanceWithSignumForDisplay;
-    }
-
-
     //
     // Getters/Setters
     //

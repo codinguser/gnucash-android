@@ -15,8 +15,8 @@
  limitations under the License.
 -->
 <resources>
-    <color name="debit_equity">#F4511E</color>
-    <color name="credit_equity">#00897B</color>
+    <color name="debit_equity">#8E24AA</color>
+    <color name="credit_equity">#1E88E5</color>
     <color name="debit_red">#c11b17</color>
     <color name="credit_green">#4cc552</color>
     <color name="debit_expense_income">#F4511E</color>

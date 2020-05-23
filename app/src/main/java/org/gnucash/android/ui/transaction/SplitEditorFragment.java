@@ -386,7 +386,7 @@ public class SplitEditorFragment extends Fragment {
             this.splitView = splitView;
 
             // Set Listeners
-            setListeners();
+            setListeners(split);
 
             if (split != null && !split.getQuantity()
                                        .equals(split.getValue())) {
@@ -397,7 +397,7 @@ public class SplitEditorFragment extends Fragment {
             initViews(split);
         }
 
-        private void setListeners() {
+        private void setListeners(Split split) {
 
             //
             // Listeners on splitAmountEditText
@@ -440,6 +440,13 @@ public class SplitEditorFragment extends Fragment {
                 public void onCheckedChanged(CompoundButton buttonView,
                                              boolean isChecked) {
 
+                    // Change Transaction Type according to splitTypeSwitch
+                    split.setType(splitTypeSwitch.getTransactionType());
+
+                    // Update Split Amount Signum
+                    updateSplitAmountEditText(split);
+
+                    // Recompute Split List Balance
                     mImbalanceWatcher.afterTextChanged(null);
                 }
             });
@@ -485,17 +492,8 @@ public class SplitEditorFragment extends Fragment {
                 splitAmountEditText.setCommodity(split.getValue()
                                                       .getCommodity());
 
-                // Get Preference about showing signum in Splits
-                boolean shallDisplayNegativeSignumInSplits = PreferenceManager.getDefaultSharedPreferences(getActivity())
-                                                                              .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
-                                                                                          false);
-
-                // Display abs value because switch button is visible
-                splitAmountEditText.setValue(shallDisplayNegativeSignumInSplits
-                                             ? split.getValueWithSignum()
-                                                    .asBigDecimal()
-                                             : split.getValueWithSignum()
-                                                  .asBigDecimal().abs());
+                // Update Split Amount EditText
+                updateSplitAmountEditText(split);
 
                 splitCurrencyTextView.setText(split.getValue()
                                                    .getCommodity()
@@ -513,6 +511,22 @@ public class SplitEditorFragment extends Fragment {
 
                 splitTypeSwitch.setChecked(split.getType());
             }
+        }
+
+        private void updateSplitAmountEditText(final Split split) {
+
+            // Get Preference about showing signum in Splits
+            boolean shallDisplayNegativeSignumInSplits = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                                                                          .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
+                                                                                      false);
+
+            final Money splitValueWithSignum = split.getValueWithSignum();
+
+            // Display abs value because switch button is visible
+            splitAmountEditText.setValue(!shallDisplayNegativeSignumInSplits
+                                         ? splitValueWithSignum.asBigDecimal()
+                                                               .abs()
+                                         : splitValueWithSignum.asBigDecimal());
         }
 
         /**
@@ -562,7 +576,7 @@ public class SplitEditorFragment extends Fragment {
     //
 
     /**
-     * Updates the displayed balance of the accounts when the amount of a split is changed
+     * Updates the displayed balance of the list of Splits when the amount of a split is changed
      */
     private class BalanceTextWatcher
             implements TextWatcher {

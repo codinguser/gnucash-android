@@ -289,39 +289,51 @@ public class Transaction extends BaseModel{
      * @param splitList List of splits
      * @return Money list of splits
      */
+    // TODO TW C 2020-04-07 : A renommer computeSplitListBalance()
     public static Money computeBalance(String accountUID, List<Split> splitList) {
 
         AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
-        AccountType accountType = accountsDbAdapter.getAccountType(accountUID);
-        String accountCurrencyCode = accountsDbAdapter.getAccountCurrencyCode(accountUID);
 
-//        boolean isDebitAccount = accountType.hasDebitNormalBalance();
+        String accountCurrencyCode = accountsDbAdapter.getAccountCurrencyCode(accountUID);
 
         Money balance = Money.createZeroInstance(accountCurrencyCode);
 
         for (Split split : splitList) {
 
-            if (!split.getAccountUID().equals(accountUID))
+            if (!split.getAccountUID()
+                      .equals(accountUID)) {
+
+                // TODO TW M 2020-05-23 : Pourrait être supprimé ?
                 continue;
 
-            //
-            // Get Amount absolute value
-            //
+            } else {
 
-            Money amount;
-            if (split.getValue().getCommodity().getCurrencyCode().equals(accountCurrencyCode)){
-                amount = split.getValue();
-            } else { //if this split belongs to the account, then either its value or quantity is in the account currency
-                amount = split.getQuantity();
-            }
+                //
+                // Get Amount absolute value
+                //
 
-            //
-            // Compute balance
-            //
+                Money amount;
 
-            boolean isDebitSplit = split.getType() == TransactionType.DEBIT;
+                if (split.getValue()
+                         .getCommodity()
+                         .getCurrencyCode()
+                         .equals(accountCurrencyCode)) {
 
-            // #876
+                    amount = split.getValue();
+
+                } else {
+                    // this split belongs to the account, then either its value or quantity is in the account currency
+
+                    amount = split.getQuantity();
+                }
+
+                //
+                // Compute balance
+                //
+
+                boolean isDebitSplit = (split.getType() == TransactionType.DEBIT);
+
+                // #876
 //            if (isDebitAccount) {
 //                if (isDebitSplit) {
 //                    balance = balance.add(amount);
@@ -335,18 +347,28 @@ public class Transaction extends BaseModel{
 //                    balance = balance.add(amount);
 //                }
 //            }
-            if (isDebitSplit) {
-                // DEBIT
 
-                balance = balance.add(amount);
+                if (isDebitSplit) {
+                    // DEBIT
 
-            } else {
-                // CREDIT
+                    balance = balance.add(amount);
 
-                balance = balance.subtract(amount);
+                } else {
+                    // CREDIT
+
+                    balance = balance.subtract(amount);
+                }
             }
 
         } // for
+
+//        //
+//        // Negate balance if account is usually creditor
+//        //
+//
+//        AccountType accountType = accountsDbAdapter.getAccountType(accountUID);
+//
+//        balance = accountType.getBalanceWithSignumForDisplay(balance);
 
         return balance;
     }
