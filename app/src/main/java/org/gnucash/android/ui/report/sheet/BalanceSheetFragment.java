@@ -19,7 +19,6 @@ import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -103,14 +102,9 @@ public class BalanceSheetFragment extends BaseReportFragment {
         loadAccountViews(LIABLITY_ACCOUNT_TYPES, mLiabilitiesTableLayout);
         loadAccountViews(EQUITY_ACCOUNT_TYPES, mEquityTableLayout);
 
-        // Get Preference about showing signum in Splits
-        boolean shallDisplayNegativeSignumInSplits = PreferenceManager.getDefaultSharedPreferences(getActivity())
-                                                                      .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
-                                                                                  false);
         AccountType.ASSET.displayBalance(mNetWorth,
                                          // #8xx
-                                         mAssetsBalance.add(mLiabilitiesBalance),
-                                         shallDisplayNegativeSignumInSplits);
+                                         mAssetsBalance.add(mLiabilitiesBalance));
     }
 
     @Override
@@ -144,14 +138,8 @@ public class BalanceSheetFragment extends BaseReportFragment {
             TextView    balanceTextView = (TextView) view.findViewById(R.id.account_balance);
             accountType     = AccountType.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_TYPE)));
 
-            // Get Preference about showing signum in Splits
-            boolean shallDisplayNegativeSignumInSplits = PreferenceManager.getDefaultSharedPreferences(getActivity())
-                                                                          .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
-                                                                                      false);
-
             accountType.displayBalance(balanceTextView,
-                                       balance,
-                                       shallDisplayNegativeSignumInSplits);
+                                       balance);
 
             tableLayout.addView(view);
         }
@@ -168,15 +156,10 @@ public class BalanceSheetFragment extends BaseReportFragment {
         accountBalance.setTextSize(16);
         accountBalance.setTypeface(null, Typeface.BOLD);
 
-        // Get Preference about showing signum in Splits
-        boolean shallDisplayNegativeSignumInSplits = PreferenceManager.getDefaultSharedPreferences(getActivity())
-                                                                      .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
-                                                                                  false);
         accountType.displayBalance(accountBalance,
                                    mAccountsDbAdapter.getAccountBalance(accountTypes,
                                                                         -1,
-                                                                        System.currentTimeMillis()),
-                                   shallDisplayNegativeSignumInSplits);
+                                                                        System.currentTimeMillis()));
 
         tableLayout.addView(totalView);
     }

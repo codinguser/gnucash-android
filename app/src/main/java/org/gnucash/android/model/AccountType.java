@@ -183,9 +183,7 @@ public enum AccountType {
      *         {@link org.gnucash.android.model.Money} balance (>0 or <0) to display
      */
     public void displayBalance(final TextView balanceTextView,
-                               final Money balance,
-                               // TODO TW C 2020-05-23 : A supprimer
-                               final boolean shallDisplayNegativeSignumInSplits) {
+                               final Money balance) {
 
         displayBalance(balanceTextView,
                        balance,

@@ -98,14 +98,8 @@ public class TransferFundsDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.dialog_transfer_funds, container, false);
         ButterKnife.bind(this, view);
 
-        // Get Preference about showing signum in Splits
-        boolean shallDisplayNegativeSignumInSplits = PreferenceManager.getDefaultSharedPreferences(getActivity())
-                                                                      .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
-                                                                                  false);
-
         AccountType.ASSET.displayBalance(mStartAmountLabel,
-                                         mOriginAmount,
-                                         shallDisplayNegativeSignumInSplits);
+                                         mOriginAmount);
 
         String fromCurrencyCode = mOriginAmount.getCommodity().getCurrencyCode();
         mFromCurrencyLabel.setText(fromCurrencyCode);

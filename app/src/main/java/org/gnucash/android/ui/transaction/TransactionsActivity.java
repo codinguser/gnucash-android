@@ -273,12 +273,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         if (mPagerAdapter != null)
             mPagerAdapter.notifyDataSetChanged();
 
-        // Get Preference about showing signum in Splits
-        boolean shallDisplayNegativeSignumInSplits = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
-                                                                      .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
-                                                                                  false);
-        new AccountBalanceTask(mSumTextView,
-                               shallDisplayNegativeSignumInSplits).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
+        new AccountBalanceTask(mSumTextView).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
                                                                                      getCurrentAccountUID());
 
     }

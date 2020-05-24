@@ -281,14 +281,8 @@ public class TransactionsListFragment extends Fragment implements
 			final AccountType accountType = GnuCashApplication.getAccountsDbAdapter()
 															  .getAccountType(mAccountUID);
 
-			// Get Preference about showing signum in Splits
-			boolean shallDisplayNegativeSignumInSplits = PreferenceManager.getDefaultSharedPreferences(getActivity())
-																		  .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
-																					  false);
-
 			accountType.displayBalance(holder.transactionAmount,
-									   amount,
-									   shallDisplayNegativeSignumInSplits);
+									   amount);
 
 			long dateMillis = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_TIMESTAMP));
 			String dateText = TransactionsActivity.getPrettyDateFormat(getActivity(), dateMillis);

@@ -499,13 +499,8 @@ public class AccountsListFragment extends Fragment implements
 
             // add a summary of transactions to the account view
 
-            // Get Preference about showing signum in Splits
-            boolean shallDisplayNegativeSignumInSplits = PreferenceManager.getDefaultSharedPreferences(getActivity())
-                                                                          .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
-                                                                                      false);
                 // Make sure the balance task is truly multithread
-            new AccountBalanceTask(holder.accountBalance,
-                                   shallDisplayNegativeSignumInSplits).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
+            new AccountBalanceTask(holder.accountBalance).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
                                                                                          accountUID);
 
             String accountColor = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_COLOR_CODE));

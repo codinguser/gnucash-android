@@ -213,21 +213,13 @@ public class ReportsOverviewFragment extends BaseReportFragment {
         mChart.highlightValues(null);
         mChart.invalidate();
 
-        // Get Preference about showing signum in Splits
-        boolean shallDisplayNegativeSignumInSplits = PreferenceManager.getDefaultSharedPreferences(getActivity())
-                                                                      .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
-                                                                                  false);
-
         AccountType.ASSET.displayBalance(mTotalAssets,
-                                         mAssetsBalance,
-                                         shallDisplayNegativeSignumInSplits);
+                                         mAssetsBalance);
         AccountType.LIABILITY.displayBalance(mTotalLiabilities,
-                                             mLiabilitiesBalance,
-                                             shallDisplayNegativeSignumInSplits);
+                                             mLiabilitiesBalance);
         // #8xx
         AccountType.ASSET.displayBalance(mNetWorth,
-                                         mAssetsBalance.add(mLiabilitiesBalance),
-                                         shallDisplayNegativeSignumInSplits);
+                                         mAssetsBalance.add(mLiabilitiesBalance));
     }
 
     /**
