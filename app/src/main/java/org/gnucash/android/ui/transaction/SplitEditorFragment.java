@@ -154,14 +154,10 @@ public class SplitEditorFragment extends Fragment {
             view.findViewById(R.id.input_accounts_spinner).setEnabled(false);
             view.findViewById(R.id.btn_remove_split).setVisibility(View.GONE);
 
-            // Get Preference about showing signum in Splits
-            boolean shallDisplayNegativeSignumInSplits = PreferenceManager.getDefaultSharedPreferences(getActivity())
-                                                                          .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
-                                                                                      false);
-            accountType.displayBalance(mImbalanceTextView,
+            // Display imbalance with signum and currency as if it was an asset
+            AccountType.ASSET.displayBalance(mImbalanceTextView,
                                        new Money(mBaseAmount.negate(),
-                                                 mCommodity),
-                                       shallDisplayNegativeSignumInSplits);
+                                                 mCommodity));
         }
 
     }
@@ -660,15 +656,12 @@ public class SplitEditorFragment extends Fragment {
 
             } // for
 
-            // Get Preference about showing signum in Splits
-            boolean shallDisplayNegativeSignumInSplits = PreferenceManager.getDefaultSharedPreferences(getActivity())
-                                                                          .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
-                                                                                      false);
+//            AccountType accountType = mAccountsDbAdapter.getAccountType(mAccountUID);
 
+            // Display imbalance with signum and currency as if it was an asset
             AccountType.ASSET.displayBalance(mImbalanceTextView,
                                              new Money(imbalance,
-                                                       mCommodity),
-                                             shallDisplayNegativeSignumInSplits);
+                                                       mCommodity));
         }
     }
 
