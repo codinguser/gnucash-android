@@ -74,15 +74,11 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
             final AccountType accountType = AccountsDbAdapter.getInstance()
                                                              .getAccountType(split.getAccountUID());
 
-            // Get Preference about showing signum in Splits
-            boolean shallDisplayNegativeSignumInSplits = PreferenceManager.getDefaultSharedPreferences(GnuCashApplication.getAppContext())
-                                                                          .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
-                                                                                      false);
-
             // Display absolute value because it is displayed either in debit or credit column
             accountType.displayBalance(balanceView,
                                        splitSignedAmount,
-                                       shallDisplayNegativeSignumInSplits);
+                                       false,
+                                       true);
         }
 
     } // Class SplitAmountViewHolder
@@ -227,20 +223,18 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
                                                                    transaction.getTimeMillis());
 
         // #8xx
-        // Define in which field (Debit or Credit) the balance shall be displayed
-        TextView balanceTextView = accountBalance.isNegative()
-                                   ? mCreditBalance
-                                   : mDebitBalance;
+        // Use Debit TextView to display the account balance (with signum)
+//        TextView balanceTextView = accountBalance.isNegative()
+//                                   ? mCreditBalance
+//                                   : mDebitBalance;
+        TextView balanceTextView = mDebitBalance;
 
         final AccountType accountType = accountsDbAdapter.getAccountType(mAccountUID);
 
-        // Get Preference about showing signum in Splits
-        boolean shallDisplayNegativeSignumInSplits = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
-                                                                      .getBoolean(getString(R.string.key_display_negative_signum_in_splits),
-                                                                                  false);
         accountType.displayBalance(balanceTextView,
                                    accountBalance,
-                                   shallDisplayNegativeSignumInSplits);
+                                   true,
+                                   true);
 
         //
         // Date
