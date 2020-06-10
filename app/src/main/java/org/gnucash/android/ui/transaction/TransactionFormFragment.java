@@ -869,6 +869,18 @@ public class TransactionFormFragment extends Fragment implements
 
         BigDecimal amountBigD = mAmountEditText.getValue();
 
+        if (amountBigD != null) {
+            // Amount is null
+
+            // RAF
+
+        } else {
+            // Amount is not null
+
+            // init to 0
+            amountBigD=new BigDecimal(0);
+        }
+
         String baseCurrencyCode = mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID);
 
         // Store signed amount
