@@ -314,21 +314,45 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        long id = item.getItemId();
-        if (id == ID_MANAGE_BOOKS){
+
+        long itemId = item.getItemId();
+
+        if (itemId == ID_MANAGE_BOOKS){
+            // Click on "Manage books..." item
+
+            // Start "Manage books" Activity
             Intent intent = new Intent(this, PreferenceActivity.class);
             intent.setAction(PreferenceActivity.ACTION_MANAGE_BOOKS);
             startActivity(intent);
+
             mDrawerLayout.closeDrawer(mNavigationView);
-            return true;
+
+        } else {
+            // Click on an existing book item
+
+            BooksDbAdapter booksDbAdapter = BooksDbAdapter.getInstance();
+
+            String selectedBookUID = booksDbAdapter.getUID(itemId);
+
+            if (!selectedBookUID.equals(booksDbAdapter.getActiveBookUID())){
+                // Selected Book is not the active one
+
+                // Close current Activity
+                finish();
+
+                // load book and Start Account Activity and reset Activity Stack
+                BookUtils.loadBook(selectedBookUID);
+
+            } else {
+                // Selected Book is the current one
+
+                // Start Account Activity and reset Activity Stack
+                AccountsActivity.start(GnuCashApplication.getAppContext());
+            }
+
         }
-        BooksDbAdapter booksDbAdapter = BooksDbAdapter.getInstance();
-        String bookUID = booksDbAdapter.getUID(id);
-        if (!bookUID.equals(booksDbAdapter.getActiveBookUID())){
-            BookUtils.loadBook(bookUID);
-            finish();
-        }
-        AccountsActivity.start(GnuCashApplication.getAppContext());
+
+
         return true;
     }
 
