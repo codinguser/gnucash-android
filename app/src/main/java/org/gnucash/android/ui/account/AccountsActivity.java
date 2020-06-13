@@ -281,6 +281,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
 
     @Override
     protected void onStart() {
+
         super.onStart();
 
         if (BuildConfig.CAN_REQUEST_RATING) {
@@ -288,6 +289,11 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
             RateThisApp.onStart(this);
             RateThisApp.showRateDialogIfNeeded(this);
         }
+
+        Log.i(LOG_TAG,
+              "New active db (" + GnuCashApplication.getActiveDb()
+                                              .getPath() + ")");
+
     }
 
     /**
