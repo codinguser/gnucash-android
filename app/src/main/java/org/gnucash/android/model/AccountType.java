@@ -1,6 +1,5 @@
 package org.gnucash.android.model;
 
-import android.content.Context;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.widget.TextView;
@@ -9,7 +8,6 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.ui.settings.PreferenceActivity;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -172,22 +170,9 @@ public enum AccountType {
 
         @ColorInt int fontColor;
 
-        if (balance.asBigDecimal()
-                   .compareTo(BigDecimal.ZERO) == 0) {
-            // balance is null
+        final boolean isCreditBalance = balance.isNegative();
 
-            Context context = GnuCashApplication.getAppContext();
-
-            fontColor = context.getResources()
-                               .getColor(android.R.color.black);
-
-        } else {
-            // balance is not null
-
-            final boolean isCreditBalance = balance.isNegative();
-
-            fontColor = getAmountColor(isCreditBalance);
-        }
+        fontColor = getAmountColor(isCreditBalance);
 
         balanceTextView.setTextColor(fontColor);
     }
