@@ -315,6 +315,19 @@ public final class Money implements Comparable<Money>{
 	 * @param amount {@link BigDecimal} amount to be set
 	 */
 	private void setAmount(@NonNull BigDecimal amount) {
+
+		if (amount != null) {
+			// Amount is not null
+
+			// NTD
+
+		} else {
+			// Amount is null
+
+			// init to 0
+			amount = new BigDecimal(0);
+		}
+
 		mAmount = amount.setScale(mCommodity.getSmallestFractionDigits(), ROUNDING_MODE);
 	}
 
