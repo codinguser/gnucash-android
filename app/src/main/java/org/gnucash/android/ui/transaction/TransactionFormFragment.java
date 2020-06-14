@@ -469,10 +469,9 @@ public class TransactionFormFragment extends Fragment implements
                     if (!amountEntered) {
                         // user already entered an amount
 
-                        // TODO TW C 2020-05-23 : Il faudrait homogénéïser en appelant updateAmountEditText ?
-                        mAmountEditText.setValue(splitList.get(0)
-                                                          .getValue()
-                                                          .asBigDecimal());
+                        final Money firstSplitAmount = splitList.get(0)
+                                                                .getValue();
+                        updateAmountEditText(firstSplitAmount);
                     }
 
                 } else {
