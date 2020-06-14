@@ -521,7 +521,7 @@ public class TransactionFormFragment extends Fragment implements
 
         final boolean isSimpleSplit = mSplitsList.size() <= 2;
 
-        toggleAmountInputEntryMode(isSimpleSplit);
+        setAllowAmountEdit(isSimpleSplit);
 
         if (mSplitsList.size() == 2){
             for (Split split : mSplitsList) {
@@ -618,15 +618,25 @@ public class TransactionFormFragment extends Fragment implements
         mTransactionTypeSwitch.setVisibility(visibility);
     }
 
-    private void toggleAmountInputEntryMode(boolean enabled){
-        if (enabled){
+    private void setAllowAmountEdit(boolean isAmountEditAllowed){
+
+        if (isAmountEditAllowed){
+            // Amount is allowed to be edited using keyboard
+
             mAmountEditText.setFocusable(true);
+
+            // Use Keyboard to edit amount
             mAmountEditText.bindListeners(mKeyboardView);
+
         } else {
+            // Amount is not allowed to be edited, but can be clicked to open SplitEditor
+
             mAmountEditText.setFocusable(false);
+
             mAmountEditText.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
                     openSplitEditor();
                 }
             });
@@ -1272,15 +1282,22 @@ public class TransactionFormFragment extends Fragment implements
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (resultCode == Activity.RESULT_OK){
+            // Splits have been saved => Use
 
             // Once split editor has been used and saved, only allow editing through it
-            toggleAmountInputEntryMode(false);
+
+            // Do not allow keyboard anymore to edit amount
+            setAllowAmountEdit(false);
+
+            // Display Split Editor button
+            mOpenSplitEditor.setVisibility(View.VISIBLE);
+
+            // Hide double Entry
             setDoubleEntryViewsVisibility(View.GONE);
 
+            // Set Split list from intent data coming from Split Editor
             List<Split> splitList = data.getParcelableArrayListExtra(UxArgument.SPLIT_LIST);
             setSplitList(splitList);
-
-            mOpenSplitEditor.setVisibility(View.VISIBLE);
         }
     }
 }
