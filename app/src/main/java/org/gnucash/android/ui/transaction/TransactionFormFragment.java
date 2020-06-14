@@ -605,10 +605,12 @@ public class TransactionFormFragment extends Fragment implements
                                                   ? signedTransactionBalance.negate()
                                                   : signedTransactionBalance;
 
+        final boolean isTransactionTypeSwitchVisible = mTransactionTypeSwitch.getVisibility() != View.GONE;
+
         accountType.displayBalanceWithoutCurrency(mAmountEditText,
                                                   newSignedTransactionBalance,
-                                                  shallDisplayNegativeSignumInSplits || (mTransactionTypeSwitch.getVisibility()
-                                                                                         == View.GONE));
+                                                  shallDisplayNegativeSignumInSplits || !isTransactionTypeSwitchVisible,
+                                                  !isTransactionTypeSwitchVisible);
     }
 
     private void setDoubleEntryViewsVisibility(int visibility) {
@@ -1271,12 +1273,13 @@ public class TransactionFormFragment extends Fragment implements
 
         if (resultCode == Activity.RESULT_OK){
 
+            // Once split editor has been used and saved, only allow editing through it
+            toggleAmountInputEntryMode(false);
+            setDoubleEntryViewsVisibility(View.GONE);
+
             List<Split> splitList = data.getParcelableArrayListExtra(UxArgument.SPLIT_LIST);
             setSplitList(splitList);
 
-            //once split editor has been used and saved, only allow editing through it
-            toggleAmountInputEntryMode(false);
-            setDoubleEntryViewsVisibility(View.GONE);
             mOpenSplitEditor.setVisibility(View.VISIBLE);
         }
     }

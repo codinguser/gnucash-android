@@ -539,7 +539,8 @@ public class SplitEditorFragment extends Fragment {
             // Display abs value because switch button is visible
             accountType.displayBalanceWithoutCurrency(splitAmountEditText,
                                                       splitValueWithSignum,
-                                                      shallDisplayNegativeSignumInSplits);
+                                                      shallDisplayNegativeSignumInSplits,
+                                                      false);
         }
 
         /**

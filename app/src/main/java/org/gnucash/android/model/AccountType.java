@@ -220,12 +220,13 @@ public enum AccountType {
      */
     public void displayBalanceWithoutCurrency(final TextView transactionBalanceTextView,
                                               final Money transactionBalance,
-                                              final boolean shallDisplayNegativeSignumInSplits) {
+                                              final boolean shallDisplayNegativeSignumInSplits,
+                                              final boolean shallDisplayZero) {
 
         displayBalance(transactionBalanceTextView,
                        transactionBalance,
                        shallDisplayNegativeSignumInSplits,
-                       false,
+                       shallDisplayZero,
                        false);
     }
     /**
