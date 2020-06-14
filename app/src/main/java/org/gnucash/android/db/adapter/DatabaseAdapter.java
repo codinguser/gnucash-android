@@ -531,12 +531,15 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      * @throws IllegalArgumentException if the GUID does not exist in the database
      */
     public long getID(@NonNull String uid){
+
         Cursor cursor = mDb.query(mTableName,
-                new String[] {DatabaseSchema.CommonColumns._ID},
-                DatabaseSchema.CommonColumns.COLUMN_UID + " = ?",
-                new String[]{uid},
-                null, null, null);
+                                  new String[]{DatabaseSchema.CommonColumns._ID},
+                                  DatabaseSchema.CommonColumns.COLUMN_UID + " = ?",
+                                  new String[]{uid},
+                                  null, null, null);
+
         long result = -1;
+
         try{
             if (cursor.moveToFirst()) {
                 result = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.CommonColumns._ID));
