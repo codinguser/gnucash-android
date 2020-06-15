@@ -16,6 +16,7 @@
 package org.gnucash.android.ui.common;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -32,11 +33,14 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.uservoice.uservoicesdk.UserVoice;
 
@@ -50,6 +54,8 @@ import org.gnucash.android.ui.report.ReportsActivity;
 import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
 import org.gnucash.android.util.BookUtils;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -210,10 +216,11 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home){
-            if (!mDrawerLayout.isDrawerOpen(mNavigationView))
+            if (!isNavigationViewOpen()) {
                 mDrawerLayout.openDrawer(mNavigationView);
-            else
-                mDrawerLayout.closeDrawer(mNavigationView);
+            } else {
+                closeNavigationView();
+            }
             return true;
         }
 
@@ -286,7 +293,7 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
                 UserVoice.launchUserVoice(this);
                 break;
         }
-        mDrawerLayout.closeDrawer(mNavigationView);
+        closeNavigationView();
     }
 
     @Override
@@ -315,6 +322,8 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
     @Override
     public boolean onMenuItemClick(MenuItem item) {
 
+        closeNavigationView();
+
         long itemId = item.getItemId();
 
         if (itemId == ID_MANAGE_BOOKS){
@@ -325,8 +334,6 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
             intent.setAction(PreferenceActivity.ACTION_MANAGE_BOOKS);
             startActivity(intent);
 
-            mDrawerLayout.closeDrawer(mNavigationView);
-
         } else {
             // Click on an existing book item
 
@@ -334,14 +341,67 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
 
             String selectedBookUID = booksDbAdapter.getUID(itemId);
 
-            if (!selectedBookUID.equals(booksDbAdapter.getActiveBookUID())){
+            if (!selectedBookUID.equals(booksDbAdapter.getActiveBookUID())) {
                 // Selected Book is not the active one
 
-                // Close current Activity
-                finish();
+                //
+                // Check if current Activity is the first Activity
+                //
 
-                // load book and Start Account Activity and reset Activity Stack
-                BookUtils.loadBook(selectedBookUID);
+                Log.d("BaseDrawerActivity",
+                      "This is  (" + this.getClass()
+                                         .getName() + ")");
+
+                ActivityManager                       mngr             = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+                List<ActivityManager.RunningTaskInfo> taskList         = mngr.getRunningTasks(10);
+                final ActivityManager.RunningTaskInfo task0RunningInfo = taskList.get(0);
+
+                if (task0RunningInfo.numActivities <= 1) {
+                    // This is the first Activity
+
+                    // Close current Activity (pop Activity stack)
+                    finish();
+
+                    //
+                    // load selected book and Start Account Activity and reset Activity Stack
+                    //
+
+                    BookUtils.loadBook(selectedBookUID);
+
+                } else {
+                    // This is not the first Activity
+
+                    Toast toast = Toast.makeText(this,
+                                                         "You must be on the Account Page to change Book",
+                                                         Toast.LENGTH_LONG);
+
+                    //
+                    // Align-Center text inside the Toast
+                    //
+
+                    TextView toastTextView = (TextView) toast.getView()
+                                                              .findViewById(android.R.id.message);
+                    if (toastTextView != null) {
+                        toastTextView.setGravity(Gravity.CENTER);
+                    }
+
+                    // Show toast
+                    toast.show();
+                }
+
+//                // Android handler to delay actions
+//                Handler handler = new Handler();
+//
+//                // After two seconds, it is not more considered as already pressed
+//                handler.postDelayed(new Runnable() {
+//                                        @Override
+//                                        public void run() {
+//
+//                                            // load book and Start Account Activity and reset Activity Stack
+//                                            BookUtils.loadBook(selectedBookUID);
+//                                        }
+//                                    },
+//                                    5000);
 
             } else {
                 // Selected Book is the current one
@@ -356,9 +416,17 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
         return true;
     }
 
-    public void onClickAppTitle(View view){
+    protected void onClickAppTitle(View view) {
+
+        closeNavigationView();
+
+        // Do not launch AccountsActivity to stay on current Activity
+//        AccountsActivity.start(this);
+    }
+
+    protected void closeNavigationView() {
+
         mDrawerLayout.closeDrawer(mNavigationView);
-        AccountsActivity.start(this);
     }
 
     public void onClickBook(View view){
@@ -377,5 +445,15 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
         menu.add(0, ID_MANAGE_BOOKS, maxRecent, R.string.menu_manage_books);
 
         popup.show();
+    }
+
+    /**
+     * Return true if main navigation menu is open
+     *
+     * @return true if main navigation menu is open
+     */
+    protected boolean isNavigationViewOpen() {
+
+        return mDrawerLayout.isDrawerOpen(mNavigationView);
     }
 }
