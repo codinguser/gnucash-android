@@ -306,7 +306,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
         //
-        // Add Tranbsaction Page
+        // Add Transaction Page
         //
 
         mIsPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(getCurrentAccountUID());

@@ -270,6 +270,7 @@ public class TransactionsListFragment extends Fragment implements
 
 		@Override
 		public void onBindViewHolderCursor(ViewHolder holder, Cursor cursor) {
+
 			holder.transactionId = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry._ID));
 
 			String description = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_DESCRIPTION));
