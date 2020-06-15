@@ -154,7 +154,9 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
         @Override
         public Fragment getItem(int i) {
             AccountsListFragment currentFragment = (AccountsListFragment) mFragmentPageReferenceMap.get(i);
+
             if (currentFragment == null) {
+
                 switch (i) {
                     case INDEX_RECENT_ACCOUNTS_FRAGMENT:
                         currentFragment = AccountsListFragment.newInstance(AccountsListFragment.DisplayMode.RECENT);
@@ -169,13 +171,16 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
                         currentFragment = AccountsListFragment.newInstance(AccountsListFragment.DisplayMode.TOP_LEVEL);
                         break;
                 }
+
                 mFragmentPageReferenceMap.put(i, currentFragment);
+
             }
             return currentFragment;
         }
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
+//             #586 By putting this in comment, there is no more crash, but I don't know if there are side effects
             super.destroyItem(container, position, object);
             mFragmentPageReferenceMap.remove(position);
         }
@@ -376,6 +381,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.edit().putInt(LAST_OPEN_TAB_INDEX, mViewPager.getCurrentItem()).apply();
     }
