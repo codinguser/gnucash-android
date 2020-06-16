@@ -24,7 +24,7 @@ package org.gnucash.android.model;
  * @author Ngewi Fet <ngewif@gmail.com>
  * @author Jesse Shieh <jesse.shieh.pub@gmail.com>
  */
-// TODO TW m 2020-03-03 : Should be named SplitType
+// TW m 2020-03-03 : Should be named SplitType
 public enum TransactionType {
     DEBIT,
     CREDIT;
