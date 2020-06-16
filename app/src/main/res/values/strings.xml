@@ -439,6 +439,7 @@
         <item>INCOME</item>
     </string-array>
 
+    <string name="toast_must_be_on_account_page_to_change_book">You must be on the Account Page to change Book</string>
     <string name="toast_connected_to_google_drive">Connected to Google Drive</string>
     <string name="toast_unable_to_connect_to_google_drive">Unable to connect to Google Drive</string>
     <string name="toast_enter_amount_to_split">Please enter an amount to split</string>

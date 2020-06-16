@@ -372,15 +372,15 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
                     // This is not the first Activity
 
                     Toast toast = Toast.makeText(this,
-                                                         "You must be on the Account Page to change Book",
-                                                         Toast.LENGTH_LONG);
+                                                 R.string.toast_must_be_on_account_page_to_change_book,
+                                                 Toast.LENGTH_LONG);
 
                     //
                     // Align-Center text inside the Toast
                     //
 
                     TextView toastTextView = (TextView) toast.getView()
-                                                              .findViewById(android.R.id.message);
+                                                             .findViewById(android.R.id.message);
                     if (toastTextView != null) {
                         toastTextView.setGravity(Gravity.CENTER);
                     }
