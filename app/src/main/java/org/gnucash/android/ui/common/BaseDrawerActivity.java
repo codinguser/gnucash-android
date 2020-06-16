@@ -356,7 +356,9 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
                 List<ActivityManager.RunningTaskInfo> taskList         = mngr.getRunningTasks(10);
                 final ActivityManager.RunningTaskInfo task0RunningInfo = taskList.get(0);
 
-                if (task0RunningInfo.numActivities <= 1) {
+                if (task0RunningInfo.numActivities <= 1 || task0RunningInfo.baseActivity.getClassName()
+                                                                                        .equals(this.getClass()
+                                                                                                    .getName())) {
                     // This is the first Activity
 
                     // Close current Activity (pop Activity stack)
