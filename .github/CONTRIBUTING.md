@@ -23,7 +23,7 @@ The two instances of GnuCash Android will live side-by-side on your device and n
 * Make a new branch for every feature you're working on.
 * Try to make clean commits that are easily readable (including descriptive commit messages!)
 * Test before you push make sure all test pass on your machine.
-  * Unit tests can be run with `gradle test`
+  * Unit tests can be run with `gradle test` or (`gradlew test` on Windows)
   * UI tests can be run with `gradle spoonDD`. This will run the tests on all connected devices/emulators.
 * Make small pull requests that are easy to review but which also add value.
 
