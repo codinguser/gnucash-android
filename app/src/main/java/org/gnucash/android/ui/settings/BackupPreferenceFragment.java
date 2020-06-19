@@ -55,10 +55,7 @@ import org.gnucash.android.util.BackupManager;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 
 /**
@@ -150,10 +147,10 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 
 		pref = findPreference(getString(R.string.key_backup_location));
 		pref.setOnPreferenceClickListener(this);
-		String defaultBackupLocation = BackupManager.getBookBackupFileUri(BooksDbAdapter.getInstance().getActiveBookUID());
-		if (defaultBackupLocation != null){
-			pref.setSummary(Uri.parse(defaultBackupLocation).getAuthority());
-		}
+		String backupFileUri = BackupManager.getBookBackupFileUri(BooksDbAdapter.getInstance()
+																				.getActiveBookUID());
+		// Display backupFileUri
+		pref.setSummary(getBackupLocationSummary(backupFileUri));
 
 		pref = findPreference(getString(R.string.key_dropbox_sync));
 		pref.setOnPreferenceClickListener(this);
@@ -438,13 +435,18 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 	}
 
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		switch (requestCode){
+	public void onActivityResult(int requestCode,
+								 int resultCode,
+								 Intent data) {
+
+		switch (requestCode) {
 
 			case REQUEST_LINK_TO_DBX:
 				Preference preference = findPreference(getString(R.string.key_dropbox_sync));
 				if (preference == null) //if we are in a preference header fragment, this may return null
+				{
 					break;
+				}
 				toggleDropboxPreference(preference);
 				break;
 
@@ -453,31 +455,65 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 					mGoogleApiClient.connect();
 					Preference pref = findPreference(getString(R.string.key_dropbox_sync));
 					if (pref == null) //if we are in a preference header fragment, this may return null
+					{
 						break;
+					}
 					toggleDropboxPreference(pref);
 				}
 				break;
 
 			case REQUEST_BACKUP_FILE:
-				if (resultCode == Activity.RESULT_OK){
-					Uri backupFileUri = null;
-					if (data != null){
-						backupFileUri = data.getData();
-					}
+				Uri backupFileUri = null;
 
-					final int takeFlags = data.getFlags()
-							& (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-					getActivity().getContentResolver().takePersistableUriPermission(backupFileUri, takeFlags);
+				if (resultCode == Activity.RESULT_OK && data != null) {
+					// User has chosen a file
+
+					backupFileUri = data.getData();
+
+					final int takeFlags = data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION
+															 | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+					getActivity().getContentResolver()
+								 .takePersistableUriPermission(backupFileUri,
+															   takeFlags);
 
 					PreferenceActivity.getActiveBookSharedPreferences()
-							.edit()
-							.putString(BackupManager.KEY_BACKUP_FILE, backupFileUri.toString())
-							.apply();
+									  .edit()
+									  .putString(BackupManager.KEY_BACKUP_FILE,
+												 backupFileUri.toString())
+									  .apply();
 
-					Preference pref = findPreference(getString(R.string.key_backup_location));
-					pref.setSummary(backupFileUri.getAuthority());
+				} else {
+					// User has clicked on back button
+
+					//
+					// Reset ability to chose in default automatic backup files
+					//
+
+					PreferenceActivity.getActiveBookSharedPreferences()
+									  .edit()
+									  .putString(BackupManager.KEY_BACKUP_FILE,
+												 null)
+									  .apply();
 				}
+
+				//
+				// Update Pref Summary (i.e. pref sub-title)
+				//
+
+				Preference pref = findPreference(getString(R.string.key_backup_location));
+				pref.setSummary(getBackupLocationSummary(backupFileUri != null
+														 ? backupFileUri.toString()
+														 : null));
+
 				break;
 		}
+	}
+
+	public String getBackupLocationSummary(final String backupFileUri) {
+
+		return (backupFileUri != null)
+			   ? Uri.parse(backupFileUri)
+					.getAuthority()
+			   : getString(R.string.summary_select_backup_file);
 	}
 }

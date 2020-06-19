@@ -249,7 +249,7 @@
     <string name="toast_disable_double_entry_to_save_transaction">Create and specify a transfer account OR disable double-entry in settings to save the transaction</string>
     <string name="label_tap_to_create_schedule">Tap to create schedule</string>
     <string name="title_restore_backup">Restore Backup…</string>
-    <string name="header_backup_and_export_settings">Backup &amp; export</string>
+    <string name="header_backup_and_export_settings">Backup &amp; Export</string>
     <string name="title_dropbox_sync_preference">Enable DropBox</string>
     <string name="title_owncloud_sync_preference">Enable ownCloud </string>
     <string name="title_backup_preference_category">Backup</string>
@@ -263,7 +263,7 @@
     <string name="toast_backup_failed">Backup failed</string>
     <string name="export_warning_xml">Exports all accounts and transactions</string>
     <string name="toast_install_file_manager">Install a file manager to select files</string>
-    <string name="title_select_backup_to_restore">Select backup to restore</string>
+    <string name="title_select_backup_to_restore">Select Backup to restore in another new Book</string>
     <string name="nav_menu_favorites">Favorites</string>
     <string name="nav_menu_open">Open…</string>
     <string name="nav_menu_reports">Reports</string>
@@ -451,7 +451,7 @@
     <string name="btn_rename">Rename</string>
     <string name="menu_rename">Rename</string>
     <string name="title_select_backup_file">Select backup file</string>
-    <string name="summary_select_backup_file">Select a file for automatic backups</string>
+    <string name="summary_select_backup_file">Select a specific file for backups</string>
     <string name="title_confirm_restore_backup">Confirm restore from backup</string>
     <string name="msg_confirm_restore_backup_into_new_book">A new book will be opened with the contents of this backup. Do you wish to proceed?</string>
     <string name="btn_restore">Restore</string>
