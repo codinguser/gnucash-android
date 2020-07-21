@@ -18,7 +18,7 @@
 <!--
 Layout for displaying settings in tablet mode (or devices with wide screens)
 -->
-<android.support.v4.widget.SlidingPaneLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.slidingpanelayout.widget.SlidingPaneLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/slidingpane_layout">
@@ -34,4 +34,4 @@ Layout for displaying settings in tablet mode (or devices with wide screens)
         android:layout_width="0dp"
         android:layout_weight="3"
         android:layout_height="match_parent" />
-</android.support.v4.widget.SlidingPaneLayout>
+</androidx.slidingpanelayout.widget.SlidingPaneLayout>

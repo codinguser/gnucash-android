@@ -20,6 +20,10 @@
         android:icon="@drawable/ic_folder_open_black_24dp"
         android:title="@string/nav_menu_open"/>
     <item
+        android:id="@+id/nav_item_toggle_hide_values"
+        android:icon="@drawable/ic_close_black_24dp"
+        android:title="@string/nav_menu_toggle_hide_values"/>
+    <item
         android:id="@+id/nav_section_accounts"
         android:title="@string/title_accounts">
         <menu>

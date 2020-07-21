@@ -24,14 +24,14 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.StringRes;
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.StringRes;
+import com.google.android.material.navigation.NavigationView;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,6 +49,7 @@ import org.gnucash.android.ui.passcode.PasscodeLockActivity;
 import org.gnucash.android.ui.report.ReportsActivity;
 import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
+import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.util.BookUtils;
 
 import butterknife.BindView;
@@ -240,6 +241,14 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
                 String[] mimeTypes = {"text/*", "application/*"};
                 openDocument.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
                 startActivityForResult(openDocument, REQUEST_OPEN_DOCUMENT);
+            }
+            break;
+
+            case R.id.nav_item_toggle_hide_values: {
+                TransactionsActivity.displayBalanceToggle = !TransactionsActivity.displayBalanceToggle;
+                finish();
+                startActivity(getIntent());
+
             }
             break;
 

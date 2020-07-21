@@ -16,7 +16,7 @@
 package org.gnucash.android.test.unit.export;
 
 import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.BookDbHelper;

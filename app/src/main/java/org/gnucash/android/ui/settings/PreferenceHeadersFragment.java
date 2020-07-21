@@ -17,7 +17,7 @@
 package org.gnucash.android.ui.settings;
 
 import android.os.Bundle;
-import android.support.v7.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceFragmentCompat;
 
 import org.gnucash.android.R;
 

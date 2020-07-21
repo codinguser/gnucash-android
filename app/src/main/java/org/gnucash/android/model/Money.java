@@ -17,7 +17,7 @@
 package org.gnucash.android.model;
 
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;

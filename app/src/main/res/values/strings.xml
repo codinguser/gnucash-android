@@ -468,6 +468,7 @@
     <string name="title_export_accounts_csv">Export as CSV</string>
     <string name="label_csv_separator">Separator</string>
     <string name="export_notice_csv">Exports transactions as CSV</string>
+    <string name="nav_menu_toggle_hide_values">Show/hide values</string>
     <string-array name="csv_transaction_headers">
         <item>Date</item>
         <item>Transaction ID</item>

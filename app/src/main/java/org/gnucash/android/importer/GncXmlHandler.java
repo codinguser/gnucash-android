@@ -18,7 +18,7 @@
 package org.gnucash.android.importer;
 
 import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
