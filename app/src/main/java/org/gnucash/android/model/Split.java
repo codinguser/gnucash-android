@@ -41,14 +41,14 @@ public class Split extends BaseModel implements Parcelable{
 
 
     /**
-     * Amount value of this split which is in the currency of the transaction
+     * Amount absolute value of this split which is in the currency of the transaction
      */
-    private Money mValue;
+    private Money mAmountAbsValue;
 
     /**
      * Amount of the split in the currency of the account to which the split belongs
      */
-    private Money mQuantity;
+    private Money mQuantityAbsValue;
 
     /**
      * Transaction UID which this split belongs to
@@ -88,8 +88,11 @@ public class Split extends BaseModel implements Parcelable{
      * @param accountUID String UID of transfer account
      */
     public Split(@NonNull Money value, @NonNull Money quantity, String accountUID){
-        setQuantity(quantity);
+
+        // Store absolute value
         setValue(value);
+        setQuantity(quantity);
+
         setAccountUID(accountUID);
     }
 
@@ -110,6 +113,7 @@ public class Split extends BaseModel implements Parcelable{
 
     /**
      * Clones the <code>sourceSplit</code> to create a new instance with same fields
+     *
      * @param sourceSplit Split to be cloned
      * @param generateUID Determines if the clone should have a new UID or should
      *                    maintain the one from source
@@ -119,8 +123,8 @@ public class Split extends BaseModel implements Parcelable{
         this.mAccountUID    = sourceSplit.mAccountUID;
         this.mSplitType     = sourceSplit.mSplitType;
         this.mTransactionUID = sourceSplit.mTransactionUID;
-        this.mValue         = new Money(sourceSplit.mValue);
-        this.mQuantity      = new Money(sourceSplit.mQuantity);
+        setValue(new Money(sourceSplit.mAmountAbsValue));
+        setQuantity(new Money(sourceSplit.mQuantityAbsValue));
 
         //todo: clone reconciled status
         if (generateUID){
@@ -131,12 +135,32 @@ public class Split extends BaseModel implements Parcelable{
     }
 
     /**
-     * Returns the value amount of the split
+     * Returns the value (= signed amount) of the split
+     *
+     * @return Money amount of the split with the currency of the transaction
+     *
+     * @see #getQuantity()
+     */
+    public Money getValueWithSignum() {
+
+        // splitAmount (positive or negative number)
+        Money signedValue = TransactionType.DEBIT.equals(getType())
+                            ? getValue()
+                            : getValue().negate();
+
+        return signedValue;
+    }
+
+
+    /**
+     * Returns the absolute value of the amount of the split
+     *
      * @return Money amount of the split with the currency of the transaction
      * @see #getQuantity()
      */
     public Money getValue() {
-        return mValue;
+
+        return mAmountAbsValue;
     }
 
     /**
@@ -145,11 +169,12 @@ public class Split extends BaseModel implements Parcelable{
      * <p>The value is in the currency of the containing transaction.
      * It's stored unsigned.</p>
      *
-     * @param value Money value of this split
+     * @param amountValue Money value of this split
      * @see #setQuantity(Money)
      */
-    public void setValue(Money value) {
-        mValue = value.abs();
+    public void setValue(Money amountValue) {
+
+        mAmountAbsValue = amountValue.abs();
     }
 
     /**
@@ -159,7 +184,8 @@ public class Split extends BaseModel implements Parcelable{
      * @see #getValue()
      */
     public Money getQuantity() {
-        return mQuantity;
+
+        return mQuantityAbsValue;
     }
 
     /**
@@ -168,11 +194,12 @@ public class Split extends BaseModel implements Parcelable{
      * <p>The quantity is in the currency of the owning account.
      * It will be stored unsigned.</p>
      *
-     * @param quantity Money quantity amount
+     * @param quantityAbsValue Money quantity amount
      * @see #setValue(Money)
      */
-    public void setQuantity(Money quantity) {
-        this.mQuantity = quantity.abs();
+    public void setQuantity(Money quantityAbsValue) {
+
+        this.mQuantityAbsValue = quantityAbsValue.abs();
     }
 
     /**
@@ -247,12 +274,14 @@ public class Split extends BaseModel implements Parcelable{
      * @return New split pair of current split
      * @see TransactionType#invert()
      */
-    public Split createPair(String accountUID){
-        Split pair = new Split(mValue, accountUID);
+    public Split createPair(String accountUID) {
+
+        Split pair = new Split(mAmountAbsValue,
+                               accountUID);
         pair.setType(mSplitType.invert());
         pair.setMemo(mMemo);
         pair.setTransactionUID(mTransactionUID);
-        pair.setQuantity(mQuantity);
+        pair.setQuantity(mQuantityAbsValue);
         return pair;
     }
 
@@ -262,12 +291,13 @@ public class Split extends BaseModel implements Parcelable{
      */
     protected Split clone() throws CloneNotSupportedException {
         super.clone();
-        Split split = new Split(mValue, mAccountUID);
+        Split split = new Split(mAmountAbsValue,
+                                mAccountUID);
         split.setUID(getUID());
         split.setType(mSplitType);
         split.setMemo(mMemo);
         split.setTransactionUID(mTransactionUID);
-        split.setQuantity(mQuantity);
+        split.setQuantity(mQuantityAbsValue);
         return split;
     }
 
@@ -279,57 +309,9 @@ public class Split extends BaseModel implements Parcelable{
      * @return whether the two splits are a pair
      */
     public boolean isPairOf(Split other) {
-        return mValue.equals(other.mValue)
-                && mSplitType.invert().equals(other.mSplitType);
-    }
 
-    /**
-     * Returns the formatted amount (with or without negation sign) for the split value
-     * @return Money amount of value
-     * @see #getFormattedAmount(Money, String, TransactionType)
-     */
-    public Money getFormattedValue(){
-        return getFormattedAmount(mValue, mAccountUID, mSplitType);
-    }
-
-    /**
-     * Returns the formatted amount (with or without negation sign) for the quantity
-     * @return Money amount of quantity
-     * @see #getFormattedAmount(Money, String, TransactionType)
-     */
-    public Money getFormattedQuantity(){
-        return getFormattedAmount(mQuantity, mAccountUID, mSplitType);
-    }
-
-    /**
-     * Splits are saved as absolute values to the database, with no negative numbers.
-     * The type of movement the split causes to the balance of an account determines
-     * its sign, and that depends on the split type and the account type
-     * @param amount Money amount to format
-     * @param accountUID GUID of the account
-     * @param splitType Transaction type of the split
-     * @return -{@code amount} if the amount would reduce the balance of
-     *   {@code account}, otherwise +{@code amount}
-     */
-    private static Money getFormattedAmount(Money amount, String accountUID, TransactionType
-            splitType){
-        boolean isDebitAccount = AccountsDbAdapter.getInstance().getAccountType(accountUID).hasDebitNormalBalance();
-        Money absAmount = amount.abs();
-
-        boolean isDebitSplit = splitType == TransactionType.DEBIT;
-        if (isDebitAccount) {
-            if (isDebitSplit) {
-                return absAmount;
-            } else {
-                return absAmount.negate();
-            }
-        } else {
-            if (isDebitSplit) {
-                return absAmount.negate();
-            } else {
-                return absAmount;
-            }
-        }
+        return mAmountAbsValue.equals(other.mAmountAbsValue) && mSplitType.invert()
+                                                                          .equals(other.mSplitType);
     }
 
     /**
@@ -394,7 +376,14 @@ public class Split extends BaseModel implements Parcelable{
 
     @Override
     public String toString() {
-        return mSplitType.name() + " of " + mValue.toString() + " in account: " + mAccountUID;
+
+        return mSplitType.name() + " of " + mAmountAbsValue.toString()
+               + " in account: "
+               + mAccountUID
+               + " ("
+               + AccountsDbAdapter.getInstance()
+                                  .getAccountFullName(mAccountUID)
+               + ")";
     }
 
     /**
@@ -412,10 +401,27 @@ public class Split extends BaseModel implements Parcelable{
     public String toCsv(){
         String sep = ";";
         //TODO: add reconciled state and date
-        String splitString = getUID() + sep + mValue.getNumerator() + sep + mValue.getDenominator()
-                + sep + mValue.getCommodity().getCurrencyCode() + sep + mQuantity.getNumerator()
-                + sep + mQuantity.getDenominator() + sep + mQuantity.getCommodity().getCurrencyCode()
-                + sep + mTransactionUID + sep + mAccountUID + sep + mSplitType.name();
+        String splitString = getUID()
+                             + sep
+                             + mAmountAbsValue.getNumerator()
+                             + sep
+                             + mAmountAbsValue.getDenominator()
+                             + sep
+                             + mAmountAbsValue.getCommodity()
+                                              .getCurrencyCode()
+                             + sep
+                             + mQuantityAbsValue.getNumerator()
+                             + sep
+                             + mQuantityAbsValue.getDenominator()
+                             + sep
+                             + mQuantityAbsValue.getCommodity()
+                                                .getCurrencyCode()
+                             + sep
+                             + mTransactionUID
+                             + sep
+                             + mAccountUID
+                             + sep
+                             + mSplitType.name();
         if (mMemo != null){
             splitString = splitString + sep + mMemo;
         }
@@ -489,8 +495,12 @@ public class Split extends BaseModel implements Parcelable{
         if (super.equals(split)) return true;
 
         if (mReconcileState != split.mReconcileState) return false;
-        if (!mValue.equals(split.mValue)) return false;
-        if (!mQuantity.equals(split.mQuantity)) return false;
+        if (!mAmountAbsValue.equals(split.mAmountAbsValue)) {
+            return false;
+        }
+        if (!mQuantityAbsValue.equals(split.mQuantityAbsValue)) {
+            return false;
+        }
         if (!mTransactionUID.equals(split.mTransactionUID)) return false;
         if (!mAccountUID.equals(split.mAccountUID)) return false;
         if (mSplitType != split.mSplitType) return false;
@@ -514,8 +524,12 @@ public class Split extends BaseModel implements Parcelable{
         Split split = (Split) o;
 
         if (mReconcileState != split.mReconcileState) return false;
-        if (!mValue.equals(split.mValue)) return false;
-        if (!mQuantity.equals(split.mQuantity)) return false;
+        if (!mAmountAbsValue.equals(split.mAmountAbsValue)) {
+            return false;
+        }
+        if (!mQuantityAbsValue.equals(split.mQuantityAbsValue)) {
+            return false;
+        }
         if (!mTransactionUID.equals(split.mTransactionUID)) return false;
         if (!mAccountUID.equals(split.mAccountUID)) return false;
         if (mSplitType != split.mSplitType) return false;
@@ -525,8 +539,8 @@ public class Split extends BaseModel implements Parcelable{
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + mValue.hashCode();
-        result = 31 * result + mQuantity.hashCode();
+        result = 31 * result + mAmountAbsValue.hashCode();
+        result = 31 * result + mQuantityAbsValue.hashCode();
         result = 31 * result + mTransactionUID.hashCode();
         result = 31 * result + mAccountUID.hashCode();
         result = 31 * result + mSplitType.hashCode();
@@ -547,13 +561,15 @@ public class Split extends BaseModel implements Parcelable{
         dest.writeString(mTransactionUID);
         dest.writeString(mSplitType.name());
 
-        dest.writeLong(mValue.getNumerator());
-        dest.writeLong(mValue.getDenominator());
-        dest.writeString(mValue.getCommodity().getCurrencyCode());
+        dest.writeLong(mAmountAbsValue.getNumerator());
+        dest.writeLong(mAmountAbsValue.getDenominator());
+        dest.writeString(mAmountAbsValue.getCommodity()
+                                        .getCurrencyCode());
 
-        dest.writeLong(mQuantity.getNumerator());
-        dest.writeLong(mQuantity.getDenominator());
-        dest.writeString(mQuantity.getCommodity().getCurrencyCode());
+        dest.writeLong(mQuantityAbsValue.getNumerator());
+        dest.writeLong(mQuantityAbsValue.getDenominator());
+        dest.writeString(mQuantityAbsValue.getCommodity()
+                                          .getCurrencyCode());
 
         dest.writeString(mMemo == null ? "" : mMemo);
         dest.writeString(String.valueOf(mReconcileState));
@@ -574,12 +590,16 @@ public class Split extends BaseModel implements Parcelable{
         long valueNum = source.readLong();
         long valueDenom = source.readLong();
         String valueCurrency = source.readString();
-        mValue = new Money(valueNum, valueDenom, valueCurrency).abs();
+        setValue(new Money(valueNum,
+                           valueDenom,
+                           valueCurrency));
 
         long qtyNum = source.readLong();
         long qtyDenom = source.readLong();
         String qtyCurrency = source.readString();
-        mQuantity = new Money(qtyNum, qtyDenom, qtyCurrency).abs();
+        setQuantity(new Money(qtyNum,
+                              qtyDenom,
+                              qtyCurrency));
 
         String memo = source.readString();
         mMemo = memo.isEmpty() ? null : memo;

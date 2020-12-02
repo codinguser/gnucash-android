@@ -95,10 +95,14 @@
   <string name="title_transaction_preferences">Préférences des transactions</string>
   <string name="title_account_preferences">Préférences du compte</string>
   <string name="title_default_transaction_type">Type de transaction par défaut</string>
-  <string name="summary_default_transaction_type">Le type de transaction à utiliser par défaut, CRÉDIT ou DÉBIT</string>
+  <string name="summary_default_transaction_type">@string/label_credit</string>
+  <string name="label_use_account_usual_balance_expense_mode">Utiliser le Solde habituel du Compte (sauf pour les Actifs)</string>
+  <string name="label_use_account_usual_balance_income_mode">Utiliser le Solde habituel du Compte</string>
   <string-array name="transaction_types">
-    <item>CRÉDIT</item>
-    <item>DÉBIT</item>
+  <item>@string/label_use_account_usual_balance_expense_mode</item>
+  <item>@string/label_use_account_usual_balance_income_mode</item>
+    <item>@string/label_debit</item>
+    <item>@string/label_credit</item>
   </string-array>
   <string name="msg_delete_all_transactions_confirmation">Êtes vous sûre de vouloir supprimer TOUTES les transactions ?</string>
   <string name="msg_delete_transaction_confirmation">Êtes vous sûre de vouloir supprimer cette transaction ?</string>
@@ -109,7 +113,7 @@
   <string name="summary_default_export_email">Email par défaut pour les exports. Vous pourrez toujours le changer lors de votre prochain export.</string>
   <string name="summary_use_double_entry">Toutes les transactions seront un transfert d’un compte à un autre</string>
   <string name="title_use_double_entry">Activer la Double entrée</string>
-  <string name="account_balance">Solde</string>
+  <string name="account_balance">Solde du Compte à la date indiquée ci-dessous</string>
   <string name="toast_no_account_name_entered">Entrer un nom de compte pour créer un compte</string>
   <string name="label_account_currency">Monnaie</string>
   <string name="label_parent_account">Compte parent</string>
@@ -197,7 +201,7 @@
   <string name="label_increase">Augmenter</string>
   <string name="label_income">Revenu</string>
   <string name="label_rebate">Remboursement</string>
-  <string name="label_expense">Frais</string>
+  <string name="label_expense">Dépense</string>
   <string name="label_bill">Facture</string>
   <string name="label_invoice">Facture d\'achat</string>
   <string name="label_buy">Achat</string>
@@ -446,4 +450,7 @@
   <string name="label_select_destination_after_export">Sélectionnez la destination une fois l\'exportation terminée</string>
   <string name="label_dropbox_export_destination">Exporter dans le dossier \'/Apps/GnuCash Android/\' sur Dropbox</string>
   <string name="title_section_preferences">Préférences</string>
+  <string name="title_display_negative_signum_in_splits">Afficher le signe - dans les transactions splittées</string>
+  <string name="summary_display_negative_signum_in_splits">Autoriser l\'affichage du signe - même lorsque le bouton Débit/Crédit est affiché</string>
+  <string name="toast_must_be_on_account_page_to_change_book">Vous devez être sur la page des Comptes pour pouvoir changer de Comptabilité</string>
 </resources>

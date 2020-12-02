@@ -154,7 +154,9 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
         @Override
         public Fragment getItem(int i) {
             AccountsListFragment currentFragment = (AccountsListFragment) mFragmentPageReferenceMap.get(i);
+
             if (currentFragment == null) {
+
                 switch (i) {
                     case INDEX_RECENT_ACCOUNTS_FRAGMENT:
                         currentFragment = AccountsListFragment.newInstance(AccountsListFragment.DisplayMode.RECENT);
@@ -169,13 +171,16 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
                         currentFragment = AccountsListFragment.newInstance(AccountsListFragment.DisplayMode.TOP_LEVEL);
                         break;
                 }
+
                 mFragmentPageReferenceMap.put(i, currentFragment);
+
             }
             return currentFragment;
         }
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
+//             #586 By putting this in comment, there is no more crash, but I don't know if there are side effects
             super.destroyItem(container, position, object);
             mFragmentPageReferenceMap.remove(position);
         }
@@ -221,6 +226,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         final Intent intent = getIntent();
@@ -280,6 +286,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
 
     @Override
     protected void onStart() {
+
         super.onStart();
 
         if (BuildConfig.CAN_REQUEST_RATING) {
@@ -287,6 +294,11 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
             RateThisApp.onStart(this);
             RateThisApp.showRateDialogIfNeeded(this);
         }
+
+        Log.i(LOG_TAG,
+              "New active db (" + GnuCashApplication.getActiveDb()
+                                              .getPath() + ")");
+
     }
 
     /**
@@ -333,18 +345,29 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
      * <p>Also handles displaying the What's New dialog</p>
      */
     private void init() {
-        PreferenceManager.setDefaultValues(this, BooksDbAdapter.getInstance().getActiveBookUID(),
-                Context.MODE_PRIVATE, R.xml.fragment_transaction_preferences, true);
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);
+        PreferenceManager.setDefaultValues(this,
+                                           BooksDbAdapter.getInstance()
+                                                         .getActiveBookUID(),
+                                           Context.MODE_PRIVATE,
+                                           R.xml.fragment_transaction_preferences,
+                                           true);
+
+        SharedPreferences prefs    = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean           firstRun = prefs.getBoolean(getString(R.string.key_first_run),
+                                                      true);
 
         if (firstRun){
             startActivity(new Intent(GnuCashApplication.getAppContext(), FirstRunWizardActivity.class));
 
-            //default to using double entry and save the preference explicitly
+            // Default Preference to using double entry and save the preference explicitly
             prefs.edit().putBoolean(getString(R.string.key_use_double_entry), true).apply();
+
+            // Default preference not to show negative number in splits
+            prefs.edit().putBoolean(getString(R.string.key_display_negative_signum_in_splits), false).apply();
+
             finish();
+
             return;
         }
 
@@ -358,6 +381,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.edit().putInt(LAST_OPEN_TAB_INDEX, mViewPager.getCurrentItem()).apply();
     }

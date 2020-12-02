@@ -22,6 +22,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Pair;
@@ -37,11 +38,11 @@ import android.widget.TextView;
 import org.gnucash.android.R;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.adapter.PricesDbAdapter;
+import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Price;
 import org.gnucash.android.ui.transaction.OnTransferFundsListener;
-import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.util.AmountParser;
 
 import java.math.BigDecimal;
@@ -97,7 +98,9 @@ public class TransferFundsDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.dialog_transfer_funds, container, false);
         ButterKnife.bind(this, view);
 
-        TransactionsActivity.displayBalance(mStartAmountLabel, mOriginAmount);
+        AccountType.ASSET.displayBalance(mStartAmountLabel,
+                                         mOriginAmount);
+
         String fromCurrencyCode = mOriginAmount.getCommodity().getCurrencyCode();
         mFromCurrencyLabel.setText(fromCurrencyCode);
         mToCurrencyLabel.setText(mTargetCommodity.getCurrencyCode());

@@ -25,7 +25,6 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -484,26 +483,39 @@ public class AccountsListFragment extends Fragment implements
 
         @Override
         public void onBindViewHolderCursor(final AccountViewHolder holder, final Cursor cursor) {
-            final String accountUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
-            mAccountsDbAdapter = AccountsDbAdapter.getInstance();
-            holder.accoundId = mAccountsDbAdapter.getID(accountUID);
 
+            final String accountUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
+
+            mAccountsDbAdapter = AccountsDbAdapter.getInstance();
+
+            holder.accoundId = mAccountsDbAdapter.getID(accountUID);
             holder.accountName.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_NAME)));
+
             int subAccountCount = mAccountsDbAdapter.getSubAccountCount(accountUID);
+
             if (subAccountCount > 0) {
                 holder.description.setVisibility(View.VISIBLE);
-                String text = getResources().getQuantityString(R.plurals.label_sub_accounts, subAccountCount, subAccountCount);
+                String text = getResources().getQuantityString(R.plurals.label_sub_accounts,
+                                                               subAccountCount,
+                                                               subAccountCount);
                 holder.description.setText(text);
-            } else
+
+            } else {
                 holder.description.setVisibility(View.GONE);
+            }
 
             // add a summary of transactions to the account view
 
-                // Make sure the balance task is truly multithread
-            new AccountBalanceTask(holder.accountBalance).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, accountUID);
+            // Make sure the balance task is truly multithread
+            new AccountBalanceTask(holder.accountBalance).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
+                                                                            accountUID);
 
             String accountColor = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_COLOR_CODE));
-            int colorCode = accountColor == null ? Color.TRANSPARENT : Color.parseColor(accountColor);
+
+            int    colorCode    = accountColor == null
+                                  ? Color.TRANSPARENT
+                                  : Color.parseColor(accountColor);
+
             holder.colorStripView.setBackgroundColor(colorCode);
 
             boolean isPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(accountUID);
@@ -514,21 +526,30 @@ public class AccountsListFragment extends Fragment implements
 
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(getActivity(), FormActivity.class);
+
+                        Intent intent = new Intent(getActivity(),
+                                                   FormActivity.class);
                         intent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-                        intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
-                        intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION.name());
+                        intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID,
+                                        accountUID);
+                        intent.putExtra(UxArgument.FORM_TYPE,
+                                        FormActivity.FormType.TRANSACTION.name());
                         getActivity().startActivity(intent);
                     }
                 });
             }
 
-            List<Budget> budgets = BudgetsDbAdapter.getInstance().getAccountBudgets(accountUID);
+            List<Budget> budgets = BudgetsDbAdapter.getInstance()
+                                                   .getAccountBudgets(accountUID);
             //TODO: include fetch only active budgets
-            if (budgets.size() == 1){
-                Budget budget = budgets.get(0);
-                Money balance = mAccountsDbAdapter.getAccountBalance(accountUID, budget.getStartofCurrentPeriod(), budget.getEndOfCurrentPeriod());
-                double budgetProgress = balance.divide(budget.getAmount(accountUID)).asBigDecimal().doubleValue() * 100;
+            if (budgets.size() == 1) {
+                Budget budget         = budgets.get(0);
+                Money  balance        = mAccountsDbAdapter.getAccountBalance(accountUID,
+                                                                             budget.getStartofCurrentPeriod(),
+                                                                             budget.getEndOfCurrentPeriod());
+                double budgetProgress = balance.divide(budget.getAmount(accountUID))
+                                               .asBigDecimal()
+                                               .doubleValue() * 100;
 
                 holder.budgetIndicator.setVisibility(View.VISIBLE);
                 holder.budgetIndicator.setProgress((int) budgetProgress);
@@ -537,7 +558,7 @@ public class AccountsListFragment extends Fragment implements
             }
 
 
-            if (mAccountsDbAdapter.isFavoriteAccount(accountUID)){
+            if (mAccountsDbAdapter.isFavoriteAccount(accountUID)) {
                 holder.favoriteStatus.setImageResource(R.drawable.ic_star_black_24dp);
             } else {
                 holder.favoriteStatus.setImageResource(R.drawable.ic_star_border_black_24dp);
@@ -546,23 +567,29 @@ public class AccountsListFragment extends Fragment implements
             holder.favoriteStatus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
                     boolean isFavoriteAccount = mAccountsDbAdapter.isFavoriteAccount(accountUID);
 
                     ContentValues contentValues = new ContentValues();
-                    contentValues.put(DatabaseSchema.AccountEntry.COLUMN_FAVORITE, !isFavoriteAccount);
-                    mAccountsDbAdapter.updateRecord(accountUID, contentValues);
+                    contentValues.put(DatabaseSchema.AccountEntry.COLUMN_FAVORITE,
+                                      !isFavoriteAccount);
+                    mAccountsDbAdapter.updateRecord(accountUID,
+                                                    contentValues);
 
-                    int drawableResource = !isFavoriteAccount ?
-                            R.drawable.ic_star_black_24dp : R.drawable.ic_star_border_black_24dp;
+                    int drawableResource = !isFavoriteAccount
+                                           ? R.drawable.ic_star_black_24dp
+                                           : R.drawable.ic_star_border_black_24dp;
                     holder.favoriteStatus.setImageResource(drawableResource);
-                    if (mDisplayMode == DisplayMode.FAVORITES)
+                    if (mDisplayMode == DisplayMode.FAVORITES) {
                         refresh();
+                    }
                 }
             });
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
                     onListItemClick(accountUID);
                 }
             });
@@ -581,7 +608,9 @@ public class AccountsListFragment extends Fragment implements
             long accoundId;
 
             public AccountViewHolder(View itemView) {
+
                 super(itemView);
+
                 ButterKnife.bind(this, itemView);
 
                 optionsMenu.setOnClickListener(new View.OnClickListener() {

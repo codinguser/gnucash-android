@@ -25,7 +25,9 @@ public class BookUtils {
      * @param bookUID GUID of the book to be loaded
      */
     public static void loadBook(@NonNull String bookUID){
+
         activateBook(bookUID);
+
         AccountsActivity.start(GnuCashApplication.getAppContext());
     }
 }

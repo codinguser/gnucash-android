@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -18,6 +19,7 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
+import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
@@ -40,14 +42,56 @@ import butterknife.OnClick;
  */
 public class TransactionDetailActivity extends PasscodeLockActivity {
 
-    @BindView(R.id.trn_description) TextView mTransactionDescription;
-    @BindView(R.id.trn_time_and_date) TextView mTimeAndDate;
-    @BindView(R.id.trn_recurrence) TextView mRecurrence;
-    @BindView(R.id.trn_notes) TextView mNotes;
+    class SplitAmountViewHolder {
+        @BindView(R.id.split_account_name) TextView accountName;
+        @BindView(R.id.split_debit) TextView        splitDebitView;
+        @BindView(R.id.split_credit) TextView       splitCreditView;
+
+        View itemView;
+
+        public SplitAmountViewHolder(View view,
+                                     Split split) {
+
+            itemView = view;
+
+            ButterKnife.bind(this,
+                             view);
+
+            AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
+
+            final String accountUID = split.getAccountUID();
+
+            accountName.setText(accountsDbAdapter.getAccountFullName(accountUID));
+
+            // splitSignedAmount (positive or negative number)
+            Money splitSignedAmount = split.getValueWithSignum();
+
+            // Use debit or credit view
+            TextView balanceView = splitSignedAmount.isNegative()
+                                   ? splitCreditView
+                                   : splitDebitView;
+
+            final AccountType accountType = AccountsDbAdapter.getInstance()
+                                                             .getAccountType(split.getAccountUID());
+
+            // Display absolute value because it is displayed either in debit or credit column
+            accountType.displayBalance(balanceView,
+                                       splitSignedAmount,
+                                       false,
+                                       true,
+                                       true);
+        }
+
+    } // Class SplitAmountViewHolder
+
     @BindView(R.id.toolbar) Toolbar mToolBar;
+    @BindView(R.id.trn_description) TextView mTransactionDescription;
     @BindView(R.id.transaction_account) TextView mTransactionAccount;
     @BindView(R.id.balance_debit) TextView mDebitBalance;
     @BindView(R.id.balance_credit) TextView mCreditBalance;
+    @BindView(R.id.trn_time_and_date) TextView mTimeAndDate;
+    @BindView(R.id.trn_recurrence) TextView mRecurrence;
+    @BindView(R.id.trn_notes) TextView mNotes;
 
     @BindView(R.id.fragment_transaction_details)
     TableLayout mDetailTableLayout;
@@ -92,60 +136,119 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
 
     }
 
-    class SplitAmountViewHolder {
-        @BindView(R.id.split_account_name) TextView accountName;
-        @BindView(R.id.split_debit) TextView splitDebit;
-        @BindView(R.id.split_credit) TextView splitCredit;
-
-        View itemView;
-
-        public SplitAmountViewHolder(View view, Split split){
-            itemView = view;
-            ButterKnife.bind(this, view);
-
-            AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
-            accountName.setText(accountsDbAdapter.getAccountFullName(split.getAccountUID()));
-            Money quantity = split.getFormattedQuantity();
-            TextView balanceView = quantity.isNegative() ? splitDebit : splitCredit;
-            TransactionsActivity.displayBalance(balanceView, quantity);
-        }
-    }
-
     /**
      * Reads the transaction information from the database and binds it to the views
      */
-    private void bindViews(){
+    private void bindViews() {
+
         TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
         Transaction transaction = transactionsDbAdapter.getRecord(mTransactionUID);
 
+        // Transaction description
         mTransactionDescription.setText(transaction.getDescription());
+
+        // Account Full Name
         mTransactionAccount.setText(getString(R.string.label_inside_account_with_name, AccountsDbAdapter.getInstance().getAccountFullName(mAccountUID)));
+
+        //
+        // Add Debit/Credit Labels
+        //
+
+        mDetailTableRows = mDetailTableLayout.getChildCount();
+        int index = 0;
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View           view     = inflater.inflate(R.layout.item_split_amount_info,
+                                                   mDetailTableLayout,
+                                                   false);
+        ((TextView) view.findViewById(R.id.split_debit)).setText(getString(R.string.label_debit));
+        ((TextView) view.findViewById(R.id.split_credit)).setText(getString(R.string.label_credit));
+        mDetailTableLayout.addView(view,
+                                   index++);
+
+        //
+        // Détails
+        //
 
         AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
 
-        Money accountBalance = accountsDbAdapter.getAccountBalance(mAccountUID, -1, transaction.getTimeMillis());
-        TextView balanceTextView = accountBalance.isNegative() ? mDebitBalance : mCreditBalance;
-        TransactionsActivity.displayBalance(balanceTextView, accountBalance);
-
-        mDetailTableRows = mDetailTableLayout.getChildCount();
         boolean useDoubleEntry = GnuCashApplication.isDoubleEntryEnabled();
-        LayoutInflater inflater = LayoutInflater.from(this);
-        int index = 0;
-        for (Split split : transaction.getSplits()) {
-            if (!useDoubleEntry && split.getAccountUID().equals(
-                    accountsDbAdapter.getImbalanceAccountUID(split.getValue().getCommodity()))) {
-                //do now show imbalance accounts for single entry use case
-                continue;
-            }
-            View view = inflater.inflate(R.layout.item_split_amount_info, mDetailTableLayout, false);
-            SplitAmountViewHolder viewHolder = new SplitAmountViewHolder(view, split);
-            mDetailTableLayout.addView(viewHolder.itemView, index++);
-        }
 
+        for (Split split : transaction.getSplits()) {
+
+            if (!useDoubleEntry && split.getAccountUID()
+                                        .equals(accountsDbAdapter.getImbalanceAccountUID(split.getValue()
+                                                                                              .getCommodity()))) {
+                //do not show imbalance accounts for single entry use case
+
+            } else {
+
+//                //
+//                // Add Account Specific Debit/Credit Labels
+//                //
+//
+//                view = inflater.inflate(R.layout.item_split_amount_info,
+//                                        mDetailTableLayout,
+//                                        false);
+//
+//                AccountType accountType = AccountsDbAdapter.getInstance().getAccountType(split.getAccountUID());
+//
+//                ((TextView) view.findViewById(R.id.split_debit)).setText(AccountTypeUtils.getLabelDebit(accountType));
+//                ((TextView) view.findViewById(R.id.split_credit)).setText(AccountTypeUtils.getLabelCredit(accountType));
+//
+//                mDetailTableLayout.addView(view,
+//                                           index++);
+
+                //
+                // Display Debit/Credit amount
+                //
+
+                view = inflater.inflate(R.layout.item_split_amount_info,
+                                        mDetailTableLayout,
+                                        false);
+
+                SplitAmountViewHolder viewHolder = new SplitAmountViewHolder(view,
+                                                                             split);
+                mDetailTableLayout.addView(viewHolder.itemView,
+                                           index++);
+            }
+        } // for
+
+        //
+        // Account balance at Transaction time
+        //
+
+        // Compute balance at Transaction time
+        Money accountBalance = accountsDbAdapter.getAccountBalance(mAccountUID,
+                                                                   -1,
+                                                                   transaction.getTimeMillis());
+
+        // #8xx
+        // Use Debit TextView to display the account balance (with signum)
+//        TextView balanceTextView = accountBalance.isNegative()
+//                                   ? mCreditBalance
+//                                   : mDebitBalance;
+        TextView balanceTextView = mDebitBalance;
+
+        final AccountType accountType = accountsDbAdapter.getAccountType(mAccountUID);
+
+        accountType.displayBalance(balanceTextView,
+                                   accountBalance,
+                                   true,
+                                   true,
+                                   true);
+
+        //
+        // Date
+        //
 
         Date trnDate = new Date(transaction.getTimeMillis());
         String timeAndDate = DateFormat.getDateInstance(DateFormat.FULL).format(trnDate);
         mTimeAndDate.setText(timeAndDate);
+
+        //
+        //
+        //
 
         if (transaction.getScheduledActionUID() != null){
             ScheduledAction scheduledAction = ScheduledActionDbAdapter.getInstance().getRecord(transaction.getScheduledActionUID());

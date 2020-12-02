@@ -50,7 +50,7 @@ public final class Money implements Comparable<Money>{
 	private Commodity mCommodity;
 
 	/**
-	 * Amount value held by this object
+	 * Amount value held by this object (can be > 0 or < 0)
 	 */
 	private BigDecimal mAmount;
 
@@ -257,7 +257,7 @@ public final class Money implements Comparable<Money>{
 	public String asString(){
 		return toPlainString();
 	}
-	
+
 	/**
 	 * Returns a string representation of the Money object formatted according to 
 	 * the <code>locale</code> and includes the currency symbol. 
@@ -315,6 +315,19 @@ public final class Money implements Comparable<Money>{
 	 * @param amount {@link BigDecimal} amount to be set
 	 */
 	private void setAmount(@NonNull BigDecimal amount) {
+
+		if (amount != null) {
+			// Amount is not null
+
+			// NTD
+
+		} else {
+			// Amount is null
+
+			// init to 0
+			amount = new BigDecimal(0);
+		}
+
 		mAmount = amount.setScale(mCommodity.getSmallestFractionDigits(), ROUNDING_MODE);
 	}
 
@@ -440,9 +453,19 @@ public final class Money implements Comparable<Money>{
 	 *
 	 * @return String representation of the amount (without currency) of the Money object
 	 */
+	public String toShortString(){
+		return String.format(Locale.getDefault(), "%.0f", asDouble());
+	}
+
+	/**
+	 * Returns a locale-specific representation of the amount of the Money object (excluding the currency)
+	 *
+	 * @return String representation of the amount (without currency) of the Money object
+	 */
 	public String toLocaleString(){
 		return String.format(Locale.getDefault(), "%.2f", asDouble());
 	}
+
 
 	/**
 	 * Returns the string representation of the Money object (value + currency) formatted according

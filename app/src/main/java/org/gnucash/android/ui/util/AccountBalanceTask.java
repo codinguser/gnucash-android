@@ -24,8 +24,8 @@ import android.widget.TextView;
 import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.ui.transaction.TransactionsActivity;
 
 import java.lang.ref.WeakReference;
 
@@ -38,9 +38,10 @@ public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
     public static final String LOG_TAG = AccountBalanceTask.class.getName();
 
     private final WeakReference<TextView> accountBalanceTextViewReference;
-    private final AccountsDbAdapter accountsDbAdapter;
+    private final AccountsDbAdapter       accountsDbAdapter;
+    private       String                  mAccountUID;
 
-    public AccountBalanceTask(TextView balanceTextView){
+    public AccountBalanceTask(TextView balanceTextView) {
         accountBalanceTextViewReference = new WeakReference<>(balanceTextView);
         accountsDbAdapter = AccountsDbAdapter.getInstance();
     }
@@ -55,7 +56,10 @@ public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
 
         Money balance = Money.getZeroInstance();
         try {
-            balance = accountsDbAdapter.getAccountBalance(params[0], -1, -1);
+            mAccountUID = params[0];
+            balance = accountsDbAdapter.getAccountBalance(mAccountUID,
+                                                          -1,
+                                                          -1);
         } catch (Exception ex) {
             Log.e(LOG_TAG, "Error computing account balance ", ex);
             Crashlytics.logException(ex);
@@ -65,10 +69,18 @@ public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
 
     @Override
     protected void onPostExecute(Money balance) {
-        if (accountBalanceTextViewReference.get() != null && balance != null){
+
+        if (accountBalanceTextViewReference.get() != null && balance != null) {
+
             final TextView balanceTextView = accountBalanceTextViewReference.get();
-            if (balanceTextView != null){
-                TransactionsActivity.displayBalance(balanceTextView, balance);
+
+            if (balanceTextView != null) {
+
+                final AccountType accountType = accountsDbAdapter.getAccountType(mAccountUID);
+
+                // Get Preference about showing signum in Splits
+                accountType.displayBalance(balanceTextView,
+                                           balance);
             }
         }
     }

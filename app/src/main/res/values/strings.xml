@@ -95,10 +95,14 @@
 	<string name="title_transaction_preferences">Transaction Preferences</string>
 	<string name="title_account_preferences">Account Preferences</string>
 	<string name="title_default_transaction_type">Default Transaction Type</string>
-	<string name="summary_default_transaction_type">The type of transaction to use by default, CREDIT or DEBIT</string>
+	<string name="summary_default_transaction_type">@string/label_credit</string>
+    <string name="label_use_account_usual_balance_expense_mode">Use Account usual Balance (Exept for Assets)</string>
+    <string name="label_use_account_usual_balance_income_mode">Use Account usual Balance</string>
 	<string-array name="transaction_types">
-		<item>CREDIT</item>
-		<item>DEBIT</item>
+        <item>@string/label_use_account_usual_balance_expense_mode</item>
+        <item>@string/label_use_account_usual_balance_income_mode</item>
+        <item>@string/label_debit</item>
+        <item>@string/label_credit</item>
 	</string-array>
 	<string name="msg_delete_all_transactions_confirmation">Are you sure you want to delete ALL transactions?</string>
 	<string name="msg_delete_transaction_confirmation">Are you sure you want to delete this transaction?</string>
@@ -109,7 +113,7 @@
 	<string name="summary_default_export_email">The default email address to send exports to. You can still change this when you export.</string>
     <string name="summary_use_double_entry">All transactions will be a transfer from one account to another</string>
 	<string name="title_use_double_entry">Activate Double Entry</string>
-	<string name="account_balance">Balance</string>
+	<string name="account_balance">Account Balance at Date below</string>
 	<string name="toast_no_account_name_entered">Enter an account name to create an account</string>
 	<string name="label_account_currency">Currency</string>
 	<string name="label_parent_account">Parent account</string>
@@ -370,6 +374,8 @@
     <string name="title_budgets">Budgets</string>
     <string name="title_use_compact_list">Enable compact view</string>
     <string name="summary_use_compact_list">Enable to always use compact view for transactions list</string>
+    <string name="title_display_negative_signum_in_splits">Display negative signum in splits</string>
+    <string name="summary_display_negative_signum_in_splits">Enable to display negative signum amount even when debit/credit toggle button is displayed</string>
     <string name="error_invalid_exchange_rate">Invalid exchange rate</string>
     <string name="sample_exchange_rate">e.g. 1 %1$s = x.xx %2$s</string>
     <string name="error_invalid_amount">Invalid amount</string>
@@ -433,6 +439,7 @@
         <item>INCOME</item>
     </string-array>
 
+    <string name="toast_must_be_on_account_page_to_change_book">You must be on the Account Page to change Book</string>
     <string name="toast_connected_to_google_drive">Connected to Google Drive</string>
     <string name="toast_unable_to_connect_to_google_drive">Unable to connect to Google Drive</string>
     <string name="toast_enter_amount_to_split">Please enter an amount to split</string>

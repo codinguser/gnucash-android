@@ -33,12 +33,14 @@ import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.report.BaseReportFragment;
 import org.gnucash.android.ui.report.ReportType;
-import org.gnucash.android.ui.transaction.TransactionsActivity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+
+import static org.gnucash.android.model.AccountType.ASSET_ACCOUNT_TYPES;
+import static org.gnucash.android.model.AccountType.EQUITY_ACCOUNT_TYPES;
+import static org.gnucash.android.model.AccountType.LIABLITY_ACCOUNT_TYPES;
 
 /**
  * Balance sheet report fragment
@@ -56,9 +58,6 @@ public class BalanceSheetFragment extends BaseReportFragment {
 
     private Money mAssetsBalance;
     private Money mLiabilitiesBalance;
-    private List<AccountType> mAssetAccountTypes;
-    private List<AccountType> mLiabilityAccountTypes;
-    private List<AccountType> mEquityAccountTypes;
 
     @Override
     public int getLayoutResource() {
@@ -78,17 +77,6 @@ public class BalanceSheetFragment extends BaseReportFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mAssetAccountTypes = new ArrayList<>();
-        mAssetAccountTypes.add(AccountType.ASSET);
-        mAssetAccountTypes.add(AccountType.CASH);
-        mAssetAccountTypes.add(AccountType.BANK);
-
-        mLiabilityAccountTypes = new ArrayList<>();
-        mLiabilityAccountTypes.add(AccountType.LIABILITY);
-        mLiabilityAccountTypes.add(AccountType.CREDIT);
-
-        mEquityAccountTypes = new ArrayList<>();
-        mEquityAccountTypes.add(AccountType.EQUITY);
     }
 
     @Override
@@ -103,17 +91,20 @@ public class BalanceSheetFragment extends BaseReportFragment {
 
     @Override
     protected void generateReport() {
-        mAssetsBalance = mAccountsDbAdapter.getAccountBalance(mAssetAccountTypes, -1, System.currentTimeMillis());
-        mLiabilitiesBalance = mAccountsDbAdapter.getAccountBalance(mLiabilityAccountTypes, -1, System.currentTimeMillis());
+        mAssetsBalance = mAccountsDbAdapter.getAccountBalance(ASSET_ACCOUNT_TYPES, -1, System.currentTimeMillis());
+        mLiabilitiesBalance = mAccountsDbAdapter.getAccountBalance(LIABLITY_ACCOUNT_TYPES, -1, System.currentTimeMillis());
     }
 
     @Override
     protected void displayReport() {
-        loadAccountViews(mAssetAccountTypes, mAssetsTableLayout);
-        loadAccountViews(mLiabilityAccountTypes, mLiabilitiesTableLayout);
-        loadAccountViews(mEquityAccountTypes, mEquityTableLayout);
 
-        TransactionsActivity.displayBalance(mNetWorth, mAssetsBalance.subtract(mLiabilitiesBalance));
+        loadAccountViews(ASSET_ACCOUNT_TYPES, mAssetsTableLayout);
+        loadAccountViews(LIABLITY_ACCOUNT_TYPES, mLiabilitiesTableLayout);
+        loadAccountViews(EQUITY_ACCOUNT_TYPES, mEquityTableLayout);
+
+        AccountType.ASSET.displayBalance(mNetWorth,
+                                         // #8xx
+                                         mAssetsBalance.add(mLiabilitiesBalance));
     }
 
     @Override
@@ -128,6 +119,7 @@ public class BalanceSheetFragment extends BaseReportFragment {
      * @param tableLayout Table layout into which to load the rows
      */
     private void loadAccountViews(List<AccountType> accountTypes, TableLayout tableLayout){
+
         LayoutInflater inflater = LayoutInflater.from(getActivity());
 
         Cursor cursor = mAccountsDbAdapter.fetchAccounts(DatabaseSchema.AccountEntry.COLUMN_TYPE
@@ -135,14 +127,20 @@ public class BalanceSheetFragment extends BaseReportFragment {
                         + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0",
                 null, DatabaseSchema.AccountEntry.COLUMN_FULL_NAME + " ASC");
 
+        AccountType accountType = null;
+
         while (cursor.moveToNext()){
             String accountUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
             String name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_NAME));
             Money balance = mAccountsDbAdapter.getAccountBalance(accountUID);
             View view = inflater.inflate(R.layout.row_balance_sheet, tableLayout, false);
             ((TextView)view.findViewById(R.id.account_name)).setText(name);
-            TextView balanceTextView = (TextView) view.findViewById(R.id.account_balance);
-            TransactionsActivity.displayBalance(balanceTextView, balance);
+            TextView    balanceTextView = (TextView) view.findViewById(R.id.account_balance);
+            accountType     = AccountType.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_TYPE)));
+
+            accountType.displayBalance(balanceTextView,
+                                       balance);
+
             tableLayout.addView(view);
         }
 
@@ -157,7 +155,11 @@ public class BalanceSheetFragment extends BaseReportFragment {
         TextView accountBalance = (TextView) totalView.findViewById(R.id.account_balance);
         accountBalance.setTextSize(16);
         accountBalance.setTypeface(null, Typeface.BOLD);
-        TransactionsActivity.displayBalance(accountBalance, mAccountsDbAdapter.getAccountBalance(accountTypes, -1, System.currentTimeMillis()));
+
+        accountType.displayBalance(accountBalance,
+                                   mAccountsDbAdapter.getAccountBalance(accountTypes,
+                                                                        -1,
+                                                                        System.currentTimeMillis()));
 
         tableLayout.addView(totalView);
     }

@@ -17,104 +17,111 @@
 package org.gnucash.android.ui.util.widget;
 
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
+import android.support.annotation.ColorInt;
 import android.support.v7.widget.SwitchCompat;
 import android.util.AttributeSet;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import org.gnucash.android.R;
 import org.gnucash.android.model.AccountType;
-import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
+import org.gnucash.android.ui.util.AccountTypeUtils;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A special type of {@link android.widget.ToggleButton} which displays the appropriate CREDIT/DEBIT labels for the
- * different account types.
+ * A special type of {@link android.widget.ToggleButton} which displays the appropriate DEBIT/CREDIT labels for the
+ * linked account type and update the color of the amount and currency fields as well
+ *
+ * checked means CREDIT
+ * unchecked means DEBIT
+ *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class TransactionTypeSwitch extends SwitchCompat {
+
     private AccountType mAccountType = AccountType.EXPENSE;
 
+    // View to update and colorize
+    private CalculatorEditText mAmountEditText;
+    private TextView mCurrencyTextView;
+
+    // Listeners to call in case of change in Transaction Type switch
     List<OnCheckedChangeListener> mOnCheckedChangeListeners = new ArrayList<>();
 
-    public TransactionTypeSwitch(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
+    public TransactionTypeSwitch(Context context,
+                                 AttributeSet attrs,
+                                 int defStyle) {
+
+        super(context,
+              attrs,
+              defStyle);
     }
 
-    public TransactionTypeSwitch(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    public TransactionTypeSwitch(Context context,
+                                 AttributeSet attrs) {
+
+        super(context,
+              attrs);
     }
 
     public TransactionTypeSwitch(Context context) {
+
         super(context);
     }
 
-    public void setAccountType(AccountType accountType){
-        this.mAccountType = accountType;
-        Context context = getContext().getApplicationContext();
-        switch (mAccountType) {
-            case CASH:
-                setTextOn(context.getString(R.string.label_spend));
-                setTextOff(context.getString(R.string.label_receive));
-                break;
-            case BANK:
-                setTextOn(context.getString(R.string.label_withdrawal));
-                setTextOff(context.getString(R.string.label_deposit));
-                break;
-            case CREDIT:
-                setTextOn(context.getString(R.string.label_payment));
-                setTextOff(context.getString(R.string.label_charge));
-                break;
-            case ASSET:
-            case EQUITY:
-            case LIABILITY:
-                setTextOn(context.getString(R.string.label_decrease));
-                setTextOff(context.getString(R.string.label_increase));
-                break;
-            case INCOME:
-                setTextOn(context.getString(R.string.label_charge));
-                setTextOff(context.getString(R.string.label_income));
-                break;
-            case EXPENSE:
-                setTextOn(context.getString(R.string.label_rebate));
-                setTextOff(context.getString(R.string.label_expense));
-                break;
-            case PAYABLE:
-                setTextOn(context.getString(R.string.label_payment));
-                setTextOff(context.getString(R.string.label_bill));
-                break;
-            case RECEIVABLE:
-                setTextOn(context.getString(R.string.label_payment));
-                setTextOff(context.getString(R.string.label_invoice));
-                break;
-            case STOCK:
-            case MUTUAL:
-                setTextOn(context.getString(R.string.label_buy));
-                setTextOff(context.getString(R.string.label_sell));
-                break;
-            case CURRENCY:
-            case ROOT:
-            default:
-                setTextOn(context.getString(R.string.label_debit));
-                setTextOff(context.getString(R.string.label_credit));
-                break;
-        }
-        setText(isChecked() ? getTextOn() : getTextOff());
+    /**
+     * Store views to colorize (green/red) accordingly to TransactionType and AccountType
+     * in addition to the current switch button
+     *
+     * @param amountEditText
+     *         EditText displaying the amount value
+     *
+     * @param currencyTextView
+     *         Currency symbol text view
+     */
+    public void setViewsToColorize(CalculatorEditText amountEditText,
+                                   TextView currencyTextView) {
+
+        mAmountEditText = amountEditText;
+        mCurrencyTextView = currencyTextView;
+    }
+
+    /**
+     * Store the accountType
+     * and define switch on/off texts accordingly
+     *
+     * @param accountType
+     */
+    public void setAccountType(AccountType accountType) {
+
+        mAccountType = accountType;
+
+        //
+        // Set switch button text
+        //
+
+        setTextOff(AccountTypeUtils.getLabelDebit(mAccountType)); // DEBIT
+        setTextOn(AccountTypeUtils.getLabelCredit(mAccountType)); // CREDIT
+
+        //
+        // Set switch text and color
+        //
+
+        setWidgetTextColor(isChecked());
+
         invalidate();
     }
 
     /**
-     * Set a checked change listener to monitor the amount view and currency views and update the display (color & balance accordingly)
-     * @param amoutView Amount string {@link android.widget.EditText}
-     * @param currencyTextView Currency symbol text view
+     * Bind a ColorizeOnTransactionTypeChangeListener as a switch checked change listener
+     * to update the signum of amount view, colorize amount,
+     * currency and switch views accordingly
      */
-    public void setAmountFormattingListener(CalculatorEditText amoutView, TextView currencyTextView){
-        setOnCheckedChangeListener(new OnTypeChangedListener(amoutView, currencyTextView));
+    public void setColorizeOnCheckedChangeListener() {
+
+        setOnCheckedChangeListener(new ColorizeOnTransactionTypeChangeListener());
     }
 
     /**
@@ -130,65 +137,127 @@ public class TransactionTypeSwitch extends SwitchCompat {
      * @param transactionType {@link org.gnucash.android.model.TransactionType} of the split
      */
     public void setChecked(TransactionType transactionType){
-        setChecked(Transaction.shouldDecreaseBalance(mAccountType, transactionType));
+        // #876
+//        setChecked(Transaction.shouldDecreaseBalance(mAccountType, transactionType));
+        setChecked(TransactionType.CREDIT.equals(transactionType));
     }
 
     /**
      * Returns the account type associated with this button
      * @return Type of account
      */
-    public AccountType getAccountType(){
+    public AccountType getAccountType() {
+
         return mAccountType;
     }
 
-    public TransactionType getTransactionType(){
-        if (mAccountType.hasDebitNormalBalance()){
-            return isChecked() ? TransactionType.CREDIT : TransactionType.DEBIT;
-        } else {
-            return isChecked() ? TransactionType.DEBIT : TransactionType.CREDIT;
-        }
+    public TransactionType getTransactionType() {
+
+        // #876
+//        if (mAccountType.hasDebitNormalBalance()) {
+//
+//            return isChecked()
+//                   ? TransactionType.CREDIT
+//                   : TransactionType.DEBIT;
+//
+//        } else {
+//
+//            return isChecked()
+//                   ? TransactionType.DEBIT
+//                   : TransactionType.CREDIT;
+//        }
+        return isChecked()
+               ? TransactionType.CREDIT
+               : TransactionType.DEBIT;
     }
 
-    private class OnTypeChangedListener implements OnCheckedChangeListener{
-        private CalculatorEditText mAmountEditText;
-        private TextView mCurrencyTextView;
+    /**
+     * Set the text color of the 3 views of the widget
+     * according to is a Credit amount
+     * and the Account type
+     *
+     * @param isCredit
+     *      true if amount is negative
+     */
+    private void setWidgetTextColor(final boolean isCredit) {
+
+        //
+        // Set switch text
+        //
+
+        setText(isCredit
+                ? getTextOn() // CREDIT
+                : getTextOff() // DEBIT
+               );
+
+        //
+        // Change signum if needed
+        //
+
+//        BigDecimal amount = mAmountEditText.getValue();
+//
+//        if (amount != null) {
+//            if ((isCredit && amount.signum() > 0) //we switched to debit but the amount is +ve
+//                || (!isCredit && amount.signum() < 0)) { //credit but amount is -ve
+//
+//                mAmountEditText.setValue(amount.negate());
+//            }
+//
+//        }
+
+        //
+        // Set text color of views
+        //
+
+        @ColorInt final int color = getAccountType().getAmountColor(isCredit);
+
+        // Set switch color
+        TransactionTypeSwitch.this.setTextColor(color);
+
+        // Set Currency color
+        mAmountEditText.setTextColor(color);
+        mCurrencyTextView.setTextColor(color);
+    }
+
+    //
+    // Inner Class OnTypeChangedListener
+    //
+
+    /**
+     * Listener on change on Transaction Type (DEBIT turned to CREDIT or vice-versa)
+     * which update displayed amount signum and colorize, accordingly
+     */
+    private class ColorizeOnTransactionTypeChangeListener
+            implements OnCheckedChangeListener{
+
         /**
          * Constructor with the amount view
-         * @param amountEditText EditText displaying the amount value
-         * @param currencyTextView Currency symbol text view
          */
-        public OnTypeChangedListener(CalculatorEditText amountEditText, TextView currencyTextView){
-            this.mAmountEditText = amountEditText;
-            this.mCurrencyTextView = currencyTextView;
+        public ColorizeOnTransactionTypeChangeListener(){
+
         }
 
         @Override
-        public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-            setText(isChecked ? getTextOn() : getTextOff());
-            if (isChecked){
-                int red = ContextCompat.getColor(getContext(), R.color.debit_red);
-                TransactionTypeSwitch.this.setTextColor(red);
-                mAmountEditText.setTextColor(red);
-                mCurrencyTextView.setTextColor(red);
-            }
-            else {
-                int green = ContextCompat.getColor(getContext(), R.color.credit_green);
-                TransactionTypeSwitch.this.setTextColor(green);
-                mAmountEditText.setTextColor(green);
-                mCurrencyTextView.setTextColor(green);
-            }
-            BigDecimal amount = mAmountEditText.getValue();
-            if (amount != null){
-                if ((isChecked && amount.signum() > 0) //we switched to debit but the amount is +ve
-                        || (!isChecked && amount.signum() < 0)){ //credit but amount is -ve
-                    mAmountEditText.setValue(amount.negate());
-                }
+        public void onCheckedChanged(CompoundButton compoundButton,
+                                     boolean isChecked) {
 
-            }
+            final boolean isCredit = isChecked;
+
+            //
+            // Set switch text and color
+            //
+
+            setWidgetTextColor(isCredit);
+
+            //
+            // Call other listeners
+            //
 
             for (OnCheckedChangeListener listener : mOnCheckedChangeListeners) {
-                listener.onCheckedChanged(compoundButton, isChecked);
-            }
+                listener.onCheckedChanged(compoundButton,
+                                          isChecked);
+            } // for
         }
+
     }
 }

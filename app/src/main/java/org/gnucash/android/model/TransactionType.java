@@ -17,13 +17,17 @@
 package org.gnucash.android.model;
 
 /**
- * Type of transaction, a credit or a debit
+ * Type of a Split of a Transaction
+ *
+ * It is a credit or a debit
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  * @author Jesse Shieh <jesse.shieh.pub@gmail.com>
  */
+// TW m 2020-03-03 : Should be named SplitType
 public enum TransactionType {
-    DEBIT, CREDIT;
+    DEBIT,
+    CREDIT;
 
     private TransactionType opposite;
 
