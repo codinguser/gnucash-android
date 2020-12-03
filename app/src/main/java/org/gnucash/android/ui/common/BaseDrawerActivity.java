@@ -210,10 +210,11 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home){
-            if (!mDrawerLayout.isDrawerOpen(mNavigationView))
+            if (!isNavigationViewOpen()) {
                 mDrawerLayout.openDrawer(mNavigationView);
-            else
-                mDrawerLayout.closeDrawer(mNavigationView);
+            } else {
+                closeNavigationView();
+            }
             return true;
         }
 
@@ -286,7 +287,7 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
                 UserVoice.launchUserVoice(this);
                 break;
         }
-        mDrawerLayout.closeDrawer(mNavigationView);
+        closeNavigationView();
     }
 
     @Override
@@ -319,7 +320,7 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
             Intent intent = new Intent(this, PreferenceActivity.class);
             intent.setAction(PreferenceActivity.ACTION_MANAGE_BOOKS);
             startActivity(intent);
-            mDrawerLayout.closeDrawer(mNavigationView);
+            closeNavigationView();
             return true;
         }
         BooksDbAdapter booksDbAdapter = BooksDbAdapter.getInstance();
@@ -332,9 +333,17 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
         return true;
     }
 
-    public void onClickAppTitle(View view){
+    protected void onClickAppTitle(View view) {
+
+        closeNavigationView();
+
+        // Do not launch AccountsActivity to stay on current Activity
+//        AccountsActivity.start(this);
+    }
+
+    protected void closeNavigationView() {
+
         mDrawerLayout.closeDrawer(mNavigationView);
-        AccountsActivity.start(this);
     }
 
     public void onClickBook(View view){
@@ -353,5 +362,33 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
         menu.add(0, ID_MANAGE_BOOKS, maxRecent, R.string.menu_manage_books);
 
         popup.show();
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (isNavigationViewOpen()) {
+            // The main navigation menu is open
+
+            // Close the main navigation menu
+//            mDrawerLayout.closeDrawer(mNavigationView);
+            onClickAppTitle(getCurrentFocus());
+
+        } else {
+            // The main navigation menu is closed
+
+            // Close the Activity
+            super.onBackPressed();
+        }
+    }
+
+    /**
+     * Return true if main navigation menu is open
+     *
+     * @return true if main navigation menu is open
+     */
+    protected boolean isNavigationViewOpen() {
+
+        return mDrawerLayout.isDrawerOpen(mNavigationView);
     }
 }
