@@ -575,8 +575,8 @@ public class AccountFormFragment extends Fragment {
                 + " AND " + DatabaseSchema.AccountEntry.COLUMN_HIDDEN + "=0"
                 + " AND " + DatabaseSchema.AccountEntry.COLUMN_TYPE + " != ?";
 
-        Cursor defaultTransferAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition,
-                new String[]{AccountType.ROOT.name()});
+        Cursor defaultTransferAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(condition,
+                                                                                                           new String[]{AccountType.ROOT.name()});
 
         if (mDefaultTransferAccountSpinner.getCount() <= 0) {
             setDefaultTransferAccountInputsVisible(false);
@@ -611,7 +611,7 @@ public class AccountFormFragment extends Fragment {
         if (mParentAccountCursor != null)
             mParentAccountCursor.close();
 
-		mParentAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition, null);
+		mParentAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(condition, null);
         final View view = getView();
         assert view != null;
         if (mParentAccountCursor.getCount() <= 0){
