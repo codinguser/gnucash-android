@@ -500,4 +500,8 @@
         <item>Tax</item>
         <item>Placeholder</item>
     </string-array>
+    <string name="double_back_press_exit_msg">Please click BACK again to Quit\n(or Change General Preferences)</string>
+    <string name="prefs_ui_category_title">User Interface Preferences</string>
+    <string name="prefs_ui_title_use_double_back_button_press_to_quit">Use double back button press to quit</string>
+    <string name="prefs_ui_summary_use_double_back_button_press_to_quit">Shall click twice on back button to actually quit GnuCashAndroid</string>
 </resources>

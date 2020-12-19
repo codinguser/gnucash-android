@@ -30,6 +30,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -42,11 +43,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -130,11 +133,38 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
     private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<>();
 
     /**
+     * DoubleBackPressed attributes
+     *
+     * @author warrott
+     */
+
+    // true if backPress button has already been pressed recently
+    private boolean mDoubleBackButtonPressedOnce;
+
+    // Runnable to consider BackPress button not more pressed recently
+    private final Runnable mResetDoubleBackPressedStatusRunnable = new Runnable() {
+        @Override
+        public void run() {
+
+            // BackPress button is not more considered pressed recently
+            mDoubleBackButtonPressedOnce = false;
+        }
+    };
+
+    // Android handler to delay actions
+    private Handler mHandler = new Handler();
+
+    // Toast
+    private Toast     mToast;
+    /**
      * ViewPager which manages the different tabs
      */
-    @BindView(R.id.pager) ViewPager mViewPager;
-    @BindView(R.id.fab_create_account) FloatingActionButton mFloatingActionButton;
-    @BindView(R.id.coordinatorLayout) CoordinatorLayout mCoordinatorLayout;
+    @BindView(R.id.pager)
+            ViewPager mViewPager;
+    @BindView(R.id.fab_create_account)
+    FloatingActionButton mFloatingActionButton;
+    @BindView(R.id.coordinatorLayout)
+    CoordinatorLayout mCoordinatorLayout;
 
     /**
      * Configuration for rating the app
@@ -221,6 +251,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         final Intent intent = getIntent();
@@ -267,6 +298,18 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
                 startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
             }
         });
+
+        // Prepare a Toast message
+        mToast = Toast.makeText(getApplicationContext(),
+                                R.string.double_back_press_exit_msg,
+                                Toast.LENGTH_SHORT);
+
+        // Align-Center text inside the Toast
+        TextView toastTextView = (TextView) mToast.getView()
+                                                  .findViewById(android.R.id.message);
+        if (toastTextView != null) {
+            toastTextView.setGravity(Gravity.CENTER);
+        }
 	}
 
     @Override
@@ -344,6 +387,14 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
 
             //default to using double entry and save the preference explicitly
             prefs.edit().putBoolean(getString(R.string.key_use_double_entry), true).apply();
+
+            // Default preference to use double back button press to exit
+            prefs.edit()
+                 .putBoolean(getString(R.string.key_use_double_back_button_press_to_quit),
+                             true)
+                 .apply();
+
+            // Finish Activity
             finish();
             return;
         }
@@ -357,9 +408,79 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
 
     @Override
     protected void onDestroy() {
+
         super.onDestroy();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.edit().putInt(LAST_OPEN_TAB_INDEX, mViewPager.getCurrentItem()).apply();
+
+        //
+        // Remove callback to avoid memory leak
+        //
+
+        if (mHandler != null) {
+            // There is an Android handler
+
+            mHandler.removeCallbacks(mResetDoubleBackPressedStatusRunnable);
+        }
+
+    }
+
+    /**
+     * Gérer un double BackPressed pour quitter l'application
+     */
+    @Override
+    public void onBackPressed() {
+
+        if (isNavigationViewOpen()) {
+            // The main navigation menu is open
+
+            // Close the main navigation menu
+            super.onBackPressed();
+
+        } else {
+            // The main navigation menu is closed
+
+            // Get Preference about double back button press to exit
+            boolean prefShallUseDoubleBackPressToExit = PreferenceManager.getDefaultSharedPreferences(this)
+                                                                         .getBoolean(getString(R.string.key_use_double_back_button_press_to_quit),
+                                                                                     true);
+
+            if (mDoubleBackButtonPressedOnce || !prefShallUseDoubleBackPressToExit) {
+                // BackPress button has already been pressed recently OR shall not use double back press to exit
+
+                //
+                // Do not show the Toast anymore
+                //
+
+                if (mToast != null) {
+                    // There is a Toast
+
+                    // Do not show the Toast anymore
+                    mToast.cancel();
+
+                } else {
+                    // There is no Toast
+
+                    // NTD
+                }
+
+                // Perform BackPress
+                super.onBackPressed();
+
+            } else {
+                // BackPress button has been pressed for the first time AND shall use double back press to exit
+
+                // Notice that button has been pressed once
+                this.mDoubleBackButtonPressedOnce = true;
+
+                // Show a message to explain that user must press again to exit
+                mToast.show();
+
+                // After two seconds, it is not more considered as already pressed
+                mHandler.postDelayed(mResetDoubleBackPressedStatusRunnable,
+                                     2000);
+            }
+        }
     }
 
     /**

@@ -125,6 +125,22 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat implemen
                     .putBoolean(getString(R.string.key_use_account_color), Boolean.valueOf(newValue.toString()))
                     .commit();
         }
+
+        //
+        // Preference : use_double_back_button_press_to_quit
+        //
+
+        if (preference.getKey()
+                      .equals(getString(R.string.key_use_double_back_button_press_to_quit))) {
+
+            // Store the new value of the Preference
+            getPreferenceManager().getSharedPreferences()
+                                  .edit()
+                                  .putBoolean(getString(R.string.key_use_double_back_button_press_to_quit),
+                                              Boolean.valueOf(newValue.toString()))
+                                  .commit();
+        }
+
         return true;
     }
 
