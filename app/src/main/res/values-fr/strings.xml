@@ -239,7 +239,7 @@
   <string name="toast_disable_double_entry_to_save_transaction">Créer et spécifier un compte de transfert OU désactiver les doubles entrées dans les paramètres pour enregistrer la transaction</string>
   <string name="label_tap_to_create_schedule">Appuyez sur pour créer le calendrier</string>
   <string name="title_restore_backup">Restaurer Sauvegarde&#8230;</string>
-  <string name="header_backup_and_export_settings">Sauvegarde &amp; export</string>
+  <string name="header_backup_and_export_settings">Sauvegarde &amp; Export</string>
   <string name="title_dropbox_sync_preference">Activer DropBox</string>
   <string name="title_owncloud_sync_preference">Activer ownCloud </string>
   <string name="title_backup_preference_category">Sauvegarde</string>
@@ -253,7 +253,7 @@
   <string name="toast_backup_failed">Échec de la sauvegarde</string>
   <string name="export_warning_xml">Exporte tous les comptes et les transactions</string>
   <string name="toast_install_file_manager">Installez un gestionnaire de fichiers pour sélectionner les fichiers</string>
-  <string name="title_select_backup_to_restore">Sélectionnez une sauvegarde à restaurer</string>
+  <string name="title_select_backup_to_restore">Sélectionnez une sauvegarde à restaurer dans un nouveau Livre de Comptes</string>
   <string name="nav_menu_favorites">Favoris</string>
   <string name="nav_menu_open">Ouvrir&#8230;</string>
   <string name="nav_menu_reports">Rapports</string>
@@ -435,7 +435,7 @@
   <string name="btn_rename">Renommer</string>
   <string name="menu_rename">Renommer</string>
   <string name="title_select_backup_file">Choisir un fichier de sauvegarde</string>
-  <string name="summary_select_backup_file">Choisir un fichier pour les sauvegardes automatiques</string>
+  <string name="summary_select_backup_file">Choisir un fichier spécifique pour les sauvegardes</string>
   <string name="title_confirm_restore_backup">Confirmer la restauration depuis la sauvegarde</string>
   <string name="msg_confirm_restore_backup_into_new_book">Un nouveau livre sera ouvert avec le contenu de cette sauvegarde. Voulez-vous continuer?</string>
   <string name="btn_restore">Restaurer</string>

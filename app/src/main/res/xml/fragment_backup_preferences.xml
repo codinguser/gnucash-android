@@ -16,16 +16,24 @@
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
     <PreferenceCategory android:title="@string/title_backup_preference_category">
-        <Preference android:title="@string/title_select_backup_file"
-                    android:key="@string/key_backup_location"
-                    android:summary="@string/summary_select_backup_file" />
+
         <Preference android:title="@string/title_create_backup_pref"
             android:key="@string/key_create_backup"
             android:summary="@string/summary_create_backup_pref" />
+
         <Preference android:title="@string/title_restore_backup"
             android:key="@string/key_restore_backup"
             android:summary="@string/summary_restore_backup_pref" />
+
+        <Preference android:title="@string/title_select_backup_file"
+            android:key="@string/key_backup_location"
+            android:summary="@string/summary_select_backup_file" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/title_export_preference_category">
         <CheckBoxPreference android:title="@string/title_dropbox_sync_preference"
             android:summary="@string/summary_dropbox_sync"
             android:checked="false"
@@ -37,20 +45,22 @@
             android:checked="false"
             android:key="@string/key_owncloud_sync"
             android:icon="@drawable/ic_owncloud" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/title_export_preference_category">
 
         <ListPreference android:title="@string/title_default_export_format"
                         android:entryValues="@array/key_export_format_values"
                         android:entries="@array/export_formats"
                         android:key="@string/key_default_export_format"
                         android:summary="@string/summary_default_export_format"/>
+
         <EditTextPreference android:title="@string/title_default_export_email"
             android:key="@string/key_default_export_email" 
             android:summary="@string/summary_default_export_email"
             android:inputType="textEmailAddress"/>
+
         <android.support.v7.preference.SwitchPreferenceCompat android:summary="@string/hint_export_choice" android:key="@string/key_export_all_transactions" android:title="@string/title_export_all_transactions"/>
+
         <android.support.v7.preference.SwitchPreferenceCompat android:summary="@string/hint_delete_after_export" android:key="@string/key_delete_transactions_after_export" android:title="@string/title_always_delete_exported_transactions"/>
+
         <android.support.v7.preference.SwitchPreferenceCompat android:key="@string/key_xml_ofx_header" android:summary="@string/summary_xml_ofx_header" android:title="@string/title_xml_ofx_header"/>
     </PreferenceCategory>
 
