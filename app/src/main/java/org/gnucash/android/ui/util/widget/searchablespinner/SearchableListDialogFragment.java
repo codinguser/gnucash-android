@@ -435,34 +435,34 @@ public class SearchableListDialogFragment<T_ITEM>
                 // NTD
             }
 
-            //
-            // Register a Listener to close dialog if there is only one item remaining in the filtered list, and select it
-            // automatically
-            //
-
-            getListViewAdapter().registerDataSetObserver(new DataSetObserver() {
-
-                @Override
-                public void onChanged() {
-
-                    if (getListViewAdapter().getCount() == 1) {
-                        // only one account
-
-                        dismissDialog();
-
-                        final T_ITEM item = (T_ITEM) getListViewAdapter().getItem(0);
-
-                        // Simulate a onSearchableListItemClicked
-                        getOnSearchableListItemClickedListener().onSearchableListItemClicked(item);
-
-                    } else {
-                        // only one account n' pas
-
-                        // RAF
-                    }
-
-                }
-            });
+//            //
+//            // Register a Listener to close dialog if there is only one item remaining in the filtered list, and select it
+//            // automatically
+//            //
+//
+//            getListViewAdapter().registerDataSetObserver(new DataSetObserver() {
+//
+//                @Override
+//                public void onChanged() {
+//
+//                    if (getListViewAdapter().getCount() == 1) {
+//                        // only one account
+//
+//                        dismissDialog();
+//
+//                        final T_ITEM item = (T_ITEM) getListViewAdapter().getItem(0);
+//
+//                        // Simulate a onSearchableListItemClicked
+//                        getOnSearchableListItemClickedListener().onSearchableListItemClicked(item);
+//
+//                    } else {
+//                        // only one account n' pas
+//
+//                        // RAF
+//                    }
+//
+//                }
+//            });
 
             // On item click listener
             getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
