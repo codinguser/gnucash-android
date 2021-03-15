@@ -15,9 +15,11 @@
  */
 package org.gnucash.android.importer;
 
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.model.Commodity;
@@ -44,17 +46,23 @@ public class CommoditiesXmlHandler extends DefaultHandler {
      * List of commodities parsed from the XML file.
      * They will be all added to db at once at the end of the document
      */
-    private List<Commodity> mCommodities;
+    private List<Commodity> mCommodities = new ArrayList<>();
+
+    private boolean deleteExisting;
 
     private CommoditiesDbAdapter mCommoditiesDbAdapter;
 
-    public CommoditiesXmlHandler(SQLiteDatabase db){
+    public CommoditiesXmlHandler(SQLiteDatabase db, boolean deleteExisting){
+        initAdapter(db);
+        this.deleteExisting = deleteExisting;
+    }
+
+    private void initAdapter(SQLiteDatabase db) {
         if (db == null){
             mCommoditiesDbAdapter = GnuCashApplication.getCommoditiesDbAdapter();
         } else {
             mCommoditiesDbAdapter = new CommoditiesDbAdapter(db);
         }
-        mCommodities = new ArrayList<>();
     }
 
     @Override
@@ -82,6 +90,25 @@ public class CommoditiesXmlHandler extends DefaultHandler {
 
     @Override
     public void endDocument() throws SAXException {
-        mCommoditiesDbAdapter.bulkAddRecords(mCommodities, DatabaseAdapter.UpdateMethod.insert);
+        if (this.deleteExisting){
+            mCommoditiesDbAdapter.deleteAllRecords();
+            mCommoditiesDbAdapter.bulkAddRecords(mCommodities, DatabaseAdapter.UpdateMethod.insert);
+        } else {
+            List<String> existingCurrencyCodes = new ArrayList<>();
+
+            try(Cursor cursor = mCommoditiesDbAdapter.fetchAllRecords()) {
+                while (cursor.moveToNext()) {
+                    String code = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommodityEntry.COLUMN_MNEMONIC));
+                    existingCurrencyCodes.add(code);
+                }
+            }
+            for (Commodity commodity : mCommodities) {
+                if (existingCurrencyCodes.contains(commodity.getCurrencyCode())){
+                    mCommoditiesDbAdapter.addRecord(commodity, DatabaseAdapter.UpdateMethod.update);
+                } else {
+                    mCommoditiesDbAdapter.addRecord(commodity, DatabaseAdapter.UpdateMethod.insert);
+                }
+            }
+        }
     }
 }

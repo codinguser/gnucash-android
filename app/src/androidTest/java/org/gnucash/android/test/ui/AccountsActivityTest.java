@@ -17,7 +17,6 @@
 package org.gnucash.android.test.ui;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.database.SQLException;
@@ -31,8 +30,6 @@ import android.support.test.runner.AndroidJUnit4;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
-
-import com.kobakei.ratethisapp.RateThisApp;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
@@ -51,6 +48,7 @@ import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.receivers.AccountCreator;
 import org.gnucash.android.test.ui.util.DisableAnimationsRule;
+import org.gnucash.android.test.ui.util.GnucashAndroidTestRunner;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.account.AccountsListFragment;
 import org.hamcrest.Description;
@@ -131,7 +129,7 @@ public class AccountsActivityTest {
 
     @BeforeClass
     public static void prepTest(){
-        preventFirstRunDialogs(GnuCashApplication.getAppContext());
+        GnucashAndroidTestRunner.preventFirstRunDialogs(GnuCashApplication.getAppContext());
 
         String activeBookUID = BooksDbAdapter.getInstance().getActiveBookUID();
         mDbHelper = new DatabaseHelper(GnuCashApplication.getAppContext(), activeBookUID);
@@ -160,26 +158,6 @@ public class AccountsActivityTest {
         mAccountsDbAdapter.addRecord(simpleAccount, DatabaseAdapter.UpdateMethod.insert);
 
         refreshAccountsList();
-    }
-
-
-    /**
-     * Prevents the first-run dialogs (Whats new, Create accounts etc) from being displayed when testing
-     * @param context Application context
-     */
-    public static void preventFirstRunDialogs(Context context) {
-        AccountsActivity.rateAppConfig = new RateThisApp.Config(10000, 10000);
-        Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
-
-        //do not show first run dialog
-        editor.putBoolean(context.getString(R.string.key_first_run), false);
-        editor.putInt(AccountsActivity.LAST_OPEN_TAB_INDEX, AccountsActivity.INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
-
-        //do not show "What's new" dialog
-        String minorVersion = context.getString(R.string.app_minor_version);
-        int currentMinor = Integer.parseInt(minorVersion);
-        editor.putInt(context.getString(R.string.key_previous_minor_version), currentMinor);
-        editor.commit();
     }
 
 

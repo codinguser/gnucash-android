@@ -81,7 +81,7 @@ public class StackedBarChartFragment extends BaseReportFragment {
 
     @Override
     public int getTitle() {
-        return R.string.title_cash_flow_report;
+        return R.string.title_bar_chart;
     }
 
     @Override

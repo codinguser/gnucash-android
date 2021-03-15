@@ -58,6 +58,7 @@ import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.ui.transaction.dialog.BulkMoveDialogFragment;
+import org.gnucash.android.ui.util.AccountUtils;
 import org.gnucash.android.ui.util.CursorRecyclerAdapter;
 import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
 import org.gnucash.android.util.BackupManager;
@@ -164,8 +165,13 @@ public class TransactionsListFragment extends Fragment implements
 	
 	@Override
 	public void onResume() {
+
 		super.onResume();
-		((TransactionsActivity)getActivity()).updateNavigationSelection();
+
+		// Select Current Account in Toolbar
+		((TransactionsActivity)getActivity()).selectCurrentAccountInToolbarSpinner();
+
+		// Refresh Transaction List according to currently selected Account in Toolbar Spinner
 		refresh();
 	}
 
@@ -299,6 +305,11 @@ public class TransactionsListFragment extends Fragment implements
 					for (Split split : splits) {
 						if (!split.getAccountUID().equals(mAccountUID)) {
 							text = AccountsDbAdapter.getInstance().getFullyQualifiedAccountName(split.getAccountUID());
+
+							// Set color according to Account
+							AccountUtils.setAccountTextColor(holder.secondaryText,
+															  split.getAccountUID());
+
 							break;
 						}
 					}
@@ -308,6 +319,7 @@ public class TransactionsListFragment extends Fragment implements
 					text = splits.size() + " splits";
 				}
 				holder.secondaryText.setText(text);
+
 				holder.transactionDate.setText(dateText);
 
 				holder.editTransaction.setOnClickListener(new View.OnClickListener() {

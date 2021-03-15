@@ -16,12 +16,19 @@
 
 package org.gnucash.android.test.ui.util;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.multidex.MultiDex;
+import android.preference.PreferenceManager;
 import android.support.test.runner.AndroidJUnitRunner;
 import android.util.Log;
+
+import com.kobakei.ratethisapp.RateThisApp;
+
+import org.gnucash.android.R;
+import org.gnucash.android.ui.account.AccountsActivity;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -34,6 +41,25 @@ public class GnucashAndroidTestRunner extends AndroidJUnitRunner{
     private static final String ANIMATION_PERMISSION = "android.permission.SET_ANIMATION_SCALE";
     private static final float DISABLED = 0.0f;
     private static final float DEFAULT = 1.0f;
+
+    /**
+     * Prevents the first-run dialogs (Whats new, Create accounts etc) from being displayed when testing
+     * @param context Application context
+     */
+    public static void preventFirstRunDialogs(Context context) {
+        AccountsActivity.rateAppConfig = new RateThisApp.Config(10000, 10000);
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+
+        //do not show first run dialog
+        editor.putBoolean(context.getString(R.string.key_first_run), false);
+        editor.putInt(AccountsActivity.LAST_OPEN_TAB_INDEX, AccountsActivity.INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
+
+        //do not show "What's new" dialog
+        String minorVersion = context.getString(R.string.app_minor_version);
+        int currentMinor = Integer.parseInt(minorVersion);
+        editor.putInt(context.getString(R.string.key_previous_minor_version), currentMinor);
+        editor.commit();
+    }
 
     @Override
     public void onCreate(Bundle args) {

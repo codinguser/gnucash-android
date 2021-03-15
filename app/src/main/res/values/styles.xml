@@ -16,9 +16,34 @@
 -->
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Customize Spinner appearance -->
+
+    <style name="spinnerItemTextStyle" parent="@android:style/Widget.TextView.SpinnerItem">
+        <item name="android:textColor">@color/bpblack</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">start</item>
+    </style>
+
+    <style name="SpinnerDropDownItemAccountSimpleNameStyle" parent="spinnerItemTextStyle">
+        <item name="android:textColor">@color/bpblack</item>
+        <item name="android:ellipsize">middle</item>
+    </style>
+
+    <style name="SpinnerDropDownItemAccountFullNameTextStyle" parent="spinnerItemTextStyle">
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textColor">@color/light_gray</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">middle</item>
+    </style>
+
+    <!-- Customize List appearance -->
+
     <style name="ListItemContainerBase">
         <item name="android:minHeight">?android:attr/listPreferredItemHeight</item>
     </style>
+
     <style name="ListItem" parent="ListItemContainerBase">
         <item name="android:paddingLeft">@dimen/dialog_padding</item>
         <item name="android:paddingRight">@dimen/dialog_padding</item>
@@ -32,7 +57,8 @@
         <item name="android:textColor">@android:color/black</item>
         <item name="android:gravity">center_vertical</item>
     </style>
-    
+
+    <!-- Spinner item with down arrow -->
     <style name="Dropdown.TextView" parent="@style/Widget.AppCompat.Spinner.DropDown.ActionBar">
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>

@@ -52,7 +52,7 @@
   <string name="hint_export_choice">Por defecto solo las nuevas transacciones desde la última exportación serán exportadas. Seleccione esta opción para exportar todas las transacciones</string>
   <string name="toast_export_error">Error exportando datos %1$s</string>
   <string name="btn_export">Exportar</string>
-  <string name="option_delete_after_export">Borrar transacciones después de exportar</string>
+  <string name="option_delete_after_export">Borrar transacciones despues de exportar</string>
   <string name="hint_delete_after_export">Todas las transacciones exportadas serán borradas cuando la exportación haya terminado</string>
   <string name="title_settings">Ajustes</string>
   <string-array name="export_destinations">
@@ -226,7 +226,7 @@
   <string name="menu_toggle_legend">Mostrar leyenda</string>
   <string name="menu_toggle_labels">Mostrar etiquetas</string>
   <string name="menu_toggle_percentage_mode">Mostrar porcentaje</string>
-  <string name="menu_toggle_average_lines">Mostrar líneas de media</string>
+  <string name="menu_toggle_average_lines">Mostar lineas de media</string>
   <string name="menu_group_smaller_slices">Agrupar porciones pequeñas</string>
   <string name="label_chart_no_data">Datos del gráfico no disponibles</string>
   <string name="label_chart_total">Total</string>

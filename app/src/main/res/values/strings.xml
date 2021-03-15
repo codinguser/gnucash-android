@@ -196,7 +196,7 @@
     <string name="msg_confirm_create_default_accounts_setting">A new book will be opened with the default accounts\n\nYour current accounts and transactions will not be modified!</string>
     <string name="title_scheduled_transactions">Transactions</string>
     <string name="title_select_export_destination">Select destination for export</string>
-    <string name="hint_split_memo">Memo</string>
+    <string name="hint_split_memo">Memo (Click to add)</string>
     <string name="label_spend">Spend</string>
     <string name="label_receive">Receive</string>
     <string name="label_withdrawal">Withdrawal</string>
@@ -500,4 +500,14 @@
         <item>Tax</item>
         <item>Placeholder</item>
     </string-array>
+    <string name="select_account">Select Account</string>
+
+    <string name="prefs_ui_category_title">User Interface Preferences</string>
+
+    <string name="prefs_ui_title_use_color_in_account_list">Use colors in Account Lists</string>
+    <string name="prefs_ui_summary_use_color_in_account_list">Use colors in Account Lists and in Transaction Lists</string>
+
+    <string name="prefs_ui_title_account_searchable_spinner_openkeyboard">Show keyboard in Searchable Account List</string>
+    <string name="prefs_ui_summary_account_searchable_spinner_openkeyboard">Show keyboard when opening a Searchable Account List</string>
+
 </resources>

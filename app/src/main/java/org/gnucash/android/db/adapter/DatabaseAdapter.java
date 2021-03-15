@@ -556,10 +556,14 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      * @throws IllegalArgumentException if the record ID does not exist in the database
      */
     public String getUID(long id){
+
         Cursor cursor = mDb.query(mTableName,
-                new String[]{DatabaseSchema.CommonColumns.COLUMN_UID},
-                DatabaseSchema.CommonColumns._ID + " = " + id,
-                null, null, null, null);
+                                  new String[]{DatabaseSchema.CommonColumns.COLUMN_UID},
+                                  DatabaseSchema.CommonColumns._ID + " = " + id,
+                                  null,
+                                  null,
+                                  null,
+                                  null);
 
         String uid = null;
         try {

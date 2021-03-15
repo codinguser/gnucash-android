@@ -31,6 +31,8 @@
     <string name="key_google_drive_app_folder_id" translatable="false">google_drive_app_folder</string>
     <string name="key_enable_crashlytics" translatable="false">enable_crashlytics</string>
     <string name="key_use_account_color" translatable="false">use_account_color</string>
+    <string name="key_use_color_in_account_list" translatable="false">key_use_color_in_account_list</string>
+    <string name="key_shall_open_keyboard_in_account_searchable_spinner" translatable="false">key_shall_open_keyboard_in_account_searchable_spinner</string>
     <string name="key_last_export_destination">last_export_destination</string>
     <string name="key_use_compact_list">use_compact_list</string>
     <string name="key_prefs_header_general">prefs_header_general</string>

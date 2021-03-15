@@ -37,6 +37,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
@@ -269,6 +270,15 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
 	}
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setSubtitle(BooksDbAdapter.getInstance().getActiveBookDisplayName());
+        }
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
 
@@ -323,18 +333,33 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
      * <p>Also handles displaying the What's New dialog</p>
      */
     private void init() {
-        PreferenceManager.setDefaultValues(this, BooksDbAdapter.getInstance().getActiveBookUID(),
-                Context.MODE_PRIVATE, R.xml.fragment_transaction_preferences, true);
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);
+        PreferenceManager.setDefaultValues(this,
+                                           BooksDbAdapter.getInstance()
+                                                         .getActiveBookUID(),
+                                           Context.MODE_PRIVATE,
+                                           R.xml.fragment_transaction_preferences,
+                                           true);
+
+        SharedPreferences prefs    = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean           firstRun = prefs.getBoolean(getString(R.string.key_first_run),
+                                                      true);
 
         if (firstRun){
             startActivity(new Intent(GnuCashApplication.getAppContext(), FirstRunWizardActivity.class));
 
-            //default to using double entry and save the preference explicitly
+            // Default Preference to using double entry and save the preference explicitly
             prefs.edit().putBoolean(getString(R.string.key_use_double_entry), true).apply();
+
+            // Default preference to open keyboard in account searchable spinners
+            prefs.edit().putBoolean(getString(R.string.key_shall_open_keyboard_in_account_searchable_spinner), false).apply();
+
+            // Default preference to use colors in account lists
+            prefs.edit().putBoolean(getString(R.string.key_use_color_in_account_list),true).apply();
+
+            // Finish Activity
             finish();
+
             return;
         }
 

@@ -36,6 +36,7 @@ import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.test.ui.util.DisableAnimationsRule;
+import org.gnucash.android.test.ui.util.GnucashAndroidTestRunner;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.junit.After;
@@ -105,7 +106,7 @@ public class CalculatorEditTextTest {
         mTransactionsDbAdapter  = TransactionsDbAdapter.getInstance();
         mAccountsDbAdapter      = AccountsDbAdapter.getInstance();
 
-        AccountsActivityTest.preventFirstRunDialogs(GnuCashApplication.getAppContext());
+        GnucashAndroidTestRunner.preventFirstRunDialogs(GnuCashApplication.getAppContext());
     }
 
     @Before

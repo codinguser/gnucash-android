@@ -28,7 +28,6 @@ import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
 
 import org.gnucash.android.R;
@@ -66,7 +65,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
-import static org.gnucash.android.test.ui.AccountsActivityTest.preventFirstRunDialogs;
+import static org.gnucash.android.test.ui.util.GnucashAndroidTestRunner.preventFirstRunDialogs;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
@@ -84,8 +83,7 @@ public class OwnCloudExportTest {
     private String OC_DIR = "gc_test";
 
     /**
-     * A JUnit {@link Rule @Rule} to launch your activity under test. This is a replacement
-     * for {@link ActivityInstrumentationTestCase2}.
+     * A JUnit {@link Rule @Rule} to launch your activity under test.
      * <p>
      * Rules are interceptors which are executed for each test method and will run before
      * any of your setup code in the {@link Before @Before} method.

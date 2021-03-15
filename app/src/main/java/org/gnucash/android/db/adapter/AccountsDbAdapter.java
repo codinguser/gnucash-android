@@ -59,6 +59,7 @@ import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
 public class AccountsDbAdapter extends DatabaseAdapter<Account> {
+
     /**
      * Separator used for account name hierarchies between parent and child accounts
      */
@@ -71,7 +72,14 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      */
     public static final String ROOT_ACCOUNT_FULL_NAME = " ";
 
-	/**
+    /**
+     * Where clause to get non hidden nor root account
+     */
+    public static final String WHERE_NOT_HIDDEN_AND_NOT_ROOT_ACCOUNT =
+            AccountEntry.COLUMN_HIDDEN + " = 0 AND " + AccountEntry.COLUMN_TYPE + " != ?";
+
+
+    /**
 	 * Transactions database adapter for manipulating transactions associated with accounts
 	 */
     private final TransactionsDbAdapter mTransactionsAdapter;
@@ -702,15 +710,20 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      * GnuCash ROOT accounts and hidden accounts will not be included in the result set.
      * @return {@link Cursor} to all account records
      */
-    public Cursor fetchAllRecordsOrderedByFullName(){
-        Log.v(LOG_TAG, "Fetching all accounts from db");
-        String selection =  AccountEntry.COLUMN_HIDDEN + " = 0 AND " + AccountEntry.COLUMN_TYPE + " != ?" ;
+    public Cursor fetchAllRecordsOrderedByFullName() {
+
+        Log.v(LOG_TAG,
+              "Fetching all accounts from db");
+
+        String selection = AccountEntry.COLUMN_HIDDEN + " = 0 AND " + AccountEntry.COLUMN_TYPE + " != ?";
+
         return mDb.query(AccountEntry.TABLE_NAME,
-                null,
-                selection,
-                new String[]{AccountType.ROOT.name()},
-                null, null,
-                AccountEntry.COLUMN_FULL_NAME + " ASC");
+                         null,
+                         selection,
+                         new String[]{AccountType.ROOT.name()},
+                         null,
+                         null,
+                         AccountEntry.COLUMN_FULL_NAME + " ASC");
     }
 
     /**
@@ -728,8 +741,12 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         Log.v(LOG_TAG, "Fetching all accounts from db where " + where + " order by " + orderBy);
 
         return mDb.query(AccountEntry.TABLE_NAME,
-                null, where, whereArgs, null, null,
-                orderBy);
+                         null,
+                         where,
+                         whereArgs,
+                         null,
+                         null,
+                         orderBy);
     }
     
     /**
@@ -740,10 +757,16 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      * @return Cursor set of accounts which fulfill <code>where</code>
      */
     public Cursor fetchAccountsOrderedByFullName(String where, String[] whereArgs) {
+
         Log.v(LOG_TAG, "Fetching all accounts from db where " + where);
+
         return mDb.query(AccountEntry.TABLE_NAME,
-                null, where, whereArgs, null, null,
-                AccountEntry.COLUMN_FULL_NAME + " ASC");
+                         null,
+                         where,
+                         whereArgs,
+                         null,
+                         null,
+                         AccountEntry.COLUMN_FULL_NAME + " ASC");
     }
 
     /**
@@ -754,12 +777,36 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      * @param whereArgs where args
      * @return Cursor set of accounts which fulfill <code>where</code>
      */
-    public Cursor fetchAccountsOrderedByFavoriteAndFullName(String where, String[] whereArgs) {
-        Log.v(LOG_TAG, "Fetching all accounts from db where " + where + " order by Favorite then Name");
+    public Cursor fetchAccountsOrderedByFavoriteAndFullName(String where,
+                                                            String[] whereArgs) {
+
+        Log.v(LOG_TAG,
+              "Fetching all accounts from db where " + where + " order by Favorite then Name");
+
         return mDb.query(AccountEntry.TABLE_NAME,
-                null, where, whereArgs, null, null,
-                AccountEntry.COLUMN_FAVORITE + " DESC, " + AccountEntry.COLUMN_FULL_NAME + " ASC");
+                         null,
+                         where,
+                         whereArgs,
+                         null,
+                         null,
+                         AccountEntry.COLUMN_FAVORITE + " DESC, " + AccountEntry.COLUMN_FULL_NAME + " ASC");
     }
+
+    /**
+     * Returns a Cursor set of all Accounts
+     *
+     * <p>This method returns the favorite accounts first, sorted by name, and then the other accounts,
+     * sorted by name.</p>
+     *
+     * @return Cursor set of all accounts
+     */
+    public Cursor fetchAccountsOrderedByFavoriteAndFullName() {
+
+        return fetchAccountsOrderedByFavoriteAndFullName(WHERE_NOT_HIDDEN_AND_NOT_ROOT_ACCOUNT,
+                                                         new String[]{AccountType.ROOT.name()});
+    }
+
+
 
     /**
      * Returns the balance of an account while taking sub-accounts into consideration
@@ -929,12 +976,18 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      */
     public Cursor fetchTopLevelAccounts() {
         //condition which selects accounts with no parent, whose UID is not ROOT and whose type is not ROOT
-        return fetchAccounts("(" + AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " IS NULL OR "
-                        + AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " = ?) AND "
-                        + AccountEntry.COLUMN_HIDDEN + " = 0 AND "
-                        + AccountEntry.COLUMN_TYPE + " != ?",
-                new String[]{getOrCreateGnuCashRootAccountUID(), AccountType.ROOT.name()},
-                AccountEntry.COLUMN_NAME + " ASC");
+        return fetchAccounts("("
+                             + AccountEntry.COLUMN_PARENT_ACCOUNT_UID
+                             + " IS NULL OR "
+                             + AccountEntry.COLUMN_PARENT_ACCOUNT_UID
+                             + " = ?) AND "
+                             + AccountEntry.COLUMN_HIDDEN
+                             + " = 0 AND "
+                             + AccountEntry.COLUMN_TYPE
+                             + " != ?",
+                             new String[]{getOrCreateGnuCashRootAccountUID(),
+                                          AccountType.ROOT.name()},
+                             AccountEntry.COLUMN_NAME + " ASC");
     }
 
     /**
@@ -1215,22 +1268,33 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      * @return Android resource ID representing the color which can be directly set to a view
      */
     public static int getActiveAccountColorResource(@NonNull String accountUID) {
+
         AccountsDbAdapter accountsDbAdapter = getInstance();
 
-        String colorCode = null;
-        int iColor = -1;
+        String colorCode        = null;
+        int    iColor           = -1;
+
         String parentAccountUID = accountUID;
-        while (parentAccountUID != null ) {
+        while (parentAccountUID != null) {
+
             colorCode = accountsDbAdapter.getAccountColorCode(accountsDbAdapter.getID(parentAccountUID));
+
             if (colorCode != null) {
                 iColor = Color.parseColor(colorCode);
                 break;
             }
+
+            // Climb to parent account
             parentAccountUID = accountsDbAdapter.getParentAccountUID(parentAccountUID);
         }
 
         if (colorCode == null) {
-            iColor = GnuCashApplication.getAppContext().getResources().getColor(R.color.theme_primary);
+            // No color has been found defined in any ancestor
+
+            // Use default theme color
+            iColor = GnuCashApplication.getAppContext()
+                                       .getResources()
+                                       .getColor(R.color.theme_primary);
         }
 
         return iColor;

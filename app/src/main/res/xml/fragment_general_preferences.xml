@@ -1,18 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/prefs_ui_category_title">
+
+        <CheckBoxPreference
+            android:key="@string/key_shall_open_keyboard_in_account_searchable_spinner"
+            android:title="@string/prefs_ui_title_account_searchable_spinner_openkeyboard"
+            android:summary="@string/prefs_ui_summary_account_searchable_spinner_openkeyboard"
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:key="@string/key_use_color_in_account_list"
+            android:title="@string/prefs_ui_title_use_color_in_account_list"
+            android:summary="@string/prefs_ui_summary_use_color_in_account_list"
+            android:defaultValue="true"/>
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/title_passcode_preferences">
-        <CheckBoxPreference android:key="@string/key_enable_passcode"
-            android:title="@string/title_enable_passcode"/>
-        <Preference android:key="@string/key_change_passcode"
+
+        <CheckBoxPreference
+            android:key="@string/key_enable_passcode"
+            android:title="@string/title_enable_passcode" />
+
+        <Preference
+            android:key="@string/key_change_passcode"
             android:title="@string/title_change_passcode"
             android:dependency="@string/key_enable_passcode" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/title_report_prefs">
-        <CheckBoxPreference android:key="@string/key_use_account_color"
+
+        <CheckBoxPreference
+            android:key="@string/key_use_account_color"
             android:title="@string/title_use_account_color"
             android:summary="@string/summary_use_account_color" />
-    </PreferenceCategory>
 
+    </PreferenceCategory>
 
 </PreferenceScreen>

@@ -86,7 +86,7 @@
 
             <Spinner android:id="@+id/input_account_type_spinner"
                      android:layout_width="0dp"
-                    android:minHeight="?android:attr/listPreferredItemHeight"
+                     android:minHeight="?android:attr/listPreferredItemHeight"
                      android:layout_height="wrap_content"
                      android:layout_weight="1"
                      android:layout_marginLeft="@dimen/dialog_padding" />
@@ -132,10 +132,11 @@
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
                       android:focusable="false"        />
-            <Spinner
+            <org.gnucash.android.ui.util.widget.searchablespinner.SearchableSpinnerView
                     android:id="@+id/input_parent_account"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                />
         </LinearLayout>
 
         <TextView android:id="@+id/label_default_transfer_account"
@@ -148,13 +149,15 @@
         <LinearLayout android:id="@+id/layout_default_transfer_account"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
+                      android:layout_marginBottom="@dimen/form_row_bottom_margin"
                       android:orientation="horizontal" >
 
             <CheckBox android:id="@+id/checkbox_default_transfer_account"
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
                       android:focusable="false" />
-            <Spinner
+
+            <org.gnucash.android.ui.util.widget.searchablespinner.SearchableSpinnerView
                     android:id="@+id/input_default_transfer_account"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />

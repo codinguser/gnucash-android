@@ -186,7 +186,7 @@
   <string name="msg_confirm_create_default_accounts_setting">Un nouveau livre sera ouvert avec les comptes courants par défaut\n\n Vos comptes et opérations actuels ne seront pas modifiés !</string>
   <string name="title_scheduled_transactions">Transactions planifiées</string>
   <string name="title_select_export_destination">Selectionnez une destination pour l\'export</string>
-  <string name="hint_split_memo">Memo</string>
+  <string name="hint_split_memo">Memo (Cliquez pour ajouter)</string>
   <string name="label_spend">Dépenser</string>
   <string name="label_receive">Recevoir</string>
   <string name="label_withdrawal">Retrait</string>
@@ -446,4 +446,10 @@
   <string name="label_select_destination_after_export">Sélectionnez la destination une fois l\'exportation terminée</string>
   <string name="label_dropbox_export_destination">Exporter dans le dossier \'/Apps/GnuCash Android/\' sur Dropbox</string>
   <string name="title_section_preferences">Préférences</string>
+  <string name="prefs_ui_category_title">Préférences d\'ergonomie</string>
+  <string name="select_account">Selectionner un Compte</string>
+  <string name="prefs_ui_title_use_color_in_account_list">Utiliser les couleurs dans les listes de Comptes</string>
+  <string name="prefs_ui_summary_use_color_in_account_list">Utiliser les couleurs dans les listes de Comptes et les listes de Transactions</string>
+    <string name="prefs_ui_summary_account_searchable_spinner_openkeyboard">Afficher le Clavier lors de l\'ouverture d\'une liste de Compte avec champ de Recherche</string>
+    <string name="prefs_ui_title_account_searchable_spinner_openkeyboard">Afficher le Clavier dans les listes de Compte avec champ de Recherche</string>
 </resources>

@@ -25,6 +25,7 @@ import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.passcode.PasscodeLockActivity;
+import org.gnucash.android.ui.util.AccountUtils;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -99,15 +100,30 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
 
         View itemView;
 
-        public SplitAmountViewHolder(View view, Split split){
+        public SplitAmountViewHolder(View view,
+                                     Split split) {
+
             itemView = view;
-            ButterKnife.bind(this, view);
+
+            ButterKnife.bind(this,
+                             view);
 
             AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
+
             accountName.setText(accountsDbAdapter.getAccountFullName(split.getAccountUID()));
-            Money quantity = split.getFormattedQuantity();
-            TextView balanceView = quantity.isNegative() ? splitDebit : splitCredit;
-            TransactionsActivity.displayBalance(balanceView, quantity);
+
+            // Set color according to Account
+            AccountUtils.setAccountTextColor(accountName,
+                                             split.getAccountUID());
+
+
+            Money    quantity    = split.getFormattedQuantity();
+            TextView balanceView = quantity.isNegative()
+                                   ? splitDebit
+                                   : splitCredit;
+
+            TransactionsActivity.displayBalance(balanceView,
+                                                quantity);
         }
     }
 

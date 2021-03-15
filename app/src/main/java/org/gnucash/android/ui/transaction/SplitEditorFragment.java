@@ -60,6 +60,7 @@ import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.transaction.dialog.TransferFundsDialogFragment;
+import org.gnucash.android.ui.util.AccountUtils;
 import org.gnucash.android.ui.util.widget.CalculatorEditText;
 import org.gnucash.android.ui.util.widget.CalculatorKeyboard;
 import org.gnucash.android.ui.util.widget.TransactionTypeSwitch;
@@ -197,13 +198,23 @@ public class SplitEditorFragment extends Fragment {
      * @return Returns the split view which was added
      */
     private View addSplitView(Split split){
+
         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-        View splitView = layoutInflater.inflate(R.layout.item_split_entry, mSplitsLinearLayout, false);
-        mSplitsLinearLayout.addView(splitView,0);
-        SplitViewHolder viewHolder = new SplitViewHolder(splitView, split);
-        splitView.setTag(viewHolder);
-        mSplitItemViewList.add(splitView);
-        return splitView;
+
+        View splitEntryView = layoutInflater.inflate(R.layout.item_split_entry,
+                                                     mSplitsLinearLayout,
+                                                     false);
+
+        // Respect sort list order
+        mSplitsLinearLayout.addView(splitEntryView);
+
+        SplitViewHolder viewHolder = new SplitViewHolder(splitEntryView,
+                                                         split);
+        splitEntryView.setTag(viewHolder);
+
+        mSplitItemViewList.add(splitEntryView);
+
+        return splitEntryView;
     }
 
     /**
@@ -216,11 +227,12 @@ public class SplitEditorFragment extends Fragment {
         mAccountUID = ((FormActivity) getActivity()).getCurrentAccountUID();
         mBaseAmount = new BigDecimal(args.getString(UxArgument.AMOUNT_STRING));
 
-        String conditions = "("
+        String where = "("
                 + DatabaseSchema.AccountEntry.COLUMN_HIDDEN + " = 0 AND "
                 + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
                 + ")";
-        mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions, null);
+        mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFavoriteAndFullName(where, null);
+
         mCommodity = CommoditiesDbAdapter.getInstance().getCommodity(mAccountsDbAdapter.getCurrencyCode(mAccountUID));
     }
 
@@ -228,13 +240,20 @@ public class SplitEditorFragment extends Fragment {
      * Holds a split item view and binds the items in it
      */
     class SplitViewHolder implements OnTransferFundsListener{
-        @BindView(R.id.input_split_memo)        EditText splitMemoEditText;
-        @BindView(R.id.input_split_amount)      CalculatorEditText splitAmountEditText;
-        @BindView(R.id.btn_remove_split)        ImageView removeSplitButton;
-        @BindView(R.id.input_accounts_spinner)  Spinner accountsSpinner;
-        @BindView(R.id.split_currency_symbol)   TextView splitCurrencyTextView;
-        @BindView(R.id.split_uid)               TextView splitUidTextView;
-        @BindView(R.id.btn_split_type)          TransactionTypeSwitch splitTypeSwitch;
+        @BindView(R.id.split_currency_symbol)
+        TextView              splitCurrencyTextView;
+        @BindView(R.id.input_split_amount)
+        CalculatorEditText    splitAmountEditText;
+        @BindView(R.id.btn_split_type)
+        TransactionTypeSwitch splitTypeSwitch;
+        @BindView(R.id.btn_remove_split)
+        ImageView             removeSplitButton;
+        @BindView(R.id.input_accounts_spinner)
+        Spinner               accountsSpinner;
+        @BindView(R.id.input_split_memo)
+        EditText              splitMemoEditText;
+        @BindView(R.id.split_uid)
+        TextView              splitUidTextView;
 
         View splitView;
         Money quantity;
@@ -267,8 +286,13 @@ public class SplitEditorFragment extends Fragment {
             updateTransferAccountsList(accountsSpinner);
 
             splitCurrencyTextView.setText(mCommodity.getSymbol());
+
+            // Set an amount formatting listener
             splitTypeSwitch.setAmountFormattingListener(splitAmountEditText, splitCurrencyTextView);
+
+            // Switch on/off according to amount signum
             splitTypeSwitch.setChecked(mBaseAmount.signum() > 0);
+
             splitUidTextView.setText(BaseModel.generateUID());
 
             if (split != null) {
@@ -340,7 +364,15 @@ public class SplitEditorFragment extends Fragment {
      * Only accounts with the same currency can be transferred to
      */
     private void updateTransferAccountsList(Spinner transferAccountSpinner){
-        mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), mCursor);
+
+        // In Splits, an account is allowed to appear many times, therefore there is no restriction on uid
+        String where = AccountUtils.getTransfertAccountWhereClause(null);
+
+        mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
+                                                               mCursor,
+                                                               where,
+                                                               null);
+
         transferAccountSpinner.setAdapter(mCursorAdapter);
     }
 
@@ -422,12 +454,17 @@ public class SplitEditorFragment extends Fragment {
 
         @Override
         public void afterTextChanged(Editable editable) {
+
+
             BigDecimal imbalance = BigDecimal.ZERO;
 
             for (View splitItem : mSplitItemViewList) {
                 SplitViewHolder viewHolder = (SplitViewHolder) splitItem.getTag();
+
                 BigDecimal amount = viewHolder.getAmountValue().abs();
+
                 long accountId = viewHolder.accountsSpinner.getSelectedItemId();
+
                 boolean hasDebitNormalBalance = AccountsDbAdapter.getInstance()
                         .getAccountType(accountId).hasDebitNormalBalance();
 
@@ -436,16 +473,20 @@ public class SplitEditorFragment extends Fragment {
                         imbalance = imbalance.add(amount);
                     else
                         imbalance = imbalance.subtract(amount);
+
                 } else {
                     if (hasDebitNormalBalance)
                         imbalance = imbalance.subtract(amount);
                     else
                         imbalance = imbalance.add(amount);
+
                 }
 
             }
 
-            TransactionsActivity.displayBalance(mImbalanceTextView, new Money(imbalance, mCommodity));
+            TransactionsActivity.displayBalance(mImbalanceTextView,
+                                                new Money(imbalance,
+                                                          mCommodity));
         }
     }
 

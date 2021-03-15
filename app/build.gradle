@@ -5,8 +5,8 @@ apply plugin: 'io.fabric'
 
 def versionMajor = 2
 def versionMinor = 4
-def versionPatch = 0
-def versionBuild = 3
+def versionPatch = 1
+def versionBuild = 4
 
 static def buildTime() {
     def df = new SimpleDateFormat("yyyyMMdd HH:mm 'UTC'")
@@ -20,13 +20,13 @@ static def gitSha() {
 
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 29
+    buildToolsVersion '29.0.0'
     defaultConfig {
         applicationId "org.gnucash.android"
         testApplicationId 'org.gnucash.android.test'
         minSdkVersion 19
-        targetSdkVersion 27
+        targetSdkVersion 29
         versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         resValue "string", "app_version_name", "${versionName}"
@@ -142,11 +142,12 @@ android {
 
     compileOptions { //we want switch with strings during xml parsing
         encoding "UTF-8"
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     testOptions {
+        animationsDisabled true
         unitTests {
             includeAndroidResources = true
         }
@@ -179,7 +180,7 @@ afterEvaluate {
 }
 
 
-def androidSupportVersion       = "27.0.2"
+def androidSupportVersion       = "28.0.0"
 def androidEspressoVersion      = "3.0.0"
 def androidSupportTestVersion   = "1.0.0"
 
@@ -223,19 +224,19 @@ dependencies {
         exclude module: 'httpclient'
     }
 
-    implementation('com.crashlytics.sdk.android:crashlytics:2.6.7@aar') {
-        transitive = true;
+    implementation('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
+        transitive = true
     }
 
 
-    testImplementation 'org.robolectric:robolectric:3.5.1'
+    testImplementation 'org.robolectric:robolectric:4.3.1'
 
     testImplementation(
             'junit:junit:4.12',
             'joda-time:joda-time:2.9.4',
-            'org.assertj:assertj-core:1.7.1'
+            'org.assertj:assertj-core:3.14.0'
     )
-    testImplementation 'org.robolectric:shadows-multidex:3.0'
+    testImplementation 'org.robolectric:shadows-multidex:4.3.1'
 
     androidTestImplementation (
             'com.android.support:support-annotations:'  + androidSupportVersion,

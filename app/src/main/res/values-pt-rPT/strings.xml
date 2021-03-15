@@ -428,7 +428,7 @@ Neste processo não serão recolhidas informações do utilizador!</string>
   <string name="toast_updated_transaction_recurring_schedule">Transação atualizada agendamento recorrente</string>
   <string name="label_export_transactions_since_date">Desde</string>
   <string name="switch_export_transactions_from_all_time">Todo o tempo</string>
-  <string name="label_recommend_app">Recomendar na Play Store</string>
+  <string name="label_recommend_app">Recomendado na Play Store</string>
   <string name="repeat_until_date">desde%1$s</string>
   <string name="repeat_on_weekday">na %1$s</string>
   <string name="repeat_x_times">por %1$d vezes</string>

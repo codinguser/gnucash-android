@@ -16,10 +16,10 @@
 -->
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
           android:id="@android:id/text1"
-          style="?android:attr/spinnerItemStyle"
-          android:maxLines="1"
           android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:textSize="18sp"
-          android:ellipsize="marquee"
-          android:textAlignment="inherit"/>
+          android:layout_height="?android:attr/listPreferredItemHeight"
+          android:gravity="center|left"
+          style="?android:attr/spinnerItemStyle"
+          android:textAlignment="inherit"
+          android:textColor="@color/bpWhite"
+    />

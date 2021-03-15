@@ -43,6 +43,7 @@ import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.receivers.TransactionRecorder;
 import org.gnucash.android.test.ui.util.DisableAnimationsRule;
+import org.gnucash.android.test.ui.util.GnucashAndroidTestRunner;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
@@ -57,7 +58,6 @@ import org.junit.runner.RunWith;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
-import java.util.Currency;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -76,7 +76,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
@@ -135,7 +134,7 @@ public class TransactionsActivityTest {
 	@BeforeClass
 	public static void prepareTestCase(){
 		Context context = GnuCashApplication.getAppContext();
-		AccountsActivityTest.preventFirstRunDialogs(context);
+		GnucashAndroidTestRunner.preventFirstRunDialogs(context);
 
 		mSplitsDbAdapter = SplitsDbAdapter.getInstance();
 		mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
