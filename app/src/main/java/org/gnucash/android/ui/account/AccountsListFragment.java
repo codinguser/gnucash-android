@@ -23,9 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -499,11 +497,11 @@ public class AccountsListFragment extends Fragment implements
 
             // add a summary of transactions to the account view
 
-                // Make sure the balance task is truly multithread
+            // Make sure the balance task is truly multithread
             new AccountBalanceTask(holder.accountBalance).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, accountUID);
 
-            String accountColor = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_COLOR_CODE));
-            int colorCode = accountColor == null ? Color.TRANSPARENT : Color.parseColor(accountColor);
+            // #871 Display inherited color from ancestor's account on the Strip View
+            int colorCode = AccountsDbAdapter.getActiveAccountColorResource(accountUID);
             holder.colorStripView.setBackgroundColor(colorCode);
 
             boolean isPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(accountUID);
