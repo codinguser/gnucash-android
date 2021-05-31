@@ -1237,6 +1237,32 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     }
 
     /**
+     * Returns the account currency code for the active account as String.
+     * <p>
+     * Basically, if we are in a top level account, use the default title color.
+     * but propagate a parent account's currency code to children who don't have own currency code
+     * </p>
+     * @param accountUID GUID of the account
+     * @return String representing the currency code which can be directly set to a view
+     */
+    public String getActiveAccountCurrencyCode(@NonNull String accountUID) {
+        String currencyCode = null;
+        String parentAccountUID = accountUID;
+        while (parentAccountUID != null ) {
+            currencyCode = getCurrencyCode(parentAccountUID);
+            if (currencyCode != null) break;
+
+            parentAccountUID = getParentAccountUID(parentAccountUID);
+        }
+
+        if (currencyCode == null) {
+            currencyCode = GnuCashApplication.getDefaultCurrencyCode();
+        }
+
+        return currencyCode;
+    }
+
+    /**
      * Returns the list of commodities in use in the database.
      *
      * <p>This is not the same as the list of all available commodities.</p>
