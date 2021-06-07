@@ -120,6 +120,8 @@ public enum AccountType {
      * @param shallDisplayCurrency if true will display Currency as well as amount (usefull when displaying balance in
      *                             TransactionListFragment, BalanceSheetFragment...)
      *                             else will not display Currency (usefull in SplitEditorFragment or TransactionFormFragment)
+     *                                  because this allows the value to be an arithmetic expression (ex. 130.67+3) that can be
+     *                                  evluated when loosing focus
      */
     public void displayBalance(final TextView balanceTextView,
                                final Money balance,
@@ -134,7 +136,7 @@ public enum AccountType {
         final Money balanceToDisplay = getBalanceWithSignumForDisplay(balance);
 
         if (shallDisplayCurrency) {
-            // Shall currency
+            // Shall display currency
 
             // Display currency
             balanceTextView.setText(!shallDisplayNegativeSignum
@@ -143,7 +145,8 @@ public enum AccountType {
                                     : balanceToDisplay.formattedString());
 
         } else {
-            // Shall not display currency
+            // Shall not display currency, because the value may be an aritmetic expression (ex. 130.67+3)
+            // and must not contain currency to be evaluated
 
             // Shall display value in all other cases than zero balance and shall not display zero balance
             final boolean shallDisplayValue = !(balanceToDisplay.isAmountZero() && !shallDisplayZero);
@@ -151,11 +154,12 @@ public enum AccountType {
             if (shallDisplayValue) {
                 // Shall display balance
 
-                // Display value without currency and without decimals
+                // Display value without currency but with 2 decimals, in order to be able to be evaluated
+                // in the case where the value is an arithmetic expression like 130.67+3
                 balanceTextView.setText(!shallDisplayNegativeSignum
                                         ? balanceToDisplay.abs()
-                                                          .toShortString()
-                                        : balanceToDisplay.toShortString());
+                                                          .toLocaleString()
+                                        : balanceToDisplay.toLocaleString());
 
             } else {
                 // Shall not display balance
