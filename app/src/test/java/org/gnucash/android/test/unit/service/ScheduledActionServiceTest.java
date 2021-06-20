@@ -30,6 +30,7 @@ import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
+import org.gnucash.android.export.ExporterFactory;
 import org.gnucash.android.importer.GncXmlImporter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Commodity;
@@ -318,7 +319,9 @@ public class ScheduledActionServiceTest {
         backupParams.setExportTarget(ExportParams.ExportTarget.SD_CARD);
         scheduledBackup.setTag(backupParams.toCsv());
 
-        File backupFolder = new File(Exporter.getExportFolderPath(BooksDbAdapter.getInstance().getActiveBookUID()));
+        final Exporter dummyExporter = ExporterFactory.getInstance().getExporter(backupParams, mDb);
+
+        File backupFolder = new File(dummyExporter.getExportFolderPath());
         assertThat(backupFolder).exists();
         assertThat(backupFolder.listFiles()).isEmpty();
 
@@ -366,8 +369,9 @@ public class ScheduledActionServiceTest {
         backupParams.setExportTarget(ExportParams.ExportTarget.SD_CARD);
         scheduledBackup.setTag(backupParams.toCsv());
 
-        File backupFolder = new File(
-                Exporter.getExportFolderPath(BooksDbAdapter.getInstance().getActiveBookUID()));
+        final Exporter dummyExporter = ExporterFactory.getInstance().getExporter(backupParams, mDb);
+
+        File backupFolder = new File(dummyExporter.getExportFolderPath());
         assertThat(backupFolder).exists();
         assertThat(backupFolder.listFiles()).isEmpty();
 
@@ -413,8 +417,9 @@ public class ScheduledActionServiceTest {
         setTransactionInDbModifiedTimestamp(transaction.getUID(),
                 new Timestamp(LocalDateTime.now().minusDays(9).toDate().getTime()));
 
-        File backupFolder = new File(
-                Exporter.getExportFolderPath(BooksDbAdapter.getInstance().getActiveBookUID()));
+        final Exporter dummyExporter = ExporterFactory.getInstance().getExporter(backupParams, mDb);
+
+        File backupFolder = new File(dummyExporter.getExportFolderPath());
         assertThat(backupFolder).exists();
         assertThat(backupFolder.listFiles()).isEmpty();
 
@@ -469,8 +474,9 @@ public class ScheduledActionServiceTest {
         transaction.addSplit(split.createPair(mTransferAccount.getUID()));
         mTransactionsDbAdapter.addRecord(transaction);
 
-        File backupFolder = new File(
-                Exporter.getExportFolderPath(BooksDbAdapter.getInstance().getActiveBookUID()));
+        final Exporter dummyExporter = ExporterFactory.getInstance().getExporter(backupParams, mDb);
+
+        File backupFolder = new File(dummyExporter.getExportFolderPath());
         assertThat(backupFolder).exists();
         assertThat(backupFolder.listFiles()).isEmpty();
 

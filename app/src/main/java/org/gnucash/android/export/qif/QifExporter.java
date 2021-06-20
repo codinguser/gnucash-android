@@ -21,7 +21,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
@@ -39,6 +41,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -115,7 +118,7 @@ public class QifExporter extends Exporter{
                     );
 
             File file = new File(getExportCacheFilePath());
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
 
             try {
                 String currentCurrencyCode = "";
@@ -195,7 +198,7 @@ public class QifExporter extends Exporter{
                                 .append(newLine);
                     }
                     String splitType = cursor.getString(cursor.getColumnIndexOrThrow("split_type"));
-                    Double quantity_num = cursor.getDouble(cursor.getColumnIndexOrThrow("split_quantity_num"));
+                    double quantity_num = cursor.getDouble(cursor.getColumnIndexOrThrow("split_quantity_num"));
                     int quantity_denom = cursor.getInt(cursor.getColumnIndexOrThrow("split_quantity_denom"));
                     int precision = 0;
                     switch (quantity_denom) {
@@ -225,7 +228,7 @@ public class QifExporter extends Exporter{
                         default:
                             throw new ExporterException(mExportParams, "split quantity has illegal denominator: "+ quantity_denom);
                     }
-                    Double quantity = 0.0;
+                    double quantity = 0.0;
                     if (quantity_denom != 0) {
                         quantity = quantity_num / quantity_denom;
                     }
@@ -253,15 +256,29 @@ public class QifExporter extends Exporter{
             PreferencesHelper.setLastExportTime(TimestampHelper.getTimestampFromNow());
 
             List<String> exportedFiles = splitQIF(file);
-            if (exportedFiles.isEmpty())
+            if (exportedFiles.isEmpty()) {
                 return Collections.emptyList();
-            else if (exportedFiles.size() > 1)
+            } else {
+                // always zip exported file(s)
                 return zipQifs(exportedFiles);
-            else
-                return exportedFiles;
+            }
         } catch (IOException e) {
             throw new ExporterException(mExportParams, e);
         }
+    }
+
+    /**
+     * Returns the path to the file where the exporter should save the export during generation.
+     * <p>This path is a temporary cache file. For the QIF export, the file extension differs from
+     *     the final file name, because multiple QIF files may be written during generation,
+     *     but the export result is always a ZIP archive. <br>
+     *     This file is deleted every time a new export is started</p>
+     * @return Absolute path to file
+     */
+    @Override
+    protected String getExportCacheFilePath(){
+
+        return getCachePath() + buildExportFileBaseName(mExportParams.getExportFormat(), getBookName()) + ".qif";
     }
 
     @NonNull
@@ -280,7 +297,7 @@ public class QifExporter extends Exporter{
      */
     private List<String> splitQIF(File file) throws IOException {
         // split only at the last dot
-        String[] pathParts = file.getPath().split("(?=\\.[^\\.]+$)");
+        String[] pathParts = file.getPath().split("(?=\\.[^.]+$)");
         ArrayList<String> splitFiles = new ArrayList<>();
         String line;
         BufferedReader in = new BufferedReader(new FileReader(file));

@@ -19,8 +19,10 @@ package org.gnucash.android.export;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -40,6 +42,12 @@ import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -99,7 +107,6 @@ public abstract class Exporter {
     protected final CommoditiesDbAdapter mCommoditiesDbAdapter;
 	protected final BudgetsDbAdapter mBudgetsDbAdapter;
     protected final Context mContext;
-    private String mExportCacheFilePath;
 
     /**
      * Database being currently exported
@@ -136,10 +143,9 @@ public abstract class Exporter {
         }
 
         mBookUID = new File(mDb.getPath()).getName(); //this depends on the database file always having the name of the book GUID
-        mExportCacheFilePath = null;
         mCacheDir = new File(mContext.getCacheDir(), params.getExportFormat().name());
         mCacheDir.mkdir();
-        purgeDirectory(mCacheDir);
+        deleteRecursively(mCacheDir);
     }
 
     /**
@@ -149,7 +155,7 @@ public abstract class Exporter {
      * @return Sanitized file name
      */
     public static String sanitizeFilename(String inputName) {
-        return inputName.replaceAll("[^a-zA-Z0-9-_\\.]", "_");
+        return inputName.replaceAll("[^a-zA-Z0-9-_.]", "_");
     }
 
     /**
@@ -159,11 +165,14 @@ public abstract class Exporter {
      * @return String containing the file name
      */
     public static String buildExportFilename(ExportFormat format, String bookName) {
+        return buildExportFileBaseName(format, bookName) + format.getExtension();
+    }
+
+    protected static String buildExportFileBaseName(ExportFormat format, String bookName) {
         return EXPORT_FILENAME_DATE_FORMAT.format(new Date(System.currentTimeMillis()))
                 + "_gnucash_export_" + sanitizeFilename(bookName) +
                 (format == ExportFormat.CSVA ? "_accounts" : "") +
-                (format == ExportFormat.CSVT ? "_transactions" : "") +
-                format.getExtension();
+                (format == ExportFormat.CSVT ? "_transactions" : "");
     }
 
     /**
@@ -180,7 +189,7 @@ public abstract class Exporter {
         try {
             Date date = EXPORT_FILENAME_DATE_FORMAT.parse(tokens[0] + "_" + tokens[1]);
             timeMillis = date.getTime();
-        } catch (ParseException e) {
+        } catch (ParseException|NullPointerException e) {
             Log.e("Exporter", "Error parsing time from file name: " + e.getMessage());
             Crashlytics.logException(e);
         }
@@ -194,46 +203,62 @@ public abstract class Exporter {
     public abstract List<String> generateExport() throws ExporterException;
 
     /**
-     * Recursively delete all files in a directory
-     * @param directory File descriptor for directory
+     * Recursively delete all files in a directory or deletes a file that is not a directory
+     * @param file File descriptor for file or directory
      */
-    private void purgeDirectory(File directory){
-        for (File file : directory.listFiles()) {
-            if (file.isDirectory())
-                purgeDirectory(file);
-            else
-                file.delete();
+    private void deleteRecursively(File file) {
+        if (file == null) {
+            return;
+        } else if (file.isDirectory()) {
+            File[] children = file.listFiles();
+            if (children == null) {
+                return;
+            }
+            for (File child : children) {
+                if (child.isDirectory()) {
+                    deleteRecursively(child);
+                } else {
+                    file.delete();
+                }
+            }
+        } else {
+            file.delete();
         }
     }
 
     /**
      * Returns the path to the file where the exporter should save the export during generation
-     * <p>This path is a temporary cache file whose file extension matches the export format.<br>
+     * <p>This path is a temporary cache file whose file extension is inferred from the export format.<br>
      *     This file is deleted every time a new export is started</p>
      * @return Absolute path to file
      */
     protected String getExportCacheFilePath(){
+
+        return getCachePath() + buildExportFilename(mExportParams.getExportFormat(), getBookName());
+    }
+
+    protected String getCachePath() {
         // The file name contains a timestamp, so ensure it doesn't change with multiple calls to
         // avoid issues like #448
-        if (mExportCacheFilePath == null) {
-            String cachePath = mCacheDir.getAbsolutePath();
-            if (!cachePath.endsWith("/"))
-                cachePath += "/";
-            String bookName = BooksDbAdapter.getInstance().getAttribute(mBookUID, DatabaseSchema.BookEntry.COLUMN_DISPLAY_NAME);
-            mExportCacheFilePath = cachePath + buildExportFilename(mExportParams.getExportFormat(), bookName);
+        String cachePath = mCacheDir.getAbsolutePath();
+        if (!cachePath.endsWith("/")) {
+            cachePath += "/";
         }
 
-        return mExportCacheFilePath;
+        return cachePath;
+    }
+
+    protected String getBookName() {
+        return BooksDbAdapter.getInstance().getAttribute(mBookUID, DatabaseSchema.BookEntry.COLUMN_DISPLAY_NAME);
     }
 
     /**
      * Returns that path to the export folder for the book with GUID {@code bookUID}.
      * This is the folder where exports like QIF and OFX will be saved for access by external programs
-     * @param bookUID GUID of the book being exported. Each book has its own export path
      * @return Absolute path to export folder for active book
      */
-    public static String getExportFolderPath(String bookUID){
-        String path = BASE_FOLDER_PATH + "/" + bookUID + "/exports/";
+    public String getExportFolderPath(){
+        String path = BASE_FOLDER_PATH + "/" + mBookUID + "/exports/";
         File file = new File(path);
         if (!file.exists())
             file.mkdirs();

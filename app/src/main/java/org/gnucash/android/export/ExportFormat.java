@@ -36,13 +36,14 @@ public enum ExportFormat {
     }
 
     /**
-     * Returns the file extension for this export format including the period e.g. ".qif"
+     * Returns the file extension for this export format including the period e.g. ".csv"
      * @return String file extension for the export format
      */
     public String getExtension(){
         switch (this) {
             case QIF:
-                return ".qif";
+                // zip qif files by default
+                return ".zip";
             case OFX:
                 return ".ofx";
             case XML:

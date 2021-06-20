@@ -19,6 +19,7 @@ package org.gnucash.android.ui.export;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -62,8 +63,10 @@ import org.gnucash.android.export.ExportAsyncTask;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
+import org.gnucash.android.export.ExporterFactory;
 import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.ScheduledAction;
+import org.gnucash.android.repository.TransactionRepository;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.settings.BackupPreferenceFragment;
 import org.gnucash.android.ui.settings.dialog.OwnCloudDialogFragment;
@@ -78,6 +81,7 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.concurrent.locks.Lock;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -324,7 +328,14 @@ public class ExportFormFragment extends Fragment implements
 		exportParameters.setCsvSeparator(mExportCsvSeparator);
 
 		Log.i(TAG, "Commencing async export of transactions");
-		new ExportAsyncTask(getActivity(), GnuCashApplication.getActiveDb()).execute(exportParameters);
+		final Lock readLock = GnuCashApplication.dbLock.readLock();
+		readLock.lock();
+		final SQLiteDatabase db = GnuCashApplication.getActiveDb();
+
+		final Exporter exporter = ExporterFactory.getInstance().getExporter(exportParameters, db);
+		new ExportAsyncTask(getActivity(), exporter, new TransactionRepository(db)).execute(exportParameters);
+
+		readLock.unlock();
 
 		if (mRecurrenceRule != null) {
 			ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.BACKUP);
