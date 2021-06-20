@@ -38,15 +38,19 @@ import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportAsyncTask;
 import org.gnucash.android.export.ExportParams;
+import org.gnucash.android.export.Exporter;
+import org.gnucash.android.export.ExporterFactory;
 import org.gnucash.android.model.Book;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.repository.TransactionRepository;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Service for running scheduled events.
@@ -88,9 +92,16 @@ public class ScheduledActionService extends JobIntentService {
                     scheduledActions.size(), book.getDisplayName()));
             processScheduledActions(scheduledActions, db);
 
+            final Lock readLock = GnuCashApplication.dbLock.readLock();
+            readLock.lock();
+            final SQLiteDatabase activeDb = GnuCashApplication.getActiveDb();
+
             //close all databases except the currently active database
-            if (!db.getPath().equals(GnuCashApplication.getActiveDb().getPath()))
+            if (!db.getPath().equals(activeDb.getPath())) {
                 db.close();
+            }
+
+            readLock.unlock();
         }
 
         Log.i(LOG_TAG, "Completed service @ " + java.text.DateFormat.getDateTimeInstance().format(new Date()));
@@ -173,8 +184,9 @@ public class ScheduledActionService extends JobIntentService {
         params.setExportStartTime(new Timestamp(scheduledAction.getLastRunTime()));
         Boolean result = false;
         try {
+            final Exporter exporter = ExporterFactory.getInstance().getExporter(params, db);
             //wait for async task to finish before we proceed (we are holding a wake lock)
-            result = new ExportAsyncTask(GnuCashApplication.getAppContext(), db).execute(params).get();
+            result = new ExportAsyncTask(GnuCashApplication.getAppContext(), exporter, new TransactionRepository(db)).execute(params).get();
         } catch (InterruptedException | ExecutionException e) {
             Crashlytics.logException(e);
             Log.e(LOG_TAG, e.getMessage());

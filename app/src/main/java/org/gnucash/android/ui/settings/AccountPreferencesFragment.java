@@ -21,6 +21,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -40,13 +41,16 @@ import org.gnucash.android.export.ExportAsyncTask;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
+import org.gnucash.android.export.ExporterFactory;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.repository.TransactionRepository;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.settings.dialog.DeleteAllAccountsConfirmationDialog;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Account settings fragment inside the Settings activity
@@ -207,7 +211,13 @@ public class AccountPreferencesFragment extends PreferenceFragmentCompat impleme
                     ExportParams exportParams = new ExportParams(ExportFormat.CSVA);
                     exportParams.setExportTarget(ExportParams.ExportTarget.URI);
                     exportParams.setExportLocation(data.getData().toString());
-                    ExportAsyncTask exportTask = new ExportAsyncTask(getActivity(), GnuCashApplication.getActiveDb());
+
+                    final Lock readLock = GnuCashApplication.dbLock.readLock();
+                    readLock.lock();
+                    final SQLiteDatabase db = GnuCashApplication.getActiveDb();
+
+                    final Exporter exporter = ExporterFactory.getInstance().getExporter(exportParams, db);
+                    final ExportAsyncTask exportTask = new ExportAsyncTask(getActivity(), exporter, new TransactionRepository(db));
 
                     try {
                         exportTask.execute(exportParams).get();
@@ -215,6 +225,8 @@ public class AccountPreferencesFragment extends PreferenceFragmentCompat impleme
                         Crashlytics.logException(e);
                         Toast.makeText(getActivity(), "An error occurred during the Accounts CSV export",
                                 Toast.LENGTH_LONG).show();
+                    } finally {
+                        readLock.unlock();
                     }
                 }
         }

@@ -58,6 +58,9 @@ import org.gnucash.android.ui.settings.PreferenceActivity;
 
 import java.util.Currency;
 import java.util.Locale;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -104,7 +107,10 @@ public class GnuCashApplication extends MultiDexApplication {
     private static RecurrenceDbAdapter mRecurrenceDbAdapter;
 
     private static BooksDbAdapter mBooksDbAdapter;
-    private static DatabaseHelper mDbHelper;
+    private static volatile DatabaseHelper mDbHelper;
+
+    // lock for accessing the current database
+    public static final ReadWriteLock dbLock = new ReentrantReadWriteLock();
 
     /**
      * Returns darker version of specified <code>color</code>.
@@ -142,6 +148,9 @@ public class GnuCashApplication extends MultiDexApplication {
      * This method should be called every time a new book is opened
      */
     public static void initializeDatabaseAdapters() {
+        final Lock exclusiveLock = dbLock.writeLock();
+        exclusiveLock.lock();
+
         if (mDbHelper != null){ //close if open
             mDbHelper.getReadableDatabase().close();
         }
@@ -172,6 +181,8 @@ public class GnuCashApplication extends MultiDexApplication {
         mCommoditiesDbAdapter       = new CommoditiesDbAdapter(mainDb);
         mBudgetAmountsDbAdapter     = new BudgetAmountsDbAdapter(mainDb);
         mBudgetsDbAdapter           = new BudgetsDbAdapter(mainDb, mBudgetAmountsDbAdapter, mRecurrenceDbAdapter);
+
+        exclusiveLock.unlock();
     }
 
     public static AccountsDbAdapter getAccountsDbAdapter() {
