@@ -454,8 +454,26 @@ public class TransactionFormFragment extends Fragment implements
             }
         });
 
+        mDescriptionEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (!hasFocus && view instanceof AutoCompleteTextView) {
+                    TransactionFormFragment.this.sanitizeDescription();
+                }
+            }
+        });
+
         mDescriptionEditText.setAdapter(adapter);
     }
+
+    /**
+     * Removes new line characters from the description text field and replaces them with spaces.
+     */
+    private void sanitizeDescription() {
+        String original = mDescriptionEditText.getText().toString();
+        mDescriptionEditText.setText(original.replaceAll("\\r?\\n", " "));
+    }
+
 
     /**
 	 * Initialize views in the fragment with information from a transaction.
@@ -844,6 +862,8 @@ public class TransactionFormFragment extends Fragment implements
             startTransferFunds();
             return;
         }
+
+        sanitizeDescription();
 
         Transaction transaction = extractTransactionFromView();
         if (mEditMode) { //if editing an existing transaction

@@ -145,7 +145,7 @@ public class QifExporter extends Exporter{
                             currentAccountUID = accountUID;
                             writer.append(QifHelper.ACCOUNT_HEADER).append(newLine);
                             writer.append(QifHelper.ACCOUNT_NAME_PREFIX)
-                                    .append(cursor.getString(cursor.getColumnIndexOrThrow("acct1_full_name")))
+                                    .append(QifHelper.sanitizeQifLine(cursor.getString(cursor.getColumnIndexOrThrow("acct1_full_name"))))
                                     .append(newLine);
                             writer.append(QifHelper.ENTRY_TERMINATOR).append(newLine);
                             writer.append(QifHelper.getQifHeader(cursor.getString(cursor.getColumnIndexOrThrow("acct1_type"))))
@@ -158,12 +158,15 @@ public class QifExporter extends Exporter{
                                 .append(newLine);
                         // Payee / description
                         writer.append(QifHelper.PAYEE_PREFIX)
-                                .append(cursor.getString(cursor.getColumnIndexOrThrow("trans_desc")))
+                                .append(QifHelper.sanitizeQifLine(cursor.getString(cursor.getColumnIndexOrThrow("trans_desc"))))
                                 .append(newLine);
                         // Notes, memo
-                        writer.append(QifHelper.MEMO_PREFIX)
-                                .append(cursor.getString(cursor.getColumnIndexOrThrow("trans_notes")))
-                                .append(newLine);
+                        String memo = QifHelper.sanitizeQifLine(cursor.getString(cursor.getColumnIndexOrThrow("trans_notes")));
+                        if (!memo.isEmpty()) {
+                            writer.append(QifHelper.MEMO_PREFIX)
+                                    .append(memo)
+                                    .append(newLine);
+                        }
                         // deal with imbalance first
                         double imbalance = cursor.getDouble(cursor.getColumnIndexOrThrow("trans_acct_balance"));
                         BigDecimal decimalImbalance = BigDecimal.valueOf(imbalance).setScale(2, BigDecimal.ROUND_HALF_UP);
@@ -186,10 +189,10 @@ public class QifExporter extends Exporter{
                     // amount associated with the header account will not be exported.
                     // It can be auto balanced when importing to GnuCash
                     writer.append(QifHelper.SPLIT_CATEGORY_PREFIX)
-                            .append(cursor.getString(cursor.getColumnIndexOrThrow("acct2_full_name")))
+                            .append(QifHelper.sanitizeQifLine(cursor.getString(cursor.getColumnIndexOrThrow("acct2_full_name"))))
                             .append(newLine);
-                    String splitMemo = cursor.getString(cursor.getColumnIndexOrThrow("split_memo"));
-                    if (splitMemo != null && splitMemo.length() > 0) {
+                    String splitMemo = QifHelper.sanitizeQifLine(cursor.getString(cursor.getColumnIndexOrThrow("split_memo")));
+                    if (!splitMemo.isEmpty()) {
                         writer.append(QifHelper.SPLIT_MEMO_PREFIX)
                                 .append(splitMemo)
                                 .append(newLine);

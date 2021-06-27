@@ -26,6 +26,7 @@ import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.qif.QifExporter;
+import org.gnucash.android.export.qif.QifHelper;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Book;
 import org.gnucash.android.model.Commodity;
@@ -156,13 +157,39 @@ public class QifExporterTest {
         String expectedDescription = "my description";
         String expectedMemo = "my memo";
 
+        checkGivenMemoAndDescription(expectedDescription,expectedDescription,expectedMemo,expectedMemo);
+    }
+
+    /**
+     * Test that new lines in the memo and description fields of transactions are not exported.
+     */
+    @Test
+    public void memoAndDescription_doNotExportNewLines() throws IOException {
+        final String lineBreak = "\r\n";
+        final String expectedLineBreakReplacement = " ";
+
+        final String descriptionFirstLine = "Test description";
+        final String descriptionSecondLine = "with 2 lines";
+        final String originalDescription = descriptionFirstLine + lineBreak + descriptionSecondLine;
+        final String expectedDescription = descriptionFirstLine + expectedLineBreakReplacement + descriptionSecondLine;
+
+        final String memoFirstLine = "My memo has multiply lines";
+        final String memoSecondLine = "This is the second line";
+        final String memoThirdLine = "This is the third line";
+        final String originalMemo = memoFirstLine + lineBreak + memoSecondLine + lineBreak + memoThirdLine;
+        final String expectedMemo = memoFirstLine + expectedLineBreakReplacement + memoSecondLine + expectedLineBreakReplacement + memoThirdLine;
+
+        checkGivenMemoAndDescription(originalDescription,expectedDescription,originalMemo,expectedMemo);
+    }
+
+    private void checkGivenMemoAndDescription(final String originalDescription, final String expectedDescription, final String originalMemo, final String expectedMemo) throws IOException {
         AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(mDb);
 
         Account account = new Account("Basic Account");
         Transaction transaction = new Transaction("One transaction");
         transaction.addSplit(new Split(Money.createZeroInstance("EUR"), account.getUID()));
-        transaction.setDescription(expectedDescription);
-        transaction.setNote(expectedMemo);
+        transaction.setDescription(originalDescription);
+        transaction.setNote(originalMemo);
         account.addTransaction(transaction);
 
         accountsDbAdapter.addRecord(account);
@@ -179,8 +206,8 @@ public class QifExporterTest {
         File file = new File(exportedFiles.get(0));
         String fileContent = readFileContent(file);
         assertThat(file).exists().hasExtension("qif");
-        assertThat(fileContent.contains(expectedDescription));
-        assertThat(fileContent.contains(expectedMemo));
+        assertThat(fileContent).contains(QifHelper.PAYEE_PREFIX + expectedDescription);
+        assertThat(fileContent).contains(QifHelper.MEMO_PREFIX + expectedMemo);
     }
 
     @NonNull

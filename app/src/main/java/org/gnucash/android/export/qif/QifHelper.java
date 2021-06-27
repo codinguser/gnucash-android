@@ -83,4 +83,11 @@ public class QifHelper {
     public static String getQifHeader(String accountType) {
         return getQifHeader(AccountType.valueOf(accountType));
     }
+
+    static String sanitizeQifLine(String line) {
+        if (line == null) {
+            return "";
+        }
+        return line.replaceAll("\\r?\\n", " ");
+    }
 }

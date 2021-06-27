@@ -65,6 +65,7 @@ import java.util.Locale;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
@@ -147,7 +148,7 @@ public class TransactionsActivityTest {
 	}
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		mAccountsDbAdapter.deleteAllRecords();
         mAccountsDbAdapter.addRecord(mBaseAccount, DatabaseAdapter.UpdateMethod.insert);
         mAccountsDbAdapter.addRecord(mTransferAccount, DatabaseAdapter.UpdateMethod.insert);
@@ -645,7 +646,7 @@ public class TransactionsActivityTest {
 		transactionIntent.setType(Transaction.MIME_TYPE);
 		transactionIntent.putExtra(Intent.EXTRA_TITLE, "Power intents");
 		transactionIntent.putExtra(Intent.EXTRA_TEXT, "Intents for sale");
-		transactionIntent.putExtra(Transaction.EXTRA_AMOUNT, new BigDecimal(4.99));
+		transactionIntent.putExtra(Transaction.EXTRA_AMOUNT, new BigDecimal("4.99"));
 		transactionIntent.putExtra(Transaction.EXTRA_ACCOUNT_UID, TRANSACTIONS_ACCOUNT_UID);
 		transactionIntent.putExtra(Transaction.EXTRA_TRANSACTION_TYPE, TransactionType.DEBIT.name());
 		transactionIntent.putExtra(Account.EXTRA_CURRENCY_CODE, "USD");
@@ -869,6 +870,63 @@ public class TransactionsActivityTest {
 	}
 
 	/**
+	 * In this test we check that new lines in the transaction description are replaced
+	 * with spaces after focus change.
+	 */
+	@Test
+	public void noNewLinesinDescriptionAfterFocusChange() {
+		setDoubleEntryEnabled(true);
+		setDefaultTransactionType(TransactionType.DEBIT);
+		validateTransactionListDisplayed();
+
+		onView(withId(R.id.fab_create_transaction)).perform(click());
+
+		final String description = "\r\nText with\r\n new lines\n";
+		clickOnView(R.id.input_transaction_name);
+		onView(withId(R.id.input_transaction_name)).perform(replaceText(description));
+
+		Espresso.closeSoftKeyboard();
+		clickOnView(R.id.input_transaction_amount);
+		onView(withId(R.id.input_transaction_amount)).perform(typeText("899"));
+		Espresso.closeSoftKeyboard();
+
+		final String expectedDescription = " Text with  new lines ";
+		onView(withId(R.id.input_transaction_name)).check(matches(withText(expectedDescription)));
+	}
+
+	/**
+	 * In this test we check that editing new lines in the transaction description are replaced
+	 * with spaces when saving.
+	 */
+	@Test
+	public void noNewLinesinDescriptionAfterSave() {
+		setDoubleEntryEnabled(true);
+		setDefaultTransactionType(TransactionType.DEBIT);
+		validateTransactionListDisplayed();
+
+		onView(withId(R.id.fab_create_transaction)).perform(click());
+
+		final String description = "\r\nText with\r\n new lines\n";
+		onView(withId(R.id.input_transaction_name)).perform(replaceText(description));
+
+		onView(withId(R.id.input_transaction_amount)).perform(typeText("899"));
+		Espresso.closeSoftKeyboard();
+
+		onView(withId(R.id.menu_save)).perform(click());
+
+		validateTransactionListDisplayed();
+
+		List<Transaction> transactions = mTransactionsDbAdapter.getAllTransactionsForAccount(TRANSACTIONS_ACCOUNT_UID);
+		assertThat(transactions).hasSize(2);
+		Transaction transaction = transactions.get(0);
+
+		// during save the description is also trimmed
+		final String expectedDescription = "Text with  new lines ";
+		assertThat(transaction.getDescription().equals(expectedDescription));
+	}
+
+
+	/**
 	 * Simple wrapper for clicking on views with espresso
 	 * @param viewId View resource ID
 	 */
@@ -893,7 +951,7 @@ public class TransactionsActivityTest {
 	}
 
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() {
 		if (mTransactionsActivity != null)
 			mTransactionsActivity.finish();
 	}
