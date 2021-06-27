@@ -883,7 +883,7 @@ public class TransactionsActivityTest {
 
 		final String description = "\r\nText with\r\n new lines\n";
 		clickOnView(R.id.input_transaction_name);
-		onView(withId(R.id.input_transaction_name)).perform(ViewActions.replaceText(description));
+		onView(withId(R.id.input_transaction_name)).perform(replaceText(description));
 
 		Espresso.closeSoftKeyboard();
 		clickOnView(R.id.input_transaction_amount);
