@@ -26,7 +26,6 @@ import com.crashlytics.android.Crashlytics;
 import org.gnucash.android.R;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
-import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
@@ -37,7 +36,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -49,14 +48,15 @@ import java.util.Map;
  *
  * @author Semyannikov Gleb <nightdevgame@gmail.com>
  */
-public class CsvTransactionsExporter extends Exporter{
+public class CsvTransactionsExporter extends Exporter {
 
-    private char mCsvSeparator;
+    private final char mCsvSeparator;
 
-    private DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd", Locale.US);
+    private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
     /**
      * Construct a new exporter with export parameters
+     *
      * @param params Parameters for the export
      */
     public CsvTransactionsExporter(ExportParams params) {
@@ -68,8 +68,9 @@ public class CsvTransactionsExporter extends Exporter{
     /**
      * Overloaded constructor.
      * Creates an exporter with an already open database instance.
+     *
      * @param params Parameters for the export
-     * @param db SQLite database
+     * @param db     SQLite database
      */
     public CsvTransactionsExporter(ExportParams params, SQLiteDatabase db) {
         super(params, db);
@@ -81,27 +82,28 @@ public class CsvTransactionsExporter extends Exporter{
     public List<String> generateExport() throws ExporterException {
         String outputFile = getExportCacheFilePath();
 
-        try (CsvWriter csvWriter = new CsvWriter(new FileWriter(outputFile), "" + mCsvSeparator)){
+        try (CsvWriter csvWriter = new CsvWriter(new FileWriter(outputFile), "" + mCsvSeparator)) {
             generateExport(csvWriter);
-        } catch (IOException ex){
+        } catch (IOException ex) {
             Crashlytics.log("Error exporting CSV");
             Crashlytics.logException(ex);
             throw new ExporterException(mExportParams, ex);
         }
 
-        return Arrays.asList(outputFile);
+        return Collections.singletonList(outputFile);
     }
 
     /**
      * Write splits to CSV format
+     *
      * @param splits Splits to be written
      */
     private void writeSplitsToCsv(@NonNull List<Split> splits, @NonNull CsvWriter writer,
-			Map<String, String> accountNames, Map<String, String> accountFullNames) throws IOException {
+                                  Map<String, String> accountNames, Map<String, String> accountFullNames) throws IOException {
         int index = 0;
 
         for (Split split : splits) {
-            if (index++ > 0){ // the first split is on the same line as the transactions. But after that, we
+            if (index++ > 0) { // the first split is on the same line as the transactions. But after that, we
                 writer.write("" + mCsvSeparator + mCsvSeparator + mCsvSeparator + mCsvSeparator
                         + mCsvSeparator + mCsvSeparator + mCsvSeparator + mCsvSeparator);
             }
@@ -140,18 +142,18 @@ public class CsvTransactionsExporter extends Exporter{
 
     private void generateExport(final CsvWriter csvWriter) throws ExporterException {
         try {
-            List<String> names = Arrays.asList(mContext.getResources().getStringArray(R.array.csv_transaction_headers));
-            for(int i = 0; i < names.size(); i++) {
-                csvWriter.writeToken(names.get(i));
+            String[] names = mContext.getResources().getStringArray(R.array.csv_transaction_headers);
+            for (int i = 0; i < names.length - 1; i++) {
+                csvWriter.writeToken(names[i]);
             }
-            csvWriter.newLine();
+            csvWriter.writeEndToken(names[names.length - 1]);
 
             Map<String, String> nameCache = new HashMap<>();
             Map<String, String> fullNameCache = new HashMap<>();
 
             Cursor cursor = mTransactionsDbAdapter.fetchTransactionsModifiedSince(mExportParams.getExportStartTime());
             Log.d(LOG_TAG, String.format("Exporting %d transactions to CSV", cursor.getCount()));
-            while (cursor.moveToNext()){
+            while (cursor.moveToNext()) {
                 Transaction transaction = mTransactionsDbAdapter.buildModelInstance(cursor);
                 Date date = new Date(transaction.getTimeMillis());
                 csvWriter.writeToken(dateFormat.format(date));
