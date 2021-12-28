@@ -17,6 +17,8 @@
 
 package org.gnucash.android.ui.account;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -357,6 +359,47 @@ public class AccountFormFragment extends Fragment {
         }
 
 	}
+
+    private SharedPreferences spGen;
+
+    private boolean isSubmit;
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        SharedPreferences.Editor spGenEditor = spGen.edit();
+        if (isSubmit) {
+            spGenEditor.putString("editName", "");
+            spGenEditor.putLong("editCurrency", Integer.MAX_VALUE);
+            spGenEditor.putString("editDesc", "");
+            spGenEditor.putBoolean("editPlaceholder", false);
+            spGenEditor.putInt("editColor", Account.DEFAULT_COLOR);
+        } else {
+            spGenEditor.putString("editName", getEnteredName());
+            spGenEditor.putLong("editCurrency", mCurrencySpinner.getSelectedItemId());
+            spGenEditor.putString("editDesc", mDescriptionEditText.getText().toString());
+            spGenEditor.putBoolean("editPlaceholder", mPlaceholderCheckBox.isChecked());
+            spGenEditor.putInt("editColor", mSelectedColor);
+        }
+        spGenEditor.commit();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        spGen = getActivity().getSharedPreferences("AccountFormFragment", MODE_PRIVATE);
+        mNameEditText.setText(spGen.getString("editName", ""));
+        int currency = (int) (long) spGen.getLong("editCurrency", Integer.MAX_VALUE);
+        if(currency == Integer.MAX_VALUE){
+            setSelectedCurrency(Money.DEFAULT_CURRENCY_CODE);
+        }else{
+            mCurrencySpinner.setSelection(currency);
+        }
+        mDescriptionEditText.setText(spGen.getString("editDesc", ""));
+        mPlaceholderCheckBox.setChecked(spGen.getBoolean("editPlaceholder", false));
+        mSelectedColor = spGen.getInt("editColor", Account.DEFAULT_COLOR);
+        isSubmit = false;
+    }
 
     /**
      * Initialize view with the properties of <code>account</code>.
@@ -825,6 +868,7 @@ public class AccountFormFragment extends Fragment {
             }
         }
         accountsToUpdate.add(mAccount);
+        isSubmit = true;
 
         // bulk update, will not update transactions
 		mAccountsDbAdapter.bulkAddRecords(accountsToUpdate, DatabaseAdapter.UpdateMethod.update);
