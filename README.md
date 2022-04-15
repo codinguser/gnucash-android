@@ -1,3 +1,6 @@
+[![Maintainers Wanted](https://img.shields.io/badge/maintainers-wanted-red.svg)](https://github.com/pickhardt/maintainers-wanted)
+
+
 <a href="https://travis-ci.org/codinguser/gnucash-android" target="_blank">
 <img src="https://travis-ci.org/codinguser/gnucash-android.svg?branch=develop" alt="Travis build status" />
 </a>
