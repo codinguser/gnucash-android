@@ -87,7 +87,7 @@
                     android:layout_height="wrap_content"
                     android:checked="false" />
 
-                <android.support.design.widget.TextInputLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/exchange_rate_text_input_layout"
                     android:layout_width="0dp"
                     android:layout_weight="2"
@@ -101,7 +101,7 @@
                         android:digits="0123456789.,"
                         android:imeOptions="actionDone"
                         android:hint="@string/hint_exchange_rate"/>
-                </android.support.design.widget.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- TODO: re-enable this button when fetching of price quotes is implemented -->
                 <Button android:id="@+id/btn_fetch_exchange_rate"
@@ -133,7 +133,7 @@
                     android:layout_height="wrap_content"
                     android:checked="true" />
 
-                <android.support.design.widget.TextInputLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/converted_amount_text_input_layout"
                     android:layout_width="0dp"
                     android:layout_weight="2"
@@ -148,7 +148,7 @@
                         android:hint="@string/hint_converted_amount">
                         <requestFocus />
                     </EditText>
-                </android.support.design.widget.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView android:id="@+id/target_currency"
                     android:textSize="16sp"

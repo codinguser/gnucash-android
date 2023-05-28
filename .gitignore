@@ -28,6 +28,7 @@ crowdin.properties
 #Crashlytics
 
 crashlytics.properties
-fabric.properties
-app/fabric.properties
 app/*.tap
+**/google-services.json
+
+debug.keystore

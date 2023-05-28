@@ -3,7 +3,7 @@ package org.gnucash.android.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 

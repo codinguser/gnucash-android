@@ -30,16 +30,16 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.PreferenceManager;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
@@ -49,8 +49,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
-import com.kobakei.ratethisapp.RateThisApp;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
@@ -139,7 +138,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
     /**
      * Configuration for rating the app
      */
-    public static RateThisApp.Config rateAppConfig = new RateThisApp.Config(14, 100);
+//    public static RateThisApp.Config rateAppConfig = new RateThisApp.Config(14, 100);
     private AccountViewPagerAdapter mPagerAdapter;
 
     /**
@@ -282,11 +281,12 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
     protected void onStart() {
         super.onStart();
 
-        if (BuildConfig.CAN_REQUEST_RATING) {
-            RateThisApp.init(rateAppConfig);
-            RateThisApp.onStart(this);
-            RateThisApp.showRateDialogIfNeeded(this);
-        }
+//        TODO: re-implement rate this app
+//        if (BuildConfig.CAN_REQUEST_RATING) {
+//            RateThisApp.init(rateAppConfig);
+//            RateThisApp.onStart(this);
+//            RateThisApp.showRateDialogIfNeeded(this);
+//        }
     }
 
     /**
@@ -393,7 +393,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
             packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
             releaseTitle.append(" - v").append(packageInfo.versionName);
         } catch (NameNotFoundException e) {
-            Crashlytics.logException(e);
+            FirebaseCrashlytics.getInstance().recordException(e);
             Log.e(LOG_TAG, "Error displaying 'Whats new' dialog");
         }
 
@@ -475,8 +475,8 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
         try {
             activity.startActivityForResult(chooser, REQUEST_PICK_ACCOUNTS_FILE);
         } catch (ActivityNotFoundException ex){
-            Crashlytics.log("No file manager for selecting files available");
-            Crashlytics.logException(ex);
+            FirebaseCrashlytics.getInstance().log("No file manager for selecting files available");
+            FirebaseCrashlytics.getInstance().recordException(ex);
             Toast.makeText(activity, R.string.toast_install_file_manager, Toast.LENGTH_LONG).show();
         }
     }
@@ -496,8 +496,8 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
         try {
             fragment.startActivityForResult(chooser, REQUEST_PICK_ACCOUNTS_FILE);
         } catch (ActivityNotFoundException ex){
-            Crashlytics.log("No file manager for selecting files available");
-            Crashlytics.logException(ex);
+            FirebaseCrashlytics.getInstance().log("No file manager for selecting files available");
+            FirebaseCrashlytics.getInstance().recordException(ex);
             Toast.makeText(fragment.getActivity(), R.string.toast_install_file_manager, Toast.LENGTH_LONG).show();
         }
     }

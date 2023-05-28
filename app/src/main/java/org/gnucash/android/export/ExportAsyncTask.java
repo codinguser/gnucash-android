@@ -27,12 +27,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.v4.content.FileProvider;
+import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -42,6 +42,7 @@ import com.google.android.gms.drive.DriveContents;
 import com.google.android.gms.drive.DriveFolder;
 import com.google.android.gms.drive.DriveId;
 import com.google.android.gms.drive.MetadataChangeSet;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.owncloud.android.lib.common.OwnCloudClient;
 import com.owncloud.android.lib.common.OwnCloudClientFactory;
 import com.owncloud.android.lib.common.OwnCloudCredentialsFactory;
@@ -144,7 +145,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             mExportedFiles = mExporter.generateExport();
         } catch (final Exception e) {
             Log.e(TAG, "Error exporting: " + e.getMessage());
-            Crashlytics.logException(e);
+            FirebaseCrashlytics.getInstance().recordException(e);
             e.printStackTrace();
             if (mContext instanceof Activity) {
                 ((Activity)mContext).runOnUiThread(new Runnable() {
@@ -166,7 +167,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         try {
             moveToTarget();
         } catch (Exporter.ExporterException e) {
-            Crashlytics.log(Log.ERROR, TAG, "Error sending exported files to target: " + e.getMessage());
+            FirebaseCrashlytics.getInstance().log("E/" + TAG + " Error sending exported files to target: " + e.getMessage());
             return false;
         }
 
@@ -365,7 +366,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 inputStream.close();
                 exportedFile.delete(); //delete file to prevent cache accumulation
             } catch (IOException e) {
-                Crashlytics.logException(e);
+                FirebaseCrashlytics.getInstance().recordException(e);
                 Log.e(TAG, e.getMessage());
             } catch (com.dropbox.core.DbxException e) {
                 e.printStackTrace();

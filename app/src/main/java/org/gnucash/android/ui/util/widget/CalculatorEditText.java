@@ -19,9 +19,9 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.inputmethodservice.KeyboardView;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.annotation.XmlRes;
-import android.support.v7.widget.AppCompatEditText;
+import androidx.annotation.Nullable;
+import androidx.annotation.XmlRes;
+import androidx.appcompat.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -30,7 +30,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
@@ -259,7 +259,7 @@ public class CalculatorEditText extends AppCompatEditText {
             setError(getContext().getString(R.string.label_error_invalid_expression));
             String msg = "Invalid expression: " + amountString;
             Log.e(this.getClass().getSimpleName(), msg);
-            Crashlytics.log(msg);
+            FirebaseCrashlytics.getInstance().log(msg);
             return "";
         }
 

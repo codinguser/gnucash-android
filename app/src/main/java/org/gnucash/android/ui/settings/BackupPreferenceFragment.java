@@ -25,12 +25,12 @@ import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.CheckBoxPreference;
-import android.support.v7.preference.Preference;
-import android.support.v7.preference.PreferenceFragmentCompat;
-import android.support.v7.preference.PreferenceManager;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.CheckBoxPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
@@ -55,10 +55,7 @@ import org.gnucash.android.util.BackupManager;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 
 /**
@@ -372,7 +369,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 
 		final String defaultBackupFile = BackupManager.getBookBackupFileUri(bookUID);
 		if (defaultBackupFile != null){
-			android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity())
+			androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(getActivity())
 					.setTitle(R.string.title_confirm_restore_backup)
 					.setMessage(R.string.msg_confirm_restore_backup_into_new_book)
 					.setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
@@ -393,7 +390,7 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 
 		//If no default location was set, look in the internal SD card location
 		if (BackupManager.getBackupList(bookUID).isEmpty()){
-			android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity())
+			androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(getActivity())
 					.setTitle(R.string.title_no_backups_found)
 					.setMessage(R.string.msg_no_backups_to_restore_from)
 					.setNegativeButton(R.string.label_dismiss, new DialogInterface.OnClickListener() {

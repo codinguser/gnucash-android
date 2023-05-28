@@ -18,10 +18,10 @@
 package org.gnucash.android.importer;
 
 import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseHelper;
@@ -552,7 +552,7 @@ public class GncXmlHandler extends DefaultHandler {
                         } catch (IllegalArgumentException ex) {
                             //sometimes the color entry in the account file is "Not set" instead of just blank. So catch!
                             Log.e(LOG_TAG, "Invalid color code '" + color + "' for account " + mAccount.getName());
-                            Crashlytics.logException(ex);
+                            FirebaseCrashlytics.getInstance().recordException(ex);
                         }
                     }
                     mInColorSlot = false;
@@ -624,10 +624,10 @@ public class GncXmlHandler extends DefaultHandler {
                         mPrice.setDate(new Timestamp(GncXmlHelper.parseDate(characterString)));
                     }
                 } catch (ParseException e) {
-                    Crashlytics.logException(e);
+                    FirebaseCrashlytics.getInstance().recordException(e);
                     String message = "Unable to parse transaction time - " + characterString;
                     Log.e(LOG_TAG, message + "\n" + e.getMessage());
-                    Crashlytics.log(message);
+                    FirebaseCrashlytics.getInstance().log(message);
                     throw new SAXException(message, e);
                 }
                 break;
@@ -655,8 +655,8 @@ public class GncXmlHandler extends DefaultHandler {
                     mValue = GncXmlHelper.parseSplitAmount(characterString).abs(); // use sign from quantity
                 } catch (ParseException e) {
                     String msg = "Error parsing split quantity - " + characterString;
-                    Crashlytics.log(msg);
-                    Crashlytics.logException(e);
+                    FirebaseCrashlytics.getInstance().log(msg);
+                    FirebaseCrashlytics.getInstance().recordException(e);
                     throw new SAXException(msg, e);
                 }
                 break;
@@ -666,8 +666,8 @@ public class GncXmlHandler extends DefaultHandler {
                     mQuantity = GncXmlHelper.parseSplitAmount(characterString).abs();
                 } catch (ParseException e) {
                     String msg = "Error parsing split quantity - " + characterString;
-                    Crashlytics.log(msg);
-                    Crashlytics.logException(e);
+                    FirebaseCrashlytics.getInstance().log(msg);
+                    FirebaseCrashlytics.getInstance().recordException(e);
                     throw new SAXException(msg, e);
                 }
                 break;
@@ -745,7 +745,7 @@ public class GncXmlHandler extends DefaultHandler {
                 } catch (IllegalArgumentException ex){ //the period type constant is not supported
                     String msg = "Unsupported period constant: " + characterString;
                     Log.e(LOG_TAG, msg);
-                    Crashlytics.logException(ex);
+                    FirebaseCrashlytics.getInstance().recordException(ex);
                     mIgnoreScheduledAction = true;
                 }
                 break;
@@ -774,8 +774,8 @@ public class GncXmlHandler extends DefaultHandler {
                 } catch (ParseException e) {
                     String msg = "Error parsing scheduled action date " + characterString;
                     Log.e(LOG_TAG, msg + e.getMessage());
-                    Crashlytics.log(msg);
-                    Crashlytics.logException(e);
+                    FirebaseCrashlytics.getInstance().log(msg);
+                    FirebaseCrashlytics.getInstance().recordException(e);
                     throw new SAXException(msg, e);
                 }
                 break;
@@ -819,7 +819,7 @@ public class GncXmlHandler extends DefaultHandler {
                     if (parts.length != 2) {
                         String message = "Illegal price - " + characterString;
                         Log.e(LOG_TAG, message);
-                        Crashlytics.log(message);
+                        FirebaseCrashlytics.getInstance().log(message);
                         throw new SAXException(message);
                     } else {
                         mPrice.setValueNum(Long.valueOf(parts[0]));
@@ -1045,7 +1045,7 @@ public class GncXmlHandler extends DefaultHandler {
         try {
             return mAccountMap.get(accountUID).getCommodity();
         } catch (Exception e) {
-            Crashlytics.logException(e);
+            FirebaseCrashlytics.getInstance().recordException(e);
             return Commodity.DEFAULT_COMMODITY;
         }
     }
@@ -1070,8 +1070,8 @@ public class GncXmlHandler extends DefaultHandler {
         } catch (NumberFormatException | ParseException e) {
             String msg = "Error parsing template credit split amount " + characterString;
             Log.e(LOG_TAG, msg + "\n" + e.getMessage());
-            Crashlytics.log(msg);
-            Crashlytics.logException(e);
+            FirebaseCrashlytics.getInstance().log(msg);
+            FirebaseCrashlytics.getInstance().recordException(e);
         } finally {
             if (splitType == TransactionType.CREDIT)
                 mInCreditNumericSlot = false;

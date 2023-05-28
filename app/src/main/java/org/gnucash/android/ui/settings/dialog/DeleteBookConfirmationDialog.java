@@ -19,7 +19,7 @@ package org.gnucash.android.ui.settings.dialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.adapter.BooksDbAdapter;

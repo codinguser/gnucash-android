@@ -30,8 +30,6 @@ import org.gnucash.android.model.Book;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
-import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
 import org.gnucash.android.util.TimestampHelper;
 import org.junit.Before;
 import org.junit.Test;

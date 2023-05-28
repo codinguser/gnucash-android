@@ -9,8 +9,6 @@ import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
-import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
-import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

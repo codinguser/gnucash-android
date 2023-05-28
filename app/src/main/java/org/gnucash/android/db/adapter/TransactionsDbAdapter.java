@@ -23,12 +23,12 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.database.sqlite.SQLiteStatement;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.AccountType;
@@ -132,7 +132,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
             mDb.setTransactionSuccessful();
         } catch (SQLException sqlEx) {
             Log.e(LOG_TAG, sqlEx.getMessage());
-            Crashlytics.logException(sqlEx);
+            FirebaseCrashlytics.getInstance().recordException(sqlEx);
         } finally {
             mDb.endTransaction();
         }

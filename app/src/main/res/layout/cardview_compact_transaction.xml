@@ -15,7 +15,7 @@
  limitations under the License.
 -->
 
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:cardview="http://schemas.android.com/apk/res-auto"
     cardview:cardUseCompatPadding="true"
@@ -61,4 +61,4 @@
             android:src="@drawable/ic_more_vert_black_24dp"
             tools:ignore="ContentDescription" />
     </LinearLayout>
-</android.support.v7.widget.CardView>
+</androidx.cardview.widget.CardView>

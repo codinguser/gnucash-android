@@ -17,7 +17,7 @@
 package org.gnucash.android.ui.report;
 
 import android.content.Context;
-import android.support.annotation.ColorRes;
+import androidx.annotation.ColorRes;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;

@@ -29,7 +29,7 @@
         <intent android:action="android.intent.action.VIEW"
             android:data="http://www.apache.org/licenses/LICENSE-2.0.html" />
     </Preference>
-    <android.support.v7.preference.SwitchPreferenceCompat
+    <androidx.preference.SwitchPreferenceCompat
         android:title="@string/title_enable_crashlytics"
         android:summary="@string/msg_enable_crashlytics"
         android:key="@string/key_enable_crashlytics" />

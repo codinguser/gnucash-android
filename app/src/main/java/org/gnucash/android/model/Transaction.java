@@ -17,7 +17,7 @@
 package org.gnucash.android.model;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;

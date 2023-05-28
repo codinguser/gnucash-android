@@ -77,7 +77,7 @@ limitations under the License.
             tools:ignore="ContentDescription" />
     </LinearLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/name_text_input_layout"
         android:layout_width="match_parent"
         android:layout_marginLeft="7dp"
@@ -91,7 +91,7 @@ limitations under the License.
             android:inputType="textMultiLine|textCapSentences"
             android:background="@android:color/transparent"
             android:gravity="top" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Spinner
             android:id="@+id/input_accounts_spinner"

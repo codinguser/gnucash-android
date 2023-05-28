@@ -21,18 +21,18 @@
         android:key="@string/key_default_transaction_type"
         android:summary="@string/summary_default_transaction_type"/>
 
-    <android.support.v7.preference.SwitchPreferenceCompat android:summary="@string/summary_use_double_entry"
+    <androidx.preference.SwitchPreferenceCompat android:summary="@string/summary_use_double_entry"
                                                           android:key="@string/key_use_double_entry"
                                                           android:defaultValue="true"
                                                           android:title="@string/title_use_double_entry"/>
 
-    <android.support.v7.preference.SwitchPreferenceCompat
+    <androidx.preference.SwitchPreferenceCompat
         android:summary="@string/summary_use_compact_list"
         android:key="@string/key_use_compact_list"
         android:dependency="@string/key_use_double_entry"
         android:title="@string/title_use_compact_list"/>
 
-    <android.support.v7.preference.SwitchPreferenceCompat android:summary="@string/summary_save_opening_balances"
+    <androidx.preference.SwitchPreferenceCompat android:summary="@string/summary_save_opening_balances"
         android:key="@string/key_save_opening_balances"
         android:defaultValue="false"
         android:title="@string/title_save_opening_balances" />

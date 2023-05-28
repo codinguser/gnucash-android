@@ -53,7 +53,8 @@
         android:allowBackup="true">
         <activity
             android:name=".ui.account.AccountsActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -89,7 +90,8 @@
         <activity android:name=".ui.homescreen.WidgetConfigurationActivity"
             android:label="@string/label_widget_configuration"
             android:theme="@style/Dialog.WidgetConfiguration"
-            android:excludeFromRecents="true">
+            android:excludeFromRecents="true"
+            android:exported="false">
 		    <intent-filter>
 		        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
 		    </intent-filter>
@@ -109,7 +111,8 @@
         <activity
             android:name="com.dropbox.core.android.AuthActivity"
             android:launchMode="singleTask"
-            android:configChanges="orientation|keyboard">
+            android:configChanges="orientation|keyboard"
+            android:exported="true">
             <intent-filter>
                 <!-- Change this to be db- followed by your app key -->
                 <data android:scheme="@string/manifest_dropbox_app_key" />
@@ -125,6 +128,7 @@
         <service android:name=".util.BackupJob"
               android:permission="android.permission.BIND_JOB_SERVICE" />
         <receiver android:name=".receivers.TransactionRecorder"
+            android:exported="false"
             android:label="Records transactions received through intents"
             android:permission="org.gnucash.android.permission.RECORD_TRANSACTION">
             <intent-filter>
@@ -143,7 +147,10 @@
                 <data android:mimeType="vnd.android.cursor.item/vnd.${applicationId}.account"/>
             </intent-filter>
         </receiver>
-        <receiver android:name=".receivers.TransactionAppWidgetProvider" >
+        <receiver
+            android:name=".receivers.TransactionAppWidgetProvider"
+            android:exported="false"
+            >
 		    <intent-filter>
 		        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
 		    </intent-filter>
@@ -166,7 +173,7 @@
         </receiver>
         <provider
             android:authorities="${applicationId}.fileprovider"
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS"

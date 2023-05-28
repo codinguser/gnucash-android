@@ -17,10 +17,10 @@
 package org.gnucash.android.model;
 
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -201,7 +201,7 @@ public final class Money implements Comparable<Money>{
 			String msg = "Currency " + mCommodity.getCurrencyCode() +
 					" with scale " + getScale() +
 					" has amount " + mAmount.toString();
-			Crashlytics.log(msg);
+			FirebaseCrashlytics.getInstance().log(msg);
 			Log.e(getClass().getName(), msg);
 			throw e;
 		}

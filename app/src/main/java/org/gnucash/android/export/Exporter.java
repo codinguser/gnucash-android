@@ -20,10 +20,10 @@ package org.gnucash.android.export;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.app.GnuCashApplication;
@@ -182,7 +182,7 @@ public abstract class Exporter {
             timeMillis = date.getTime();
         } catch (ParseException e) {
             Log.e("Exporter", "Error parsing time from file name: " + e.getMessage());
-            Crashlytics.logException(e);
+            FirebaseCrashlytics.getInstance().recordException(e);
         }
         return timeMillis;
     }
