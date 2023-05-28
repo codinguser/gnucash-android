@@ -23,7 +23,7 @@
 
     <include layout="@layout/actionbar_progress_indicator" />
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:background="?attr/colorPrimary"
         android:layout_width="match_parent"

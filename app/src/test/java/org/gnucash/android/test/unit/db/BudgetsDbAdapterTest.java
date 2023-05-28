@@ -15,7 +15,7 @@
  */
 package org.gnucash.android.test.unit.db;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetAmountsDbAdapter;
@@ -27,8 +27,6 @@ import org.gnucash.android.model.BudgetAmount;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Recurrence;
-import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
-import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

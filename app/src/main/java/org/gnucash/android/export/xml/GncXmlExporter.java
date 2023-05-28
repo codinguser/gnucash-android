@@ -22,7 +22,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
@@ -785,8 +785,8 @@ public class GncXmlExporter extends Exporter{
 
             generateExport(writer);
         } catch (IOException ex){
-            Crashlytics.log("Error exporting XML");
-            Crashlytics.logException(ex);
+            FirebaseCrashlytics.getInstance().log("Error exporting XML");
+            FirebaseCrashlytics.getInstance().recordException(ex);
         } finally {
             if (writer != null) {
                 try {
@@ -895,7 +895,7 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.endDocument();
             xmlSerializer.flush();
         } catch (Exception e) {
-            Crashlytics.logException(e);
+            FirebaseCrashlytics.getInstance().recordException(e);
             throw new ExporterException(mExportParams, e);
         }
     }

@@ -18,7 +18,7 @@ package org.gnucash.android.model;
 
 
 import android.graphics.Color;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.export.ofx.OfxHelper;

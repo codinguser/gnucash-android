@@ -18,15 +18,14 @@ package org.gnucash.android.export.csv;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.gnucash.android.R;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
-import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
@@ -84,8 +83,8 @@ public class CsvTransactionsExporter extends Exporter{
         try (CsvWriter csvWriter = new CsvWriter(new FileWriter(outputFile), "" + mCsvSeparator)){
             generateExport(csvWriter);
         } catch (IOException ex){
-            Crashlytics.log("Error exporting CSV");
-            Crashlytics.logException(ex);
+            FirebaseCrashlytics.getInstance().log("Error exporting CSV");
+            FirebaseCrashlytics.getInstance().recordException(ex);
             throw new ExporterException(mExportParams, ex);
         }
 
@@ -169,7 +168,7 @@ public class CsvTransactionsExporter extends Exporter{
 
             PreferencesHelper.setLastExportTime(TimestampHelper.getTimestampFromNow());
         } catch (IOException e) {
-            Crashlytics.logException(e);
+            FirebaseCrashlytics.getInstance().recordException(e);
             throw new ExporterException(mExportParams, e);
         }
     }

@@ -185,7 +185,7 @@
             tools:text="15:30H"
             android:textColor="@android:color/black"
             android:clickable="true"/>
-        <android.support.v7.widget.SwitchCompat
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_export_all"
             android:text="@string/switch_export_transactions_from_all_time"
             android:paddingLeft="5dp"

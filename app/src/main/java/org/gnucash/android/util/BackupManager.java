@@ -22,10 +22,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.SystemClock;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
@@ -82,7 +82,7 @@ public class BackupManager {
             } catch (IOException ex) {
                 Log.e(LOG_TAG, "Auto backup failed for book " + bookUID);
                 ex.printStackTrace();
-                Crashlytics.logException(ex);
+                FirebaseCrashlytics.getInstance().recordException(ex);
             }
         }
     }
@@ -123,7 +123,7 @@ public class BackupManager {
             writer.close();
             return true;
         } catch (IOException | Exporter.ExporterException e) {
-            Crashlytics.logException(e);
+            FirebaseCrashlytics.getInstance().recordException(e);
             Log.e("GncXmlExporter", "Error creating XML  backup", e);
             return false;
         }
@@ -183,8 +183,12 @@ public class BackupManager {
         Log.i(LOG_TAG, "Scheduling backup job");
         Intent intent = new Intent(context, PeriodicJobReceiver.class);
         intent.setAction(PeriodicJobReceiver.ACTION_BACKUP);
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(context,0, intent,
-                                                               PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(
+                context,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+        );
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 SystemClock.elapsedRealtime() + AlarmManager.INTERVAL_FIFTEEN_MINUTES,

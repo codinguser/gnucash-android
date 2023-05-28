@@ -25,11 +25,11 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
-import android.support.v7.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
@@ -206,7 +206,7 @@ public class MigrationHelper {
                         MigrationHelper.moveFile(src, dst);
                     } catch (IOException e) {
                         Log.e(LOG_TAG, "Error migrating " + src.getName());
-                        Crashlytics.logException(e);
+                        FirebaseCrashlytics.getInstance().recordException(e);
                     }
                 }
             } else {
@@ -222,7 +222,7 @@ public class MigrationHelper {
                         MigrationHelper.moveFile(src, dst);
                     } catch (IOException e) {
                         Log.e(LOG_TAG, "Error migrating backup: " + src.getName());
-                        Crashlytics.logException(e);
+                        FirebaseCrashlytics.getInstance().recordException(e);
                     }
                 }
             }
@@ -746,7 +746,10 @@ public class MigrationHelper {
                 //cancel existing pending intent
                 Context context = GnuCashApplication.getAppContext();
                 PendingIntent recurringPendingIntent = PendingIntent.getBroadcast(context,
-                        (int)transactionId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                        (int) transactionId,
+                        intent,
+                        PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_MUTABLE
+                );
                 AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
                 alarmManager.cancel(recurringPendingIntent);
             }
@@ -886,7 +889,7 @@ public class MigrationHelper {
                 importCommodities(db, true);
             } catch (SAXException | ParserConfigurationException | IOException e) {
                 Log.e(LOG_TAG, "Error loading currencies into the database", e);
-                Crashlytics.logException(e);
+                FirebaseCrashlytics.getInstance().recordException(e);
                 throw new RuntimeException(e);
             }
 
@@ -1537,7 +1540,7 @@ public class MigrationHelper {
                 MigrationHelper.moveFile(src, dst);
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error moving file " + src.getPath());
-                Crashlytics.logException(e);
+                FirebaseCrashlytics.getInstance().recordException(e);
             }
         }
     }
@@ -1574,8 +1577,8 @@ public class MigrationHelper {
                     ex.printStackTrace();
                     String msg = String.format("Error moving files from %s to %s", srcDir.getPath(), dstDir.getPath());
                     Log.e(LOG_TAG, msg);
-                    Crashlytics.log(msg);
-                    Crashlytics.logException(ex);
+                    FirebaseCrashlytics.getInstance().log(msg);
+                    FirebaseCrashlytics.getInstance().recordException(ex);
                 }
 
             }
@@ -1648,7 +1651,7 @@ public class MigrationHelper {
             dbVersion = 16;
         } catch (SAXException | ParserConfigurationException | IOException e) {
             Log.e(LOG_TAG, "Error loading currencies into the database", e);
-            Crashlytics.logException(e);
+            FirebaseCrashlytics.getInstance().recordException(e);
         }
 
         return dbVersion;

@@ -17,7 +17,7 @@
 package org.gnucash.android.export.csv;
 
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

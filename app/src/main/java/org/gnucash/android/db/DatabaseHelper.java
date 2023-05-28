@@ -21,7 +21,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.gnucash.android.model.Commodity;
 import org.xml.sax.SAXException;
@@ -280,17 +280,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } catch (NoSuchMethodException e) {
                 String msg = String.format("Database upgrade method upgradeToVersion%d(SQLiteDatabase) definition not found ", newVersion);
                 Log.e(LOG_TAG, msg, e);
-                Crashlytics.log(msg);
-                Crashlytics.logException(e);
+                FirebaseCrashlytics.getInstance().log(msg);
+                FirebaseCrashlytics.getInstance().recordException(e);
                 throw new RuntimeException(e);
             }  catch (IllegalAccessException e) {
                 String msg = String.format("Database upgrade to version %d failed. The upgrade method is inaccessible ", newVersion);
                 Log.e(LOG_TAG, msg, e);
-                Crashlytics.log(msg);
-                Crashlytics.logException(e);
+                FirebaseCrashlytics.getInstance().log(msg);
+                FirebaseCrashlytics.getInstance().recordException(e);
                 throw new RuntimeException(e);
             } catch (InvocationTargetException e){
-                Crashlytics.logException(e.getTargetException());
+                FirebaseCrashlytics.getInstance().recordException(e.getTargetException());
                 throw new RuntimeException(e.getTargetException());
             }
         }

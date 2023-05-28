@@ -18,7 +18,7 @@ package org.gnucash.android.export.csv;
 
 import android.database.sqlite.SQLiteDatabase;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.gnucash.android.R;
 import org.gnucash.android.export.ExportParams;
@@ -66,8 +66,8 @@ public class CsvAccountExporter extends Exporter{
         try (CsvWriter writer = new CsvWriter(new FileWriter(outputFile), mCsvSeparator + "")) {
             generateExport(writer);
         } catch (IOException ex){
-            Crashlytics.log("Error exporting CSV");
-            Crashlytics.logException(ex);
+            FirebaseCrashlytics.getInstance().log("Error exporting CSV");
+            FirebaseCrashlytics.getInstance().recordException(ex);
             throw new ExporterException(mExportParams, ex);
         }
 
@@ -107,7 +107,7 @@ public class CsvAccountExporter extends Exporter{
                 csvWriter.writeEndToken(account.isPlaceholderAccount() ? "T": "F");
             }
         } catch (IOException e) {
-            Crashlytics.logException(e);
+            FirebaseCrashlytics.getInstance().recordException(e);
             throw new ExporterException(mExportParams, e);
         }
     }

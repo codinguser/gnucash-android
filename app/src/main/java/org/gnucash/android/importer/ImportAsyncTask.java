@@ -28,7 +28,7 @@ import android.provider.OpenableColumns;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseSchema;
@@ -82,12 +82,12 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
 
         } catch (Exception exception){
             Log.e(ImportAsyncTask.class.getName(), "" + exception.getMessage());
-            Crashlytics.log("Could not open: " + uris[0].toString());
-            Crashlytics.logException(exception);
+            FirebaseCrashlytics.getInstance().log("Could not open: " + uris[0].toString());
+            FirebaseCrashlytics.getInstance().recordException(exception);
             exception.printStackTrace();
 
             final String err_msg = exception.getLocalizedMessage();
-            Crashlytics.log(err_msg);
+            FirebaseCrashlytics.getInstance().log(err_msg);
             mContext.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

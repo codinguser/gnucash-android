@@ -64,7 +64,7 @@ limitations under the License.
         android:textSize="16sp"
         android:text="@string/label_last_3_months_expenses"/>
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/card_report_summary_chart"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
@@ -76,9 +76,9 @@ limitations under the License.
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="250dp" />
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/card_total"
         app:elevation="10dp"
         android:layout_height="wrap_content"
@@ -131,6 +131,6 @@ limitations under the License.
                     android:layout_height="wrap_content"/>
             </TableRow>
         </TableLayout>
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
 </LinearLayout>

@@ -23,7 +23,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema.BookEntry;
@@ -98,7 +98,7 @@ public class BookDbHelper extends SQLiteOpenHelper {
                 MigrationHelper.moveFile(src, dst);
             } catch (IOException e) {
                 String err_msg = "Error renaming database file";
-                Crashlytics.log(err_msg);
+                FirebaseCrashlytics.getInstance().log(err_msg);
                 Log.e(LOG_TAG, err_msg, e);
             }
 

@@ -22,10 +22,8 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.support.test.runner.AndroidJUnitRunner;
+import androidx.test.runner.AndroidJUnitRunner;
 import android.util.Log;
-
-import com.kobakei.ratethisapp.RateThisApp;
 
 import org.gnucash.android.R;
 import org.gnucash.android.ui.account.AccountsActivity;
@@ -47,7 +45,7 @@ public class GnucashAndroidTestRunner extends AndroidJUnitRunner{
      * @param context Application context
      */
     public static void preventFirstRunDialogs(Context context) {
-        AccountsActivity.rateAppConfig = new RateThisApp.Config(10000, 10000);
+//        AccountsActivity.rateAppConfig = new RateThisApp.Config(10000, 10000);
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
 
         //do not show first run dialog

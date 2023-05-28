@@ -21,7 +21,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.model.Money;
@@ -58,7 +58,7 @@ public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
             balance = accountsDbAdapter.getAccountBalance(params[0], -1, -1);
         } catch (Exception ex) {
             Log.e(LOG_TAG, "Error computing account balance ", ex);
-            Crashlytics.logException(ex);
+            FirebaseCrashlytics.getInstance().recordException(ex);
         }
         return balance;
     }
