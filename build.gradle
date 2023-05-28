@@ -4,7 +4,7 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:4.2.2'
+		classpath 'com.android.tools.build:gradle:7.0.0'
 		classpath 'com.google.gms:google-services:4.3.15'
 		classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.2'
 	}
@@ -12,9 +12,7 @@ buildscript {
 
 allprojects {
     repositories {
-		maven { url "http://dl.bintray.com/populov/maven" }
         maven { url "https://jitpack.io" }
-		maven { url "http://JRAF.org/static/maven/2" }
         google()
         mavenCentral()
     }

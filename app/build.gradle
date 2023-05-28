@@ -96,6 +96,7 @@ android {
 
     productFlavors {
         development {
+            dimension "stability"
             applicationId 'org.gnucash.android.devel'
             testApplicationId 'org.gnucash.android.devel.test'
             resValue "string", "app_name", "GnuCash-devel"
@@ -108,6 +109,7 @@ android {
         }
 
         beta {
+            dimension "stability"
             resValue "string", "app_name", "GnuCash - beta"
             versionName "${versionMajor}.${versionMinor}.${versionPatch}-beta${versionBuild}"
             resValue "string", "app_version_name", "${versionName}"
@@ -124,6 +126,7 @@ android {
         }
 
         production {
+            dimension "stability"
             resValue "string", "app_name", "GnuCash"
             buildConfigField "boolean", "CAN_REQUEST_RATING", "true"
 
@@ -152,6 +155,7 @@ android {
             includeAndroidResources = true
         }
     }
+    namespace 'org.gnucash.android'
 }
 
 def androidSupportVersion       = "28.0.0"
