@@ -23,13 +23,13 @@ static def gitSha() {
 
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
     buildToolsVersion '30.0.3'
     defaultConfig {
         applicationId "org.gnucash.android"
         testApplicationId 'org.gnucash.android.test'
         minSdkVersion 19
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         resValue "string", "app_version_name", "${versionName}"
@@ -59,12 +59,12 @@ android {
             storeFile file("../debug.keystore")
         }
 
-        if(project.hasProperty("RELEASE_STORE_FILE")) {
+        if (project.hasProperty("RELEASE_STORE_FILE")) {
             release {
-                storeFile       file(RELEASE_STORE_FILE)
-                storePassword   RELEASE_STORE_PASSWORD
-                keyAlias        RELEASE_KEY_ALIAS
-                keyPassword     RELEASE_KEY_PASSWORD
+                storeFile file(RELEASE_STORE_FILE)
+                storePassword RELEASE_STORE_PASSWORD
+                keyAlias RELEASE_KEY_ALIAS
+                keyPassword RELEASE_KEY_PASSWORD
             }
         }
     }
@@ -75,7 +75,7 @@ android {
 //            minifyEnabled true
 //            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            if (project.hasProperty("RELEASE_STORE_FILE")){
+            if (project.hasProperty("RELEASE_STORE_FILE")) {
                 signingConfig signingConfigs.release
             } else {
                 signingConfig signingConfigs.debug
@@ -111,7 +111,7 @@ android {
             versionName "${versionMajor}.${versionMinor}.${versionPatch}-beta${versionBuild}"
             resValue "string", "app_version_name", "${versionName}"
 
-            if (project.hasProperty("RELEASE_DROPBOX_APP_KEY")){
+            if (project.hasProperty("RELEASE_DROPBOX_APP_KEY")) {
                 resValue "string", "dropbox_app_key", RELEASE_DROPBOX_APP_KEY
                 resValue "string", "dropbox_app_secret", RELEASE_DROPBOX_APP_SECRET
                 resValue "string", "manifest_dropbox_app_key", "db-${RELEASE_DROPBOX_APP_KEY}"
@@ -127,7 +127,7 @@ android {
             resValue "string", "app_name", "GnuCash"
             buildConfigField "boolean", "CAN_REQUEST_RATING", "true"
 
-            if (project.hasProperty("RELEASE_DROPBOX_APP_KEY")){
+            if (project.hasProperty("RELEASE_DROPBOX_APP_KEY")) {
                 resValue "string", "dropbox_app_key", RELEASE_DROPBOX_APP_KEY
                 resValue "string", "dropbox_app_secret", RELEASE_DROPBOX_APP_SECRET
                 resValue "string", "manifest_dropbox_app_key", "db-${RELEASE_DROPBOX_APP_KEY}"
@@ -158,12 +158,8 @@ android {
     }
 }
 
-def androidSupportVersion       = "28.0.0"
-def androidEspressoVersion      = "3.0.0"
-def androidSupportTestVersion   = "1.0.0"
-
-repositories{
-    flatDir{
+repositories {
+    flatDir {
         dirs 'libs'
     }
 }
@@ -171,22 +167,22 @@ repositories{
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.github.nextcloud:android-library:1.0.31'
-    implementation('com.android.support:support-v4:'       + androidSupportVersion,
-                   'com.android.support:appcompat-v7:'     + androidSupportVersion,
-                   'com.android.support:design:'           + androidSupportVersion,
-                   'com.android.support:cardview-v7:'      + androidSupportVersion,
-                   'com.android.support:preference-v7:'    + androidSupportVersion,
-                   'com.android.support:recyclerview-v7:'  + androidSupportVersion,
-                   'com.code-troopers.betterpickers:library:3.1.0',
-                   'com.github.PhilJay:MPAndroidChart:v2.1.3',
-                   'joda-time:joda-time:2.9.4',
-                   'com.google.android.gms:play-services-drive:16.1.0',
-                   'com.squareup:android-times-square:1.6.5@aar',
-                   'com.github.techfreak:wizardpager:1.0.3',
-                   'net.objecthunter:exp4j:0.4.7',
-                   'org.apache.jackrabbit:jackrabbit-webdav:2.13.3',
-                   'com.dropbox.core:dropbox-core-sdk:3.0.3',
-            'androidx.multidex:multidex:2.0.0'
+    implementation('androidx.legacy:legacy-support-v4:1.0.0',
+            'androidx.appcompat:appcompat:1.6.1',
+            'com.google.android.material:material:1.9.0',
+            'androidx.cardview:cardview:1.0.0',
+            'androidx.preference:preference:1.2.0',
+            'androidx.recyclerview:recyclerview:1.3.0',
+            'com.code-troopers.betterpickers:library:3.1.0',
+            'com.github.PhilJay:MPAndroidChart:v2.1.3',
+            'joda-time:joda-time:2.9.4',
+            'com.google.android.gms:play-services-drive:16.1.0',
+            'com.squareup:android-times-square:1.6.5@aar',
+            'com.github.techfreak:wizardpager:1.0.3',
+            'net.objecthunter:exp4j:0.4.7',
+            'org.apache.jackrabbit:jackrabbit-webdav:2.13.3',
+            'com.dropbox.core:dropbox-core-sdk:3.0.3',
+            'androidx.multidex:multidex:2.0.1'
     )
     implementation 'com.google.firebase:firebase-crashlytics:18.3.7'
     implementation 'com.google.firebase:firebase-analytics:21.3.0'
@@ -205,21 +201,21 @@ dependencies {
     )
     testImplementation 'org.robolectric:shadows-multidex:4.3.1'
 
-    androidTestImplementation (
-            'com.android.support:support-annotations:'  + androidSupportVersion,
-            'com.android.support.test:runner:'          + androidSupportTestVersion,
-            'com.android.support.test:rules:'           + androidSupportTestVersion,
-            'com.android.support.test.espresso:espresso-core:'      + androidEspressoVersion,
-            'com.android.support.test.espresso:espresso-intents:'   + androidEspressoVersion,
+    androidTestImplementation(
+            'androidx.annotation:annotation:1.6.0',
+            'androidx.test:runner:1.5.2',
+            'androidx.test:rules:1.5.0',
+            'androidx.test.espresso:espresso-core:3.5.1',
+            'androidx.test.espresso:espresso-intents:3.5.1',
             //the following are only added so that the app and test version both us the same versions
-            'com.android.support:appcompat-v7:'     + androidSupportVersion,
-            'com.android.support:design:'           + androidSupportVersion)
-    androidTestImplementation ('com.android.support.test.espresso:espresso-contrib:'   + androidEspressoVersion) {
+            'androidx.appcompat:appcompat:1.6.1',
+            'com.google.android.material:material:1.9.0')
+    androidTestImplementation('androidx.test.espresso:espresso-contrib:3.5.1') {
         exclude group: 'com.android.support', module: 'support-v4'
         exclude module: 'recyclerview-v7'
     }
 
-    androidTestImplementation('com.squareup.assertj:assertj-android:1.1.1'){
-        exclude group: 'com.android.support', module:'support-annotations'
+    androidTestImplementation('com.squareup.assertj:assertj-android:1.1.1') {
+        exclude group: 'com.android.support', module: 'support-annotations'
     }
 }

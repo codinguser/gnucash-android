@@ -3,8 +3,11 @@ several different people.
 Appreciation goes to Muslim Chochlov and the to whole GnuCash community for guiding the
 project through the early phases (as Google Summer of Code project 2012) and providing valuable feedback.
 
-### Core Developers:
-* Ngewi Fet <ngewif@gmail.com> - Project maintainer
+### Core Developers
+* Tiago A. Reul <tiago@reul.space> - Maintainer
+
+### Former Core Developers:
+* Ngewi Fet <ngewif@gmail.com> - Former project maintainer
 * Yongxin Wang <fefe.wyx@gmail.com>
 * Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
 * Àlex Magaz Graça <alexandre.magaz@gmail.com>
