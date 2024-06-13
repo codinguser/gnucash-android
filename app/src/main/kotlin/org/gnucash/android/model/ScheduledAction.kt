@@ -60,6 +60,7 @@ class ScheduledAction    //all actions are enabled by default
      */
     enum class ActionType(@JvmField @StringRes val labelId: Int) {
         TRANSACTION(R.string.action_transaction),
+        // TODO rename `BACKUP` to `EXPORT`
         BACKUP(R.string.action_backup)
     }
 

@@ -16,7 +16,7 @@
  limitations under the License.
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -25,16 +25,21 @@
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:drawSelectorOnTop="false" />
+        android:choiceMode="multipleChoice"
+        android:drawSelectorOnTop="false"
+        android:listSelector="@drawable/calendar_bg_selector" />
 
     <TextView
         android:id="@android:id/empty"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        style="@style/ListItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:gravity="center"
         android:text="@string/label_no_recurring_transactions"
-        android:layout_gravity="center"
         android:textAppearance="?android:textAppearanceLarge"
-        style="@style/ListItem" />
+        android:textColor="@color/theme_accent" />
 
-</LinearLayout>
+</FrameLayout>

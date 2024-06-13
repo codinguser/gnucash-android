@@ -21,16 +21,17 @@
     </style>
 
     <style name="ListItem" parent="ListItemContainerBase">
-        <item name="android:paddingLeft">@dimen/dialog_padding</item>
-        <item name="android:paddingRight">@dimen/dialog_padding</item>
+        <item name="android:paddingStart">@dimen/dialog_padding</item>
+        <item name="android:paddingEnd">@dimen/dialog_padding</item>
         <item name="android:paddingTop">8dp</item>
         <item name="android:paddingBottom">8dp</item>
         <item name="android:gravity">center_vertical</item>
+        <item name="android:background">?selectableItemBackground</item>
     </style>
 
     <style name="ListItemText">
         <item name="android:textSize">20sp</item>
-        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
         <item name="android:gravity">center_vertical</item>
     </style>
 
