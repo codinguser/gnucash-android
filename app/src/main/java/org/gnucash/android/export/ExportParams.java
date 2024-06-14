@@ -155,7 +155,7 @@ public class ExportParams {
     /**
      * Set flag to delete transactions after exporting is complete
      *
-     * @param deleteTransactions SEt to <code>true</code> if transactions should be deleted, false if not
+     * @param deleteTransactions Set to <code>true</code> if transactions should be deleted, false if not
      */
     public void setDeleteTransactionsAfterExport(boolean deleteTransactions) {
         this.mDeleteTransactionsAfterExport = deleteTransactions;

@@ -223,20 +223,24 @@ public abstract class DatabaseAdapter<Model extends BaseModel> implements Closea
      */
     public void addRecord(@NonNull final Model model, UpdateMethod updateMethod) {
         Timber.d("Adding %s record to database: ", model.getClass().getSimpleName());
+        final SQLiteStatement statement;
         switch (updateMethod) {
             case insert:
-                synchronized (getInsertStatement()) {
-                    setBindings(getInsertStatement(), model).execute();
+                statement = getInsertStatement();
+                synchronized (statement) {
+                    setBindings(statement, model).execute();
                 }
                 break;
             case update:
-                synchronized (getUpdateStatement()) {
-                    setBindings(getUpdateStatement(), model).execute();
+                statement = getUpdateStatement();
+                synchronized (statement) {
+                    setBindings(statement, model).execute();
                 }
                 break;
             default:
-                synchronized (getReplaceStatement()) {
-                    setBindings(getReplaceStatement(), model).execute();
+                statement = getReplaceStatement();
+                synchronized (statement) {
+                    setBindings(statement, model).execute();
                 }
                 break;
         }

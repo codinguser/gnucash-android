@@ -267,21 +267,25 @@ public class ScheduledActionsListFragment extends ListFragment implements
         }
 
         if (mActionType == ScheduledAction.ActionType.BACKUP) {
-            //nothing to do for export actions
-            return;
+            ScheduledAction scheduledAction = (ScheduledAction) v.getTag();
+            editExport(scheduledAction);
+        } else if (mActionType == ScheduledAction.ActionType.TRANSACTION) {
+            String scheduledActionUid = v.getTag().toString();
+            editTransaction(id, scheduledActionUid);
         }
+    }
 
+    private void editTransaction(long id, String scheduledActionUid) {
         Transaction transaction = mTransactionsDbAdapter.getRecord(id);
 
         //this should actually never happen, but has happened once. So perform check for the future
         if (transaction.getSplits().isEmpty()) {
-            Toast.makeText(getActivity(), R.string.toast_transaction_has_no_splits_and_cannot_open, Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), R.string.toast_transaction_has_no_splits_and_cannot_open, Toast.LENGTH_SHORT).show();
             return;
         }
 
         String accountUID = transaction.getSplits().get(0).getAccountUID();
-        openTransactionForEdit(accountUID, mTransactionsDbAdapter.getUID(id),
-            v.getTag().toString());
+        openTransactionForEdit(accountUID, mTransactionsDbAdapter.getUID(id), scheduledActionUid);
     }
 
     /**
@@ -290,14 +294,14 @@ public class ScheduledActionsListFragment extends ListFragment implements
      * @param accountUID     GUID of account to which transaction belongs
      * @param transactionUID GUID of transaction to be edited
      */
-    public void openTransactionForEdit(String accountUID, String transactionUID, String scheduledActionUid) {
-        Intent createTransactionIntent = new Intent(getActivity(), FormActivity.class);
-        createTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-        createTransactionIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION.name());
-        createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
-        createTransactionIntent.putExtra(UxArgument.SELECTED_TRANSACTION_UID, transactionUID);
-        createTransactionIntent.putExtra(UxArgument.SCHEDULED_ACTION_UID, scheduledActionUid);
-        startActivity(createTransactionIntent);
+    private void openTransactionForEdit(String accountUID, String transactionUID, String scheduledActionUid) {
+        Intent intent = new Intent(requireContext(), FormActivity.class)
+            .setAction(Intent.ACTION_INSERT_OR_EDIT)
+            .putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION.name())
+            .putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID)
+            .putExtra(UxArgument.SELECTED_TRANSACTION_UID, transactionUID)
+            .putExtra(UxArgument.SCHEDULED_ACTION_UID, scheduledActionUid);
+        startActivity(intent);
     }
 
     @Override
@@ -392,6 +396,14 @@ public class ScheduledActionsListFragment extends ListFragment implements
             refreshList();
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    private void editExport(@NonNull ScheduledAction scheduledAction) {
+        Intent intent = new Intent(requireContext(), FormActivity.class)
+            .setAction(Intent.ACTION_EDIT)
+            .putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.EXPORT.name())
+            .putExtra(UxArgument.SCHEDULED_UID, scheduledAction.getUID());
+        startActivity(intent);
     }
 
     /**
@@ -512,14 +524,15 @@ public class ScheduledActionsListFragment extends ListFragment implements
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
             super.bindView(view, context, cursor);
-            ScheduledActionDbAdapter mScheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
-            ScheduledAction scheduledAction = mScheduledActionDbAdapter.buildModelInstance(cursor);
+            ScheduledActionDbAdapter scheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
+            ScheduledAction scheduledAction = scheduledActionDbAdapter.buildModelInstance(cursor);
 
             TextView primaryTextView = view.findViewById(R.id.primary_text);
             TextView descriptionTextView = view.findViewById(R.id.secondary_text);
             TextView amountTextView = view.findViewById(R.id.right_text);
 
             ExportParams params = ExportParams.parseCsv(scheduledAction.getTag());
+            view.setTag(scheduledAction);
             String exportDestination = params.getExportTarget().getDescription();
             if (params.getExportTarget() == ExportParams.ExportTarget.URI) {
                 exportDestination = exportDestination + " (" + getDocumentName(params.getExportLocation(), context) + ")";
@@ -545,7 +558,6 @@ public class ScheduledActionsListFragment extends ListFragment implements
             }
         }
     }
-
 
     /**
      * {@link DatabaseCursorLoader} for loading recurring transactions asynchronously from the database

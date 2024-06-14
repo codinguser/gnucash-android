@@ -126,7 +126,7 @@ public class GncXmlHandler extends DefaultHandler {
     List<Account> mTemplatAccountList;
 
     /**
-     * Map of the tempate accounts to the template transactions UIDs
+     * Map of the template accounts to the template transactions UIDs
      */
     Map<String, String> mTemplateAccountToTransactionMap;
 
