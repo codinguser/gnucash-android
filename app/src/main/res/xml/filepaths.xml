@@ -14,8 +14,9 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<paths xmlns:android="http://schemas.android.com/apk/res/android">
+<paths>
     <cache-path name="ofx" path="OFX/" />
     <cache-path name="qif" path="QIF/" />
     <cache-path name="xml" path="XML/" />
+    <cache-path name="csv" path="CSV/" />
 </paths>

@@ -223,7 +223,7 @@ dependencies {
         exclude module: 'httpclient'
     }
 
-    implementation('com.crashlytics.sdk.android:crashlytics:2.6.7@aar') {
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
         transitive = true;
     }
 
